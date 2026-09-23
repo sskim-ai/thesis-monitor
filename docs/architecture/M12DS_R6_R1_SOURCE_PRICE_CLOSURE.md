@@ -48,10 +48,12 @@ unchanged.
 
 ## Source Diagnosis and Stop
 
-The bounded 2026-09-23 12:53 KST diagnostic found current US raw bars, but no
+The bounded 2026-09-23 12:53 KST diagnostic found current US raw bars for 21
+symbols, but no
 latest-bar settled-close/finality authority in the existing Kiwoom projection.
 The existing completed-session gate remains unchanged. All 22 are classified
-UNRESOLVED_PROVIDER_FAILURE, specifically missing completed-close authority;
+UNRESOLVED_PROVIDER_FAILURE: 21 lack completed-close authority, while XLC
+returned HTTP 502 with upstream token HTTP 429;
 this is not a claim that raw current bars are absent or that the parser is wrong.
 
 KR current-only TR rows were from the ongoing session while the target was the
@@ -62,3 +64,6 @@ The noon observation does not prove the cause of the earlier morning failures.
 The full information gate remains closed. No fresh Market/Core/A/B or 24-message
 success is claimed. Raw diagnostic evidence is local outside Git. Exact-price
 migration checks preserve historical scope baselines without path exemptions.
+The initial diagnostic parser replay on the XLC error body is non-authoritative;
+its HTTP status, retained response detail and collector HTTPStatusError warning
+own classification. The diagnostic now records HTTP errors before parser replay.

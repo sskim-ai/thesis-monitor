@@ -24,3 +24,19 @@ def test_transport_never_archives_auth_or_headers(tmp_path):
         assert receipt['request_parameters'] == {'symbol': 'SPY'}
         assert 'secret' not in (tmp_path / 'response-01.json').read_text()
     asyncio.run(exercise())
+
+
+def test_http_failure_keeps_native_error_separate_from_bar_parser(tmp_path):
+    async def exercise():
+        transport = DiagnosticTransport(tmp_path, httpx.MockTransport(
+            lambda req: httpx.Response(502, json={'detail': 'upstream token HTTP 429'})))
+        async with httpx.AsyncClient(transport=transport, base_url='https://example.test') as client:
+            result = await client.get('/ohlcv', params={'symbol': 'XLC'}, headers={'X-API-Key':'private'})
+            assert result.status_code == 502
+        row = transport.rows[0]
+        assert row['http_exception']['type'] == 'HTTPStatusError'
+        assert '502' in row['http_exception']['message']
+        assert row['http_exception']['stack']
+        assert row['response']['detail'] == 'upstream token HTTP 429'
+        assert 'private' not in json.dumps(row)
+    asyncio.run(exercise())

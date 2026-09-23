@@ -68,6 +68,11 @@ class DiagnosticTransport(httpx.AsyncBaseTransport):
                'http_status': response.status_code, 'raw_response_sha256': sha256(body).hexdigest(),
                'response_shape': shape(payload), 'response': sanitize(payload),
                'received_utc': datetime.now(timezone.utc).isoformat()}
+        response.request = request
+        try:
+            response.raise_for_status()
+        except httpx.HTTPStatusError as exc:
+            row['http_exception'] = exception_receipt(exc)
         self.rows.append(row)
         put(self.root / f'response-{len(self.rows):02d}.json', row)
         return response
@@ -113,6 +118,11 @@ async def run(root):
                'metadata': payload.get('meta'), 'selected_current_row': None,
                'client_cache_or_fallback_used': False,
                'server_cache_path_version': 'not_exposed_unless_in_source_metadata'}
+        if response.get('http_exception'):
+            row.update(status='FAIL', parser_invoked=False, exception=response['http_exception'])
+            us.append(row)
+            continue
+        row['parser_invoked'] = True
         row['bar_finality'] = []
         for i, raw in enumerate(sorted(raw_rows, key=lambda r: str(r.get('date') or ''))):
             annotated = annotate_normalized_bar(raw, provider=row['provider'] or '',
