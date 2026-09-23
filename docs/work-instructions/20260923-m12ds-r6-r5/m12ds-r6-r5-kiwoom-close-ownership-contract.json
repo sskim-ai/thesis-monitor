@@ -1,0 +1,28 @@
+{
+  "contract": "m12ds-r6-r5-kiwoom-regular-close-ownership-decision-v1",
+  "daily_chart": {
+    "api": "usa06012",
+    "role": "dated daily OHLCV",
+    "row_close": "cur_prc",
+    "latest_row_finality": "UNPROVEN"
+  },
+  "quote_cross_context": {
+    "api": "usa20100",
+    "role": "qualification-only current quote context",
+    "fields": [
+      "cur_prc",
+      "base_close_pric",
+      "pre_open_pric",
+      "pre_high_pric",
+      "pre_low_pric"
+    ],
+    "not_production_authority_until_proven": true
+  },
+  "decision_rule": {
+    "kiwoom_owner_pass": "Some existing Kiwoom field/row is proven to equal the just-completed regular-session close at the real production cutoff and remains stable under later historical finalization.",
+    "kiwoom_owner_fail": "No Kiwoom field can own the just-completed regular close at the production cutoff.",
+    "no_more_unbounded_finality_loops": true
+  },
+  "alpha_vantage": "not used",
+  "new_provider": "not authorized"
+}

@@ -1,0 +1,22 @@
+{
+  "task_id": "M12DS-R6-R5-20260923",
+  "operating_main": "2097645892e30d84aba435416f98e7f9545a87fa",
+  "continuation_base": "33bb3cb666bd0063aba9444afe7d5f062fefac62",
+  "r6_r4_report_sha256": "7c0e70b7a09232130a4988b7797c80ab92d1010a390610e90071d6f5e2717920",
+  "r6_r4_terminal": "M12DS_R6_R4_KIWOOM_FINALITY_UNRESOLVED",
+  "routing": "22/22",
+  "dated_pair": "22/22",
+  "ohl_parity": "22/22",
+  "close_parity": "3/22",
+  "close_changed": 19,
+  "actual_cutoff_qualifying": "0/22",
+  "alpha_vantage": "EXCLUDED_ACCOUNT_INSUFFICIENT",
+  "kr_post_close": "PASS",
+  "validation": "5380 passed / 63 existing skips / 0 failed",
+  "transport": {
+    "timeout_seconds": 600,
+    "max_attempts": 3,
+    "max_retries_after_first": 2,
+    "retry_identity": "BYTE_IDENTICAL"
+  }
+}
