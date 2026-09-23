@@ -21,11 +21,12 @@ def setup(monkeypatch, tmp_path, outcomes):
     monkeypatch.setattr(t, 'RUNTIME_ROOT', tmp_path / 'runtime')
     monkeypatch.setattr(t.launch, 'context_receipt', lambda: context)
     monkeypatch.setattr(t.p, 'binding', lambda: None)
-    monkeypatch.setattr(t.p.transport, 'OfficialShadowRequest', lambda binding, ns, prompt, schema:
-                        SimpleNamespace(prompt_sha256=prompt, schema_sha256=schema))
+    monkeypatch.setattr(t.p.transport, 'OfficialShadowRequest', lambda binding, ns, prompt, schema, timeout_seconds:
+                        SimpleNamespace(prompt_sha256=prompt, schema_sha256=schema, timeout_seconds=timeout_seconds))
     calls = []
 
     def fake(**kw):
+        assert kw['request'].timeout_seconds == kw['timeout']
         calls.append({'namespace': kw['state_namespace'], 'prompt': kw['prompt'].read_bytes(),
                       'schema': kw['schema'].read_bytes(), 'timeout': kw['timeout']})
         kw['log'].write_text(json.dumps({'type': 'turn.started'}) + '\n')

@@ -333,3 +333,28 @@ def test_prompt_mutation_during_invocation_is_not_accepted(invocation, monkeypat
     monkeypatch.setattr(transport.subprocess, "run", capture)
     with pytest.raises(transport.OfficialShadowError, match="INPUT_CHANGED_DURING_INVOCATION"):
         runtime._invoke_signed_in_codex(**invocation)
+
+
+def test_explicit_600_second_request_binding(invocation, monkeypatch):
+    invocation['timeout'] = 600
+    invocation['official_shadow'] = replace(invocation['official_shadow'], timeout_seconds=600)
+    calls = []
+
+    def capture(argv, **kwargs):
+        calls.append(kwargs['timeout'])
+        invocation['output'].write_bytes(b'{}')
+        kwargs['stdout'].write(b'{"type":"thread.started"}\n{"type":"turn.completed"}\n')
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(transport.subprocess, 'run', capture)
+    runtime._invoke_signed_in_codex(**invocation)
+    assert calls == [600]
+
+
+@pytest.mark.parametrize('bound,actual', [(1200, 600), (600, 1200), (601, 601), (3600, 3600)])
+def test_request_timeout_drift_or_unsupported_limit_never_spawns(invocation, monkeypatch, bound, actual):
+    invocation['timeout'] = actual
+    invocation['official_shadow'] = replace(invocation['official_shadow'], timeout_seconds=bound)
+    monkeypatch.setattr(transport.subprocess, 'run', lambda *a, **k: pytest.fail('must not spawn'))
+    with pytest.raises(transport.OfficialShadowError, match='REQUEST_ID_OR_TIMEOUT_DRIFT'):
+        runtime._invoke_signed_in_codex(**invocation)

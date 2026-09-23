@@ -108,7 +108,8 @@ def invoke(proof, stage, spec, request):
         p.write(destination / 'request-identity.json', identity)
         p.write(destination / 'host-context.json', context)
         req = p.transport.OfficialShadowRequest(p.binding(), namespace,
-                    p.sha(approved / 'prompt.txt'), p.sha(approved / 'provider-wire-schema.json'))
+                    p.sha(approved / 'prompt.txt'), p.sha(approved / 'provider-wire-schema.json'),
+                    timeout_seconds=policy['timeout_seconds'])
         receipt = {'attempt': attempt, 'transport_namespace': namespace, 'started_at': p.now(),
                    'prompt_sha256': req.prompt_sha256, 'schema_sha256': req.schema_sha256,
                    'logical_identity_sha256': p.owner.canonical_sha256(identity), 'directory': str(destination)}

@@ -96,6 +96,7 @@ class OfficialShadowRequest:
     request_id: str
     prompt_sha256: str
     schema_sha256: str
+    timeout_seconds: int = 1200
 
 
 def validate_binding(binding: OfficialCodexBinding, codex_bin: str) -> None:
@@ -226,7 +227,10 @@ def invoke_official_shadow(
 ) -> dict[str, object]:
     validate_binding(request.binding, codex_bin)
     _require(
-        timeout == 1200 and state_namespace == request.request_id, "REQUEST_ID_OR_TIMEOUT_DRIFT"
+        timeout == request.timeout_seconds
+        and request.timeout_seconds in (600, 1200)
+        and state_namespace == request.request_id,
+        "REQUEST_ID_OR_TIMEOUT_DRIFT",
     )
     _require(cwd.is_absolute() and cwd.is_dir() and not cwd.is_symlink(), "INPUT_CWD_INVALID")
     _require(
