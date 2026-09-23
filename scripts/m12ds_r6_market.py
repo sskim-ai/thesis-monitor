@@ -43,6 +43,10 @@ def market_context(packet):
                 context['facts'].pop(fact['fact_id'], None)
                 matrix[fact['fact_id']].update(eligible=False, reasons=['publication_freshness_unverified_or_expired'])
                 continue
+            if fact['fact_id'] in context['facts']:
+                context['facts'][fact['fact_id']]['publication_freshness'] = freshness
+                if not freshness['current_direction_eligible']:
+                    context['facts'][fact['fact_id']]['usage'] = 'LATEST_PUBLISHED_CONTEXT_ONLY_NOT_CURRENT_DIRECTION'
         eligible = (packet['market'] == 'us' and current_context_eligible(fact, completed, packet['assessment_date']))
         eligible |= packet['market'] == 'kr' and kr_sector_alias(fact, source, completed, context['facts'])
         if not eligible:

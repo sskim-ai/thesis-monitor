@@ -2,6 +2,8 @@ from datetime import datetime
 from copy import deepcopy
 from zoneinfo import ZoneInfo
 
+import pytest
+
 from app.macro.publication import publication_receipt, publication_freshness
 from app.services.market_numeric_claim_service import numeric_catalog
 from tests.test_m12ds_r6_information_coverage import html
@@ -75,3 +77,20 @@ def test_lagged_refs_cannot_own_direction_in_schema_or_validator():
     row['supporting_refs'] = []
     assert not validate_json_schema(row, market.market_schema(context))
     assert market.validate_market(row, context)['status'] == 'PASS'
+
+
+@pytest.mark.parametrize('market_name', ['us', 'kr'])
+def test_existing_context_fact_gets_same_lag_restriction_in_both_markets(monkeypatch, market_name):
+    from scripts import m12ds_r6_market as market
+    at = datetime(2026, 9, 23, 8, tzinfo=KST)
+    fact = dict(fact_id='oil', fact_type='market_oil', as_of_date='2026-09-15', fields=dict(
+        provider='fred', series_code='DCOILWTICO', quality='fresh',
+        publication_receipt=publication_receipt(html(), 'DCOILWTICO', at)))
+    context = dict(facts={'oil': deepcopy(fact)}, parity_matrix=[dict(ref='oil',eligible=True,reasons=[])])
+    monkeypatch.setattr(market.previous, 'market_context', lambda packet: deepcopy(context))
+    packet = dict(market=market_name, assessment_date='2026-09-23', market_context=dict(
+        session=dict(market=market_name, assessment_date='2026-09-23',latest_completed_regular_session_date='2026-09-22'),
+        fact_catalog=[fact], numeric_registry=[]))
+    result = market.market_context(packet)
+    assert result['facts']['oil']['publication_freshness']['current_direction_eligible'] is False
+    assert 'oil' not in market._directional_facts(result)
