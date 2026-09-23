@@ -5,10 +5,11 @@ Plan-only by default. Never enables schedules or invokes model/delivery/DB route
 
 import argparse
 import asyncio
-from datetime import date, datetime, time, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from hashlib import sha256
 from pathlib import Path
 import json
+from time import monotonic
 
 import httpx
 
@@ -162,6 +163,20 @@ def split(envelopes, items, mode):
     }
 
 
+async def wait_until_slot(slot):
+    """Recheck wall time after early sleeps, bounded against a stalled/backward clock."""
+    end = slot + timedelta(minutes=1)
+    deadline = monotonic() + max(0, (end - datetime.now(KST)).total_seconds())
+    while True:
+        now = datetime.now(KST)
+        if now >= slot:
+            return now < end
+        remaining = deadline - monotonic()
+        if remaining <= 0:
+            return False
+        await asyncio.sleep(min(1.0, (slot - now).total_seconds(), remaining))
+
+
 async def observe(day, routes, output, *, mode, env_file, frozen_plan):
     expected = plan(day, routes)
     if frozen_plan != expected:
@@ -191,12 +206,16 @@ async def observe(day, routes, output, *, mode, env_file, frozen_plan):
             else [None]
         )
         for slot in slots:
-            now = datetime.now(KST)
-            if slot and now >= slot.replace(second=59, microsecond=999999):
-                receipts.append(dict(slot=slot.isoformat(), status="MISSED_NOT_BACKFILLED"))
+            if slot and not await wait_until_slot(slot):
+                receipt = dict(
+                    slot=slot.isoformat(),
+                    status="MISSED_NOT_BACKFILLED",
+                    checked_at=datetime.now(KST).isoformat(),
+                    collected=0,
+                )
+                put(output / (slot.strftime("%H%M") + "-receipt.json"), receipt)
+                receipts.append(receipt)
                 continue
-            if slot:
-                await asyncio.sleep(max(0, (slot - now).total_seconds()))
             name = slot.strftime("%H%M") if slot else "later"
             envelopes, errors = await sample(
                 client, token, expected["requests"], output / name, cutoff=slot
@@ -207,6 +226,13 @@ async def observe(day, routes, output, *, mode, env_file, frozen_plan):
                 collected=len(envelopes),
                 status="INCOMPLETE" if errors else "COLLECTED_NOT_QUALIFIED",
             )
+            if (
+                slot
+                and not envelopes
+                and len(errors) == 1
+                and errors[0].get("error") == "configured_minute_exhausted"
+            ):
+                receipt["status"] = "MISSED_NOT_BACKFILLED"
             if slot and not errors:
                 try:
                     receipt["review"] = review_cutoff(
