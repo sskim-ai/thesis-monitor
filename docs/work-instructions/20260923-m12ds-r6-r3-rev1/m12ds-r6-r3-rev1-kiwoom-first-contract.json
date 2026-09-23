@@ -1,0 +1,72 @@
+{
+  "contract": "m12ds-r6-r3-rev1-kiwoom-daily-row-close-first-v1",
+  "us_route_priority": [
+    "Kiwoom usa06012 dated daily-row close qualification",
+    "Alpha Vantage existing-account TIME_SERIES_DAILY fallback qualification only if Kiwoom fails"
+  ],
+  "kiwoom_daily_row": {
+    "action": "usa06012",
+    "required_context": "dated DAILY_BAR/OHLCV row",
+    "allowed_mapping_if_proven": {
+      "open": "row-local open field",
+      "high": "row-local high field",
+      "low": "row-local low field",
+      "close": "row-local cur_prc",
+      "volume": "row-local volume"
+    },
+    "must_prove": [
+      "daily-candle endpoint semantics",
+      "row-local cur_prc is close in this context",
+      "regular-session-only or after-hours-non-mutating finality",
+      "exact exchange session date",
+      "same-basis previous close",
+      "full ETF universe",
+      "availability at configured cutoff"
+    ],
+    "forbidden": [
+      "global cur_prc-to-close relabel",
+      "generic quote cur_prc treated as close",
+      "wall-clock-only finality",
+      "next-session lookahead in production"
+    ]
+  },
+  "alpha_vantage_fallback": {
+    "authorization": "existing configured account only",
+    "endpoint_preference": "TIME_SERIES_DAILY",
+    "new_key": false,
+    "paid_upgrade": false,
+    "only_after_kiwoom_failure": true
+  },
+  "kr_post_close": {
+    "actions": [
+      "ka20001",
+      "ka20003",
+      "ka20009"
+    ],
+    "required": [
+      "exchange CLOSED",
+      "collection after 15:30 KST",
+      "same calendar/session date",
+      "composite index identity",
+      "exact level/return parity under documented representation",
+      "sector snapshot bound to completed same-day session"
+    ]
+  },
+  "macro_latest_available": {
+    "display_allowed": true,
+    "must_show_observation_date": true,
+    "must_be_separate_from_direction_evidence": true,
+    "direction_use": false
+  },
+  "full_reproof_gate": {
+    "require_us_cutoff_proof": true,
+    "require_kr_post_close_proof": true,
+    "require_24_messages": true
+  },
+  "transport": {
+    "timeout_seconds": 600,
+    "max_attempts": 3,
+    "max_retries_after_first": 2,
+    "retry_identity": "BYTE_IDENTICAL"
+  }
+}

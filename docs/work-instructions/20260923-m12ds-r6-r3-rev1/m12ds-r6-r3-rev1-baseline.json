@@ -1,0 +1,53 @@
+{
+  "task_id": "M12DS-R6-R3-REV1-20260923",
+  "operating_main": "2097645892e30d84aba435416f98e7f9545a87fa",
+  "continuation_base": "d70b18f4619ffb0988236c3620a2841c59cb424d",
+  "r6_r2_report_sha256": "fa9c63acb5f1a3dd5db25b403802afcfbd4c5eebfd43188a95fc10850259665e",
+  "r6_r2_terminal": "M12DS_R6_R2_US_SETTLED_CLOSE_ROUTE_REQUIRES_USER_AUTHORIZATION",
+  "configured_cutoffs_kst": {
+    "us_source": [
+      "08:05",
+      "08:10",
+      "08:15",
+      "08:20"
+    ],
+    "us_ai_primary": "08:15",
+    "us_ai_backup": "08:30",
+    "us_fallback": "08:40",
+    "kr_source": [
+      "16:05",
+      "16:20",
+      "16:50"
+    ],
+    "kr_ai_primary": "16:15",
+    "kr_ai_backup": "16:55",
+    "kr_fallback": "17:10"
+  },
+  "authorization": {
+    "kiwoom_usa06012_daily_close_qualification_first": true,
+    "alpha_vantage_existing_account_fallback_only": true,
+    "alpha_vantage_qualification_only_after_kiwoom_failure": true,
+    "typed_adapter_only_after_route_qualification": true,
+    "new_key": false,
+    "new_paid_subscription": false,
+    "new_external_provider": false
+  },
+  "transport_policy": {
+    "timeout_seconds": 600,
+    "max_attempts_per_logical_request": 3,
+    "max_retries_after_first": 2,
+    "retry_identity": "BYTE_IDENTICAL",
+    "retry_only": [
+      "TRANSIENT_TRANSPORT",
+      "TRANSIENT_PROCESS"
+    ],
+    "never_retry": [
+      "SCHEMA",
+      "SEMANTIC",
+      "SOURCE_USE",
+      "POLICY",
+      "SECURITY",
+      "IDENTITY"
+    ]
+  }
+}
