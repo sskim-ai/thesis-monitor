@@ -53,6 +53,22 @@ def assert_transport_bytes(payload, baseline):
     assert sha256(payload).hexdigest() == baseline["reviewed_root_file_sha256"], "transport_bytes"
 
 
+def assert_transport_timeout_amendment(payload, baseline):
+    # Only the user-authorized request-bound 600s option may differ from the pin.
+    replacements = (
+        (b'    schema_sha256: str\n    timeout_seconds: int = 1200\n', b'    schema_sha256: str\n'),
+        (b'        timeout == request.timeout_seconds\n'
+         b'        and request.timeout_seconds in (600, 1200)\n'
+         b'        and state_namespace == request.request_id,\n'
+         b'        "REQUEST_ID_OR_TIMEOUT_DRIFT",\n',
+         b'        timeout == 1200 and state_namespace == request.request_id, "REQUEST_ID_OR_TIMEOUT_DRIFT"\n'),
+    )
+    for current, original in replacements:
+        assert payload.count(current) == 1, 'timeout_amendment_scope'
+        payload = payload.replace(current, original)
+    assert_transport_bytes(payload, baseline)
+
+
 @pytest.mark.parametrize("message,kind", [
     ("attempt to write a readonly database", "OFFICIAL_STATE_DB_READONLY"),
     ("failed to initialize in-process app-server client: Operation not permitted", "APP_SERVER_INITIALIZATION_PERMISSION_DENIED"),
@@ -121,7 +137,7 @@ def test_runner_hook_preserves_all_financial_semantic_methods():
 def test_original_child_transport_byte_identity():
     baseline = portable_baseline()["transport"]
     assert baseline["path"] == launch.HELPER
-    assert_transport_bytes((previous.REPO / launch.HELPER).read_bytes(), baseline)
+    assert_transport_timeout_amendment((previous.REPO / launch.HELPER).read_bytes(), baseline)
     assert "read-only" in previous.transport.COMMAND_PREFIX
     assert '--ephemeral' in previous.transport.COMMAND_PREFIX
 
@@ -157,6 +173,10 @@ def test_portable_transport_detects_one_byte_mutation():
     raw = (previous.REPO / baseline["path"]).read_bytes()
     with pytest.raises(AssertionError, match="transport_bytes"):
         assert_transport_bytes(raw + b" ", baseline)
+    with pytest.raises(AssertionError, match="transport_bytes"):
+        assert_transport_timeout_amendment(raw + b" ", baseline)
+    with pytest.raises(AssertionError, match="timeout_amendment_scope"):
+        assert_transport_timeout_amendment(raw.replace(b'in (600, 1200)', b'in (600, 1200, 3600)'), baseline)
 
 
 @pytest.mark.parametrize("case", ["malformed", "root", "tree", "hash", "fingerprint", "owner", "path"])
