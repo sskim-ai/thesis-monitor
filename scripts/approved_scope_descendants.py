@@ -47,6 +47,33 @@ REVIEWED_HASHES = {
 WORKFLOW_PATH = ".github/workflows/test.yml"
 WORKFLOW_BEFORE_SHA256 = "b0932124732f0234db8ad76b1e356b044c8c4bc0892645c6f514ef7575515d5d"
 WORKFLOW_AFTER_SHA256 = "f1502fd11213551c9f552c43ea4eb65df913104e1fd8241fc03a53d0fd03be31"
+KR_HOLIDAY_PATH = "app/jobs/monitor_daily.py"
+KR_HOLIDAY_BASE = "2097645892e30d84aba435416f98e7f9545a87fa"
+KR_HOLIDAY_INSTRUCTION = "ea6515ee2a310fc2b4074158b0c4341085d75835"
+KR_HOLIDAY_IMPLEMENTATION = "635151bb94aa10b178eb05168852b51405f4d02c"
+KR_HOLIDAY_BEFORE = "61da8dfb03fc241c6b1f46735e403a395616dc01ab2fc9a07f1a949e25427fe7"
+KR_HOLIDAY_AFTER = "8f9a1437aee45b54edeab7e8dadc1151a3022bfb806f72c111584837e4f16edd"
+
+
+def _kr_holiday_approval(observed):
+    try:
+        if (not _ancestor(KR_HOLIDAY_IMPLEMENTATION)
+                or _git("show", "-s", "--format=%P", KR_HOLIDAY_IMPLEMENTATION).decode().strip() != KR_HOLIDAY_INSTRUCTION
+                or _git("show", "-s", "--format=%P", KR_HOLIDAY_INSTRUCTION).decode().strip() != KR_HOLIDAY_BASE):
+            return None
+        before = _git("show", f"{KR_HOLIDAY_INSTRUCTION}:{KR_HOLIDAY_PATH}")
+        reviewed = _git("show", f"{KR_HOLIDAY_IMPLEMENTATION}:{KR_HOLIDAY_PATH}")
+        if (sha256(before).hexdigest() != KR_HOLIDAY_BEFORE
+                or sha256(reviewed).hexdigest() != KR_HOLIDAY_AFTER
+                or observed != reviewed or _git("show", f"HEAD:{KR_HOLIDAY_PATH}") != reviewed):
+            return None
+        return dict(owner="M12DS-KR-HOLIDAY-MINIMAL-INTEGRATION", path=KR_HOLIDAY_PATH,
+            instruction_commit=KR_HOLIDAY_INSTRUCTION, implementation_commit=KR_HOLIDAY_IMPLEMENTATION,
+            before_sha256=KR_HOLIDAY_BEFORE, sha256=KR_HOLIDAY_AFTER,
+            provenance_mode="EXACT_KR_HOLIDAY_MIXED_RUN_GATE", exact_blob_verified=True,
+            production_deployment=False)
+    except (OSError, subprocess.SubprocessError):
+        return None
 
 
 def _git(*args):
@@ -128,13 +155,15 @@ def _workflow_approval(observed):
 
 def approved_descendant(path):
     pin = PINS.get(path)
-    if ((pin is None and path != WORKFLOW_PATH) or not Path(path).is_file()
+    if ((pin is None and path not in {WORKFLOW_PATH, KR_HOLIDAY_PATH}) or not Path(path).is_file()
             or Path(path).is_symlink()):
         return None
     try:
         observed = Path(path).read_bytes()
     except OSError:
         return None
+    if path == KR_HOLIDAY_PATH:
+        return _kr_holiday_approval(observed)
     if path == WORKFLOW_PATH:
         return _workflow_approval(observed)
     # A failed clean attestation must never fall back to a different proof mode.
