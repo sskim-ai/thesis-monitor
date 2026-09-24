@@ -205,6 +205,17 @@ async def _run_market_job(
 ) -> dict[str, object]:
     current_as_of = as_of
     producer_target: XkrxRoleTarget | None = None
+    if market_scope == "all":
+        current_as_of = current_as_of or datetime.now(KST)
+        target, reason = _kr_production_target(run_date, current_as_of)
+        if reason is not None and (
+            target is None
+            or target.calendar_evidence.get("wallclock_is_xkrx_session") is not True
+        ):
+            # Mixed runs must not bypass the market-specific holiday gate.
+            kr_result = await _run_market_job(session, run_date, "kr", as_of=current_as_of)
+            us_result = await _run_market_job(session, run_date, "us", as_of=current_as_of)
+            return {"market_scope": "all", "markets": {"us": us_result, "kr": kr_result}}
     if market_scope == "kr":
         producer_target, skip_reason = _kr_production_target(
             run_date,
