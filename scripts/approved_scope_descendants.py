@@ -70,6 +70,33 @@ R6_R1_PRICE_BEFORE = {
     'app/services/current_price_context_service.py': '9e68c509952bf6bad320506d860f08830712fb3c623960e99d126c8d9ec61f5f',
     'app/services/ohlcv_client.py': '91ba0207a96445869d089e5446e242059624eea74b5cc10d78266cace462972f',
 }
+KR_HOLIDAY_PATH = 'app/jobs/monitor_daily.py'
+KR_HOLIDAY_INSTRUCTION = '6b051f2f526545f83549ea12d0abc0ed9c6d5668'
+KR_HOLIDAY_BASE = '67ff7af7f7529f7aa6adda97af22105fd0501917'
+KR_HOLIDAY_IMPLEMENTATION = '94ce57cf7fd4279474380691492817308b5558bc'
+KR_HOLIDAY_BEFORE = '61da8dfb03fc241c6b1f46735e403a395616dc01ab2fc9a07f1a949e25427fe7'
+KR_HOLIDAY_AFTER = '8f9a1437aee45b54edeab7e8dadc1151a3022bfb806f72c111584837e4f16edd'
+
+
+def _kr_holiday_approval(observed):
+    try:
+        if (not _ancestor(KR_HOLIDAY_IMPLEMENTATION)
+                or _git('show', '-s', '--format=%P', KR_HOLIDAY_IMPLEMENTATION).decode().strip() != KR_HOLIDAY_INSTRUCTION
+                or _git('show', '-s', '--format=%P', KR_HOLIDAY_INSTRUCTION).decode().strip() != KR_HOLIDAY_BASE):
+            return None
+        before = _git('show', f'{KR_HOLIDAY_INSTRUCTION}:{KR_HOLIDAY_PATH}')
+        reviewed = _git('show', f'{KR_HOLIDAY_IMPLEMENTATION}:{KR_HOLIDAY_PATH}')
+        if (sha256(before).hexdigest() != KR_HOLIDAY_BEFORE
+                or sha256(reviewed).hexdigest() != KR_HOLIDAY_AFTER
+                or observed != reviewed or _git('show', f'HEAD:{KR_HOLIDAY_PATH}') != reviewed):
+            return None
+        return dict(owner='M12DS-KR-HOLIDAY', path=KR_HOLIDAY_PATH,
+            instruction_commit=KR_HOLIDAY_INSTRUCTION, implementation_commit=KR_HOLIDAY_IMPLEMENTATION,
+            before_sha256=KR_HOLIDAY_BEFORE, sha256=KR_HOLIDAY_AFTER,
+            provenance_mode='EXACT_KR_HOLIDAY_MIXED_RUN_GATE', exact_blob_verified=True,
+            production_deployment=False)
+    except (OSError, subprocess.SubprocessError):
+        return None
 
 
 def _r6_r1_price_transform(path, before):
@@ -196,13 +223,15 @@ def _workflow_approval(observed):
 
 def approved_descendant(path):
     pin = PINS.get(path)
-    if ((pin is None and path != WORKFLOW_PATH and path not in R6_SOURCE_HASHES and path not in R6_R1_PRICE_BEFORE) or not Path(path).is_file()
+    if ((pin is None and path not in {WORKFLOW_PATH, KR_HOLIDAY_PATH} and path not in R6_SOURCE_HASHES and path not in R6_R1_PRICE_BEFORE) or not Path(path).is_file()
             or Path(path).is_symlink()):
         return None
     try:
         observed = Path(path).read_bytes()
     except OSError:
         return None
+    if path == KR_HOLIDAY_PATH:
+        return _kr_holiday_approval(observed)
     if path == WORKFLOW_PATH:
         return _workflow_approval(observed)
     if path in R6_R1_PRICE_BEFORE:

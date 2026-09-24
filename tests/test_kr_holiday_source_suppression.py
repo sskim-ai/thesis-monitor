@@ -145,3 +145,16 @@ async def test_readonly_observer_rejects_account_or_order_endpoints(tmp_path):
         assert transport.auth_calls == 0
     finally:
         await transport.aclose()
+
+
+def test_holiday_descendant_requires_exact_reviewed_bytes_and_ancestry(monkeypatch):
+    from pathlib import Path
+    from scripts import approved_scope_descendants as provenance
+
+    receipt = provenance.approved_descendant(provenance.KR_HOLIDAY_PATH)
+    assert receipt and receipt["exact_blob_verified"]
+    assert receipt["sha256"] == provenance.KR_HOLIDAY_AFTER
+    observed = Path(provenance.KR_HOLIDAY_PATH).read_bytes()
+    assert provenance._kr_holiday_approval(observed + b"\n") is None
+    monkeypatch.setattr(provenance, "_ancestor", lambda commit: False)
+    assert provenance._kr_holiday_approval(observed) is None
