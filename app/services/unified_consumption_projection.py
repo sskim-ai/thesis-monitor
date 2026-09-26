@@ -160,4 +160,3 @@ def project_working_capital_consumption(*, snapshot: WorkingCapitalCoreSnapshot,
         working_context(context), inputs,
         ("app/services/working_capital_shadow_consumption_service.py",
          "app/services/working_capital_core_service.py"), denials)
-
