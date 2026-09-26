@@ -41,9 +41,10 @@ def _parse_rss_date(value: str | None) -> date:
 class GoogleNewsRSSProvider(NewsProvider):
     name = "google_news_rss"
 
-    def __init__(self, timeout_seconds: float = 5.0, max_items: int = 10) -> None:
+    def __init__(self, timeout_seconds: float = 5.0, max_items: int = 10, *, transport=None, as_of=None) -> None:
         self.timeout_seconds = timeout_seconds
         self.max_items = max_items
+        self.transport, self.as_of = transport, as_of
 
     async def fetch_events(
         self,
@@ -60,7 +61,8 @@ class GoogleNewsRSSProvider(NewsProvider):
             f"?q={query}+when:{lookback_days}d&hl=en-US&gl=US&ceid=US:en"
         )
         seen: set[tuple[str, str]] = set()
-        async with httpx.AsyncClient(timeout=self.timeout_seconds, follow_redirects=True) as client:
+        async with httpx.AsyncClient(timeout=self.timeout_seconds, follow_redirects=self.as_of is None,
+                                     transport=self.transport) as client:
             response = await client.get(url)
             response.raise_for_status()
 
@@ -80,6 +82,11 @@ class GoogleNewsRSSProvider(NewsProvider):
                 continue
             seen.add(dedupe_key)
             published = _parse_rss_date(item.findtext("pubDate"))
+            if self.as_of is not None:
+                try:
+                    published = parsedate_to_datetime(item.findtext("pubDate")).date()
+                except (TypeError, ValueError, IndexError):
+                    continue
             source_node = item.find("source")
             source = source_node.text if source_node is not None and source_node.text else "Google News RSS"
             summary = clean_text(item.findtext("description")) or title
@@ -131,9 +138,10 @@ class NaverNewsProvider(NewsProvider):
     name = "naver_news"
     endpoint = "https://openapi.naver.com/v1/search/news.json"
 
-    def __init__(self, timeout_seconds: float = 5.0, display: int = 10) -> None:
+    def __init__(self, timeout_seconds: float = 5.0, display: int = 10, *, transport=None, as_of=None) -> None:
         self.timeout_seconds = timeout_seconds
         self.display = min(max(display, 1), 100)
+        self.transport, self.as_of = transport, as_of
 
     async def fetch_events(
         self,
@@ -153,7 +161,7 @@ class NaverNewsProvider(NewsProvider):
             "X-Naver-Client-Id": settings.naver_client_id,
             "X-Naver-Client-Secret": settings.naver_client_secret,
         }
-        async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
+        async with httpx.AsyncClient(timeout=self.timeout_seconds, transport=self.transport) as client:
             response = await client.get(self.endpoint, params=params, headers=headers)
             response.raise_for_status()
             payload = response.json()
@@ -161,6 +169,11 @@ class NaverNewsProvider(NewsProvider):
         events: list[RawEvent] = []
         seen: set[tuple[str, str]] = set()
         for item in payload.get("items", []):
+            if self.as_of is not None:
+                try:
+                    parsedate_to_datetime(item.get("pubDate"))
+                except (TypeError, ValueError, IndexError):
+                    continue
             title = clean_text(item.get("title")) or "Untitled Naver news item"
             link = item.get("originallink") or item.get("link") or self.endpoint
             dedupe_key = (link, normalize_title(title))

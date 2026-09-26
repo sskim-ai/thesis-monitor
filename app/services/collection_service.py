@@ -383,9 +383,12 @@ def _refresh_duplicate_event(duplicate: Event, event: Event) -> None:
 
 
 class CollectionService:
-    def __init__(self, *, source_policy: UnifiedSourcePolicy | None = None) -> None:
+    def __init__(self, *, source_policy: UnifiedSourcePolicy | None = None,
+                 event_acquisitions: dict | None = None) -> None:
         settings = get_settings()
         self.source_policy = source_policy
+        self.event_acquisitions = event_acquisitions or {}
+        self.event_owner_denials: list[dict[str, str]] = []
         self.providers = provider_priority(
             include_live_news=settings.enable_live_providers,
             include_mock_provider=settings.include_mock_provider,
@@ -416,8 +419,17 @@ class CollectionService:
     ) -> list[RawEvent]:
         if self.source_policy is not None:
             self.source_policy.require(provider.name)
-            # A registry allowlist does not prove nested reads/cache provenance.
-            raise ValueError("unified_event_wire_owner_not_qualified")
+            acquisition = self.event_acquisitions.get(provider.name)
+            if acquisition is None:
+                raise ValueError("unified_event_wire_owner_not_qualified")
+            from app.models.security import SecurityMaster
+            with session.no_autoflush:
+                target = session.exec(select(SecurityMaster).where(SecurityMaster.ticker == ticker)).first()
+            if target is None:
+                raise ValueError("unified_event_security_identity_missing")
+            self.source_policy.require(target.identity_provider)
+            return await acquisition.collect(session, provider, target,
+                lookback_days=lookback_days, aliases=search_aliases)
         settings = get_settings()
         status = self.provider_status.get(provider.name)
         if status is not None and not status.configured:
@@ -546,7 +558,30 @@ class CollectionService:
 
     async def collect_events(self, session: Session, ticker: str, lookback_days: int) -> list[Event]:
         if self.source_policy is not None:
-            raise ValueError("unified_event_wire_owner_not_qualified")
+            if not self.event_acquisitions:
+                raise ValueError("unified_event_wire_owner_not_qualified")
+            if session.new or session.dirty or session.deleted:
+                raise ValueError("unified_event_clean_read_session_required")
+            from app.models.security import SecurityMaster
+            with session.no_autoflush:
+                target = session.exec(select(SecurityMaster).where(
+                    SecurityMaster.ticker == normalize_ticker(ticker))).first()
+                if target is None:
+                    raise ValueError("unified_event_security_identity_missing")
+                aliases = self.news_query_service.aliases(target)
+                rows = []
+                names = {provider.name for provider in self.providers}
+                if set(self.event_acquisitions) - names:
+                    raise ValueError("unified_event_owner_not_in_registry")
+                for provider in self.providers:
+                    if provider.name not in self.event_acquisitions:
+                        self.event_owner_denials.append({"provider": provider.name,
+                            "reason": "optional_event_owner_not_declared"})
+                        continue
+                    raw = await self._fetch_provider_events(session, provider, target.ticker,
+                        lookback_days, aliases, target.issuer_type)
+                    rows.extend(_raw_event_to_model(item) for item in raw)
+                return list({event_fingerprint(item): item for item in rows}.values())
         ticker = normalize_ticker(ticker)
         company = session.exec(select(Company).where(Company.ticker == ticker)).first()
         watchlist_item = session.exec(
@@ -669,6 +704,10 @@ class CollectionService:
         auto_backfill: bool = False,
         backfill_years: int = 5,
     ) -> ThesisEventResponse:
+        if self.source_policy is not None:
+            # The historical Event table has no original wire receipts. Only
+            # collect_events returns the newly bound, detached unified result.
+            raise ValueError("unified_thesis_event_cache_not_source_qualified")
         ticker = normalize_ticker(ticker)
         backfill_status = await self._maybe_backfill_financial_snapshots(
             session=session,

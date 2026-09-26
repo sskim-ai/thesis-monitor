@@ -232,8 +232,10 @@ def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
             "app/macro/providers/finnhub.py",
             "app/macro/providers/krx.py",
             "app/macro/providers/market.py",
+            "app/providers/filings.py",
             "app/providers/kiwoom_rest_client.py",
             "app/providers/nasdaq_trader_breadth_provider.py",
+            "app/providers/news.py",
             "app/providers/registry.py",
             "app/services/collection_service.py",
             "app/services/direction_timing_ownership_service.py",
@@ -264,7 +266,7 @@ def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
             "tests/test_market_intelligence_service.py",
             "tests/test_partial_output_forensics_transport_stall_review.py",
         }
-        assert result["financial_semantic_change_count"] == 36
+        assert result["financial_semantic_change_count"] == 38
         assert result["directional_semantic_change_count"] == 36
         assert result["fictional_case_change_count"] == 0
     else:

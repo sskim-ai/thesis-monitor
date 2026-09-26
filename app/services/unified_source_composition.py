@@ -20,6 +20,7 @@ from pydantic import Field, model_validator
 from app.services.unified_snapshot_contract import ContractModel, digest, encoded
 from app.services.unified_source_policy import UnifiedSourcePolicy
 from app.services.unified_source_replay import read_bound_artifact
+from app.services.unified_aggregate_receipt import AggregateReceipt, VerifiedAggregate, verify_aggregate
 
 
 class AcquisitionClass(StrEnum):
@@ -113,6 +114,7 @@ class OwnerAdapter:
     contract: str
     code_sha256: str
     project_and_validate: Callable[[bytes, datetime], OwnerProjection]
+    project_aggregate_and_validate: Callable[[VerifiedAggregate, datetime], OwnerProjection] | None = None
 
 
 @dataclass(frozen=True)
@@ -166,6 +168,7 @@ def _resolve(item: SourceInput, role: SourceRole, *, root: Path, run_id: str,
     raw = read_bound_artifact(root, item.artifact, item.artifact_sha256)
     if item.acquisition_class == C and item.receipt_artifact:
         read_bound_artifact(root, item.receipt_artifact, item.receipt_sha256)
+    aggregate = None
     if item.acquisition_class in (A, B):
         receipt = json.loads(read_bound_artifact(root, item.receipt_artifact, item.receipt_sha256))
         expected = {"run_id": run_id, "attempt_id": item.attempt_id,
@@ -178,12 +181,19 @@ def _resolve(item: SourceInput, role: SourceRole, *, root: Path, run_id: str,
                     "artifact": item.artifact, "artifact_sha256": item.artifact_sha256}
         if any(receipt.get(k) != v for k, v in expected.items()):
             raise ValueError("source_acquisition_receipt_binding_mismatch")
-        if (receipt.get("request_sha256") != digest(receipt.get("request"))
+        if receipt.get("contract") == "unified-transitive-source-receipt-v1":
+            aggregate = verify_aggregate(root, AggregateReceipt.model_validate(receipt), policy=policy, cutoff=cutoff)
+            if aggregate.receipt.owner != role.owner or owner.project_aggregate_and_validate is None:
+                raise ValueError("aggregate_owner_replay_not_qualified")
+        elif (receipt.get("request_sha256") != digest(receipt.get("request"))
             or type(receipt.get("ordinal")) is not int or receipt["ordinal"] < 1
             or receipt.get("outcome") != "HTTP_RESPONSE"
             or not 200 <= receipt.get("http_status", 0) < 300):
             raise ValueError("source_successful_request_receipt_required")
-    projected = owner.project_and_validate(raw, cutoff)
+    projected = (owner.project_aggregate_and_validate(aggregate, cutoff) if aggregate
+                 else owner.project_and_validate(raw, cutoff))
+    if aggregate and digest(projected.value) != aggregate.receipt.normalized_sha256:
+        raise ValueError("aggregate_output_not_child_derived")
     if not projected.eligible or projected.denial:
         raise ValueError("source_owner_current_eligibility_failed")
     if (projected.provider, projected.market, projected.symbol, projected.basis,

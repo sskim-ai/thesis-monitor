@@ -68,6 +68,9 @@ def project_local_seed(session: Session, *, market: str, session_key: str,
             "activated_at", "first_eligible_session", "created_at"})
         identity_rows, theses, companies, denials = [], [], [], []
         for item in items:
+            if not _at_or_before(item.created_at, cutoff):
+                denials.append({"role": "universe", "ticker": item.ticker,
+                                "reason": "universe_record_after_cutoff"})
             security = session.exec(select(SecurityMaster).where(
                 SecurityMaster.ticker == item.ticker)).first()
             valid, _safe, details = _security_readiness(item, security, market)

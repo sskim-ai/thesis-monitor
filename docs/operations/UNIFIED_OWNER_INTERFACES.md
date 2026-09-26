@@ -1,5 +1,64 @@
 # Unified Source Owner Interfaces
 
+## R2A-R3 Offline Extension
+
+R2A-R2 below remains the accepted historical baseline. R2A-R3 adds the following
+local, opt-in interfaces; none registers a production adapter:
+
+- Google RSS, Naver, SEC submissions and OpenDART event requests can use
+  `EventReceiptTransport` and `EventAcquisition`. Each original response is
+  bound to run/acquisition, request ordinal, exact bytes, original decoding,
+  publication and persisted security identity. A cache read needs its original
+  HTTP receipt and raw hash. Prohibited sources are checked before raw access.
+  Original date/decoding absence, future publication and failed identity remain
+  denied. Nested OpenDART statement requests use the same transport. The
+  detached CollectionService branch does not insert Event/financial/telemetry
+  rows. The historical get_thesis_events cache/backfill path remains excluded.
+- `unified_class_c_owners` inventories all 12 frozen roles. Direct SEC
+  companyfacts business fields and OpenDART selected occurrences now preserve
+  record/filing/period/unit/currency identity and existing field-owned quality.
+  Macro observation projection calls the existing temporal owner, preserving
+  reference-only and previous-US-session classifications. Fed projection is
+  published context only and excludes stored interpretation/unknown fields.
+- Mandatory universe, identity and stored thesis/business metadata are bridged
+  to `freeze_run` by `unified_local_seed_bridge`. Frozen selected records are
+  revalidated with the real local owner in an isolated in-memory DB; no
+  assessment rows or query-time prices enter this replay. This proves a local
+  three-role seed, not the complete 24-family source adapter.
+- `unified_aggregate_receipt` validates the transitive child graph, original
+  body/normalization hashes, run/attempt/acquisition identity, exact ordered
+  child inventory and Kiwoom cursor continuity. Composition requires a separate
+  aggregate owner callback and equality with child-derived normalization.
+  An aggregate cannot go through the single-HTTP-response adapter.
+
+### Remaining R2A-R3 Gates
+
+1. `project_estimate_inventory` is an explicit inventory/denial, not a working
+   eligible-estimate selector. The existing Finnhub path in
+   `ValuationSnapshotService.fetch` writes provider-defined partial consensus;
+   persisted security/period/basis eligibility needs a read-only owner split.
+2. `project_canonical_catalog` proves typed lineage only. It explicitly returns
+   `consumption_eligible=false`; latest-formal/current cashflow and working-
+   capital consumption eligibility is not connected to this run projection.
+3. SEC projection covers selected companyfacts revenue/operating-income, not
+   every foreign-filing, balance-sheet or derived domain consumed downstream.
+   The optional C projections (including macro/Fed) are not all installed as
+   immutable, current-cutoff `OwnerAdapter` callbacks.
+4. Aggregate integrity mechanics are tested with synthetic receipts. Real
+   Kiwoom, KRX, event, Nasdaq and US multi-symbol owner replayers still need to
+   implement `project_aggregate_and_validate` and verify their complete planned
+   child sets. No callback that simply trusts normalized output is registered.
+5. Without those concrete branches there is no whole-adapter transitive
+   reachability proof, final complete seed or full network-free prequalification.
+   These are code/contract gaps, not permission to run a live canary.
+
+`NETWORK_FREE_SOURCE_ADAPTER_PREQUALIFIED=false`.
+`complete_source_adapter_qualified=false`, `complete_ai_adapter_qualified=false`.
+R2B is NOT_GENERATED_NOT_EXECUTED and R3 remains BLOCKED. Existing product retry
+times, provider exclusions, prompts, validators, schemas and deployment stay
+unchanged. Historical scope tests add only observed `filings.py`/`news.py` drift;
+their FAIL result and reviewed acceptance roots remain frozen.
+
 R5F-R2A-R2 is local and opt-in. It does not qualify or register a complete source
 adapter. Acquisition classes and product times remain the R2A-REV1 contract.
 
