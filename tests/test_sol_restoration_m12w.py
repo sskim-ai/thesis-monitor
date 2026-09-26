@@ -227,6 +227,8 @@ def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
     assert result["status"] == "FAIL"
     if result["verification_mode"] == "EXACT_BASE_ARCHIVE_SHA256":
         assert set(result["changed_existing_paths"]) == {
+            "app/macro/kr_close.py",
+            "app/providers/registry.py",
             "app/services/direction_timing_ownership_service.py",
             "app/services/directional_balance_service.py",
             "app/services/directional_financial_context_service.py",
@@ -234,7 +236,9 @@ def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
             "app/services/financial_framework_claim_service.py",
             "app/services/krx_night_session_contract_service.py",
             "app/services/market_intelligence_service.py",
+            "app/services/ohlcv_client.py",
             "app/services/structured_autonomy_alias_service.py",
+            "app/services/valuation_snapshot_service.py",
             "scripts/directional_core_price_timing_holdout.py",
             "scripts/directional_financial_context_m12.py",
             "scripts/financial_exclusion_expectation_m12u.py",
@@ -250,8 +254,8 @@ def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
             "tests/test_market_intelligence_service.py",
             "tests/test_partial_output_forensics_transport_stall_review.py",
         }
-        assert result["financial_semantic_change_count"] == 22
-        assert result["directional_semantic_change_count"] == 22
+        assert result["financial_semantic_change_count"] == 26
+        assert result["directional_semantic_change_count"] == 26
         assert result["fictional_case_change_count"] == 0
     else:
         assert result["verification_mode"] == "CI_PORTABLE_AGGREGATE_SHA256"

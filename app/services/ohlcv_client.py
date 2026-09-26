@@ -42,6 +42,7 @@ from app.services.packet_owned_technical_context_service import (
     build_packet_owned_technical_context,
 )
 from app.services.provider_telemetry_service import ProviderTelemetryService
+from app.services.unified_source_observer import OhlcvReceiptObserver
 
 
 PERIOD_COUNTS = {
@@ -378,9 +379,24 @@ def _chart_timeframe_context(
 
 
 class OhlcvClient:
-    def __init__(self, transport: httpx.AsyncBaseTransport | None = None) -> None:
+    def __init__(self, transport: httpx.AsyncBaseTransport | None = None, *,
+                 source_observer: OhlcvReceiptObserver | None = None) -> None:
         self.settings = get_settings()
         self.transport = transport
+        self.source_observer = source_observer
+
+    async def _get_period(self, client: httpx.AsyncClient, params: dict) -> httpx.Response:
+        if self.source_observer is not None:
+            return await self.source_observer.get(client, "/ohlcv", params=params)
+        return await client.get("/ohlcv", params=params)
+
+    def _observe_normalization(self, response, bars, supply, inspection) -> None:
+        if self.source_observer is not None:
+            self.source_observer.normalized(
+                response, normalized={"bars": bars, "supply_demand": supply},
+                contract=inspection.contract, valid=inspection.valid,
+                fingerprint=inspection.payload_fingerprint,
+            )
 
     async def _request_period(
         self,
@@ -410,7 +426,7 @@ class OhlcvClient:
             if attempt:
                 _increment(acquisition_audit, "retry_count")
             try:
-                response = await client.get("/ohlcv", params=params)
+                response = await self._get_period(client, params)
                 response.raise_for_status()
                 bars, supply_demand, provider = self._decode_period_payload(
                     response.json(),
@@ -423,6 +439,7 @@ class OhlcvClient:
                     bars,
                     timeframe=period,
                 )
+                self._observe_normalization(response, bars, supply_demand, first_inspection)
                 self._record_inspection(acquisition_audit, first_inspection)
                 if first_inspection.valid:
                     return self._complete_period_response(
@@ -436,7 +453,7 @@ class OhlcvClient:
                 _increment(acquisition_audit, "request_count")
                 _increment(acquisition_audit, "retry_count")
                 try:
-                    refetch_response = await client.get("/ohlcv", params=params)
+                    refetch_response = await self._get_period(client, params)
                     refetch_response.raise_for_status()
                     refetched_bars, refetched_supply, refetched_provider = (
                         self._decode_period_payload(
@@ -475,6 +492,9 @@ class OhlcvClient:
                 second_inspection = inspect_normalized_ohlcv_rows(
                     refetched_bars,
                     timeframe=period,
+                )
+                self._observe_normalization(
+                    refetch_response, refetched_bars, refetched_supply, second_inspection,
                 )
                 self._record_inspection(acquisition_audit, second_inspection)
                 if second_inspection.valid:

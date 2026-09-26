@@ -20,11 +20,15 @@ def test_complete_scope_freeze_preserves_every_unapproved_owner():
         "helper_unrelated_ast_unchanged",
     ]
     assert result["unexpected_file_changes"] == [
+        "app/macro/kr_close.py",
+        "app/providers/registry.py",
         "app/services/directional_financial_context_service.py",
         "app/services/evidence_maturity_pricing_service.py",
         "app/services/krx_night_session_contract_service.py",
         "app/services/market_intelligence_service.py",
+        "app/services/ohlcv_client.py",
         "app/services/structured_autonomy_alias_service.py",
+        "app/services/valuation_snapshot_service.py",
         "scripts/directional_financial_context_m12.py",
         "scripts/first_class_typed_financial_evidence_m12b.py",
         "scripts/new_issuer_final_freeze_ownership_proof.py",

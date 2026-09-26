@@ -16,6 +16,12 @@ from scripts import leverage_hold_sell_boundary_m12ab as ab
 
 # Isolated real Git graphs keep this contract test independent of checkout depth.
 SOURCE_ROOT = Path(__file__).resolve().parents[1]
+REVIEWED_ROOT = guard.CLEAN_IDENTITY["clean_root_sha"]
+
+
+def reviewed_bytes(path):
+    # The attestation covers the historical root, not future opt-in owner edits.
+    return subprocess.check_output(["git", "show", REVIEWED_ROOT + ":" + path], cwd=SOURCE_ROOT)
 
 
 def git(repo, *args):
@@ -41,7 +47,7 @@ def clean_repo(tmp_path, monkeypatch):
     for path in PINS:
         target = repo / path
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes((SOURCE_ROOT / path).read_bytes())
+        target.write_bytes(reviewed_bytes(path))
     workflow = repo / guard.WORKFLOW_PATH
     workflow.parent.mkdir(parents=True, exist_ok=True)
     workflow.write_bytes(subprocess.check_output(
@@ -127,7 +133,7 @@ def test_clean_root_must_be_ancestor(clean_repo):
     for path in PINS:
         target = repo / path
         target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_bytes((SOURCE_ROOT / path).read_bytes())
+        target.write_bytes(reviewed_bytes(path))
     commit(repo, "unreviewed parallel history")
     assert all(approved_descendant(path) is None for path in PINS)
 

@@ -18,11 +18,7 @@ from pydantic import Field
 from app.services.ohlcv_client import OhlcvClient
 from app.services.ohlcv_provider_integrity_service import inspect_normalized_ohlcv_rows
 from app.services.unified_snapshot_contract import ContractModel, SourceReceipt, digest
-
-
-def prohibited_provider(provider: str) -> bool:
-    identity = "".join(c for c in provider.casefold() if c.isalnum())
-    return identity in {"alphavantage", "massive", "massivecom", "polygon", "polygonio"}
+from app.services.unified_source_policy import prohibited_provider
 
 
 class FrozenOhlcvRole(ContractModel):
@@ -59,7 +55,7 @@ def read_bound_artifact(root: Path, relative: str, expected_sha256: str) -> byte
     if path.is_absolute() or not path.parts or any(p in {".", ".."} for p in path.parts):
         raise ValueError("source_artifact_path_invalid")
     current = root
-    if root.is_symlink():
+    if any(parent.is_symlink() for parent in (root, *root.parents)):
         raise ValueError("source_artifact_symlink")
     for part in path.parts:
         current = current / part

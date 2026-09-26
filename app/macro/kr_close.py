@@ -9,6 +9,7 @@ from sqlmodel import Session, select
 from app.macro.providers.alpha_vantage_fx import AlphaVantageKrCloseFxProvider
 from app.macro.providers.base import CollectedObservation
 from app.models.macro import MacroBriefing, MacroObservation
+from app.services.unified_source_policy import UnifiedSourcePolicy
 from app.services.notification_service import (
     dispatch_pending_notifications,
     queue_macro_notification,
@@ -268,7 +269,15 @@ async def run_kr_close_market_briefing(
     force: bool = False,
     queue_notifications: bool = True,
     dispatch_notifications: bool = True,
+    source_policy: UnifiedSourcePolicy | None = None,
 ) -> KrCloseBriefingRunResult:
+    if source_policy is not None:
+        # This owner can reuse a previously persisted Alpha FX briefing. Deny
+        # the entire optional role before cache reads, persistence, or delivery.
+        return KrCloseBriefingRunResult(
+            run_date, "unavailable", "source_policy_denied", 0,
+            ["optional_kr_fx_source_excluded_including_cache"], None,
+        )
     as_of = as_of or datetime.now(timezone.utc)
     cutoff = kr_close_production_cutoff(run_date)
     post_cutoff = _as_utc(as_of) >= _as_utc(cutoff)
