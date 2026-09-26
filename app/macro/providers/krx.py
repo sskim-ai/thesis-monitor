@@ -5,7 +5,7 @@ from zoneinfo import ZoneInfo
 import httpx
 from pydantic import TypeAdapter
 
-from app.jobs.probe_krx_night_futures import fetch_live_probe
+from app.jobs.probe_krx_night_futures import KrxNightFuturesProbeResult, fetch_live_probe
 from app.macro.providers.base import (
     CollectedObservation,
     MacroProviderResult,
@@ -71,112 +71,117 @@ class KrxNightFuturesProvider:
             observation_time=as_of,
             **options,
         )
-        history_update = (persist_live_probe_history(probe) if self.history_directory is None
-                          else persist_live_probe_history(probe, root=self.history_directory))
-        history_warnings = [
-            "krx_night_history_update_failed:" + error for error in history_update.errors
-        ]
-        telemetry = probe.compact_summary()
-        telemetry["history_update"] = history_update.model_dump(mode="json")
-        if not probe.night_session_usable:
-            return MacroProviderResult(
-                provider=self.name,
-                warnings=[
-                    probe.reason or "night_session_unavailable",
-                    *history_warnings,
-                ],
-                telemetry=telemetry,
-            )
-        observations: list[CollectedObservation] = []
-        for item in probe.observations:
-            observed_at = datetime.combine(item.session_date, time(6), tzinfo=KST)
-            timeframes = build_same_contract_timeframes(
-                self.history_directory or default_krx_night_history_directory(),
-                instrument_root=item.product,
-                reference_date=item.session_date,
-                daily_change_value=item.point_change,
-                daily_change_pct=item.change_pct,
-                daily_baseline_date=item.reference_date,
-                daily_baseline_close=item.reference_price,
-            )
-            observations.append(
-                CollectedObservation(
-                    series_code=SERIES_CODES[item.product],
-                    category="kr_night_futures",
-                    observed_at=observed_at,
-                    value=item.night_close,
-                    unit="index_points",
-                    frequency="daily",
-                    market_session="kr_night",
-                    previous_value=item.regular_close,
-                    change_value=item.point_change,
-                    change_pct=item.change_pct,
-                    source_url=probe.source_url,
-                    quality_status=probe.session_freshness,
-                    raw_payload={
-                        "product": item.product,
-                        "instrument": item.product,
-                        "contract_code": item.contract_code,
-                        "contract_name": item.contract_name,
-                        "expiry": item.maturity,
-                        "contract_maturity": item.maturity,
-                        "exchange": item.exchange,
-                        "session_basis_contract": ("night-futures-session-basis-v1"),
-                        "session_type": item.session_type,
-                        "session_date": item.session_date.isoformat(),
-                        "trade_date": item.session_date.isoformat(),
-                        "session_open": datetime.combine(
-                            item.reference_date, time(18), tzinfo=KST
-                        ).isoformat(),
-                        "session_close": observed_at.isoformat(),
-                        "reference_session": item.reference_session,
-                        "reference_date": item.reference_date.isoformat(),
-                        "reference_price": item.reference_price,
-                        "current_session_price": item.current_session_price,
-                        "comparison_semantic": item.comparison_semantic,
-                        "expected_latest_session_date": (
-                            probe.expected_latest_session_date.isoformat()
-                            if probe.expected_latest_session_date
-                            else None
-                        ),
-                        "reference_date_contract": probe.reference_date_contract,
-                        "expected_reference_date": (
-                            probe.expected_reference_date.isoformat()
-                            if probe.expected_reference_date
-                            else None
-                        ),
-                        "provider_raw_bas_dd": item.session_date.isoformat(),
-                        "reference_date_match": item.reference_date_match,
-                        "reference_date_relation": item.reference_date_relation,
-                        "finality_valid": item.finality_valid,
-                        "session_freshness": probe.session_freshness,
-                        "queried_dates": [value.isoformat() for value in probe.queried_dates],
-                        "date_statuses": [
-                            value.model_dump(mode="json") for value in probe.date_statuses
-                        ],
-                        "night_close": item.night_close,
-                        "regular_close": item.regular_close,
-                        "point_change": item.point_change,
-                        "change_pct": item.change_pct,
-                        "provider_change_point": item.provider_change_point,
-                        "provider_change_match": item.provider_change_match,
-                        "night_source_record_id": item.night_source_record_id,
-                        "reference_source_record_id": item.reference_source_record_id,
-                        "night_source_payload_sha256": (item.night_source_payload_sha256),
-                        "reference_source_payload_sha256": (item.reference_source_payload_sha256),
-                        "session_evidence": item.session_evidence,
-                        "night_timeframes": (
-                            timeframes.model_dump(mode="json") if timeframes is not None else None
-                        ),
-                    },
-                )
-            )
+        return materialize_night_probe(probe, history_directory=self.history_directory)
+
+
+def materialize_night_probe(probe: KrxNightFuturesProbeResult, *, history_directory: Path | None) -> MacroProviderResult:
+    """Existing typed history/DWM owner, with storage supplied explicitly for replay."""
+    history_update = (persist_live_probe_history(probe) if history_directory is None
+                      else persist_live_probe_history(probe, root=history_directory))
+    history_warnings = [
+        "krx_night_history_update_failed:" + error for error in history_update.errors
+    ]
+    telemetry = probe.compact_summary()
+    telemetry["history_update"] = history_update.model_dump(mode="json")
+    if not probe.night_session_usable:
         return MacroProviderResult(
-            provider=self.name,
-            observations=observations,
+            provider="krx_night_futures",
             warnings=[
-                *(probe.warnings if probe.session_freshness != "fresh" else []),
+                probe.reason or "night_session_unavailable",
                 *history_warnings,
             ],
             telemetry=telemetry,
         )
+    observations: list[CollectedObservation] = []
+    for item in probe.observations:
+        observed_at = datetime.combine(item.session_date, time(6), tzinfo=KST)
+        timeframes = build_same_contract_timeframes(
+            history_directory or default_krx_night_history_directory(),
+            instrument_root=item.product,
+            reference_date=item.session_date,
+            daily_change_value=item.point_change,
+            daily_change_pct=item.change_pct,
+            daily_baseline_date=item.reference_date,
+            daily_baseline_close=item.reference_price,
+        )
+        observations.append(
+            CollectedObservation(
+                series_code=SERIES_CODES[item.product],
+                category="kr_night_futures",
+                observed_at=observed_at,
+                value=item.night_close,
+                unit="index_points",
+                frequency="daily",
+                market_session="kr_night",
+                previous_value=item.regular_close,
+                change_value=item.point_change,
+                change_pct=item.change_pct,
+                source_url=probe.source_url,
+                quality_status=probe.session_freshness,
+                raw_payload={
+                    "product": item.product,
+                    "instrument": item.product,
+                    "contract_code": item.contract_code,
+                    "contract_name": item.contract_name,
+                    "expiry": item.maturity,
+                    "contract_maturity": item.maturity,
+                    "exchange": item.exchange,
+                    "session_basis_contract": ("night-futures-session-basis-v1"),
+                    "session_type": item.session_type,
+                    "session_date": item.session_date.isoformat(),
+                    "trade_date": item.session_date.isoformat(),
+                    "session_open": datetime.combine(
+                        item.reference_date, time(18), tzinfo=KST
+                    ).isoformat(),
+                    "session_close": observed_at.isoformat(),
+                    "reference_session": item.reference_session,
+                    "reference_date": item.reference_date.isoformat(),
+                    "reference_price": item.reference_price,
+                    "current_session_price": item.current_session_price,
+                    "comparison_semantic": item.comparison_semantic,
+                    "expected_latest_session_date": (
+                        probe.expected_latest_session_date.isoformat()
+                        if probe.expected_latest_session_date
+                        else None
+                    ),
+                    "reference_date_contract": probe.reference_date_contract,
+                    "expected_reference_date": (
+                        probe.expected_reference_date.isoformat()
+                        if probe.expected_reference_date
+                        else None
+                    ),
+                    "provider_raw_bas_dd": item.session_date.isoformat(),
+                    "reference_date_match": item.reference_date_match,
+                    "reference_date_relation": item.reference_date_relation,
+                    "finality_valid": item.finality_valid,
+                    "session_freshness": probe.session_freshness,
+                    "queried_dates": [value.isoformat() for value in probe.queried_dates],
+                    "date_statuses": [
+                        value.model_dump(mode="json") for value in probe.date_statuses
+                    ],
+                    "night_close": item.night_close,
+                    "regular_close": item.regular_close,
+                    "point_change": item.point_change,
+                    "change_pct": item.change_pct,
+                    "provider_change_point": item.provider_change_point,
+                    "provider_change_match": item.provider_change_match,
+                    "night_source_record_id": item.night_source_record_id,
+                    "reference_source_record_id": item.reference_source_record_id,
+                    "night_source_payload_sha256": (item.night_source_payload_sha256),
+                    "reference_source_payload_sha256": (item.reference_source_payload_sha256),
+                    "session_evidence": item.session_evidence,
+                    "night_timeframes": (
+                        timeframes.model_dump(mode="json") if timeframes is not None else None
+                    ),
+                },
+            )
+        )
+    return MacroProviderResult(
+        provider="krx_night_futures",
+        observations=observations,
+        warnings=[
+            *(probe.warnings if probe.session_freshness != "fresh" else []),
+            *history_warnings,
+        ],
+        telemetry=telemetry,
+    )
