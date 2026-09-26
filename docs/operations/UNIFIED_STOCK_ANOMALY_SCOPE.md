@@ -20,6 +20,10 @@ the same receipt/hash/provider/session ownership, then separate consumer gates.
   it projects `HistoricalPricePoint(date, close)` without reading open/high/low.
 - Unknown selection is ineligible. Normalizers that skip bad rows are not a
   waiver: selected date spans and the owner's raw tail retain malformed holes.
+- The analysis-only view projects completion markers from the existing V3
+  exchange-calendar owner. Unmarked native current-month rows cannot become
+  completed monthly features. Raw OHLCV and source fingerprints stay unchanged;
+  projected finality metadata is recorded separately.
 - Optional-component availability is not a claim that a full Core/A/B packet
   meets its requirements. No mandatory field is made optional.
 
@@ -60,7 +64,8 @@ All three original 2023-06-05 HIGH_LT_OPEN anomalies remain. Source daily
   daily/weekly long histories remain blocked. V3 spans start 2022-09-30 and
   2021-03-11 respectively, so the malformed row cannot be waved away.
 - Monthly source has no integrity anomaly. Current typed technical status is
-  `PARTIAL_SAFE`, with 170 safe feature facts across D/W/M in this frozen corpus.
+  `PARTIAL_SAFE`; exact safe feature counts are recorded in the final proof after
+  the existing calendar-finality projection excludes partial monthly bars.
 
 ## Remaining Integration Blocker
 

@@ -172,3 +172,13 @@ def test_unprovable_date_scope_blocks_component_without_selector_exception():
     assert not result["current_price_eligible"]
     assert result["features"]["daily"]["facts"] == []
     assert all(not c["eligible"] for c in result["role_consumer_matrix"]["adjusted_daily"])
+
+
+def test_native_current_month_not_promoted_to_completed_feature():
+    rows = bars()
+    before = deepcopy(rows)
+    result = project(rows)
+    states = result["analysis_view_finality"]["monthly"]["rows"]
+    assert states[-1]["bar_state"] == "PARTIAL"
+    assert all(f["as_of"] < "2026-09-01" for f in result["features"]["monthly"]["facts"])
+    assert rows == before

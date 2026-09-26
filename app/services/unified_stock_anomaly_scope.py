@@ -16,7 +16,9 @@ from app.services.ohlcv_structure_service import (
     LOCAL_CONFIG, LOCAL_PIVOT_LOOKBACKS, MAJOR_CONFIG, normalize_structure_bars,
 )
 from app.services.packet_owned_technical_context_service import build_packet_owned_technical_context
-from app.services.price_structure_wave_fibonacci_v3_service import HISTORY_REQUESTS, prepare_long_history
+from app.services.price_structure_wave_fibonacci_v3_service import (
+    HISTORY_REQUESTS, normalize_completed_bars, prepare_long_history,
+)
 from app.services.unified_snapshot_contract import digest
 
 
@@ -194,7 +196,26 @@ def materialize_source_components(*, ticker: str, market: str, cutoff: date,
         matrix[role] = role_consumers(rows, role=role, timeframe=timeframe, cutoff=cutoff,
             market=market, observed_at=observed_at)
     current = matrix["adjusted_daily"][0]
-    periods = {tf: roles[f"adjusted_{tf}"] for tf in ("daily", "weekly", "monthly")}
+    periods, finality = {}, {}
+    for tf in ("daily", "weekly", "monthly"):
+        raw = roles[f"adjusted_{tf}"]
+        inspection = inspect_normalized_ohlcv_rows(raw, timeframe=tf, cutoff=cutoff)
+        if any(issue.violation.value in _STRUCTURAL for issue in inspection.issues):
+            periods[tf] = raw
+            finality[tf] = {"status": "UNPROVABLE_SOURCE_DATES", "rows": []}
+            continue
+        native = normalize_completed_bars(raw, cutoff=cutoff.isoformat(), timeframe=tf,
+            market=market.upper(), observed_at=observed_at)
+        by_date = {bar.date: bar for bar in native}
+        # Native chart rows have no completion marker. Reuse the existing market
+        # calendar owner on a separate view; never mark a partial month complete.
+        periods[tf] = [{**row, "bar_state": by_date[str(row["date"])[:10]].bar_state}
+            if str(row["date"])[:10] in by_date else dict(row) for row in raw]
+        finality[tf] = {"status": "EXISTING_CALENDAR_OWNER_PROJECTION",
+            "owner": "price_structure_wave_fibonacci_v3_service.normalize_completed_bars",
+            "rows": [{"date": b.date, "bar_state": b.bar_state,
+                "period_start": b.period_start, "period_end": b.period_end,
+                "calendar": b.market_calendar} for b in native]}
     context = build_packet_owned_technical_context(ticker=ticker, market=market, session="closed",
         as_of=observed_at, periods=periods, cutoff=cutoff, expected_daily_completed=cutoff.isoformat(),
         source="sealed_r2b0_kiwoom", source_version="one-shot-stock-source-acquisition-v1")
@@ -214,7 +235,7 @@ def materialize_source_components(*, ticker: str, market: str, cutoff: date,
             start, end = dep["dependency_start"], dep["dependency_end"]
             dates = tuple(bar.as_of.isoformat() for bar in normalized.bars
                 if start and end and start <= bar.as_of.isoformat() <= end)
-            verdict = assess_consumer(periods[tf], timeframe=tf, cutoff=cutoff,
+            verdict = assess_consumer(roles[f"adjusted_{tf}"], timeframe=tf, cutoff=cutoff,
                 consumer=ConsumerRows(str(dep["semantic"]),
                     "ohlcv_feature_engine_service._feature_facts / technical_feature_dependency_service.assess_feature_dependency",
                     f'{dep["dependency_kind"]}; minimum_history={dep["required_bars"]}', dates,
@@ -239,6 +260,7 @@ def materialize_source_components(*, ticker: str, market: str, cutoff: date,
         "current_price_eligible": current["eligible"], "role_consumer_matrix": matrix,
         "technical_context_id": context.technical_context_id,
         "technical_status": context.status.value, "features": features,
+        "analysis_view_finality": finality,
         "complete_stock_packet": False, "stock_packet_sha256": None,
         "materializer_status": "BLOCKED_COMPLETE_STOCK_OWNER_NOT_IMPLEMENTED",
         "observed_business_union_status": "NOT_REACHED_NO_BOUND_CLASS_C_INPUT",
