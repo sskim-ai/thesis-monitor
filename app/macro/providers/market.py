@@ -37,6 +37,20 @@ MARKET_SYMBOLS = {
 }
 
 
+def normalize_market_observation(payload: dict, *, symbol: str, source_url: str) -> CollectedObservation | None:
+    """Shared by live collection and child-byte offline replay."""
+    bars = payload.get("periods", {}).get("daily", [])
+    if not bars:
+        return None
+    latest = bars[-1]
+    return CollectedObservation(
+        series_code=symbol, category=MARKET_SYMBOLS[symbol],
+        observed_at=datetime.fromisoformat(str(latest["date"])).replace(tzinfo=timezone.utc),
+        value=float(latest["close"]), unit="usd", frequency="daily",
+        market_session="us_regular", source_url=source_url,
+    )
+
+
 class OhlcvMarketProvider:
     name = "ohlcv_analyst"
 
@@ -62,7 +76,7 @@ class OhlcvMarketProvider:
             timeout=self.settings.ohlcv_timeout_seconds,
             transport=self.transport,
         ) as client:
-            for symbol, category in MARKET_SYMBOLS.items():
+            for symbol in MARKET_SYMBOLS:
                 try:
                     get = client.get if self.source_observer is None else (
                         lambda route, **kwargs: self.source_observer.get(client, route, **kwargs)
@@ -80,24 +94,12 @@ class OhlcvMarketProvider:
                         },
                     )
                     response.raise_for_status()
-                    bars = response.json().get("periods", {}).get("daily", [])
-                    if not bars:
+                    observation = normalize_market_observation(response.json(), symbol=symbol,
+                        source_url=f"{self.settings.ohlcv_base_url.rstrip('/')}/ohlcv")
+                    if observation is None:
                         result.warnings.append(f"{symbol}: no daily bars")
                         continue
-                    latest = bars[-1]
-                    observed_at = datetime.fromisoformat(str(latest["date"])).replace(
-                        tzinfo=timezone.utc
-                    )
-                    observation = CollectedObservation(
-                            series_code=symbol,
-                            category=category,
-                            observed_at=observed_at,
-                            value=float(latest["close"]),
-                            unit="usd",
-                            frequency="daily",
-                            market_session="us_regular",
-                            source_url=f"{self.settings.ohlcv_base_url.rstrip('/')}/ohlcv",
-                    )
+                    observed_at = observation.observed_at
                     if self.source_observer is not None:
                         read = next(r for r in self.source_observer.reads if r.symbol == symbol)
                         if observed_at.date() != read.session_date or observed_at > as_of:

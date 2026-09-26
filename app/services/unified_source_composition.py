@@ -71,7 +71,7 @@ class SourceInput(ContractModel):
             )):
                 raise ValueError("denial_must_not_contain_source_or_value")
             return self
-        if self.denial or not self.artifact or not self.artifact_sha256:
+        if (self.denial and self.acquisition_class != C) or not self.artifact or not self.artifact_sha256:
             raise ValueError("bound_source_artifact_required")
         if self.acquisition_class == A:
             if not self.attempt_id or self.acquisition_id or self.version or self.original_record_id:
@@ -194,8 +194,6 @@ def _resolve(item: SourceInput, role: SourceRole, *, root: Path, run_id: str,
                  else owner.project_and_validate(raw, cutoff))
     if aggregate and digest(projected.value) != aggregate.receipt.normalized_sha256:
         raise ValueError("aggregate_output_not_child_derived")
-    if not projected.eligible or projected.denial:
-        raise ValueError("source_owner_current_eligibility_failed")
     if (projected.provider, projected.market, projected.symbol, projected.basis,
         projected.session) != (role.provider, role.market, role.symbol, role.basis, role.session):
         raise ValueError("source_owner_identity_basis_session_mismatch")
@@ -206,6 +204,17 @@ def _resolve(item: SourceInput, role: SourceRole, *, root: Path, run_id: str,
         item.original_record_id, item.version
     ):
         raise ValueError("source_record_version_mismatch")
+    if item.denial is not None:
+        if (item.acquisition_class != C or role.mandatory or projected.eligible
+                or projected.denial != item.denial or projected.value is not None):
+            raise ValueError("optional_persisted_denial_not_owner_bound")
+        return {"source": item.model_dump(mode="json"), "value": None,
+                "availability": "UNAVAILABLE", "provider": projected.provider,
+                "eligibility": {"owner": role.owner, "contract": owner.contract,
+                    "code_sha256": owner.code_sha256, "cutoff": cutoff.isoformat()},
+                "basis": projected.basis, "session": projected.session}
+    if not projected.eligible or projected.denial:
+        raise ValueError("source_owner_current_eligibility_failed")
     policy.check_lineage(projected.value)
     return {"source": item.model_dump(mode="json"), "value": projected.value,
             "value_sha256": digest(projected.value), "provider": projected.provider,

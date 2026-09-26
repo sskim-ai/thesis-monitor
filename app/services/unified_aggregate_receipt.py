@@ -89,6 +89,7 @@ class VerifiedAggregate:
     child_bodies: tuple[bytes | None, ...]
     child_normalizations: tuple[dict | None, ...]
     normalized: bytes
+    accepted_pages: tuple[dict | None, ...] = ()
 
 
 def verify_aggregate(root: Path, receipt: AggregateReceipt, *, policy: UnifiedSourcePolicy,
@@ -104,7 +105,7 @@ def verify_aggregate(root: Path, receipt: AggregateReceipt, *, policy: UnifiedSo
     raw = read_bound_artifact(root, receipt.artifact, receipt.artifact_sha256)
     if digest(json.loads(raw)) != receipt.normalized_sha256:
         raise ValueError("aggregate_normalized_hash_mismatch")
-    children, bodies, normalizations = [], [], []
+    children, bodies, normalizations, pages = [], [], [], []
     cursors, ordinals = {}, []
     for child in receipt.children:
         current = json.loads(read_bound_artifact(root, child.receipt.path, child.receipt.sha256))
@@ -155,6 +156,7 @@ def verify_aggregate(root: Path, receipt: AggregateReceipt, *, policy: UnifiedSo
             if (normalization.get("response_receipt_sha256") != digest(current)
                     or normalization.get("normalized_sha256") != digest(normalization.get("normalized"))):
                 raise ValueError("aggregate_child_normalization_mismatch")
+        page = None
         if child.accepted_page:
             page = json.loads(read_bound_artifact(root, child.accepted_page.path, child.accepted_page.sha256))
             request = current["request"]
@@ -171,9 +173,10 @@ def verify_aggregate(root: Path, receipt: AggregateReceipt, *, policy: UnifiedSo
         children.append(current)
         bodies.append(body)
         normalizations.append(normalization)
+        pages.append(page)
     if ordinals != sorted(set(ordinals)):
         raise ValueError("aggregate_child_order_mismatch")
     if any(cursor is not None for _number, cursor in cursors.values()):
         raise ValueError("aggregate_page_set_incomplete")
     policy.check_lineage(json.loads(raw))
-    return VerifiedAggregate(receipt, plan, tuple(children), tuple(bodies), tuple(normalizations), raw)
+    return VerifiedAggregate(receipt, plan, tuple(children), tuple(bodies), tuple(normalizations), raw, tuple(pages))
