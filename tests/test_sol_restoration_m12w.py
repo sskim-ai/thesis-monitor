@@ -237,6 +237,7 @@ def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
             "app/providers/nasdaq_trader_breadth_provider.py",
             "app/providers/news.py",
             "app/providers/registry.py",
+            "app/services/ai_review_service.py",
             "app/services/collection_service.py",
             "app/services/direction_timing_ownership_service.py",
             "app/services/directional_balance_service.py",
@@ -268,8 +269,8 @@ def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
             "tests/test_market_intelligence_service.py",
             "tests/test_partial_output_forensics_transport_stall_review.py",
         }
-        assert result["financial_semantic_change_count"] == 40
-        assert result["directional_semantic_change_count"] == 40
+        assert result["financial_semantic_change_count"] == 41
+        assert result["directional_semantic_change_count"] == 41
         assert result["fictional_case_change_count"] == 0
     else:
         assert result["verification_mode"] == "CI_PORTABLE_AGGREGATE_SHA256"

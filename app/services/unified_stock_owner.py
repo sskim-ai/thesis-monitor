@@ -188,10 +188,16 @@ def component_binding(components):
             path = ("technical_context.features." + role.removeprefix("adjusted_") + ".facts:" + c["consumer"]
                 if feature else "price_and_positioning.price.current_price" if requirement == "MANDATORY"
                 else "chart_context:" + role + ":" + c["consumer"])
+            source_only = c["consumer"] in {"v3_long_cycle", "valuation_weekly_close_history"}
+            if source_only:
+                path = ("valuation" if c["consumer"] == "valuation_weekly_close_history"
+                        else "chart_context.structure.price_structure_v3")
             result.append({"role": role, "consumer": c["consumer"], "packet_path": path,
                 "requirement": requirement, "Core": False, "A": False, "B": True,
                 "renderer_requires": requirement == "MANDATORY", "eligible": c["eligible"],
-                "behavior": "INCLUDE" if c["eligible"] else
+                "selected_value_in_packet": c["eligible"] and not source_only,
+                "behavior": "SOURCE_AVAILABLE_CONSUMER_NOT_MATERIALIZED" if c["eligible"] and source_only
+                    else "INCLUDE" if c["eligible"] else
                     "MANDATORY_FIELD_UNAVAILABLE_SOURCE_ANOMALY" if requirement == "MANDATORY" else
                     "UNAVAILABLE_SOURCE_ANOMALY_RELEVANT" if c["reason"] == "SOURCE_ANOMALY_RELEVANT_TO_CONSUMER"
                     else "UNAVAILABLE_" + c["reason"],

@@ -94,6 +94,10 @@ def test_actual_existing_owners_deterministic_and_optional_absence(source):
     assert stock["technical_context"]["contract"] == "packet-owned-technical-context-v1"
     assert "cash_flow_user_visible" not in stock and "working_capital_user_visible" not in stock
     assert "forward_eps" not in stock["valuation"]
+    for component in first["component_binding"]:
+        if component["eligible"] and component["consumer"] in {"v3_long_cycle", "valuation_weekly_close_history"}:
+            assert component["behavior"] == "SOURCE_AVAILABLE_CONSUMER_NOT_MATERIALIZED"
+            assert not component["selected_value_in_packet"]
     assert validate_assembled(first, expected_result_sha256=digest(first))
 
 

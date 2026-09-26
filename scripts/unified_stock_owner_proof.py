@@ -147,13 +147,21 @@ def main():
             try:
                 result = assemble_stock(**params)
             except ValueError as exc:
+                try:
+                    assemble_stock(**params)
+                except ValueError as repeated:
+                    if str(repeated) != str(exc):
+                        raise ValueError("stock_owner_denial_nondeterministic") from repeated
+                else:
+                    raise ValueError("stock_owner_denial_not_reproduced") from exc
                 failure = {"ticker": ticker, "market": market, "status": "BLOCKED",
                     "mandatory_missing": [str(exc)], "packet_sha256": None,
                     "role_coverage": "4/4", "current_price_eligible": components[ticker]["current_price_eligible"],
                     "safe_technical_facts": sum(len(f["facts"]) for f in components[ticker]["features"].values()),
                     "observed_business_cardinality": 0, "financial_state": {"status": "OWNER_BINDING_FAILED"},
                     "input_hashes": hashes, "numeric_registry_count": 0,
-                    "numeric_registry_unregistered": None, "replay_exact": False}
+                    "numeric_registry_unregistered": None, "replay_exact": False,
+                    "failure_replay_exact": True}
                 durable_json(proof / f"assembled/{ticker}.json", failure, exclusive=True)
                 rows.append(failure)
                 print(ticker, "BLOCKED", str(exc), flush=True)

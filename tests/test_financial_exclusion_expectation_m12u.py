@@ -66,6 +66,7 @@ def test_scope_is_portable_and_only_approved_surfaces_changed():
         "app/providers/nasdaq_trader_breadth_provider.py",
         "app/providers/news.py",
         "app/providers/registry.py",
+        "app/services/ai_review_service.py",
         "app/services/collection_service.py",
         "app/services/directional_financial_context_service.py",
         "app/services/evidence_maturity_pricing_service.py",
