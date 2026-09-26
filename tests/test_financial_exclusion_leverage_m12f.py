@@ -38,6 +38,8 @@ def test_complete_scope_freeze_preserves_every_unapproved_owner():
         "app/services/krx_night_session_contract_service.py",
         "app/services/market_intelligence_service.py",
         "app/services/ohlcv_client.py",
+        "app/services/ohlcv_feature_engine_service.py",
+        "app/services/ohlcv_structure_service.py",
         "app/services/structured_autonomy_alias_service.py",
         "app/services/us_exchange_breadth_service.py",
         "app/services/valuation_snapshot_service.py",

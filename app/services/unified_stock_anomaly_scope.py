@@ -101,6 +101,12 @@ def _dates(rows) -> tuple[str, ...]:
 
 
 def _structure_consumer(rows, timeframe, kind, *, cutoff, market, observed_at):
+    inspection = inspect_normalized_ohlcv_rows(rows, timeframe=timeframe, cutoff=cutoff)
+    if any(issue.violation.value in _STRUCTURAL for issue in inspection.issues):
+        return ConsumerRows(kind, "existing structure selector (not invoked)",
+            "date/order/identity uncertainty prevents proving selected rows", None,
+            frozenset({"date", "open", "high", "low", "close", "volume"}),
+            "OPTIONAL_COMPONENT", existing_row_integrity_prerequisite=True)
     if kind == "v3_long_cycle":
         selected, _ = prepare_long_history(rows, timeframe=timeframe, cutoff=cutoff.isoformat(),
             adjustment_basis="provider_adjusted_price_v1", market=market.upper(),
@@ -158,8 +164,10 @@ def role_consumers(rows: list[dict], *, role: str, timeframe: str, cutoff: date,
         local = next(c for c in consumers if c.consumer == "legacy_local_pivots")
         boxes_index = next(i for i, c in enumerate(consumers) if c.consumer == "legacy_boxes")
         boxes = consumers[boxes_index]
+        combined_dates = (tuple(sorted(set((*boxes.dates, *local.dates))))
+            if boxes.dates is not None and local.dates is not None else None)
         consumers[boxes_index] = ConsumerRows(boxes.consumer, boxes.owner,
-            boxes.selection + "; plus local-pivot zones", tuple(sorted(set((*boxes.dates, *local.dates)))),
+            boxes.selection + "; plus local-pivot zones", combined_dates,
             boxes.fields, boxes.requirement, local.dependency_span, True)
     results = [assess_consumer(rows, timeframe=timeframe, cutoff=cutoff, consumer=c) for c in consumers]
     for result in results:

@@ -248,6 +248,8 @@ def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
             "app/services/krx_night_session_contract_service.py",
             "app/services/market_intelligence_service.py",
             "app/services/ohlcv_client.py",
+            "app/services/ohlcv_feature_engine_service.py",
+            "app/services/ohlcv_structure_service.py",
             "app/services/structured_autonomy_alias_service.py",
             "app/services/us_exchange_breadth_service.py",
             "app/services/valuation_snapshot_service.py",
@@ -266,8 +268,8 @@ def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
             "tests/test_market_intelligence_service.py",
             "tests/test_partial_output_forensics_transport_stall_review.py",
         }
-        assert result["financial_semantic_change_count"] == 38
-        assert result["directional_semantic_change_count"] == 38
+        assert result["financial_semantic_change_count"] == 40
+        assert result["directional_semantic_change_count"] == 40
         assert result["fictional_case_change_count"] == 0
     else:
         assert result["verification_mode"] == "CI_PORTABLE_AGGREGATE_SHA256"

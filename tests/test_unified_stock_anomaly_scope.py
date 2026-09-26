@@ -163,3 +163,12 @@ def test_stale_daily_not_current_substitute():
     assert not result["current_price_eligible"]
     assert result["current_price"] is None
     assert result["features"]["daily"]["facts"] == []
+
+
+def test_unprovable_date_scope_blocks_component_without_selector_exception():
+    rows = bars()
+    rows[20]["date"] = "invalid"
+    result = project(rows)
+    assert not result["current_price_eligible"]
+    assert result["features"]["daily"]["facts"] == []
+    assert all(not c["eligible"] for c in result["role_consumer_matrix"]["adjusted_daily"])
