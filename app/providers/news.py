@@ -53,19 +53,25 @@ class GoogleNewsRSSProvider(NewsProvider):
         *,
         search_aliases: list[str] | None = None,
     ) -> list[RawEvent]:
-        terms = search_aliases or [ticker]
-        query_text = " OR ".join(f'"{term}"' for term in terms[:4])
-        query = quote_plus(f"({query_text}) company stock")
-        url = (
-            "https://news.google.com/rss/search"
-            f"?q={query}+when:{lookback_days}d&hl=en-US&gl=US&ceid=US:en"
-        )
-        seen: set[tuple[str, str]] = set()
+        url = self.request_url(ticker, lookback_days, search_aliases=search_aliases)
         async with httpx.AsyncClient(timeout=self.timeout_seconds, follow_redirects=self.as_of is None,
                                      transport=self.transport) as client:
             response = await client.get(url)
             response.raise_for_status()
+        return self.parse_response(response, ticker=ticker)
 
+    @staticmethod
+    def request_url(ticker, lookback_days, *, search_aliases=None):
+        terms = search_aliases or [ticker]
+        query_text = " OR ".join(f'"{term}"' for term in terms[:4])
+        query = quote_plus(f"({query_text}) company stock")
+        return (
+            "https://news.google.com/rss/search"
+            f"?q={query}+when:{lookback_days}d&hl=en-US&gl=US&ceid=US:en"
+        )
+    def parse_response(self, response, *, ticker):
+        url = str(response.url)
+        seen: set[tuple[str, str]] = set()
         try:
             root = ElementTree.fromstring(response.text)
         except ElementTree.ParseError:
@@ -154,9 +160,7 @@ class NaverNewsProvider(NewsProvider):
         if not settings.naver_client_id or not settings.naver_client_secret:
             return []
 
-        terms = search_aliases or [ticker]
-        query = " OR ".join(f'"{term}"' for term in terms[:4])
-        params = {"query": query, "display": self.display, "start": 1, "sort": "date"}
+        params = self.request_params(ticker, search_aliases=search_aliases)
         headers = {
             "X-Naver-Client-Id": settings.naver_client_id,
             "X-Naver-Client-Secret": settings.naver_client_secret,
@@ -164,8 +168,15 @@ class NaverNewsProvider(NewsProvider):
         async with httpx.AsyncClient(timeout=self.timeout_seconds, transport=self.transport) as client:
             response = await client.get(self.endpoint, params=params, headers=headers)
             response.raise_for_status()
-            payload = response.json()
+        return self.parse_response(response, ticker=ticker)
 
+    def request_params(self, ticker, *, search_aliases=None):
+        terms = search_aliases or [ticker]
+        query = " OR ".join(f'"{term}"' for term in terms[:4])
+        return {"query": query, "display": self.display, "start": 1, "sort": "date"}
+
+    def parse_response(self, response, *, ticker):
+        payload = response.json()
         events: list[RawEvent] = []
         seen: set[tuple[str, str]] = set()
         for item in payload.get("items", []):

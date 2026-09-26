@@ -7,7 +7,7 @@ Input replays use only private in-memory SQLite owners and supplied bytes.
 from __future__ import annotations
 
 from copy import deepcopy
-from datetime import date
+from datetime import date, datetime
 import json
 
 from app.models.financial import FinancialSnapshot
@@ -37,6 +37,7 @@ from app.services.unified_source_composition import SourceRole
 from app.services.unified_source_policy import UnifiedSourcePolicy
 from app.services.unified_stock_acquisition import ROLES, StockPlan, decode_owned_role
 from app.services.unified_stock_anomaly_scope import materialize_source_components
+from app.services.unified_stock_event_input import BoundNewsInput, replay_news
 
 
 CONTRACT = "unified-complete-stock-owner-v1"
@@ -207,11 +208,21 @@ def component_binding(components):
 
 def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: dict[str, bytes],
                    local_seed: dict, financial: dict, components: dict,
-                   expected_hashes: dict, policy: UnifiedSourcePolicy) -> dict:
+                   expected_hashes: dict, policy: UnifiedSourcePolicy,
+                   event_source: BoundNewsInput | None = None,
+                   business_cutoff: datetime | None = None) -> dict:
     """No path lookup, providers, prior assessments or downstream model output."""
     for key, value in (("local", local_seed), ("financial", financial), ("components", components),
                        ("receipts", receipts), ("plan", plan.model_dump(mode="json"))):
         _exact(value, expected_hashes[key])
+    event_binding = None
+    if (event_source is None) != (business_cutoff is None):
+        raise ValueError("event_source_and_business_cutoff_required_together")
+    if event_source is not None:
+        if business_cutoff.utcoffset() is None or business_cutoff < plan.frozen_at:
+            raise ValueError("business_cutoff_before_sealed_price_or_naive")
+        _exact(event_source.model_dump(mode="json"), expected_hashes["events"])
+        _exact(business_cutoff.isoformat(), expected_hashes["business_cutoff"])
     reads = [r for r in plan.reads if r.subject == ticker]
     if len(reads) != 4 or set(receipts) != set(ROLES):
         raise ValueError("exact_four_subject_roles_required")
@@ -238,8 +249,17 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     security, watch, thesis = (tables[k] for k in ("securitymaster", "watchlistitem", "investmentthesis"))
     if security["canonical_security_id"] != reads[0].canonical_security_id:
         raise ValueError("stock_local_security_receipt_mismatch")
-    valuation, financial_refs, financial_state = _financial(financial, ticker=ticker, market=market,
-        cutoff=plan.frozen_at, policy=policy)
+    if event_source is not None:
+        event_binding = replay_news(event_source, security=security, business_cutoff=business_cutoff, policy=policy)
+    try:
+        valuation, financial_refs, financial_state = _financial(financial, ticker=ticker, market=market,
+            cutoff=plan.frozen_at, policy=policy)
+    except ValueError as exc:
+        if event_source is None or str(exc) != "financial_selected_tuple_mismatch":
+            raise
+        valuation, financial_refs = {}, {}
+        financial_state = {"status": "DENIED", "denials": [str(exc)],
+            "owner": "project_reported_financial", "version": financial["projection"]["version"]}
     technical, periods = _technical(components, roles, **{k: params[k] for k in ("ticker", "market", "cutoff", "observed_at")})
     currency = technical.currency
     decision = {"current_price": components["current_price"], "currency": currency,
@@ -265,7 +285,9 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     chart = {"available": bool(timeframes), "quality": "fresh", "source": "kiwoom",
         "timeframes": timeframes, "structure": _compact_chart_structure(structure) if structure else {},
         "stored_price_rules": json.loads(thesis["price_rules"])}
-    facts = build_source_fact_catalog(assessment_date=plan.frozen_at.date(), capital_actions=[], evidence=[],
+    event_evidence = event_binding["evidence"] if event_binding else []
+    at = business_cutoff or plan.frozen_at
+    facts = build_source_fact_catalog(assessment_date=at.date(), capital_actions=[], evidence=event_evidence,
         valuation=valuation, price={"price": decision}, chart=chart, monitoring_state={})
     # Empty auto-generated earnings envelopes are not observed evidence.
     facts = [f for f in facts if f["fact_type"] != "earnings" or financial_refs]
@@ -276,7 +298,7 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
         "thesis": {"core_thesis": thesis["core_thesis"], "time_horizon": thesis.get("time_horizon"),
             **{k: json.loads(thesis[k]) for k in ("thesis_drivers", "validation_metrics", "strengthen_signals",
                 "weaken_signals", "invalidation_signals", "market_expectations", "valuation_framework", "macro_exposures")}},
-        "evidence": [], "valuation": valuation, "price_and_positioning": {"price": decision},
+        "evidence": event_evidence, "valuation": valuation, "price_and_positioning": {"price": decision},
         "chart_context": chart, "fact_catalog": facts, "numeric_registry": build_numeric_registry(facts),
         "current_price_context": select_current_price_context({"decision": decision}),
         "technical_context": technical.model_dump(mode="json"),
@@ -290,17 +312,45 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
         has_adr_basis_risk=security.get("security_type") in {"adr", "gdr"})
     stock["chart_knowledge_routing"] = _chart_knowledge_routing(chart)
     packet = {"packet_id": plan.run_id + ":" + market, "market": market,
-        "assessment_date": plan.frozen_at.date().isoformat(), "generated_at": plan.frozen_at.isoformat(),
+        "assessment_date": at.date().isoformat(), "generated_at": at.isoformat(),
         "schema_version": 4, "stocks": [stock]}
+    if event_source is not None:
+        packet["source_time_domains"] = {"price_source_frozen_at": plan.frozen_at.isoformat(),
+            "price_session": session_key, "business_cutoff": business_cutoff.isoformat(),
+            "financial_projection_cutoff": financial["projection"]["cutoff"],
+            "scope": "MIXED_TIME_MATERIALIZER_PROOF_NOT_HISTORICAL_PRODUCTION_DECISION"}
     # Consume the serialized packet through its real loader. Producer-only
     # Decimal instances must not grant permissions lost at the JSON boundary.
     serialized_technical = PacketOwnedTechnicalContext.model_validate(stock["technical_context"])
     evidence = build_decision_evidence_packet(packet=packet, stock=stock, technical_context=serialized_technical)
-    owned = build_owned_evidence_packet(evidence, stock=stock)
-    stage_alias_catalogs(owned)
     from scripts.m12dk_current_source_authority import earnings_lineage_receipt
     business = [earnings_lineage_receipt(ref.model_dump(mode="json"), stock, packet)
         for ref in evidence.evidence if ref.source_ref and ref.source_ref.startswith("stock.fact_catalog.earnings:")]
+    if event_source is not None:
+        financial_state = {**financial_state, "earnings_qualification": deepcopy(business)}
+        denied = [r for r in business if r["status"] != "PASS"]
+        if denied:
+            financial_state.update(status="DENIED", denial_reason="existing_earnings_owner_rejected")
+            facts[:] = [f for f in facts if f["fact_type"] not in {"earnings", "financial_quality"}]
+            stock["valuation"] = {}
+            stock["numeric_registry"] = build_numeric_registry(facts)
+            evidence = build_decision_evidence_packet(packet=packet, stock=stock, technical_context=serialized_technical)
+        if financial_state["status"] in {"DENIED", "UNAVAILABLE"}:
+            stock["data_cautions"].append("REPORTED_FINANCIAL_UNAVAILABLE_OR_DENIED_SEE_FINANCIAL_STATE")
+        selected = {r["event_fingerprint"]: r for r in event_binding["selected"] if r["status"] == "PASS"}
+        for ref in evidence.evidence:
+            if not ref.source_ref.startswith("stock.fact_catalog.event:"):
+                continue
+            fp = ref.source_ref.removeprefix("stock.fact_catalog.event:").split(":", 1)[0]
+            if fp not in selected:
+                raise ValueError("event_typed_ref_not_selected_by_owner")
+            business.append({"status": "PASS", "source_kind": "BUSINESS_EVENT", "ref_id": ref.ref_id,
+                "ticker": ticker, "event_fingerprint": fp, "source_receipt_sha256": event_binding["source_receipt_sha256"],
+                "raw_sha256": event_binding["raw_sha256"], "event": selected[fp]})
+        # Cautions participate in the typed evidence identity too.
+        evidence = build_decision_evidence_packet(packet=packet, stock=stock, technical_context=serialized_technical)
+    owned = build_owned_evidence_packet(evidence, stock=stock)
+    stage_alias_catalogs(owned)
     usable = [r for r in business if r["status"] == "PASS"]
     if not usable:
         missing.append("observed_business_union:eligible_reported_financial_or_event")
@@ -308,14 +358,18 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     if registry_errors:
         missing.append("numeric_registry:unregistered_fields")
     graph = {f["fact_id"]: {"ticker": ticker, "fact_sha256": digest(f),
-        "source": "selected_financial" if f["fact_type"] in {"earnings", "financial_quality"}
+        "source": "business_events" if f["fact_id"].startswith("event:") else
+            "selected_financial" if f["fact_type"] in {"earnings", "financial_quality"}
             else "local_seed" if f["fact_type"] in {"security_identity", "security_basis", "chart_price_rules"}
             else "sealed_stock_roles",
-        "input_sha256": expected_hashes["financial"] if f["fact_type"] in {"earnings", "financial_quality"}
+        "input_sha256": expected_hashes["events"] if f["fact_id"].startswith("event:") else
+            expected_hashes["financial"] if f["fact_type"] in {"earnings", "financial_quality"}
             else expected_hashes["local"] if f["fact_type"] in {"security_identity", "security_basis", "chart_price_rules"}
             else expected_hashes["receipts"]} for f in facts}
     for node in graph.values():
-        if node["source"] == "selected_financial":
+        if node["source"] == "business_events":
+            node["event_binding"] = deepcopy(event_binding)
+        elif node["source"] == "selected_financial":
             node["records"] = deepcopy(financial_refs)
         elif node["source"] == "local_seed":
             node["records"] = {table: {"record_id": str(row["id"]), "record_sha256": digest(row)}
@@ -343,7 +397,10 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
         "numeric_registry_graph": numeric_graph, "evidence_reference_graph": evidence_graph,
         "observed_business_union": business, "observed_business_cardinality": len(usable),
         "numeric_registry_unregistered": registry_errors, "input_hashes": deepcopy(expected_hashes),
-        "complete_source_adapter_qualified": False}
+        "complete_source_adapter_qualified": False,
+        **({"event_binding": event_binding, "event_source": event_source.model_dump(mode="json"),
+            "business_cutoff": business_cutoff.isoformat(), "event_policy": sorted(policy.allowed_providers)}
+           if event_source is not None else {})}
 
 
 def validate_assembled(result, *, expected_result_sha256):
@@ -351,6 +408,22 @@ def validate_assembled(result, *, expected_result_sha256):
     if digest(result) != expected_result_sha256:
         raise ValueError("assembled_result_hash_mismatch")
     stock = result["packet"]["stocks"][0]
+    if "event_source" in result:
+        event_source = BoundNewsInput.model_validate(result["event_source"])
+        cutoff = datetime.fromisoformat(result["business_cutoff"])
+        if digest(result["event_source"]) != result["input_hashes"]["events"] or digest(cutoff.isoformat()) != result["input_hashes"]["business_cutoff"]:
+            raise ValueError("event_input_hash_mismatch")
+        replayed = replay_news(event_source, security=event_source.read.security,
+            business_cutoff=cutoff, policy=UnifiedSourcePolicy(frozenset(result["event_policy"])))
+        if replayed != result["event_binding"] or stock["evidence"] != replayed["evidence"]:
+            raise ValueError("event_source_replay_mismatch")
+        from app.services.canonical_fact_service import canonical_event_fact
+        expected_events = [canonical_event_fact(item) for item in replayed["evidence"]]
+        if [f for f in stock["fact_catalog"] if f["fact_id"].startswith("event:")] != expected_events:
+            raise ValueError("event_catalog_not_owned_by_source")
+        domains = result["packet"].get("source_time_domains", {})
+        if domains.get("business_cutoff") != cutoff.isoformat() or result["packet"]["generated_at"] != cutoff.isoformat():
+            raise ValueError("business_time_domain_mismatch")
     reject_downstream(stock)
     if stock["ticker"] != result["ticker"] or stock["numeric_registry"] != build_numeric_registry(stock["fact_catalog"]):
         raise ValueError("numeric_registry_or_subject_mismatch")
@@ -380,13 +453,22 @@ def validate_assembled(result, *, expected_result_sha256):
         binding = result["source_graph"][fact["fact_id"]]
         if binding["ticker"] != stock["ticker"] or binding["fact_sha256"] != digest(fact):
             raise ValueError("source_reference_mismatch")
-        key = {"selected_financial": "financial", "local_seed": "local", "sealed_stock_roles": "receipts"}[binding["source"]]
+        key = {"selected_financial": "financial", "local_seed": "local", "sealed_stock_roles": "receipts",
+               "business_events": "events"}[binding["source"]]
         if binding["input_sha256"] != result["input_hashes"][key]:
             raise ValueError("source_input_hash_mismatch")
     if result["numeric_registry_graph"] != [{"fact_id": r["fact_id"], "field_path": r["field_path"],
             "registry_entry_sha256": digest(r), "source_node_sha256": digest(result["source_graph"][r["fact_id"]])}
             for r in stock["numeric_registry"]]:
         raise ValueError("numeric_source_graph_mismatch")
+    if "event_source" in result:
+        from scripts.m12dk_current_source_authority import earnings_lineage_receipt
+        refs = {r.ref_id for r in evidence.evidence if r.source_ref.startswith("stock.fact_catalog.event:")}
+        refs.update(r.ref_id for r in evidence.evidence if r.source_ref.startswith("stock.fact_catalog.earnings:")
+            and earnings_lineage_receipt(r.model_dump(mode="json"), stock, result["packet"])["status"] == "PASS")
+        actual = [r["ref_id"] for r in result["observed_business_union"] if r["status"] == "PASS"]
+        if set(actual) != refs or len(actual) != len(refs) or result["observed_business_cardinality"] != len(refs):
+            raise ValueError("observed_business_union_replay_mismatch")
     if result["status"] == "PASS" and (result["mandatory_missing"] or not result["observed_business_cardinality"]):
         raise ValueError("mandatory_stock_contract_failed")
     return result["status"] == "PASS"

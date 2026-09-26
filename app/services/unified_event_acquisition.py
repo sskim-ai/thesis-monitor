@@ -42,6 +42,37 @@ class CachedEventRead:
     receipt_sha256: str
 
 
+def qualify_event_rows(session, rows, target, *, provider, cutoff, lookback_days):
+    """Same identity/relevance path for wire capture and byte-owned offline replay."""
+    normalized, rejected, candidates = [], [], []
+    with session.no_autoflush:
+        for raw in rows:
+            record = TypeAdapter(dict).dump_python(asdict(raw), mode="json")
+            audit = {"raw_event": record, "raw_event_sha256": digest(record),
+                     "temporal_identity": "FAIL", "document_identity": "NOT_REACHED",
+                     "relevance": "NOT_REACHED"}
+            candidates.append(audit)
+            if raw.provider != provider or raw.ticker != target.ticker or not (
+                cutoff.date() - timedelta(days=lookback_days) <= raw.date <= cutoff.date()
+            ):
+                rejected.append({"raw_event_sha256": digest(record), "reason": "subject_or_publication_mismatch"})
+                continue
+            audit["temporal_identity"] = "PASS"
+            document_ok = validate_source_document_identity(raw)
+            verdict = EventRelevanceService().validate(session, raw, target)
+            audit.update(document_identity=raw.document_identity_status, relevance=asdict(verdict))
+            if not document_ok or not verdict.accepted:
+                rejected.append({"event_url_sha256": digest(raw.url),
+                                 "reason": verdict.reason or "document_identity_invalid"})
+                continue
+            raw.identity_validated, raw.identity_status = True, verdict.status
+            raw.subject_company_name, raw.relevance_evidence = verdict.subject_company_id, verdict.evidence
+            raw.claim_actor, raw.claim_actor_type = attribute_claim_actor(raw)
+            extract_structured_flags(raw)
+            normalized.append(raw)
+    return normalized, rejected, candidates
+
+
 class EventReceiptTransport(httpx.AsyncBaseTransport):
     """Bound HTTP transport; original cache receipt bytes remain separate."""
 
@@ -207,7 +238,7 @@ class EventAcquisition:
             if not target.cik:
                 raise ValueError("unified_sec_issuer_identity_missing")
             provider.unified_cik = target.cik
-        normalized, attempts, rejected = [], [], []
+        normalized, attempts, rejected, candidates = [], [], [], []
         try:
             for attempt in range(1, self.max_attempts + 1):
                 try:
@@ -218,25 +249,8 @@ class EventAcquisition:
                     attempts.append({"attempt": attempt, "error_type": type(exc).__name__})
                     continue
                 attempts.append({"attempt": attempt, "raw_event_count": len(rows)})
-                with session.no_autoflush:
-                    for raw in rows:
-                        if raw.provider != self.transport.provider or raw.ticker != target.ticker or not (
-                            self.cutoff.date() - timedelta(days=lookback_days) <= raw.date <= self.cutoff.date()
-                        ):
-                            rejected.append({"raw_event_sha256": digest(TypeAdapter(dict).dump_python(asdict(raw), mode="json")),
-                                             "reason": "subject_or_publication_mismatch"})
-                            continue
-                        document_ok = validate_source_document_identity(raw)
-                        verdict = EventRelevanceService().validate(session, raw, target)
-                        if not document_ok or not verdict.accepted:
-                            rejected.append({"event_url_sha256": digest(raw.url),
-                                             "reason": verdict.reason or "document_identity_invalid"})
-                            continue
-                        raw.identity_validated, raw.identity_status = True, verdict.status
-                        raw.subject_company_name, raw.relevance_evidence = verdict.subject_company_id, verdict.evidence
-                        raw.claim_actor, raw.claim_actor_type = attribute_claim_actor(raw)
-                        extract_structured_flags(raw)
-                        normalized.append(raw)
+                normalized, rejected, candidates = qualify_event_rows(session, rows, target,
+                    provider=self.transport.provider, cutoff=self.cutoff, lookback_days=lookback_days)
                 break
         finally:
             self.transport.used = True
@@ -247,6 +261,7 @@ class EventAcquisition:
             "security_record_id": target.id, "security_record_sha256": digest(target.model_dump(mode="json")),
             "cutoff": self.cutoff.isoformat(), "lookback_days": lookback_days,
             "children": self.transport.children, "attempts": attempts, "rejected": rejected,
+            "candidates": candidates,
             "normalized": values, "normalized_sha256": digest(values),
             "denial": None if values else "optional_event_unavailable",
             "owner_contracts": ["event_identity", "event_relevance", "event_financial_validation"],
