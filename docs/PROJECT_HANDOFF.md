@@ -1,5 +1,17 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-26 R2B0 One-Shot Source Handoff
+
+Read `docs/operations/UNIFIED_ONE_SHOT_STOCK_ACQUISITION.md` first for this local
+source-adapter track. New role-bound source capture is 88/88 and deterministic
+native replay is 88/88, but usability is 85/88: CPNG adjusted daily, adjusted
+weekly and unadjusted weekly valuation fail the unchanged HIGH_LT_OPEN rule.
+Preserve all original raw responses. No retry, source replacement or row repair
+occurred. The conditional stock materializer was not reached; 21 subjects with
+four usable roles are not 21 qualified stock packets. All full adapter gates
+remain false, and no R2B instruction was generated. KRX historical closure stays
+accepted. The ZIP/SHA are local/iCloud deliverables; no remote push or deployment.
+
 ## 2026-09-04 KR/US Monitoring Infrastructure Integration Handoff
 
 Start with `docs/reports/20260904-infrastructure-artifact-index.md` and

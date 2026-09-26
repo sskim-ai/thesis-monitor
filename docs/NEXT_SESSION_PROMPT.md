@@ -1,5 +1,18 @@
 # Next Session Prompt
 
+## Current Local Unified-Source Track: R2B0 Partial
+
+Start with `docs/operations/UNIFIED_ONE_SHOT_STOCK_ACQUISITION.md` and the immutable
+R2B0 report. The one authorized 88-role acquisition is finished. No further
+network request is authorized by this handoff. Usable receipts are 85/88; CPNG's
+three HIGH_LT_OPEN roles prevent the required 88/88 gate. Native raw replay is
+88/88, so retain the actual provider rows and their request/source hashes.
+Do not rerun all 88, replace responses from an archive, weaken OHLC validation,
+or begin materialization, R2B, models or scheduler cutover. A separate bounded
+CPNG source-integrity decision is needed. Operating main and schedules remain
+unchanged. Earlier session prompts below are historical, not current execution
+authorization.
+
 Latest authoritative work is the 2026-09-05 logical-condition and bounded validation production
 integration. Read `docs/reports/20260905-production-integration-artifact-index.md`,
 `docs/reports/20260905-main-readiness.md`, and both integrated real TEST E2E reports first. Exact

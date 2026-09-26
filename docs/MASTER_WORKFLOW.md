@@ -1,5 +1,18 @@
 # Thesis Monitor Master Workflow
 
+## 2026-09-26 R2B0 Source-Only Result
+
+Current unified-source handoff: `UNIFIED_ONE_SHOT_STOCK_ACQUISITION.md` in
+`docs/operations`. The exact US14/KR8 x four-role plan captured all 88 responses;
+290 Kiwoom data pages plus one auth exchange, no retries/fallback. Native raw
+replay is 88/88, usable role validation is 85/88. Three CPNG roles retain original
+`HIGH_LT_OPEN` defects on 2023-06-05. Terminal is
+`M12DS_R6_R5F_R2B0_ONE_SHOT_SOURCE_ACQUISITION_PARTIAL`.
+Materialization/full adapter prequalification were not reached. R2B/R3 remain
+blocked. KRX R5 historical closure is preserved. Local branch only; operating
+main, model calls, rendering, delivery, schedulers, push and deploy unchanged.
+Older workflow entries below remain historical records.
+
 Master Workflow: `v31`
 As of: `2026-09-01`
 Repository: `sskim-ai/thesis-monitor`
