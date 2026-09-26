@@ -48,6 +48,9 @@ class NewsRead(ContractModel):
     subject: str
     market: Literal["us", "kr"]
     provider: Literal["google_news_rss", "naver_news"]
+    provider_owner: str
+    source_receipt_owner: Literal["PlannedNewsTransport/EventReceiptTransport"] = "PlannedNewsTransport/EventReceiptTransport"
+    validation_path: Literal["source_bytes -> existing_parser -> identity -> relevance -> temporal -> business_review -> canonical_event -> typed_union"] = "source_bytes -> existing_parser -> identity -> relevance -> temporal -> business_review -> canonical_event -> typed_union"
     run_id: str
     acquisition_id: str
     security: dict
@@ -65,7 +68,8 @@ class NewsRead(ContractModel):
     @model_validator(mode="after")
     def exact_query(self):
         target = SecurityMaster.model_validate(self.security)
-        if self.provider != PROVIDERS[self.market].name or target.ticker != self.subject:
+        if (self.provider != PROVIDERS[self.market].name or target.ticker != self.subject
+                or self.provider_owner != PROVIDERS[self.market].__module__ + "." + PROVIDERS[self.market].__name__):
             raise ValueError("news_subject_provider_mismatch")
         if not target.id or not target.canonical_security_id or not target.canonical_company_id:
             raise ValueError("news_canonical_identity_required")
@@ -93,6 +97,7 @@ def make_read(*, security, market, run_id, lookback_days, security_records):
             params=provider.request_params(target.ticker, search_aliases=aliases)))
     identity = request_identity(request)
     return NewsRead(subject=target.ticker, market=market, provider=provider.name, run_id=run_id,
+        provider_owner=type(provider).__module__ + "." + type(provider).__name__,
         acquisition_id=run_id + ":" + target.ticker, security=target.model_dump(mode="json"),
         aliases=tuple(aliases), lookback_days=lookback_days, request=identity,
         request_sha256=digest(identity), owner_fingerprints=fingerprints(),
@@ -123,10 +128,10 @@ def _decode(value):
     return base64.b64decode(value, validate=True)
 
 
-def _publication_records(response, market):
+def _publication_records(response, market, source_url):
     if market == "us":
         return [{"title": clean_text(n.findtext("title")) or "Untitled news item",
-                 "url": n.findtext("link") or str(response.url), "published": n.findtext("pubDate")}
+                 "url": n.findtext("link") or source_url, "published": n.findtext("pubDate")}
                 for n in ElementTree.fromstring(response.text).findall(".//item")]
     return [{"title": clean_text(n.get("title")) or "Untitled Naver news item",
              "url": n.get("originallink") or n.get("link") or NaverNewsProvider.endpoint,
@@ -190,9 +195,12 @@ def replay_news(source: BoundNewsInput, *, security: dict, business_cutoff: date
     response = httpx.Response(receipt["http_status"], content=raw, request=request)
     response.encoding = receipt["response_encoding"]
     provider = PROVIDERS[read.market](as_of=norm_cutoff.date())
+    source_url = (provider.request_url(read.subject, read.lookback_days, search_aliases=list(read.aliases))
+                  if read.market == "us" else provider.endpoint)
     try:
-        rows = provider.parse_response(response, ticker=read.subject)
-        publication = _publication_records(response, read.market)
+        rows = provider.parse_response(response, ticker=read.subject,
+            **({"source_url": source_url} if read.market == "us" else {}))
+        publication = _publication_records(response, read.market, source_url)
     except (ValueError, ElementTree.ParseError):
         if norm.get("normalized"):
             raise ValueError("malformed_body_has_consumed_evidence") from None

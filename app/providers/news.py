@@ -58,7 +58,7 @@ class GoogleNewsRSSProvider(NewsProvider):
                                      transport=self.transport) as client:
             response = await client.get(url)
             response.raise_for_status()
-        return self.parse_response(response, ticker=ticker)
+        return self.parse_response(response, ticker=ticker, source_url=url)
 
     @staticmethod
     def request_url(ticker, lookback_days, *, search_aliases=None):
@@ -69,8 +69,9 @@ class GoogleNewsRSSProvider(NewsProvider):
             "https://news.google.com/rss/search"
             f"?q={query}+when:{lookback_days}d&hl=en-US&gl=US&ceid=US:en"
         )
-    def parse_response(self, response, *, ticker):
-        url = str(response.url)
+
+    def parse_response(self, response, *, ticker, source_url=None):
+        url = source_url or str(response.url)
         seen: set[tuple[str, str]] = set()
         try:
             root = ElementTree.fromstring(response.text)
