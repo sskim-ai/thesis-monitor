@@ -597,3 +597,12 @@ def test_duplicate_failed_cycle_does_not_notify_again(tmp_path):
     assert second["run_id"] == first["run_id"]
     assert len(ports.notifications) == 1
     assert len(ports.collections) == 3
+
+
+@pytest.mark.parametrize("token,expected", [("true", True), ("false", False),
+                                          ("disabled", True), ("enabled", False), ("unknown", None)])
+def test_launchctl_disabled_formats(token, expected):
+    from scripts.unified_snapshot_inventory import disabled_state
+
+    assert disabled_state('  "example.job" => ' + token, "example.job") is expected
+    assert disabled_state('  "example.job" => ' + token, "another.job") is None

@@ -13,6 +13,18 @@ import tomllib
 from app.services.unified_run_artifacts import durable_json
 
 
+def disabled_state(output: str, label: str) -> bool | None:
+    for line in output.splitlines():
+        key, separator, value = line.strip().partition(" => ")
+        if separator and key == json.dumps(label):
+            state = value.rstrip(";,").strip()
+            if state in {"true", "disabled"}:
+                return True
+            if state in {"false", "enabled"}:
+                return False
+    return None
+
+
 def inventory(home: Path, operating: Path) -> dict:
     def fingerprint(path):
         return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -49,7 +61,7 @@ def inventory(home: Path, operating: Path) -> dict:
         agents.append({"label": label, "file": path.name, "sha256": fingerprint(path),
                        "schedule": value.get("StartCalendarInterval"),
                        "loaded": code == 0, "launchctl_returncode": code,
-                       "disabled": f'"{label}" => true' in disabled_output if disabled_code == 0 else None,
+                       "disabled": disabled_state(disabled_output, label) if disabled_code == 0 else None,
                        "running": "state = running" in output if code == 0 else None,
                        "entrypoint": next((a for a in argv if "app.jobs." in a), "service_or_other"),
                        "classification": role})

@@ -109,9 +109,12 @@ and API service remain untouched. The old code paths remain byte-identical;
 they are not alternative entrypoints for a unified cycle. Rollback must first
 disable new entries before restoring any old path.
 
-Observed before state: the four Codex jobs were PAUSED; four legacy launchd
-monitoring/delivery agents were not loaded, but were not durably disabled.
-Unloaded does not imply removed or disabled across login/reboot.
+Observed state: the four Codex jobs were PAUSED; four legacy launchd
+monitoring/delivery agents were not loaded and were durably disabled. The first
+inventory parser expected `true/false`; this host prints `disabled/enabled`.
+The corrected parser supports both formats and returns unknown for absent
+evidence. Preserve the initial receipt and its correction in the report.
+Unloaded alone does not imply removed or disabled across login/reboot.
 
 ## Validation Scope
 
