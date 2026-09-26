@@ -62,6 +62,36 @@ def sealed(value):
     return AggregateReceipt.model_validate({**value, "aggregate_sha256": digest(value)})
 
 
+def test_prohibited_original_cache_provider_denied_before_body_read(tmp_path, monkeypatch):
+    from app.services import unified_aggregate_receipt as module
+
+    root = tmp_path / "cache"
+    value = fixture(root, cls=B)
+    current = json.loads((root / "read-1.json").read_bytes())
+    original = {**current, "provider": "alpha_vantage"}
+    durable_json(root / "original.json", original)
+    cached = {**current, "outcome": "CACHE_SOURCE_OPEN",
+        "original_receipt": "original.json",
+        "original_receipt_sha256": binding(root, "original.json")["sha256"],
+        "original_requested_at": current["requested_at"],
+        "original_received_at": current["received_at"]}
+    durable_json(root / "cached.json", cached)
+    value["children"][0] = {"child_id": "read-1", "receipt": binding(root, "cached.json"),
+                           "normalization": None, "accepted_page": None}
+    reads = []
+    original_read = module.read_bound_artifact
+
+    def tracked_read(root, path, sha):
+        reads.append(path)
+        return original_read(root, path, sha)
+
+    monkeypatch.setattr(module, "read_bound_artifact", tracked_read)
+    with pytest.raises(ValueError, match="provider"):
+        verify_aggregate(root, sealed(value), policy=POLICY, cutoff=NOW)
+    assert "original.json" in reads
+    assert "read-1.body" not in reads
+
+
 @pytest.mark.parametrize("cls", [A, B])
 def test_transitive_class_a_b_graph_has_deterministic_hash(tmp_path, cls):
     root = tmp_path / "graph"

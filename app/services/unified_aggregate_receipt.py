@@ -127,7 +127,6 @@ def verify_aggregate(root: Path, receipt: AggregateReceipt, *, policy: UnifiedSo
         body = None
         if outcome in {"HTTP_RESPONSE", "CACHE_SOURCE_OPEN"}:
             parent = Path(child.receipt.path).parent
-            body = read_bound_artifact(root, str(parent / current["artifact"]), current["artifact_sha256"])
             if outcome == "CACHE_SOURCE_OPEN":
                 original = json.loads(read_bound_artifact(root, str(parent / current["original_receipt"]),
                                                           current["original_receipt_sha256"]))
@@ -143,6 +142,7 @@ def verify_aggregate(root: Path, receipt: AggregateReceipt, *, policy: UnifiedSo
                 original_times = [datetime.fromisoformat(original[k]) for k in ("requested_at", "received_at")]
                 if any(t.utcoffset() is None for t in original_times) or not original_times[0] <= original_times[1] <= cutoff:
                     raise ValueError("aggregate_cache_original_time_invalid")
+            body = read_bound_artifact(root, str(parent / current["artifact"]), current["artifact_sha256"])
             try:
                 policy.check_lineage(json.loads(body))
             except json.JSONDecodeError:
