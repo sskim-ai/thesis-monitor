@@ -423,6 +423,8 @@ def _feature_facts(
     bars: Sequence[_Bar],
     adjustment_basis: str,
     invalid_dates: Sequence[date] = (),
+    *,
+    dependency_audit: list[dict[str, object]] | None = None,
 ) -> tuple[tuple[TechnicalFeatureFact, ...], tuple[str, ...]]:
     if not bars:
         return (), ()
@@ -455,6 +457,8 @@ def _feature_facts(
             row_dates=[bar.as_of for bar in bars],
             invalid_dates=invalid_dates,
         )
+        if dependency_audit is not None:
+            dependency_audit.append(dependency.model_dump(mode="json"))
         if dependency.classification in {
             DependencyClassification.UNSAFE_DEPENDS_ON_BAD_ROW,
             DependencyClassification.UNAVAILABLE_OTHER_REASON,

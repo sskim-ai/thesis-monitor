@@ -1,5 +1,16 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-26 R2B0-R1 Scoped Source Handoff
+
+Read `docs/operations/UNIFIED_STOCK_ANOMALY_SCOPE.md` first. R1 separates immutable
+source integrity from actual consumer dependencies. All 88 receipt identities
+and source bytes remain exact. CPNG current price and close-only valuation input
+are eligible; full-range/recursive and V3 D/W histories are still blocked.
+22 deterministic component projections are NOT 22 stock packets. Complete
+stock/Class-C/business-union binding remains unimplemented (Outcome C); stock
+hashes null, R2B/R3 blocked. Preserve the sealed acquisition; no fresh call is
+authorized. Local ZIP/SHA are delivered to both iCloud root and Thesis Monitor.
+
 ## 2026-09-26 R2B0 One-Shot Source Handoff
 
 Read `docs/operations/UNIFIED_ONE_SHOT_STOCK_ACQUISITION.md` first for this local

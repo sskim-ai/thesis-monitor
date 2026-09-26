@@ -1,5 +1,16 @@
 # Thesis Monitor Master Workflow
 
+## 2026-09-26 R2B0-R1 Consumer Scope
+
+Current local handoff: `docs/operations/UNIFIED_STOCK_ANOMALY_SCOPE.md`.
+Sealed 88-role bytes preserved; 22 current-price/typed technical component
+projections reproduce. CPNG historical defects are not repaired: close-only
+valuation input and bounded recent components survive, dependent recursive/V3
+components remain unavailable. Outcome C: complete stock owner/Class-C binding
+not implemented; zero full stock packets, hashes null, prequalification not
+reached. No R2B instruction, acquisition, models, rendering, production writes,
+push or deploy. R2B0 entry below is historical, not the new consumption policy.
+
 ## 2026-09-26 R2B0 Source-Only Result
 
 Current unified-source handoff: `UNIFIED_ONE_SHOT_STOCK_ACQUISITION.md` in

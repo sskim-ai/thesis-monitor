@@ -1,5 +1,17 @@
 # Next Session Prompt
 
+## Current Local Track: R2B0-R1 Component Closure, Stock Owner Gap
+
+Read `docs/operations/UNIFIED_STOCK_ANOMALY_SCOPE.md` and the R1 immutable report.
+Do not rerun acquisition. Consumer scoping is implemented offline on exact R2B0
+bytes; CPNG bad rows remain, recent/close-only inputs survive, recursive and
+long-cycle dependencies fail. Full stock materialization remains unimplemented:
+next bounded work is the pure stock owner plus exact Class-C/local seed binding,
+nonempty observed-business union and typed/numeric negative tests. Do not count
+the 22 technical component projections as full packets. R2B execution, models,
+Telegram, main push/deploy and schedulers remain unauthorized by this handoff.
+Older entries below are historical.
+
 ## Current Local Unified-Source Track: R2B0 Partial
 
 Start with `docs/operations/UNIFIED_ONE_SHOT_STOCK_ACQUISITION.md` and the immutable

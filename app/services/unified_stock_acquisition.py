@@ -134,8 +134,11 @@ def bound_artifact(root: Path, path: str, sha: str) -> bytes:
     return data
 
 
-def validate_role(plan: StockPlan, read: StockRead, receipt: dict, root: Path) -> dict:
-    """Validate immutable role ownership. Raw-page replay is an additional required proof."""
+def load_owned_role(plan: StockPlan, read: StockRead, receipt: dict, root: Path) -> list[dict]:
+    """Verify receipt/source ownership without conflating it with consumer eligibility.
+
+    Raw-page replay remains an additional proof. Returned rows are never repaired.
+    """
     import json
 
     if receipt["run_id"] != plan.run_id or receipt["acquisition_id"] != plan.acquisition_id:
@@ -173,6 +176,14 @@ def validate_role(plan: StockPlan, read: StockRead, receipt: dict, root: Path) -
         if page["http_status"] != 200 or str(data.get("return_code", "0")) not in {"0", ""}:
             raise ValueError("stock_source_error_response")
     bars = json.loads(bound_artifact(root, receipt["normalized_artifact"], receipt["normalized_sha256"]))
+    if not isinstance(bars, list) or any(not isinstance(bar, dict) for bar in bars):
+        raise ValueError("stock_normalized_shape_invalid")
+    return bars
+
+
+def validate_role(plan: StockPlan, read: StockRead, receipt: dict, root: Path) -> dict:
+    """Historical whole-payload gate, retained for exact R2B0 reproducibility."""
+    bars = load_owned_role(plan, read, receipt, root)
     inspection = inspect_normalized_ohlcv_rows(bars, timeframe=read.timeframe,
         cutoff=datetime.fromisoformat(read.latest_completed_session).date())
     if not bars or not inspection.valid:

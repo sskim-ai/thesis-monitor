@@ -7,7 +7,7 @@ import pytest
 
 from app.services.unified_snapshot_contract import digest, encoded
 from app.services.unified_stock_acquisition import (
-    ROLES, UNIVERSE, StockPlan, StockRead, bound_artifact, coverage, make_reads, validate_role,
+    ROLES, UNIVERSE, StockPlan, StockRead, bound_artifact, coverage, load_owned_role, make_reads, validate_role,
 )
 from scripts.unified_stock_source_worker import WireBoundary, sha
 
@@ -85,6 +85,22 @@ def test_universe_mismatch_precedes_network():
 def test_valid_receipt(plan, tmp_path):
     receipt = fixture_receipt(plan, tmp_path)
     assert validate_role(plan, plan.reads[0], receipt, tmp_path)["status"] == "PASS"
+
+
+def test_ownership_not_integrity_waiver(plan, tmp_path):
+    receipt = fixture_receipt(plan, tmp_path)
+    bars = json.loads((tmp_path / "bars.json").read_bytes())
+    bars[0]["high"] = 9.5
+    data = encoded(bars)
+    (tmp_path / "bars.json").write_bytes(data)
+    receipt["normalized_sha256"] = sha(data)
+    assert load_owned_role(plan, plan.reads[0], receipt, tmp_path) == bars
+    assert (tmp_path / "bars.json").read_bytes() == data
+    with pytest.raises(ValueError, match="ohlcv_integrity"):
+        validate_role(plan, plan.reads[0], receipt, tmp_path)
+    receipt["run_id"] = "wrong"
+    with pytest.raises(ValueError, match="prior_run"):
+        load_owned_role(plan, plan.reads[0], receipt, tmp_path)
 
 
 @pytest.mark.parametrize("field,value", [("run_id", "prior"), ("acquisition_id", "prior"),
