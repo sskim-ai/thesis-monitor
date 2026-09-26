@@ -90,6 +90,11 @@ normalized bar fingerprints, but no standalone OHLCV HTTP response was found
 in the declared source archive areas. Four roles per stock (adjusted D/W/M and
 unadjusted valuation) lack request-to-response-to-normalization binding. A
 normalized `raw_bar_fingerprint` is not a hash of the original HTTP response.
+R2 permits a source artifact instead of raw HTTP bytes. The blocker is not
+the absence of HTTP bytes alone: the retained aggregate monitor-result artifact
+does not identify the individual source request, response time and normalized
+role for these four reads. Hashing that aggregate packet now cannot recover
+the missing per-read ownership. No new raw-only requirement is imposed.
 The collector `m12ds_r4_collect` also copies the operating database/state and
 imports a pre-acquired night snapshot. We do not retroactively stamp those
 values with a new attempt identity.
