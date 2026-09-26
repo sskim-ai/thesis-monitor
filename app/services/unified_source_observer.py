@@ -12,6 +12,7 @@ import hashlib
 import json
 from pathlib import Path
 from typing import Literal
+from collections.abc import Awaitable, Callable
 
 import httpx
 from pydantic import Field, model_validator
@@ -25,6 +26,42 @@ def _secret_field(value: object) -> bool:
     if isinstance(value, dict):
         return any(SECRET_KEY.search(str(k)) or _secret_field(v) for k, v in value.items())
     return isinstance(value, list) and any(_secret_field(v) for v in value)
+
+
+async def capture_source_response(*, root: Path, identity: str, receipt: dict,
+                                  send: Callable[[], Awaitable[httpx.Response]]) -> httpx.Response:
+    """Shared data-only wire capture. Callers never pass auth headers or auth bodies."""
+    durable_json(root / f"{identity}.intent.json", receipt, exclusive=True)
+    try:
+        response = await send()
+    except httpx.HTTPError as exc:
+        durable_json(root / f"{identity}.response.json", {
+            **receipt, "received_at": datetime.now(timezone.utc).isoformat(),
+            "outcome": "TRANSPORT_ERROR", "error_class": type(exc).__name__,
+            "artifact": None, "artifact_sha256": None,
+        }, exclusive=True)
+        raise
+    raw = response.content
+    response_receipt = {
+        **receipt, "received_at": datetime.now(timezone.utc).isoformat(),
+        "http_status": response.status_code, "artifact": f"{identity}.body",
+        "artifact_sha256": hashlib.sha256(raw).hexdigest(),
+        "outcome": "HTTP_RESPONSE", "raw_representation": "httpx_response_content",
+    }
+    try:
+        secret_field = _secret_field(response.json())
+    except ValueError:
+        secret_field = False
+    if SECRET_VALUE.search(raw.decode("utf-8", errors="replace")) or secret_field:
+        durable_json(root / f"{identity}.response.json", {
+            **response_receipt, "artifact": None, "artifact_sha256": None,
+            "outcome": "BODY_WITHHELD_SECRET_RISK",
+        }, exclusive=True)
+        raise ValueError("source_response_secret_risk")
+    durable_bytes(root / response_receipt["artifact"], raw, exclusive=True)
+    durable_json(root / f"{identity}.response.json", response_receipt, exclusive=True)
+    response.extensions["unified_source_receipt"] = (identity, response_receipt)
+    return response
 
 
 class OhlcvRead(ContractModel):
@@ -75,6 +112,20 @@ class OhlcvReceiptObserver:
                      "acquisition_class": "ATTEMPT_FRESH", "reads": json.loads(self._plan)},
                      exclusive=True)
 
+    @property
+    def reads(self) -> tuple[OhlcvRead, ...]:
+        return tuple(OhlcvRead.model_validate(r) for r in json.loads(self._plan))
+
+    def require_market_set(self, symbols: set[str]) -> None:
+        if self._ordinal or len(self.reads) != len(symbols) or {
+            r.symbol for r in self.reads
+        } != symbols or len({r.session_date for r in self.reads}) != 1:
+            raise ValueError("whole_fresh_market_plan_required")
+        if any(r.market != "us" or r.period != "daily" or not r.adjusted
+               or r.provider != "ohlcv_analyst"
+               for r in self.reads):
+            raise ValueError("market_plan_basis_mismatch")
+
     async def get(self, client: httpx.AsyncClient, route: str, *, params: dict) -> httpx.Response:
         reads = tuple(OhlcvRead.model_validate(r) for r in json.loads(self._plan))
         selected = [r for r in reads if r.params == params]
@@ -96,39 +147,8 @@ class OhlcvReceiptObserver:
                    "basis": "adjusted_close" if read.adjusted else "unadjusted_close",
                    "request": request, "request_sha256": digest(request),
                    "requested_at": datetime.now(timezone.utc).isoformat()}
-        # Intent is durable even if a process dies before receiving the response.
-        durable_json(self.root / f"{identity}.intent.json", receipt, exclusive=True)
-        try:
-            response = await client.get(route, params=params)
-        except httpx.HTTPError as exc:
-            durable_json(self.root / f"{identity}.response.json", {
-                **receipt, "received_at": datetime.now(timezone.utc).isoformat(),
-                "outcome": "TRANSPORT_ERROR", "error_class": type(exc).__name__,
-                "artifact": None, "artifact_sha256": None,
-            }, exclusive=True)
-            raise
-        raw = response.content
-        artifact = f"{identity}.body"
-        response_receipt = {
-            **receipt, "received_at": datetime.now(timezone.utc).isoformat(),
-            "http_status": response.status_code, "artifact": artifact,
-            "artifact_sha256": hashlib.sha256(raw).hexdigest(),
-            "outcome": "HTTP_RESPONSE", "raw_representation": "httpx_response_content",
-        }
-        text = raw.decode("utf-8", errors="replace")
-        try:
-            secret_field = _secret_field(response.json())
-        except ValueError:
-            secret_field = False
-        if SECRET_VALUE.search(text) or secret_field:
-            durable_json(self.root / f"{identity}.response.json", {
-                **response_receipt, "artifact": None, "artifact_sha256": None,
-                "outcome": "BODY_WITHHELD_SECRET_RISK",
-            }, exclusive=True)
-            raise ValueError("source_response_secret_risk")
-        durable_bytes(self.root / artifact, raw, exclusive=True)
-        durable_json(self.root / f"{identity}.response.json", response_receipt, exclusive=True)
-        response.extensions["unified_source_receipt"] = (identity, response_receipt)
+        response = await capture_source_response(root=self.root, identity=identity,
+            receipt=receipt, send=lambda: client.get(route, params=params))
         self._pending.add(identity)
         return response
 

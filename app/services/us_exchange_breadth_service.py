@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import hashlib
 from datetime import date, datetime
 from pathlib import Path
 
@@ -19,6 +20,7 @@ from app.services.structured_market_context_service import (
     StructuredMarketContextEnvelope,
     persist_structured_market_context,
 )
+from app.services.unified_run_acquisition import RunAcquisitionObserver
 
 
 def _cross_section(
@@ -86,11 +88,25 @@ async def collect_and_persist_us_exchange_breadth(
     *,
     session_date: date,
     observed_at: datetime,
+    source_observer: RunAcquisitionObserver | None = None,
 ) -> dict[str, object]:
     """Collect official Nasdaq breadth without making the US packet dependent on it."""
     settings = get_settings()
     if not settings.nasdaq_us_exchange_breadth_enabled:
+        if source_observer is not None:
+            source_observer.begin(provider="nasdaq_trader", role="us_exchange_breadth")
+            source_observer.finish(normalized=None, contract="nasdaq-official-exchange-breadth-v1",
+                fingerprint=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+                denial="NOT_ENABLED")
         return {"status": "NOT_ENABLED", "packet_continues": True}
+    # Unified callers use the explicit receipt root, never the legacy shared cache.
+    if source_observer is not None:
+        result, _payload = await NasdaqTraderBreadthProvider(source_observer=source_observer).collect(
+            session_date=session_date, retrieved_at=observed_at)
+        return {"status": result.publication_state, "packet_continues": True,
+                "source_payload_sha256": result.source_payload_sha256,
+                "denial_reason": result.denial_reason,
+                "run_acquisition": source_observer.identity}
     result, payload = await NasdaqTraderBreadthProvider().collect(
         session_date=session_date,
         retrieved_at=observed_at,

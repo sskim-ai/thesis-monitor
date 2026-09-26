@@ -8,6 +8,7 @@ from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 
 import httpx
+from app.services.unified_run_acquisition import RunAcquisitionObserver
 from pydantic import BaseModel, Field
 
 from app.config import get_settings
@@ -673,6 +674,7 @@ async def fetch_live_probe(
     api_key: str | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
     max_lookback_days: int = 7,
+    source_observer: RunAcquisitionObserver | None = None,
 ) -> KrxNightFuturesProbeResult:
     run_date = run_date or date.today()
     api_key = api_key if api_key is not None else get_settings().krx_open_api_key
@@ -708,10 +710,10 @@ async def fetch_live_probe(
             target_date = run_date - timedelta(days=days_back)
             queried_dates.append(target_date)
             try:
-                response = await client.get(
-                    KRX_FUTURES_DAILY_URL,
-                    params={"basDd": target_date.strftime("%Y%m%d")},
-                )
+                params = {"basDd": target_date.strftime("%Y%m%d")}
+                response = (await client.get(KRX_FUTURES_DAILY_URL, params=params)
+                    if source_observer is None else await source_observer.get(
+                        client, KRX_FUTURES_DAILY_URL, params=params))
                 response.raise_for_status()
                 payload = response.json()
             except (httpx.HTTPError, ValueError, TypeError) as exc:

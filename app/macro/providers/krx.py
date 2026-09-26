@@ -1,5 +1,9 @@
 from datetime import datetime, time
+import hashlib
+from pathlib import Path
 from zoneinfo import ZoneInfo
+import httpx
+from pydantic import TypeAdapter
 
 from app.jobs.probe_krx_night_futures import fetch_live_probe
 from app.macro.providers.base import (
@@ -11,6 +15,7 @@ from app.services.krx_night_history_service import (
     default_krx_night_history_directory,
     persist_live_probe_history,
 )
+from app.services.unified_run_acquisition import RunAcquisitionObserver
 
 
 KST = ZoneInfo("Asia/Seoul")
@@ -23,13 +28,51 @@ SERIES_CODES = {
 class KrxNightFuturesProvider:
     name = "krx_night_futures"
 
+    def __init__(self, *, source_observer: RunAcquisitionObserver | None = None,
+                 transport: httpx.AsyncBaseTransport | None = None,
+                 history_directory: Path | None = None):
+        if source_observer is not None and history_directory is None:
+            raise ValueError("unified_night_history_directory_required")
+        if source_observer is not None and (history_directory.exists() or any(
+            p.is_symlink() for p in (history_directory, *history_directory.parents)
+        )):
+            raise ValueError("unified_night_new_private_history_required")
+        self.source_observer = source_observer
+        self.transport = transport
+        self.history_directory = history_directory
+
     async def collect(self, as_of: datetime) -> MacroProviderResult:
+        observer = self.source_observer
+        if observer is not None:
+            observer.begin(provider=self.name, role="night_and_publication_context")
+        fingerprint = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+        try:
+            result = await self._collect(as_of)
+        except Exception as exc:
+            if observer is not None:
+                observer.finish(normalized=None, contract="night-futures-session-basis-v1",
+                                fingerprint=fingerprint, denial=type(exc).__name__)
+            raise
+        if observer is not None:
+            observer.finish(normalized=TypeAdapter(MacroProviderResult).dump_python(result, mode="json"),
+                contract="night-futures-session-basis-v1", fingerprint=fingerprint,
+                denial=None if len(result.observations) == 2 else "night_products_unavailable")
+        return result
+
+    async def _collect(self, as_of: datetime) -> MacroProviderResult:
         run_date = as_of.astimezone(KST).date()
+        options = {}
+        if self.source_observer is not None:
+            options["source_observer"] = self.source_observer
+        if self.transport is not None:
+            options["transport"] = self.transport
         probe = await fetch_live_probe(
             run_date=run_date,
             observation_time=as_of,
+            **options,
         )
-        history_update = persist_live_probe_history(probe)
+        history_update = (persist_live_probe_history(probe) if self.history_directory is None
+                          else persist_live_probe_history(probe, root=self.history_directory))
         history_warnings = [
             "krx_night_history_update_failed:" + error for error in history_update.errors
         ]
@@ -48,7 +91,7 @@ class KrxNightFuturesProvider:
         for item in probe.observations:
             observed_at = datetime.combine(item.session_date, time(6), tzinfo=KST)
             timeframes = build_same_contract_timeframes(
-                default_krx_night_history_directory(),
+                self.history_directory or default_krx_night_history_directory(),
                 instrument_root=item.product,
                 reference_date=item.session_date,
                 daily_change_value=item.point_change,

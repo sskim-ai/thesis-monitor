@@ -28,6 +28,7 @@ from app.services.market_cross_section_service import (
     MarketSectorFact,
 )
 from app.services.market_session import korea_market_session
+from app.services.unified_kiwoom_observer import KiwoomRead
 from app.services.structured_market_context_service import (
     StructuredMarketContextEnvelope,
     load_structured_market_context,
@@ -291,6 +292,27 @@ def _flow_concentration(
     )
 
 
+def kiwoom_market_reads(*, session_date: date, max_pages: int,
+                       max_requests_per_page: int) -> tuple[KiwoomRead, ...]:
+    reads = []
+    for market, spec in MARKETS.items():
+        for api_id, body in (
+            ("ka20001", {"mrkt_tp": spec["ka20001_market"], "inds_cd": spec["code"]}),
+            ("ka20003", {"inds_cd": spec["code"]}),
+            ("ka20009", {"mrkt_tp": spec["ka20001_market"], "inds_cd": spec["code"]}),
+            ("ka10051", {"mrkt_tp": spec["ka10051_market"], "amt_qty_tp": "0",
+                         "base_dt": session_date.strftime("%Y%m%d"), "stex_tp": "3"}),
+            ("ka10066", {"mrkt_tp": spec["ka10066_market"], "amt_qty_tp": "1",
+                         "trde_tp": "0", "stex_tp": "3"}),
+        ):
+            local = api_id.startswith("ka2")
+            reads.append(KiwoomRead(key=f"{market}:{api_id}", api_id=api_id, body=body,
+                role="kr_local_indices_sectors_breadth" if local else "kr_market_investor_flows",
+                mandatory=local, max_pages=max_pages if api_id == "ka10066" else 1,
+                max_requests_per_page=max_requests_per_page))
+    return tuple(reads)
+
+
 class KiwoomKrMarketContextService:
     def __init__(
         self,
@@ -422,6 +444,27 @@ class KiwoomKrMarketContextService:
                 raise ValueError(f"Kiwoom current/historical index mismatch: {market}")
 
     async def collect(
+        self, *, session_date: date, observed_at: datetime,
+    ) -> KiwoomMarketContextCollection:
+        observer = getattr(self.client, "source_observer", None)
+        if observer is not None:
+            expected = kiwoom_market_reads(session_date=session_date, max_pages=self.max_pages,
+                max_requests_per_page=self.client.max_retries + 1)
+            if observer.reads != expected:
+                raise ValueError("kiwoom_whole_market_plan_required")
+            observer.begin(session_date, observed_at)
+            self._archive_rows = []
+        try:
+            collection = await self._collect(session_date=session_date, observed_at=observed_at)
+        except Exception as exc:
+            if observer is not None:
+                observer.finish(denial=type(exc).__name__)
+            raise
+        if observer is not None:
+            observer.finish(collection=collection)
+        return collection
+
+    async def _collect(
         self,
         *,
         session_date: date,
@@ -456,16 +499,18 @@ class KiwoomKrMarketContextService:
                     "inds_cd": spec["code"],
                 },
             )
-            aggregate = await self._request(
-                api_id="ka10051",
-                endpoint=SECTOR_ENDPOINT,
-                body={
-                    "mrkt_tp": spec["ka10051_market"],
-                    "amt_qty_tp": "0",
-                    "base_dt": session_date.strftime("%Y%m%d"),
-                    "stex_tp": "3",
-                },
-            )
+            try:
+                aggregate = await self._request(
+                    api_id="ka10051", endpoint=SECTOR_ENDPOINT,
+                    body={"mrkt_tp": spec["ka10051_market"], "amt_qty_tp": "0",
+                          "base_dt": session_date.strftime("%Y%m%d"), "stex_tp": "3"},
+                )
+                aggregate_rows[market] = _aggregate_row(aggregate.payload, market=market,
+                                                       code=spec["code"])
+                aggregate_payloads[market] = aggregate.payload
+            except (KiwoomRestError, TypeError, ValueError):
+                if getattr(self.client, "source_observer", None) is None:
+                    raise
             self._validate_session_identity(
                 session_date=session_date,
                 observed_at=observed_at,
@@ -477,12 +522,6 @@ class KiwoomKrMarketContextService:
             )
             current_payloads[market] = current.payload
             sector_payloads[market] = sectors.payload
-            aggregate_payloads[market] = aggregate.payload
-            aggregate_rows[market] = _aggregate_row(
-                aggregate.payload,
-                market=market,
-                code=spec["code"],
-            )
 
         page_sets: dict[str, _PageSet] = {}
         page_errors: dict[str, str] = {}
@@ -555,6 +594,9 @@ class KiwoomKrMarketContextService:
                 )
 
             page_set = page_sets.get(market)
+            if market not in aggregate_rows:
+                blocked_concentration[market] = ["AGGREGATE_UNAVAILABLE"]
+                continue
             for actor, (aggregate_field, stock_field) in FLOW_FIELDS.items():
                 source_value = _signed_int(aggregate_rows[market].get(aggregate_field))
                 aggregate_amount = source_value * KA10051_AMOUNT_UNIT_KRW

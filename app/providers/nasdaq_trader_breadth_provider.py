@@ -3,6 +3,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import io
+from pathlib import Path
 from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
 from email.utils import parsedate_to_datetime
@@ -13,6 +14,7 @@ from pydantic import BaseModel, Field, model_validator
 
 from app.config import get_settings
 from app.services.market_session import us_market_session
+from app.services.unified_run_acquisition import RunAcquisitionObserver
 
 
 CONTRACT_VERSION = "nasdaq-official-exchange-breadth-v1"
@@ -214,6 +216,7 @@ class NasdaqTraderBreadthProvider:
         base_url: str | None = None,
         timeout_seconds: float | None = None,
         transport: httpx.AsyncBaseTransport | None = None,
+        source_observer: RunAcquisitionObserver | None = None,
     ) -> None:
         settings = get_settings()
         self.base_url = (base_url or settings.nasdaq_trader_base_url).rstrip("/")
@@ -221,8 +224,28 @@ class NasdaqTraderBreadthProvider:
             timeout_seconds or settings.nasdaq_trader_timeout_seconds
         )
         self.transport = transport
+        self.source_observer = source_observer
 
     async def collect(
+        self, *, session_date: date, retrieved_at: datetime,
+    ) -> tuple[NasdaqOfficialBreadthResult, bytes]:
+        observer = self.source_observer
+        if observer is not None:
+            observer.begin(provider="nasdaq_trader", role="us_exchange_breadth")
+        fingerprint = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+        try:
+            result, payload = await self._collect(session_date=session_date, retrieved_at=retrieved_at)
+        except Exception as exc:
+            if observer is not None:
+                observer.finish(normalized=None, contract=CONTRACT_VERSION,
+                                fingerprint=fingerprint, denial=type(exc).__name__)
+            raise
+        if observer is not None:
+            observer.finish(normalized=result.model_dump(mode="json"), contract=CONTRACT_VERSION,
+                            fingerprint=fingerprint, denial=result.denial_reason)
+        return result, payload
+
+    async def _collect(
         self,
         *,
         session_date: date,
@@ -238,7 +261,8 @@ class NasdaqTraderBreadthProvider:
                 "User-Agent": "thesis-monitor/1.0 official-public-market-statistics"
             },
         ) as client:
-            response = await client.get(path)
+            response = (await client.get(path) if self.source_observer is None else
+                        await self.source_observer.get(client, path))
             response.raise_for_status()
         source_url = str(response.url)
         payload = response.content

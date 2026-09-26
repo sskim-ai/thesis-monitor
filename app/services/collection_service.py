@@ -45,6 +45,7 @@ from app.services.dividend_history_service import DividendHistoryService
 from app.services.security_master_service import SecurityMasterService
 from app.services.news_query_service import NewsQueryService
 from app.services.provider_telemetry_service import ProviderTelemetryService
+from app.services.unified_source_policy import UnifiedSourcePolicy
 from app.services.thesis_scoring import score_event
 from app.utils.tickers import COMPANY_NAME_ALIASES, normalize_ticker
 
@@ -382,11 +383,13 @@ def _refresh_duplicate_event(duplicate: Event, event: Event) -> None:
 
 
 class CollectionService:
-    def __init__(self) -> None:
+    def __init__(self, *, source_policy: UnifiedSourcePolicy | None = None) -> None:
         settings = get_settings()
+        self.source_policy = source_policy
         self.providers = provider_priority(
             include_live_news=settings.enable_live_providers,
             include_mock_provider=settings.include_mock_provider,
+            **({"source_policy": source_policy} if source_policy is not None else {}),
         )
         self.profile_fallback_provider = MockProvider()
         self.dividend_service = DividendHistoryService()
@@ -411,6 +414,10 @@ class CollectionService:
         search_aliases: list[str],
         issuer_type: str,
     ) -> list[RawEvent]:
+        if self.source_policy is not None:
+            self.source_policy.require(provider.name)
+            # A registry allowlist does not prove nested reads/cache provenance.
+            raise ValueError("unified_event_wire_owner_not_qualified")
         settings = get_settings()
         status = self.provider_status.get(provider.name)
         if status is not None and not status.configured:
@@ -501,6 +508,8 @@ class CollectionService:
         auto_backfill: bool,
         backfill_years: int,
     ) -> BackfillStatus:
+        if self.source_policy is not None and auto_backfill:
+            raise ValueError("unified_backfill_requires_separate_acquisition")
         backfill_provider = provider or "opendart"
         before_count = self._snapshot_count(session, ticker, backfill_provider)
         status = BackfillStatus(
@@ -536,6 +545,8 @@ class CollectionService:
         return status
 
     async def collect_events(self, session: Session, ticker: str, lookback_days: int) -> list[Event]:
+        if self.source_policy is not None:
+            raise ValueError("unified_event_wire_owner_not_qualified")
         ticker = normalize_ticker(ticker)
         company = session.exec(select(Company).where(Company.ticker == ticker)).first()
         watchlist_item = session.exec(
@@ -714,6 +725,8 @@ class CollectionService:
         )
 
     async def get_company_profile(self, session: Session, ticker: str) -> CompanyProfile:
+        if self.source_policy is not None:
+            raise ValueError("unified_profile_requires_versioned_owner_projection")
         ticker = normalize_ticker(ticker)
         company = session.exec(select(Company).where(Company.ticker == ticker)).first()
         if company is not None:
@@ -734,6 +747,10 @@ class CollectionService:
     async def get_earnings_checkpoints(
         self, session: Session, ticker: str
     ) -> EarningsCheckpointResponse:
+        if self.source_policy is not None:
+            return EarningsCheckpointResponse(ticker=normalize_ticker(ticker), checkpoints=[],
+                provider_status="unavailable",
+                unavailable_reason="unified_earnings_requires_versioned_owner_projection")
         ticker = normalize_ticker(ticker)
         for provider in self.providers:
             try:

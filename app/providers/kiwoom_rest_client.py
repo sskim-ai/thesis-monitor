@@ -12,6 +12,7 @@ from urllib.parse import urlsplit
 import httpx
 
 from app.config import get_settings
+from app.services.unified_kiwoom_observer import KiwoomReceiptObserver
 
 
 OFFICIAL_BASE_URL = "https://api.kiwoom.com"
@@ -71,6 +72,7 @@ class KiwoomRestClient:
         request_interval_seconds: float | None = None,
         max_retries: int | None = None,
         transport: httpx.AsyncBaseTransport | None = None,
+        source_observer: KiwoomReceiptObserver | None = None,
     ) -> None:
         settings = get_settings()
         self.app_key = app_key if app_key is not None else settings.kiwoom_app_key
@@ -94,6 +96,7 @@ class KiwoomRestClient:
             max_retries if max_retries is not None else settings.kiwoom_rest_max_retries
         )
         self.transport = transport
+        self.source_observer = source_observer
         self._token: str | None = None
         self._token_expires_at: datetime | None = None
         self._last_request_at: float | None = None
@@ -171,6 +174,8 @@ class KiwoomRestClient:
     ) -> KiwoomRestResponse:
         if not endpoint.startswith("/api/dostk/"):
             raise ValueError("Kiwoom market request endpoint is outside the allowlisted API")
+        if self.source_observer is not None:
+            self.source_observer.preflight(endpoint, api_id, body, continuation, next_key)
         async with httpx.AsyncClient(
             base_url=self.base_url,
             timeout=self.timeout_seconds,
@@ -181,17 +186,19 @@ class KiwoomRestClient:
                 await self._rate_limit()
                 self._requests += 1
                 try:
-                    response = await client.post(
-                        endpoint,
-                        json=body,
-                        headers={
+                    headers = {
                             "Content-Type": "application/json;charset=UTF-8",
                             "authorization": f"Bearer {token}",
                             "api-id": api_id,
                             "cont-yn": "Y" if continuation else "N",
                             "next-key": next_key,
-                        },
-                    )
+                        }
+                    if self.source_observer is None:
+                        response = await client.post(endpoint, json=body, headers=headers)
+                    else:
+                        response = await self.source_observer.post(client, endpoint=endpoint,
+                            api_id=api_id, body=body, headers=headers,
+                            continuation=continuation, next_key=next_key)
                     if response.status_code == 429 and attempt < self.max_retries:
                         self._retries += 1
                         retry_after = response.headers.get("Retry-After")
@@ -216,6 +223,9 @@ class KiwoomRestClient:
                         f"Kiwoom continuation response lacks next-key: {api_id}"
                     )
                 self._successes += 1
+                if self.source_observer is not None:
+                    self.source_observer.accept_page(response,
+                        continuation=response_continuation, next_key=response_next_key)
                 return KiwoomRestResponse(
                     api_id=api_id,
                     payload=payload,

@@ -915,8 +915,10 @@ class ValuationSnapshotService:
                 .order_by(FinancialSnapshot.reported_date)
             ).all()
         )
-        return [row for row in rows if financial_snapshot_is_usable(row)
-                and (self.source_policy is None or self.source_policy.permits(row.provider))]
+        if self.source_policy is not None:
+            rows = [FinancialSnapshot.model_validate(row.model_dump()) for row in rows
+                    if self.source_policy.permits(row.provider)]
+        return [row for row in rows if financial_snapshot_is_usable(row)]
 
     def _financial_quality_source_metadata(
         self,
@@ -2148,7 +2150,15 @@ class ValuationSnapshotService:
             security_master = session.exec(
                 select(SecurityMaster).where(SecurityMaster.ticker == ticker)
             ).first()
-            identity_provenance = load_official_identity_provenance(session, ticker)
+            if self.source_policy is None:
+                identity_provenance = load_official_identity_provenance(session, ticker)
+            else:
+                from app.services.official_security_identity_service import OFFICIAL_IDENTITY_CACHE_PROVIDER
+                if self.source_policy.permits(OFFICIAL_IDENTITY_CACHE_PROVIDER):
+                    identity_provenance = load_official_identity_provenance(session, ticker)
+                    self.source_policy.check_lineage(identity_provenance)
+                if security_master is not None:
+                    self.source_policy.require(security_master.identity_provider)
             identity_context = _resolve_per_share_basis_context(
                 watchlist_item,
                 security_master,
@@ -2157,8 +2167,9 @@ class ValuationSnapshotService:
                 identity_provenance=identity_provenance,
             )
             if (
-                identity_context.issuer_type in {"adr", "foreign_private_issuer"}
-                or identity_context.is_depositary_security
+                (identity_context.issuer_type in {"adr", "foreign_private_issuer"}
+                 or identity_context.is_depositary_security)
+                and (self.source_policy is None or self.source_policy.permits("sec_edgar"))
             ):
                 foreign_cache = session.exec(
                     select(ProviderResponseCache).where(
@@ -2218,9 +2229,14 @@ class ValuationSnapshotService:
         dividend_history: list[DividendHistory] = []
         capital_returns: list[CapitalReturnHistory] = []
         if session is not None:
-            dividend_history = self.dividend_service.sync_financial_snapshots(session, ticker, rows)
-            capital_returns = self.dividend_service.sync_capital_returns(session, ticker, rows)
-            if self.source_policy is not None:
+            if self.source_policy is None:
+                dividend_history = self.dividend_service.sync_financial_snapshots(session, ticker, rows)
+                capital_returns = self.dividend_service.sync_capital_returns(session, ticker, rows)
+            else:
+                dividend_history = list(session.exec(select(DividendHistory).where(
+                    DividendHistory.ticker == ticker).order_by(DividendHistory.fiscal_year)).all())
+                capital_returns = list(session.exec(select(CapitalReturnHistory).where(
+                    CapitalReturnHistory.ticker == ticker).order_by(CapitalReturnHistory.period_end)).all())
                 dividend_history = [r for r in dividend_history if self.source_policy.permits(r.provider)]
                 capital_returns = [r for r in capital_returns if self.source_policy.permits(r.provider)]
         provider_pe: float | None = None

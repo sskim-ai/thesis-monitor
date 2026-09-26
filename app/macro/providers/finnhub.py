@@ -1,9 +1,13 @@
 from datetime import datetime, timedelta, timezone
+import hashlib
+from pathlib import Path
 
 import httpx
+from pydantic import TypeAdapter
 
 from app.config import get_settings
 from app.macro.providers.base import CollectedEvent, MacroProviderResult
+from app.services.unified_run_acquisition import RunAcquisitionObserver
 
 
 BIG_TECH = {"NVDA", "MSFT", "AAPL", "GOOGL", "AMZN", "META", "TSLA", "AVGO", "TSM"}
@@ -12,11 +16,32 @@ BIG_TECH = {"NVDA", "MSFT", "AAPL", "GOOGL", "AMZN", "META", "TSLA", "AVGO", "TS
 class FinnhubEarningsProvider:
     name = "finnhub_earnings"
 
-    def __init__(self, transport: httpx.AsyncBaseTransport | None = None) -> None:
+    def __init__(self, transport: httpx.AsyncBaseTransport | None = None, *,
+                 source_observer: RunAcquisitionObserver | None = None) -> None:
         self.settings = get_settings()
         self.transport = transport
+        self.source_observer = source_observer
 
     async def collect(self, as_of: datetime) -> MacroProviderResult:
+        if self.source_observer is not None:
+            self.source_observer.begin(provider=self.name, role="earnings_calendar")
+        try:
+            result = await self._collect(as_of)
+        except Exception as exc:
+            if self.source_observer is not None:
+                self._finish_receipt(None, type(exc).__name__)
+            raise
+        if self.source_observer is not None:
+            self._finish_receipt(result, "owner_unavailable" if result.warnings else None)
+        return result
+
+    def _finish_receipt(self, result, denial):
+        self.source_observer.finish(normalized=(
+            TypeAdapter(MacroProviderResult).dump_python(result, mode="json") if result else None),
+            contract="finnhub-earnings-calendar-owner-v1", denial=denial,
+            fingerprint=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
+
+    async def _collect(self, as_of: datetime) -> MacroProviderResult:
         result = MacroProviderResult(provider=self.name)
         if not self.settings.finnhub_api_key:
             result.warnings.append("FINNHUB_API_KEY is not configured")
@@ -29,14 +54,13 @@ class FinnhubEarningsProvider:
                 timeout=self.settings.macro_provider_timeout_seconds,
                 transport=self.transport,
             ) as client:
-                response = await client.get(
-                    "/api/v1/calendar/earnings",
-                    params={
-                        "from": start.isoformat(),
-                        "to": end.isoformat(),
-                        "token": self.settings.finnhub_api_key,
-                    },
-                )
+                params = {"from": start.isoformat(), "to": end.isoformat()}
+                if self.source_observer is None:
+                    response = await client.get("/api/v1/calendar/earnings",
+                        params={**params, "token": self.settings.finnhub_api_key})
+                else:
+                    response = await self.source_observer.get(client, "/api/v1/calendar/earnings",
+                        params=params, credential_params={"token": self.settings.finnhub_api_key})
                 response.raise_for_status()
             rows = response.json().get("earningsCalendar", [])
             for row in rows:
