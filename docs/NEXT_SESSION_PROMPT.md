@@ -1,5 +1,16 @@
 # Next Session Prompt
 
+## Current Local Track: R2B0-R2 Source Owner Gaps
+
+Read the immutable R2 report and `docs/operations/UNIFIED_STOCK_OWNER_BINDING.md`.
+Pure source-only stock assembly is implemented, but supplied inputs do not
+qualify 22/22. Next bounded scope is the precise financial/business owner paths
+in that report, not a new stock price acquisition or CPNG anomaly policy change.
+Do not relax quality, fabricate filing lineage, substitute old assessments or
+count diagnostic packet hashes as accepted hashes. No full prequalification or
+R2B instruction is available. Provider/model/render/send and production changes
+remain outside this local task. Entries below are historical.
+
 ## Current Local Track: R2B0-R1 Component Closure, Stock Owner Gap
 
 Read `docs/operations/UNIFIED_STOCK_ANOMALY_SCOPE.md` and the R1 immutable report.

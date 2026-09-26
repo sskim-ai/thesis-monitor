@@ -139,6 +139,12 @@ def load_owned_role(plan: StockPlan, read: StockRead, receipt: dict, root: Path)
 
     Raw-page replay remains an additional proof. Returned rows are never repaired.
     """
+    return decode_owned_role(plan, read, receipt,
+        lambda path, sha: bound_artifact(root, path, sha))
+
+
+def decode_owned_role(plan: StockPlan, read: StockRead, receipt: dict, artifact_reader) -> list[dict]:
+    """Same receipt checks, with caller-owned byte inputs for pure assembly."""
     import json
 
     if receipt["run_id"] != plan.run_id or receipt["acquisition_id"] != plan.acquisition_id:
@@ -170,12 +176,12 @@ def load_owned_role(plan: StockPlan, read: StockRead, receipt: dict, root: Path)
             raise ValueError("stock_request_hash_mismatch")
         if not start <= datetime.fromisoformat(page["requested_at"]) <= datetime.fromisoformat(page["received_at"]) <= end:
             raise ValueError("stock_page_time_mismatch")
-        raw = bound_artifact(root, page["artifact"], page["source_sha256"])
+        raw = artifact_reader(page["artifact"], page["source_sha256"])
         data = json.loads(raw)
         PROVIDER.check_lineage(data)
         if page["http_status"] != 200 or str(data.get("return_code", "0")) not in {"0", ""}:
             raise ValueError("stock_source_error_response")
-    bars = json.loads(bound_artifact(root, receipt["normalized_artifact"], receipt["normalized_sha256"]))
+    bars = json.loads(artifact_reader(receipt["normalized_artifact"], receipt["normalized_sha256"]))
     if not isinstance(bars, list) or any(not isinstance(bar, dict) for bar in bars):
         raise ValueError("stock_normalized_shape_invalid")
     return bars

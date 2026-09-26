@@ -1,5 +1,17 @@
 # Thesis Monitor Master Workflow
 
+## 2026-09-26 R2B0-R2 Complete Stock Owner
+
+Read `docs/operations/UNIFIED_STOCK_OWNER_BINDING.md`. Source-only assembly now
+binds sealed stock roles, local/Class-C evidence, typed consumers and numeric
+registry without prior AI/assessment reads. The supplied all-subject diagnostic
+qualifies 005930 and 047810; US14 and six KR subjects retain explicit observed
+business/financial owner gaps. CPNG's 170 safe facts survive, source anomalies
+remain unchanged, and optional blocked technical fields do not fail its whole
+stock. Outcome C; full source prequalification/R2B remain unreached. This local
+track authorizes no providers, models, render/send, production writes, push or
+deployment. Final exact-SHA proof and validation live in the immutable R2 ZIP.
+
 ## 2026-09-26 R2B0-R1 Consumer Scope
 
 Current local handoff: `docs/operations/UNIFIED_STOCK_ANOMALY_SCOPE.md`.

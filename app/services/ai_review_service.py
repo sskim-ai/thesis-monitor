@@ -2122,6 +2122,25 @@ def _fact_catalog(
     chart: dict[str, object],
     monitoring_state: dict[str, object],
 ) -> list[dict[str, object]]:
+    return build_source_fact_catalog(
+        assessment_date=assessment.assessment_date,
+        capital_actions=_dict(assessment.thesis_snapshot).get("capital_action_materiality", []),
+        evidence=evidence, valuation=valuation, price=price, chart=chart,
+        monitoring_state=monitoring_state,
+    )
+
+
+def build_source_fact_catalog(
+    *,
+    assessment_date: date,
+    capital_actions: list,
+    evidence: list[dict[str, object]],
+    valuation: dict[str, object],
+    price: dict[str, object],
+    chart: dict[str, object],
+    monitoring_state: dict[str, object],
+) -> list[dict[str, object]]:
+    """Pure catalog owner shared by assessment and explicit source assembly."""
     facts = [fact for item in evidence if (fact := canonical_event_fact(item))]
     financial_quality = _dict(valuation.get("financial_quality"))
     currency = str(valuation.get("currency") or "unknown")
@@ -2285,7 +2304,7 @@ def _fact_catalog(
                 "fact_type": "monitoring_transition",
                 "as_of_date": str(
                     _dict(current_monitoring.get("price_structure")).get("as_of_date")
-                    or assessment.assessment_date.isoformat()
+                    or assessment_date.isoformat()
                 ),
                 "source": "deterministic_monitoring_state",
                 "fields": {
@@ -2307,7 +2326,7 @@ def _fact_catalog(
                 "fact_type": "monitoring_metric_transition",
                 "as_of_date": str(
                     _dict(current_monitoring.get("price_structure")).get("as_of_date")
-                    or assessment.assessment_date.isoformat()
+                    or assessment_date.isoformat()
                 ),
                 "source": "deterministic_monitoring_state",
                 "fields": {
@@ -2794,8 +2813,7 @@ def _fact_catalog(
             }
         )
     facts.extend(_chart_facts(chart, str(price.get("price", {}).get("currency") or currency)))
-    snapshot = _dict(assessment.thesis_snapshot)
-    for item in snapshot.get("capital_action_materiality", []):
+    for item in capital_actions:
         if isinstance(item, dict) and (fact := canonical_capital_action_fact(item)):
             facts.append(fact)
     return facts

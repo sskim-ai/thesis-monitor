@@ -1,5 +1,17 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-26 R2B0-R2 Source Assembly Handoff
+
+The pure owner exists in `unified_stock_owner.py`; it does not call `_stock_packet`
+or access assessments. See `UNIFIED_STOCK_OWNER_BINDING.md` and the immutable R2
+report. Two supplied subject inputs qualify (005930/047810). Remaining evidence
+gaps: US14 exact SEC filing/occurrence selection, 000660 quality taint, 003690
+mixed selected filing tuple, and four KR statement-basis contract failures.
+No old safe period or AI observation is substituted. CPNG price and bounded
+technical context survive unchanged; its business union is empty. Full adapter
+prequalification/R2B are not reached. Preserve all source captures and outcomes.
+No network/model/render/delivery/DB mutation or main push/deploy is authorized.
+
 ## 2026-09-26 R2B0-R1 Scoped Source Handoff
 
 Read `docs/operations/UNIFIED_STOCK_ANOMALY_SCOPE.md` first. R1 separates immutable
