@@ -20,6 +20,9 @@ automatic business-union PASS.
 The optional `business_cutoff` is distinct from the sealed price query/session
 and financial projection cutoff. Both domains are recorded. These mixed-time
 packets are materializer/provenance proofs, not historical production decisions.
+This Korean review uses an explicit Asia/Seoul business clock, preserving Naver's
+source-local calendar date; original publication and receipt timestamps still
+undergo exact timezone-aware availability checks.
 Callers omitting the new event input retain the previous owner behavior.
 
 Existing reported-financial denials remain explicit, including mixed-filing

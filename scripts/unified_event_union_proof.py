@@ -10,6 +10,7 @@ import socket
 import sqlite3
 import subprocess
 import zipfile
+from zoneinfo import ZoneInfo
 
 import httpx
 from sqlmodel import Session, SQLModel, create_engine
@@ -34,6 +35,11 @@ BASE = 'a0de7b591c33ac5cc0f5c449def29c1460a2d539'
 R3_SHA = 'b43e88df23b490403689d73ebee039d68b9aefd106d11f8f5e3380b854f7d50c'
 RETAINED = {'005930', '047810'}
 POLICY = UnifiedSourcePolicy(BASE_POLICY.allowed_providers | {'google_news_rss', 'naver_news'})
+
+
+def business_now():
+    # Existing news rows carry source-local calendar dates; the review is KST.
+    return datetime.now(ZoneInfo('Asia/Seoul'))
 
 
 def require_twenty(reads):
@@ -122,6 +128,7 @@ def freeze(args, root):
         'instruction_sha': args.instruction_sha, 'base': BASE, 'entries': [r.model_dump(mode='json') for r in reads],
         'maximum_logical_requests': 20, 'maximum_HTTP_requests': 20, 'retries': 0, 'redirects': False,
         'financial_refresh': False, 'business_cutoff_policy': 'ACTUAL_ONE_SHOT_ACQUISITION_COMPLETION_REVIEW_TIME',
+        'business_timezone': 'Asia/Seoul',
         'proof_scope': 'MIXED_TIME_MATERIALIZER_NOT_HISTORICAL_PRODUCTION_DECISION',
         'query_owner': 'NewsQueryService + existing provider request_url/request_params',
         'source_config_fingerprint': before['config'], 'retained_without_recollection': sorted(RETAINED)}
@@ -164,7 +171,7 @@ async def acquire(args, root):
                 folder = args.output / 'acquisition' / read.subject
                 transport = PlannedNewsTransport(read=read, root=folder, policy=POLICY,
                     inner=httpx.AsyncHTTPTransport(retries=0))
-                owner = EventAcquisition(transport, cutoff=datetime.now(timezone.utc), max_attempts=1)
+                owner = EventAcquisition(transport, cutoff=business_now(), max_attempts=1)
                 error = None
                 try:
                     await owner.collect(session, PROVIDERS[read.market](), by_ticker[read.subject],
@@ -178,7 +185,7 @@ async def acquire(args, root):
                 print(read.subject, 'HTTP', transport.ordinal, 'owner_error', error, flush=True)
     finally:
         engine.dispose()
-    save(args.output, 'business-cutoff.json', {'business_cutoff': datetime.now(timezone.utc).isoformat(),
+    save(args.output, 'business-cutoff.json', {'business_cutoff': business_now().isoformat(),
         'actual_completed': True, 'historical_production_decision': False, 'counts': counts,
         'logical_attempts': sum(r['logical_attempts'] for r in counts),
         'HTTP_attempts': sum(r['HTTP_attempts'] for r in counts), 'retries': 0})

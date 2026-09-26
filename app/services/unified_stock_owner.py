@@ -250,6 +250,8 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     if security["canonical_security_id"] != reads[0].canonical_security_id:
         raise ValueError("stock_local_security_receipt_mismatch")
     if event_source is not None:
+        if event_source.read.market != market:
+            raise ValueError("event_stock_market_mismatch")
         event_binding = replay_news(event_source, security=security, business_cutoff=business_cutoff, policy=policy)
     try:
         valuation, financial_refs, financial_state = _financial(financial, ticker=ticker, market=market,
@@ -410,6 +412,8 @@ def validate_assembled(result, *, expected_result_sha256):
     stock = result["packet"]["stocks"][0]
     if "event_source" in result:
         event_source = BoundNewsInput.model_validate(result["event_source"])
+        if event_source.read.market != result["market"] or event_source.read.subject != stock["ticker"]:
+            raise ValueError("event_stock_market_or_subject_mismatch")
         cutoff = datetime.fromisoformat(result["business_cutoff"])
         if digest(result["event_source"]) != result["input_hashes"]["events"] or digest(cutoff.isoformat()) != result["input_hashes"]["business_cutoff"]:
             raise ValueError("event_input_hash_mismatch")

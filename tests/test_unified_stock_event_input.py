@@ -33,11 +33,12 @@ def wire(tmp_path, source, *, title="Fixture awarded large order supply contract
     provider = GoogleNewsRSSProvider if market == 'us' else NaverNewsProvider
     policy = UnifiedSourcePolicy(source['policy'].allowed_providers | {provider.name})
     read = make_read(security=security, market=market, run_id='synthetic-one-shot', lookback_days=3, security_records=records)
-    at = datetime.now(timezone.utc) + (timedelta(hours=1) if future else -timedelta(minutes=1))
+    clock = timezone(timedelta(hours=9)) if market == 'kr' else timezone.utc
+    at = datetime.now(clock) + (timedelta(hours=1) if future else -timedelta(minutes=1))
     body = f'<rss><channel><item><title>{title}</title><link>https://example.test/order</link><pubDate>{at.strftime("%a, %d %b %Y %H:%M:%S GMT")}</pubDate><description>{summary}</description><source>Fixture News</source></item></channel></rss>'.encode()
     if market == 'kr':
         body = json.dumps({'items': [{'title': title, 'originallink': 'https://example.test/order',
-            'pubDate': at.strftime('%a, %d %b %Y %H:%M:%S GMT'), 'description': summary}]}).encode()
+            'pubDate': at.strftime('%a, %d %b %Y %H:%M:%S %z'), 'description': summary}]}).encode()
     transport = PlannedNewsTransport(read=read, root=tmp_path / 'wire', policy=policy,
         inner=httpx.MockTransport(lambda r: httpx.Response(http_status, content=body)))
     engine = create_engine('sqlite://')
@@ -45,7 +46,7 @@ def wire(tmp_path, source, *, title="Fixture awarded large order supply contract
     with Session(engine) as session:
         session.add(target)
         session.commit()
-        owner = EventAcquisition(transport, cutoff=datetime.now(timezone.utc), max_attempts=1)
+        owner = EventAcquisition(transport, cutoff=datetime.now(clock), max_attempts=1)
         asyncio.run(owner.collect(session, provider(), target, lookback_days=3, aliases=list(read.aliases)))
     engine.dispose()
     def enc(p):
@@ -54,7 +55,7 @@ def wire(tmp_path, source, *, title="Fixture awarded large order supply contract
         response_receipt_b64=enc(transport.root / 'read-0001.response.json'),
         normalization_b64=enc(transport.root / 'normalization.json'),
         raw_response_b64=enc(transport.root / 'read-0001.body'))
-    return value, datetime.now(timezone.utc), policy, records[0]
+    return value, datetime.now(clock), policy, records[0]
 
 
 def bind(source, value, cutoff, policy):
@@ -218,3 +219,18 @@ def test_exact_twenty_plan_has_no_retained_subjects_duplicates_or_retries(source
         require_twenty(reads[:-1] + [reads[0]])
     with pytest.raises(ValueError):
         require_twenty(reads[:-1])
+
+
+def test_review_clock_preserves_korean_source_calendar_day():
+    from scripts.unified_event_union_proof import business_now
+    assert business_now().utcoffset() == timedelta(hours=9)
+
+
+def test_wrong_market_event_cannot_enter_stock_packet(tmp_path, source, monkeypatch):
+    from app.config import get_settings
+    monkeypatch.setattr(get_settings(), 'naver_client_id', 'synthetic-client')
+    monkeypatch.setattr(get_settings(), 'naver_client_secret', 'synthetic-secret')
+    value, cutoff, policy, _ = wire(tmp_path, source, market='kr')
+    bind(source, value, cutoff, policy)
+    with pytest.raises(ValueError, match='event_stock_market_mismatch'):
+        assemble_stock(**source)
