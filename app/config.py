@@ -63,6 +63,8 @@ class Settings(BaseSettings):
     monitor_lookback_days: int = 3
     monitor_retry_attempts: int = 3
     monitor_retry_base_seconds: float = 2.0
+    unified_snapshot_enabled: bool = False
+    unified_snapshot_debug_destination: str | None = None
     onboarding_reconciler_enabled: bool = True
     onboarding_retry_base_minutes: int = 30
     onboarding_retry_max_minutes: int = 720
