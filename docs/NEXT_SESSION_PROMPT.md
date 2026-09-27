@@ -1,5 +1,17 @@
 # Next Session Prompt
 
+## Current Local Track: R2B-R2 Quality Representation Gap
+
+Read `operations/R2B_WHOLE_DECISION_LIMIT.md` and the immutable R2B-R2 report.
+Do not dispatch models, reveal independent assessment, refresh sources or promote
+this local branch from this handoff. UNKNOWN_LIMIT and 20 price-rule bindings are
+closed, but A/B whole readiness is 8/22. The next bounded decision concerns the
+14 absent typed financial-quality records: determine the correct source owner or
+an explicit typed absence representation without inventing source refs, widening
+authority or weakening quality validation. Rerun whole-cohort actual A
+materialization before any request freeze. Schema-only PASS is insufficient.
+All source/blind hashes must remain exact. Prior entries below are historical.
+
 ## Current Local Track: R2B0-R2 Source Owner Gaps
 
 Read the immutable R2 report and `docs/operations/UNIFIED_STOCK_OWNER_BINDING.md`.

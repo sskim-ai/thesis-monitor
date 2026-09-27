@@ -1,5 +1,19 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-28 R2B-R2 Whole-Decision Handoff
+
+Implementation `1ad422c6f6243771740480411f927152ae2c7e7b`, based on R2B-R1
+`98543a8778a0517a0b5c3da69f935c480f8ef302`. Archive-only limitation and stored-rule
+contracts pass. Full implementation regression: 6125 passed / 63 identical skips;
+focused: 330 passed. Final exact-SHA receipts are in the immutable R2B-R2 report.
+The initial schema-only 22/22 is superseded by actual A-materialization readiness
+8/22. Blocked: CORZ, CPNG, CRCL, GOOGL, HUT, IBM, MU, RXRX, SKHY, TSLA, TSM,
+WRD, WULF, 003690. The raw source lacks their financial-quality record; the new
+adapter did not remove it. Do not invent refs or change missing quality to NONE.
+Market/Core/A/B calls 0/0/0/0; actual messages 0/24. SNDK correctly takes the
+generic UNKNOWN_LIMIT branch, not HOLD/5:5. Independent reveal remains CLOSED.
+No main/operating mutation or push. Older entries below are historical.
+
 ## 2026-09-26 R2B0-R2 Source Assembly Handoff
 
 The pure owner exists in `unified_stock_owner.py`; it does not call `_stock_packet`

@@ -1,5 +1,18 @@
 # Thesis Monitor Master Workflow
 
+## 2026-09-28 R2B-R2 Local Offline Closure
+
+Newest local source is R2B-R1 / sealed REV10, not the historical R2B0 gaps below.
+See `operations/R2B_WHOLE_DECISION_LIMIT.md` and
+`reports/20260928-r2b-r2-whole-decision-limit.md`.
+UNKNOWN_LIMIT now represents Overall/New Buyer/Holder OBSERVE without a ratio.
+All 20 stored price rules bind exact Class-C versions; no current-date invention.
+Source assembly and Core are 22/22; A/B readiness is 8/22. Fourteen subjects
+fail actual A normalization because expected typed financial quality is absent
+and the legacy validator requires a nonempty quality ref. No model dispatch.
+Terminal: `R2B_R2_WHOLE_COHORT_MODEL_INPUT_GAP`. Independent assessment unread,
+reveal closed, source refresh and production side effects zero. Local only.
+
 ## 2026-09-26 R2B0-R2 Complete Stock Owner
 
 Read `docs/operations/UNIFIED_STOCK_OWNER_BINDING.md`. Source-only assembly now
