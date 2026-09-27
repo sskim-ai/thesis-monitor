@@ -44,7 +44,8 @@ def classify_document(raw, *, url, filing, plan):
             purpose = 'FINANCIAL_RESULTS_OR_EARNINGS'
         evidence = [o['occurrence_id'] for o in occurrences]
     elif (filing['form'].split('/')[0] != '20-F'
-          and not re.search(r'(?i)(?:consolidated|separate) statements? of|financial results|earnings release', text)):
+          and not re.search(r'(?i)(?:financial|interim|annual|quarterly)\s+(?:statements?|results|report|information)'
+                            r'|(?:consolidated|separate).*?statements? of|earnings release', text)):
         # These labels are diagnostics, never an affirmative financial authority.
         for state, pattern in (
             ('RUMOR_OR_DISCLOSURE_RESPONSE', r'(?i)response to (?:a |the )?(?:disclosure |media )?(?:inquiry|rumou?r)|(?:clarification|disclosure) (?:of|regarding) (?:a |the )?rumou?r'),

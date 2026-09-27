@@ -147,6 +147,14 @@ def test_unparsed_annual_report_cannot_be_classified_by_incidental_dividend():
     assert not annual['financial_authority']
 
 
+@pytest.mark.parametrize('caption', ['Consolidated interim statements of income',
+    'Quarterly financial report', 'Interim financial statements', 'Annual financial information'])
+def test_unparsed_financial_content_cannot_be_denied_by_incidental_purpose_words(caption):
+    report = purpose(f'<p>{caption}. Cash dividend paid and compensation paid.</p>')
+    assert report['purpose'] == 'UNKNOWN_PURPOSE'
+    assert not report['financial_authority']
+
+
 @pytest.mark.parametrize('count', [0, 1, 7, 8, 9, 30])
 def test_purpose_candidate_cap_and_metadata_order(count):
     rows = [filing('6-K', i + 1) for i in range(count)]
