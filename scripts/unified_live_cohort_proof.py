@@ -53,6 +53,89 @@ def stamp():
     return datetime.now(timezone.utc).isoformat()
 
 
+def validate_acquisition_plan(plan):
+    stock = StockPlan.model_validate(plan["stock_plan"])
+    if stock.run_id != plan["proof_run_id"] or stock.frozen_at.isoformat() != plan["started_at"]:
+        raise ValueError("stock_parent_generation_mismatch")
+    if (plan["proof_mode"] != "AD_HOC_LIVE_SOURCE_PROOF" or
+            plan["scope"] != "LIVE_SOURCE_ADAPTER_PROOF_NOT_PRODUCTION_DECISION"):
+        raise ValueError("proof_scope_mismatch")
+    if set(plan["market_attempts"]) != {"us", "kr"} or len(set(plan["market_attempts"].values())) != 2:
+        raise ValueError("market_subattempt_identity_mismatch")
+    us = tuple(OhlcvRead.model_validate(r) for r in plan["us_market_reads"])
+    if ([r.symbol for r in us] != list(MARKET_SYMBOLS) or
+            plan["US_MARKET_SYMBOL_COUNT"] != len(us) or plan["us_market_registry_sha256"] != digest(MARKET_SYMBOLS)):
+        raise ValueError("exact_market_registry_required")
+    if any(r.provider != "ohlcv_analyst" or r.response_provider != "kiwoom" or r.period != "daily"
+           or not r.adjusted or r.session_date.isoformat() != plan["sessions"]["us"] for r in us):
+        raise ValueError("us_market_identity_basis_mismatch")
+    kr = kiwoom_market_reads(session_date=datetime.fromisoformat(plan["sessions"]["kr"]).date(),
+        max_pages=plan["kr_max_pages"], max_requests_per_page=1)
+    if plan["kr_market_reads"] != [r.model_dump(mode="json") for r in kr]:
+        raise ValueError("exact_kr_owner_graph_required")
+    if len(plan["night_reads"]) != 7:
+        raise ValueError("night_bounded_lookback_required")
+    maxima = {"stock_wire": sum(r.max_pages for r in stock.reads) + 1,
+              "us_market_wire": len(us) * 2 + 4,
+              "kr_market_wire": sum(r.max_pages for r in kr) + 1, "night_wire": 7}
+    if set(plan["budgets"]) != set(maxima):
+        raise ValueError("mandatory_budget_missing")
+    for name, maximum in maxima.items():
+        if plan["budgets"][name] != {"maximum_logical": maximum, "maximum_HTTP_attempts": maximum * 3,
+                "timeout_seconds": 600, "transient_retries": 2, "semantic_retries": 0}:
+            raise ValueError("finite_exact_provider_budget_required")
+    if any(value != 0 for value in plan["prohibited"].values()):
+        raise ValueError("prohibited_side_effect_planned")
+    return plan
+
+
+def supplemental_class_c(db, out, at, parent):
+    from sqlmodel import Session, create_engine
+    from app.services.unified_class_c_owners import (
+        MACRO_ROLES, project_macro_records, project_published_events,
+        project_estimate_inventory, project_canonical_catalog,
+    )
+    policy = UnifiedSourcePolicy(frozenset({"fred", "eia", "ecos", "ohlcv_analyst", "kiwoom",
+        "federal_reserve", "finnhub", "sec_companyfacts", "sec_edgar", "opendart"}))
+    def connect():
+        conn = sqlite3.connect(f"{db.as_uri()}?mode=ro", uri=True)
+        conn.execute("PRAGMA query_only=ON")
+        return conn
+    engine = create_engine("sqlite://", creator=connect)
+    try:
+        with Session(engine) as session:
+            for role in MACRO_ROLES:
+                try:
+                    value = project_macro_records(session, role=role, cutoff=at, policy=policy)
+                except (ValueError, TypeError) as exc:
+                    value = {"role": role, "eligible": False, "value": None, "cutoff": at.isoformat(),
+                             "owner_denial": type(exc).__name__, "reason": str(exc), "qualification": "DENIED"}
+                save(out, "class-c/" + role + ".json", value)
+            save(out, "class-c/central_bank_published_events.json", project_published_events(session, cutoff=at, policy=policy))
+            for ticker in UNIVERSE["us"]:
+                save(out, "class-c/estimate-" + ticker + ".json", project_estimate_inventory(
+                    session, ticker=ticker, cutoff=at, policy=policy))
+    finally:
+        engine.dispose()
+    save(out, "class-c/canonical_cashflow_working_capital.json",
+         project_canonical_catalog([], cutoff=at, policy=policy))
+    # Freeze accepted business-only records, not old prices or model outputs.
+    for tickers in UNIVERSE.values():
+        for ticker in tickers:
+            old = json.loads(parent["files"]["accepted-stock-packets/" + ticker + ".json"])
+            facts = [f for f in old["packet"]["stocks"][0]["fact_catalog"] if f["fact_type"] == "earnings_comparison"]
+            value = {"contract": "frozen-accepted-reported-comparison-input-v1", "ticker": ticker,
+                "frozen_at": at.isoformat(), "original_cutoff": old["packet"]["generated_at"],
+                "source_artifact_sha256": sha256_bytes(parent["files"]["accepted-stock-packets/" + ticker + ".json"]),
+                "parent_zip_sha256": REV7_SHA, "quality_bundles": old.get("projection", {}).get("quality_bundles", []),
+                "facts": facts, "financial_source_graph": old.get("financial_source_graph", {}),
+                "issuer_business_bridge": old.get("issuer_business_bridge"),
+                "scope": "VERSIONED_BUSINESS_ONLY_CURRENT_ELIGIBILITY_REPLAY_REQUIRED",
+                "old_class_a_values_consumed": False,
+                "prior_event_reused_as_class_b": False}
+            save(out, "class-c/business-versioned-" + ticker + ".json", value)
+
+
 def freeze(args):
     from app.services.fpi_discovered_exhibit_phase2 import sealed_source
     parent = sealed_source(args.rev7, REV7_SHA)
@@ -94,7 +177,7 @@ def freeze(args):
     us_session = us_market_session(at).latest_completed_regular_session_date
     kr_session = korea_market_session(at).latest_completed_regular_session_date
     us = [OhlcvRead(role="us_market:" + symbol, symbol=symbol, market="us", provider="ohlcv_analyst",
-        period="daily", adjusted=True, session_date=us_session, max_requests=1,
+        response_provider="kiwoom", period="daily", adjusted=True, session_date=us_session, max_requests=1,
         params={"symbol": symbol, "market": "US", "periods": "daily", "count": 2,
                 "include_indicators": "false", "indicator_limit": 0, "adjusted": "true"}).model_dump(mode="json")
         for symbol in MARKET_SYMBOLS]
@@ -114,6 +197,7 @@ def freeze(args):
                   "timeout_seconds": 600, "transient_retries": 2, "semantic_retries": 0}
                for k, n in maxima.items()}
     capture_class_c(db, args.output, stock)
+    supplemental_class_c(db, args.output, at, parent)
     versions = {str(p.relative_to(args.output)): sha256_bytes(p.read_bytes())
                 for p in sorted((args.output / "class-c").glob("*.json"))}
     denials = {role: {"status": "OPTIONAL_UNAVAILABLE", "value": None,
@@ -143,6 +227,7 @@ def freeze(args):
             "discovery": {"route": "/api/us/stkinfo", "api_id": "usa10099",
                           "bodies": [{"stex_tp": e} for e in ("ND", "NY", "NA")], "maximum_each": 1}},
         "prohibited": {k: 0 for k in ("alpha_vantage", "massive", "mock", "fallback", "model", "render", "send", "production_write")}}
+    validate_acquisition_plan(plan)
     save(args.output, "state-before.json", before)
     save(args.output, "REV7-identity.json", {"sha256": REV7_SHA, "manifest_entries": len(parent["files"])})
     save(args.output, "canonical-identities.json", {t: identities[t] for ts in UNIVERSE.values() for t in ts})
@@ -162,6 +247,7 @@ def verify(args):
     if sha256_bytes(path.read_bytes()) != expected:
         raise SourceSafetyStop("plan_drift")
     plan = read(path)
+    validate_acquisition_plan(plan)
     def guard():
         if sha256_bytes(path.read_bytes()) != expected:
             raise SourceSafetyStop("plan_drift")

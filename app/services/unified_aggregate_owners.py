@@ -58,7 +58,7 @@ def us_market_aggregate_owner(*, role: SourceRole, source_url: str,
             payload = json.loads(body)
             policy.check_lineage(payload)
             if (payload.get("resolved_symbol", {}).get("code") != read.symbol
-                    or payload.get("meta", {}).get("provider") != role.provider
+                    or payload.get("meta", {}).get("provider") != (read.response_provider or role.provider)
                     or payload.get("meta", {}).get("adjusted") is not True):
                 raise ValueError("us_market_response_identity_mismatch")
             observation = normalize_market_observation(payload, symbol=read.symbol, source_url=source_url)

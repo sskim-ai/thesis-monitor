@@ -129,3 +129,26 @@ def test_current_whole_stock_set_required():
 def test_provider_exclusion(provider):
     with pytest.raises(ValueError):
         UnifiedSourcePolicy(frozenset({"kiwoom"})).require(provider)
+
+
+def test_legacy_market_plan_wire_shape_unchanged():
+    from app.services.unified_source_observer import OhlcvRead
+    from datetime import date
+    read = OhlcvRead(role="market", symbol="SPY", market="us", provider="ohlcv_analyst",
+        period="daily", adjusted=True, session_date=date(2026, 9, 25),
+        params={"symbol": "SPY", "periods": "daily", "adjusted": "true"}, max_requests=1)
+    assert "response_provider" not in read.model_dump(mode="json")
+    assert "response_provider" not in json.loads(read.model_dump_json())
+    native = read.model_copy(update={"response_provider": "kiwoom"})
+    assert native.model_dump(mode="json")["response_provider"] == "kiwoom"
+
+
+def test_native_response_provider_requires_explicit_policy(tmp_path):
+    from app.services.unified_source_observer import OhlcvRead, OhlcvReceiptObserver
+    from datetime import date
+    read = OhlcvRead(role="market", symbol="SPY", market="us", provider="ohlcv_analyst",
+        response_provider="kiwoom", period="daily", adjusted=True, session_date=date(2026, 9, 25),
+        params={"symbol": "SPY", "periods": "daily", "adjusted": "true"}, max_requests=1)
+    with pytest.raises(ValueError, match="source_provider_not_authorized"):
+        OhlcvReceiptObserver(root=tmp_path / "a", run_id="a", attempt_id="b", reads=(read,),
+                            policy=UnifiedSourcePolicy(frozenset({"ohlcv_analyst"})))

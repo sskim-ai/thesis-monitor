@@ -15,7 +15,7 @@ from typing import Literal
 from collections.abc import Awaitable, Callable
 
 import httpx
-from pydantic import Field, model_validator
+from pydantic import Field, model_validator, model_serializer
 
 from app.services.unified_run_artifacts import durable_bytes, durable_json, SECRET_KEY, SECRET_VALUE
 from app.services.unified_snapshot_contract import ContractModel, digest
@@ -69,11 +69,19 @@ class OhlcvRead(ContractModel):
     symbol: str = Field(pattern=r"^[A-Za-z0-9.^_-]+$")
     market: Literal["us", "kr"]
     provider: str = Field(min_length=1)
+    response_provider: Literal["kiwoom"] | None = None
     period: Literal["daily", "weekly", "monthly"]
     adjusted: bool
     session_date: date
     params: dict[str, str | int]
     max_requests: int = Field(ge=1, le=10)
+
+    @model_serializer(mode="wrap")
+    def preserve_legacy_wire_shape(self, handler):
+        value = handler(self)
+        if self.response_provider is None:
+            value.pop("response_provider", None)
+        return value
 
     @model_validator(mode="after")
     def request_identity(self):
@@ -101,6 +109,8 @@ class OhlcvReceiptObserver:
             raise ValueError("duplicate_source_read_identity")
         for read in reads:
             policy.require(read.provider)
+            if read.response_provider is not None:
+                policy.require(read.response_provider)
         self.root, self.run_id, self.attempt_id = root, run_id, attempt_id
         self.policy = policy
         # Pydantic frozen models do not recursively freeze dictionaries.
@@ -163,7 +173,8 @@ class OhlcvReceiptObserver:
         if not isinstance(meta, dict) or not isinstance(resolved, dict):
             raise ValueError("source_response_identity_missing_or_mismatched")
         read = receipt["read"]
-        if (resolved.get("code"), meta.get("provider")) != (read["symbol"], read["provider"]):
+        if (resolved.get("code"), meta.get("provider")) != (
+                read["symbol"], read.get("response_provider") or read["provider"]):
             raise ValueError("source_response_identity_missing_or_mismatched")
         if type(meta.get("adjusted")) is not bool or meta["adjusted"] != read["adjusted"]:
             raise ValueError("source_response_basis_mismatch")
