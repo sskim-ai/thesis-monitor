@@ -271,16 +271,16 @@ def test_actual_stock_materializer_comparative_binding(tmp_path):
 
 def test_shadow_numeric_binding_does_not_change_default_registry():
     from app.services.numeric_semantic_registry import build_numeric_registry
-    from app.services.bounded_financial_stock_owner import comparison_numeric_semantic
+    from app.services.bounded_financial_stock_owner import build_shadow_numeric_registry
     fact={'fact_id':'comparison','fact_type':'earnings_comparison','fields':{
         'metric':'revenue','currency':'USD','current_value':100,'prior_comparable_value':80,'delta':20,'growth_pct':25}}
     original=build_numeric_registry([fact])
     assert not any(r['registered'] for r in original)
-    shadow=build_numeric_registry([fact],semantic_resolver=comparison_numeric_semantic)
+    shadow=build_shadow_numeric_registry([fact])
     assert all(r['registered'] and not r['prose_allowed'] for r in shadow)
     assert build_numeric_registry([fact])==original
     fact['fields']['unowned_number']=999
-    shadow=build_numeric_registry([fact],semantic_resolver=comparison_numeric_semantic)
+    shadow=build_shadow_numeric_registry([fact])
     assert not shadow[-1]['registered']
 
 

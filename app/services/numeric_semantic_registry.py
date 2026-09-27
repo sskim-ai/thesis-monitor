@@ -2765,8 +2765,6 @@ def numeric_declaration_fact_ids(
 
 def build_numeric_registry(
     facts: list[dict[str, object]],
-    *,
-    semantic_resolver=resolve_numeric_semantic,
 ) -> list[dict[str, object]]:
     registry: list[dict[str, object]] = []
     for fact in facts:
@@ -2800,7 +2798,7 @@ def build_numeric_registry(
                 for index, item in enumerate(value):
                     walk(item, f"{path}.{index}")
             elif isinstance(value, (int, float)) and not isinstance(value, bool):
-                spec, unit = semantic_resolver(fact_type, path, fields)
+                spec, unit = resolve_numeric_semantic(fact_type, path, fields)
                 declaration_aliases = numeric_declaration_fact_ids(
                     facts,
                     source_fact=fact,

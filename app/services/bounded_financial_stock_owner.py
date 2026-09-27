@@ -35,6 +35,21 @@ def comparison_numeric_semantic(fact_type, path, fields):
     return spec, unit
 
 
+def build_shadow_numeric_registry(facts):
+    registry = build_numeric_registry(facts)
+    by_id = {f['fact_id']: f for f in facts}
+    for row in registry:
+        if row['fact_type'] != 'earnings_comparison' or row['registered']:
+            continue
+        spec, unit = comparison_numeric_semantic(
+            row['fact_type'], row['field_path'], by_id[row['fact_id']]['fields'])
+        if spec is not None:
+            row.update(registered=True, unit=unit, semantic_type=spec.semantic_type,
+                       formatter=spec.formatter, scope=spec.scope,
+                       approved_labels=list(spec.approved_labels), prose_allowed=False)
+    return registry
+
+
 def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed):
     validate_assembled(baseline, expected_result_sha256=digest(baseline))
     if baseline['ticker'] != plan['ticker'] or baseline['market'] != plan['market']:
@@ -72,7 +87,7 @@ def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed):
         'scope': 'MIXED_TIME_SOURCE_PREQUALIFICATION_NOT_PRODUCTION_DECISION'}
     stock = packet['stocks'][0]
     stock['fact_catalog'].extend(facts)
-    stock['numeric_registry'] = build_numeric_registry(stock['fact_catalog'], semantic_resolver=comparison_numeric_semantic)
+    stock['numeric_registry'] = build_shadow_numeric_registry(stock['fact_catalog'])
     technical = PacketOwnedTechnicalContext.model_validate(stock['technical_context'])
     evidence = build_decision_evidence_packet(packet=packet, stock=stock, technical_context=technical)
     owned = build_owned_evidence_packet(evidence, stock=stock)

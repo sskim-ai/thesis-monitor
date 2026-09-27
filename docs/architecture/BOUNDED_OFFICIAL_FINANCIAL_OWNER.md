@@ -27,11 +27,11 @@ model call, renderer, delivery, production persistence or deployment.
   comparative owners. Clean siblings can survive only under those owners.
   No threshold change, taint erasure or new financial-sector exception.
 - Consumption: existing canonical `earnings_comparison` constructor, typed
-  evidence builder and strict numeric registry. An explicit shadow-only resolver
+  evidence builder and strict numeric registry. An explicit shadow-only adapter
   binds exactly current, prior, difference and comparable growth for the three
   permitted metrics after the comparative owner reconstructs each Fact. These
   numeric entries are audit-only, not prose-enabled. The production resolver
-  remains the default; any other numeric field remains a packet blocker.
+  is byte-unchanged; any other numeric field remains a packet blocker.
 
 ## Bounds
 
