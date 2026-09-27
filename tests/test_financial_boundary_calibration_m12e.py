@@ -56,6 +56,7 @@ def test_calibration_preserves_nonprompt_code_and_other_owners():
         "scripts/new_issuer_holdout_selection_ownership_proof.py",
         "tests/test_evidence_maturity_pricing_service.py",
         "tests/test_market_intelligence_service.py",
+        "tests/test_synthetic_canary_fixture_repair_ownership_resume.py",
     ]
     before = m12u.e.prompt_value(
         m12u.read(m12u.BASELINE)["approved_module_before"][m12u.BALANCE]

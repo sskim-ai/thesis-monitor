@@ -50,6 +50,7 @@ def test_complete_scope_freeze_preserves_every_unapproved_owner():
         "scripts/new_issuer_holdout_selection_ownership_proof.py",
         "tests/test_evidence_maturity_pricing_service.py",
         "tests/test_market_intelligence_service.py",
+        "tests/test_synthetic_canary_fixture_repair_ownership_resume.py",
     ]
     before = m12u.e.prompt_value(m12u.read(m12u.BASELINE)["approved_module_before"][m12u.BALANCE])
     after = z.without_m12z_prompt(result["after_prompt"])

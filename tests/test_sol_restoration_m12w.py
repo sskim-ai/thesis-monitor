@@ -268,9 +268,10 @@ def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
             "tests/test_first_class_typed_financial_evidence_m12b.py",
             "tests/test_market_intelligence_service.py",
             "tests/test_partial_output_forensics_transport_stall_review.py",
+            "tests/test_synthetic_canary_fixture_repair_ownership_resume.py",
         }
-        assert result["financial_semantic_change_count"] == 41
-        assert result["directional_semantic_change_count"] == 41
+        assert result["financial_semantic_change_count"] == 42
+        assert result["directional_semantic_change_count"] == 42
         assert result["fictional_case_change_count"] == 0
     else:
         assert result["verification_mode"] == "CI_PORTABLE_AGGREGATE_SHA256"
