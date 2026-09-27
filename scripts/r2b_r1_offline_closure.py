@@ -210,7 +210,7 @@ def run(args):
         "max_seconds": 1200, "transport_retries": 0, "semantic_retries": 0, "fallback": 0, "judge": 0})
     save("repository-identities.json", {"base": BASE, "head": prior.git("rev-parse", "HEAD"),
         "branch": prior.git("branch", "--show-current"),
-        "instruction_commit": prior.git("log", "-1", "--format=%H", "--", str(args.receipt.relative_to(prior.REPO))),
+        "instruction_commit": prior.git("log", "-1", "--format=%H", "--", str(args.receipt.resolve().relative_to(prior.REPO))),
         "changed_files": prior.git("diff", "--name-only", BASE, "HEAD").splitlines(),
         "code_hashes": {p: prior.sha((prior.REPO / p).read_bytes()) for p in
                         prior.git("diff", "--name-only", BASE, "HEAD").splitlines()}})
