@@ -66,6 +66,10 @@ newer selected period. Ambiguous same-period observations are denied.
 
 The R4 price/session corpus remains immutable. A new financial cutoff is a
 separate time domain, not a new price observation or a production snapshot.
+Serialized legacy numeric registries are compared as exact row multisets before
+normalizing traversal order on a detached validation copy. The original packet
+hash, every numeric row, source graph binding and multiplicity must match first;
+the unchanged legacy validator then checks all other ownership dimensions.
 005930, 047810 and SNDK keep their complete R4 result byte-equivalent. All other
 subjects are attempted independently unless a trust/budget/config systemic
 stop occurs. A source-owner PASS does not imply packet or next-phase PASS.

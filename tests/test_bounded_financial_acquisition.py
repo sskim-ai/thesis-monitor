@@ -255,7 +255,7 @@ def test_actual_stock_materializer_comparative_binding(tmp_path):
     from app.services.unified_stock_owner import assemble_stock
     from app.services.bounded_financial_stock_owner import assemble, validate
     inputs=source.__wrapped__()
-    baseline=assemble_stock(**inputs)
+    baseline=json.loads(json.dumps(assemble_stock(**inputs),sort_keys=True))
     local=inputs['local_seed']
     security=next(r['record'] for c in local['roles'].values() for r in c['records'] if r['table']=='securitymaster')
     p,a,r=sec_fixture(tmp_path,ticker='CORZ',cik='1234',security=security)
@@ -267,6 +267,30 @@ def test_actual_stock_materializer_comparative_binding(tmp_path):
     result['packet']['stocks'][0]['fact_catalog'][-1]['fields']['current_value']=9999
     with pytest.raises(ValueError,match='replay_mismatch'):
         validate(result,**args)
+
+
+@pytest.mark.parametrize('mutation', ['value', 'duplicate', 'missing', 'graph', 'packet_hash'])
+def test_serialized_baseline_registry_normalization_never_repairs_tampering(mutation):
+    from test_unified_stock_owner import source
+    from app.services.unified_stock_owner import assemble_stock
+    from app.services.bounded_financial_stock_owner import validate_frozen_baseline
+    baseline=json.loads(json.dumps(assemble_stock(**source.__wrapped__()),sort_keys=True))
+    original=deepcopy(baseline)
+    validate_frozen_baseline(baseline)
+    assert baseline==original
+    registry=baseline['packet']['stocks'][0]['numeric_registry']
+    if mutation=='value':
+        registry[0]['value']+=1
+    elif mutation=='duplicate':
+        registry.append(deepcopy(registry[0]))
+    elif mutation=='missing':
+        registry.pop()
+    elif mutation=='graph':
+        baseline['numeric_registry_graph'][0]['registry_entry_sha256']='0'*64
+    else:
+        baseline['diagnostic_packet_sha256']='0'*64
+    with pytest.raises(ValueError):
+        validate_frozen_baseline(baseline)
 
 
 def test_shadow_numeric_binding_does_not_change_default_registry():

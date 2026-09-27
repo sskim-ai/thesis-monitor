@@ -5,6 +5,7 @@ Financial comparisons use the existing canonical comparative fact constructor;
 no current amount by itself receives directional authority.
 """
 from copy import deepcopy
+from collections import Counter
 
 from app.services.bounded_financial_projection import project
 from app.services.cross_market_decision_engine_service import build_decision_evidence_packet
@@ -50,8 +51,34 @@ def build_shadow_numeric_registry(facts):
     return registry
 
 
+def validate_frozen_baseline(baseline):
+    """JSON object-key sorting may reorder registry traversal, never its rows."""
+    stock = baseline['packet']['stocks'][0]
+    registry = build_numeric_registry(stock['fact_catalog'])
+    if stock['numeric_registry'] == registry:
+        return validate_assembled(baseline, expected_result_sha256=digest(baseline))
+    if Counter(digest(r) for r in registry) != Counter(digest(r) for r in stock['numeric_registry']):
+        raise ValueError('frozen_numeric_registry_rows_mismatch')
+    if digest(baseline['packet']) != baseline['diagnostic_packet_sha256']:
+        raise ValueError('frozen_packet_hash_mismatch')
+    if baseline['status']=='PASS' and baseline['packet_sha256'] != digest(baseline['packet']):
+        raise ValueError('frozen_qualified_packet_hash_mismatch')
+    graph = [{'fact_id':r['fact_id'], 'field_path':r['field_path'],
+        'registry_entry_sha256':digest(r),
+        'source_node_sha256':digest(baseline['source_graph'][r['fact_id']])} for r in registry]
+    if Counter(digest(r) for r in graph) != Counter(digest(r) for r in baseline['numeric_registry_graph']):
+        raise ValueError('frozen_numeric_registry_graph_mismatch')
+    replay = deepcopy(baseline)
+    replay['packet']['stocks'][0]['numeric_registry'] = registry
+    replay['numeric_registry_graph'] = graph
+    replay['diagnostic_packet_sha256'] = digest(replay['packet'])
+    if replay['status']=='PASS':
+        replay['packet_sha256'] = replay['diagnostic_packet_sha256']
+    return validate_assembled(replay, expected_result_sha256=digest(replay))
+
+
 def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed):
-    validate_assembled(baseline, expected_result_sha256=digest(baseline))
+    validate_frozen_baseline(baseline)
     if baseline['ticker'] != plan['ticker'] or baseline['market'] != plan['market']:
         raise ValueError('financial_stock_subject_mismatch')
     if digest(local_seed) != baseline['input_hashes']['local'] or digest(plan['security']) != plan['identity_sha256']:

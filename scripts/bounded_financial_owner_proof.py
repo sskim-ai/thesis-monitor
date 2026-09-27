@@ -174,17 +174,19 @@ def prove(args, root):
                 except (ValueError,KeyError,TypeError) as exc:
                     result = {'ticker':ticker,'status':'BLOCKED','reason':type(exc).__name__+':'+str(exc)}
                     row.update(status='BLOCKED',exact_blocker=result['reason'],packet_sha256=None,direction_eligible=False)
-            save(args.output,'proof-final/assembled/'+ticker+'.json',result)
+            save(args.output,args.proof_tag+'/assembled/'+ticker+'.json',result)
             matrix.append(row)
             print(ticker,row['status'],row.get('direction_eligible'),flush=True)
-    save(args.output,'proof-final/22-subject-matrix.json',matrix)
-    save(args.output,'proof-final/offline-replay-receipt.json',{'network_calls':0,'controls_exact':True,'subjects':len(matrix),
+    save(args.output,args.proof_tag+'/22-subject-matrix.json',matrix)
+    save(args.output,args.proof_tag+'/offline-replay-receipt.json',{'network_calls':0,'controls_exact':True,'subjects':len(matrix),
+        'acquisition_code_sha':plan['code_sha'],'projection_code_sha':git(root,'rev-parse','HEAD'),
         'model_calls':0,'rendered_messages':0,'Telegram':0,'production_DB_writes':0,'scheduler_mutation':0})
 
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('mode',choices=['baseline','freeze','acquire','prove'])
+    p.add_argument('--proof-tag', default='proof-final')
     for key in ('output','r4','corpus','r1-bundle','operating'):
         p.add_argument('--'+key,type=Path,required=True)
     args=p.parse_args()
