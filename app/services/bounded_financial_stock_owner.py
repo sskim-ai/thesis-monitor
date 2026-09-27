@@ -6,6 +6,7 @@ no current amount by itself receives directional authority.
 """
 from copy import deepcopy
 from collections import Counter
+import json
 
 from app.services.bounded_financial_projection import project
 from app.services.cross_market_decision_engine_service import build_decision_evidence_packet
@@ -77,7 +78,7 @@ def validate_frozen_baseline(baseline):
     return validate_assembled(replay, expected_result_sha256=digest(replay))
 
 
-def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, followup_directory=None, phase2=None, field_semantics=False, coverage_window=None):
+def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, followup_directory=None, phase2=None, field_semantics=False, coverage_window=None, issuer_business=None):
     validate_frozen_baseline(baseline)
     if baseline['ticker'] != plan['ticker'] or baseline['market'] != plan['market']:
         raise ValueError('financial_stock_subject_mismatch')
@@ -107,6 +108,11 @@ def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, fo
             denied.append({'metric': metric, 'reason': 'MULTIPLE_CURRENT_COMPARISON_OWNERS'})
         else:
             facts.extend(unique.values())
+    bridge = None
+    if issuer_business is not None:
+        if facts:
+            raise ValueError('issuer_business_native_comparison_already_owned')
+        bridge, facts = _issuer_business_facts(plan, issuer_business)
     # Preserve the complete baseline artifact; enrich only a detached packet.
     packet = deepcopy(baseline['packet'])
     packet.update(packet_id=plan['run_id'] + ':' + plan['market'], generated_at=plan['cutoff'], assessment_date=plan['cutoff'][:10])
@@ -133,7 +139,7 @@ def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, fo
     acquisition_denials = projection.get('acquisition_denial_reconciliation', {}).get(
         'effective_denials', acquisition.get('denials', []))
     complete = not missing and not acquisition_denials
-    return {'contract': 'bounded-financial-stock-owner-v1', 'ticker': plan['ticker'], 'market': plan['market'],
+    result = {'contract': 'bounded-financial-stock-owner-v1', 'ticker': plan['ticker'], 'market': plan['market'],
         'status': 'PASS' if complete else 'BLOCKED', 'mandatory_missing': sorted(set(missing)),
         'acquisition_denials': acquisition_denials, 'comparison_denials': denied,
         'baseline_sha256': digest(baseline), 'projection': projection,
@@ -147,6 +153,56 @@ def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, fo
             'occurrences': f['fields']['source_occurrences'], 'quality_receipt_sha256': f['quality_receipt_sha256']}
             for f in facts},
         'numeric_registry_unregistered': bad_numeric, 'production_dispatch_enabled': False}
+    if bridge is not None:
+        result['issuer_business_bridge'] = bridge
+        result['input_hashes']['issuer_business_bridge'] = digest(bridge)
+        for fact in facts:
+            result['financial_source_graph'][fact['fact_id']]['issuer_business_bridge'] = deepcopy(
+                fact['issuer_business_bridge'])
+    return result
+
+
+def _issuer_business_facts(plan, inputs):
+    from app.services.bounded_financial_projection import _raw
+    from app.services.issuer_business_bridge import identity_bridge, bind_comparison
+
+    source_inputs = inputs['source_inputs']
+    if source_inputs.get('issuer_business') is not None:
+        raise ValueError('recursive_issuer_bridge_denied')
+    source_plan = source_inputs['plan']
+    if (source_plan['provider'] != 'opendart' or source_plan['cutoff'] != plan['cutoff']
+            or source_plan['ticker'] == plan['ticker']):
+        raise ValueError('issuer_business_source_scope_or_cutoff_mismatch')
+    source = assemble(**source_inputs)
+    if source['status'] != 'PASS' or digest(source) != inputs['source_result_sha256']:
+        raise ValueError('issuer_business_source_owner_replay_mismatch')
+    captures = [r for r in source_inputs['receipts'] if r['stage'] == 'discovery' and not r['failure_class']]
+    rows = []
+    for receipt in captures:
+        rows.extend(json.loads(_raw(source_inputs['directory'], receipt['artifact'], source_inputs['receipts']))['list'])
+    if len(captures) != 1:
+        raise ValueError('issuer_business_identity_discovery_not_unique')
+    bridge = identity_bridge(
+        target=plan['security'], source=source_plan['security'],
+        official=inputs['official_identity'], expected_official_sha256=inputs['official_identity_sha256'],
+        dart_rows=rows, dart_receipt=captures[0], cutoff=plan['cutoff'])
+    if bridge['status'] != 'PASS':
+        raise ValueError('issuer_business_identity_unproven:' + ','.join(bridge['errors']))
+    selected = {f['fact_id']: f for f in source['packet']['stocks'][0]['fact_catalog']
+                if 'canonical:' + f['fact_id'] in source['comparative_fact_refs']}
+    facts = []
+    for bundle in source['projection']['quality_bundles']:
+        quality = source_quality(bundle)
+        originals = comparative_facts(quality, ticker=source_plan['ticker'], issuer_id=bridge['issuer_id'])
+        projected = comparative_facts(quality, ticker=plan['ticker'], issuer_id=bridge['issuer_id'], projection=bridge)
+        for original, fact in zip(originals, projected, strict=True):
+            if selected.get(original['fact_id']) != original:
+                continue
+            facts.append(bind_comparison(fact, original, bridge, source_result_sha256=digest(source)))
+    unique = {digest(f): f for f in facts}
+    if not unique:
+        raise ValueError('issuer_business_no_eligible_original_comparison')
+    return bridge, list(unique.values())
 
 
 def validate(result, **inputs):
