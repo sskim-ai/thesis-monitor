@@ -6,7 +6,7 @@ requires an independently eligible comparable pair, never only a current amount.
 from __future__ import annotations
 
 from datetime import date, datetime
-from dataclasses import asdict
+from dataclasses import asdict, replace
 import json
 import math
 from pydantic import TypeAdapter
@@ -21,16 +21,24 @@ from app.services.kr_financial_lineage_service import _bounds
 from app.services.financial_observation_quality_service import build_reported_observation_quality
 from app.services.sec_business_field_quality_service import field_errors
 from app.services.sec_financial_snapshot_service import _companyfacts_snapshots
-from app.services.sec_foreign_comparison_service import parse_document, occurrence_errors
+from app.services.sec_foreign_comparison_service import occurrence_errors
 from app.services.sec_foreign_comparison_service import current_projection
 from scripts.m12dr_financial_source_authority import source_quality
 from app.services.financial_observation_quality_service import digest as quality_digest
 from app.services.unified_run_artifacts import sha256_bytes
 from app.services.unified_snapshot_contract import digest
-from app.services.bounded_financial_acquisition import sec_selection, dart_selection
+from app.services.bounded_financial_acquisition import (
+    sec_selection, dart_selection, sec_base, exhibit_identities, exhibit_selection, AcquisitionDenied,
+)
+from app.services.sec_fpi_financial_purpose import classify_document, select_economic_period, candidate_inventory, FINANCIAL
+from app.services.bounded_fpi_followup import verify_followup
 
 METRICS = ("revenue", "operating_income", "net_income")
 CONTRACT = "bounded-official-financial-projection-v1"
+# Exact standard concept extension on the opt-in reported-field route only.
+# Existing occurrence selection, lineage and quality owners remain unchanged.
+REPORTED_FIELD_SPECS = {**FIELD_SPECS, 'revenue': replace(FIELD_SPECS['revenue'],
+    account_ids=(*FIELD_SPECS['revenue'].account_ids, 'ifrs-full_insurancerevenue'))}
 
 
 def paired(current, prior):
@@ -131,14 +139,63 @@ def verify_capture(plan, acquisition, directory, receipts):
         _raw(directory,doc['artifact'],receipts)
 
 
-def project(plan, acquisition, directory, receipts):
+def reconcile_fragment_denials(plan, acquisition, directory, receipts):
+    original = acquisition.get('denials', [])
+    proven, diagnostics, remaining = 0, [], []
+    for filing in acquisition['selected_filings']:
+        primary = sec_base(plan, filing) + filing['primaryDocument']
+        docs = [d for d in acquisition['documents'] if d['filing'] == filing]
+        captured = next((d for d in docs if d['url'] == primary), None)
+        indexes = [r for r in receipts if r['stage'] == 'index' and r.get('filing') == filing and not r['failure_class']]
+        if not captured or len(indexes) != 1:
+            continue
+        try:
+            index = json.loads(_raw(directory, indexes[0]['artifact'], receipts))
+            html = _raw(directory, captured['artifact'], receipts).decode('utf-8', errors='replace')
+            aliases = exhibit_identities(index, html, plan, filing)
+            fragments = [r for r in aliases if '#' in r['original_url']]
+            closed = bool(fragments) and all(r['already_captured_primary'] for r in fragments)
+            proven += int(closed)
+            try:
+                exhibits = exhibit_selection(index, html, plan, filing)
+                if set(exhibits) - {d['url'] for d in docs}:
+                    remaining.append('SEC_LINKED_EXHIBIT_NOT_CAPTURED')
+            except AcquisitionDenied as exc:
+                remaining.append(str(exc))
+            diagnostics.append({'filing': filing, 'aliases': aliases, 'closed_same_document_only': closed,
+                'primary_sha256': sha256_bytes(_raw(directory, captured['artifact'], receipts)), 'new_calls': 0})
+        except (AcquisitionDenied, ValueError):
+            diagnostics.append({'filing': filing, 'closed_same_document_only': False})
+    expected = original.count('SEC_DOCUMENT_SOURCE_SCOPE_DENIED')
+    effective = ([d for d in original if d != 'SEC_DOCUMENT_SOURCE_SCOPE_DENIED'] + sorted(set(remaining))
+                 if expected and proven == expected else list(original))
+    return {'original_denials': original, 'effective_denials': effective,
+        'resolved_count': expected if expected and proven == expected else 0, 'diagnostics': diagnostics}
+
+
+def project(plan, acquisition, directory, receipts, *, followup_directory=None):
     if acquisition["plan_sha256"] != digest(plan):
         raise ValueError("financial_plan_binding_mismatch")
     verify_capture(plan,acquisition,directory,receipts)
     snapshots, witnesses, denied = [], {}, []
-    filings = acquisition["selected_filings"]
+    filings = list(acquisition["selected_filings"])
     created = datetime.fromisoformat(plan["cutoff"])
+    followup, inventory, uncaptured = None, None, []
     if plan["provider"] == "sec_edgar":
+        source_documents = [{**d, 'raw': _raw(directory, d['artifact'], receipts)} for d in acquisition['documents']]
+        if '6-K' in plan['forms']:
+            discovery = next(r for r in receipts if r['stage'] == 'discovery' and not r['failure_class'])
+            discovery_raw = _raw(directory, discovery['artifact'], receipts)
+            inventory = candidate_inventory(json.loads(discovery_raw), plan)
+            if followup_directory is not None:
+                followup = verify_followup(plan, discovery_raw, acquisition['documents'], followup_directory)
+                source_documents.extend(followup['documents'])
+                selected = {f['accessionNumber']: f for f in filings}
+                selected.update({f['accessionNumber']: f for f in followup['plan']['candidates']})
+                filings = list(selected.values())
+            captured = {d['url'] for d in source_documents}
+            uncaptured = [f for f in inventory['inspection_window']
+                          if sec_base(plan, f) + f['primaryDocument'] not in captured]
         artifact = acquisition.get("companyfacts_artifact")
         if artifact:
             raw = _raw(directory, artifact, receipts)
@@ -146,7 +203,7 @@ def project(plan, acquisition, directory, receipts):
             if str(payload.get("cik", "")).lstrip('0') != plan["issuer"].lstrip('0'):
                 raise ValueError("issuer_mismatch")
             selected = {f["accessionNumber"]: f for f in filings}
-            document_ids = {d["filing"]["accessionNumber"] for d in acquisition["documents"]}
+            document_ids = {d["filing"]["accessionNumber"] for d in source_documents}
             for row in _companyfacts_snapshots(payload, plan["ticker"]):
                 filing = selected.get(row.source_filing_id)
                 if not filing or row.source_filing_id not in document_ids:
@@ -162,21 +219,21 @@ def project(plan, acquisition, directory, receipts):
                     "fields": {r["field"]: r for r in json.loads(row.raw_financial_fields) if r.get("field") in METRICS}}
         # Preserve foreign statement occurrences, but do not disguise them as
         # Company Facts. Their separate existing owner must qualify each cell.
-        foreign, foreign_rows = [], []
-        for document in acquisition["documents"]:
+        foreign, foreign_rows, purpose_documents = [], [], []
+        for document in source_documents:
             filing = document["filing"]
             if filing["form"].split('/')[0] not in {"6-K", "20-F"}:
                 continue
-            raw = _raw(directory, document["artifact"], receipts)
-            occurrences = parse_document(raw.decode('utf-8', errors='replace'), issuer_cik=plan["issuer"],
-                    accession=filing["accessionNumber"], document_type=filing["form"], filing_date=filing["filingDate"],
-                    source_url=document["url"], raw_payload=raw)
+            raw = document['raw']
+            purpose = classify_document(raw, url=document['url'], filing=filing, plan=plan)
+            purpose_documents.append(purpose)
+            occurrences = purpose['occurrences']
             for occurrence in occurrences:
                 foreign.append({"occurrence": occurrence,
                     "errors": occurrence_errors(occurrence, date.fromisoformat(plan["cutoff"][:10])),
                     "packet_consumption": "SEPARATE_FOREIGN_OWNER_NOT_COMPANYFACTS"})
             current = current_projection(occurrences)
-            if current:
+            if current and purpose['purpose'] in FINANCIAL:
                 end = date.fromisoformat(current['period_end'])
                 foreign_rows.append(FinancialSnapshot(ticker=plan['ticker'], period=end.isoformat(),
                     financial_period_end=end, financials_as_of=end, filing_date=date.fromisoformat(filing['filingDate']),
@@ -207,7 +264,7 @@ def project(plan, acquisition, directory, receipts):
                 raw_hashes[info["basis"]] = sha256_bytes(raw)
             fields, values, lineages = {}, {}, []
             for metric in METRICS:
-                selection = select_field_occurrence(rows_by_basis, FIELD_SPECS[metric])
+                selection = select_field_occurrence(rows_by_basis, REPORTED_FIELD_SPECS[metric])
                 if selection.status != 'selected' or selection.row is None:
                     denied.append({"field": metric, "filing": filing.receipt_no,
                         "reason": selection.reason or "FIELD_ABSENT"})
@@ -253,7 +310,17 @@ def project(plan, acquisition, directory, receipts):
                     statement_type='IS',amount_role='current',amount_variant='standalone')
                 if end:
                     expected_periods.append(end.isoformat())
+    foreign_purpose = plan['provider'] == 'sec_edgar' and '6-K' in plan['forms']
+    purpose_selection = None
+    if foreign_purpose:
+        purpose_selection = select_economic_period(purpose_documents, uncaptured=uncaptured)
+        if purpose_selection['status'] != 'PASS' and inventory['exhaustion_reason']:
+            purpose_selection['denial_reasons'].append(inventory['exhaustion_reason'])
+        expected_periods = [purpose_selection['period_end']] if purpose_selection['period_end'] else []
+        denied.extend({'field': 'all', 'reason': reason} for reason in purpose_selection['denial_reasons'])
     current_gap = bool(expected_periods and (not ordered or str(ordered[0].financial_period_end)<max(expected_periods)))
+    if purpose_selection and purpose_selection['status'] != 'PASS':
+        current_gap = True
     if current_gap:
         denied.append({'field':'all','reason':'LATEST_SELECTED_PERIOD_UNAVAILABLE_NO_OLDER_SUBSTITUTION'})
     stale = freshness.full_financial_freshness=='stale'
@@ -264,6 +331,8 @@ def project(plan, acquisition, directory, receipts):
         if current_gap or stale:
             continue
         if row.financial_period_end != ordered[0].financial_period_end:
+            continue
+        if purpose_selection and row.source_filing_id not in purpose_selection['source_accessions']:
             continue
         if row.provider == 'sec_companyfacts':
             peers = [r for r in ordered if r.provider == row.provider and r.source_filing_id == row.source_filing_id
@@ -340,7 +409,7 @@ def project(plan, acquisition, directory, receipts):
         comparisons.append({'metric': metric, 'current_ref': current['normalized_hash'], 'prior_ref': prior['normalized_hash'],
             'direction': 'higher' if current['value'] > prior['value'] else 'lower' if current['value'] < prior['value'] else 'unchanged',
             'direction_eligible': True, 'scope': 'observed_metric_relation_not_investment_verdict'})
-    return {'contract': CONTRACT, 'ticker': plan['ticker'], 'plan_sha256': digest(plan),
+    result = {'contract': CONTRACT, 'ticker': plan['ticker'], 'plan_sha256': digest(plan),
         'snapshots': [r.model_dump(mode='json') for r in validated], 'fields': records,
         'comparison_candidates': [{**c, 'direction_eligible':False,
             'reason':'REQUIRES_EXISTING_COMPARISON_OWNER'} for c in comparisons],
@@ -352,3 +421,10 @@ def project(plan, acquisition, directory, receipts):
         'context_eligible': any(r['context_eligible'] for r in records),
         'direction_eligible': any(b['quality']['status'] == 'PASS' for b in quality_bundles),
         'valuation_eligible': False, 'production_persistence': False}
+    if foreign_purpose:
+        result['fpi_purpose'] = {'documents': purpose_documents, 'selection': purpose_selection,
+            'uncaptured_window': uncaptured, 'candidate_inventory': inventory}
+        result['acquisition_denial_reconciliation'] = reconcile_fragment_denials(plan, acquisition, directory, receipts)
+        if followup:
+            result['fpi_followup'] = {k: v for k, v in followup.items() if k != 'documents'}
+    return result

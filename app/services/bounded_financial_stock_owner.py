@@ -77,7 +77,7 @@ def validate_frozen_baseline(baseline):
     return validate_assembled(replay, expected_result_sha256=digest(replay))
 
 
-def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed):
+def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, followup_directory=None):
     validate_frozen_baseline(baseline)
     if baseline['ticker'] != plan['ticker'] or baseline['market'] != plan['market']:
         raise ValueError('financial_stock_subject_mismatch')
@@ -88,7 +88,7 @@ def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed):
     if not identities or any(any(r.get(k)!=plan['security'].get(k) for k in
             ('canonical_company_id','canonical_security_id','cik','corp_code')) for r in identities):
         raise ValueError('financial_security_identity_mismatch')
-    projection = project(plan, acquisition, directory, receipts)
+    projection = project(plan, acquisition, directory, receipts, followup_directory=followup_directory)
     issuer = ('CIK:' if plan['market'] == 'us' else 'DART:') + plan['issuer']
     candidates = []
     for bundle in projection['quality_bundles']:
@@ -129,10 +129,12 @@ def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed):
     bad_numeric = [r for r in stock['numeric_registry'] if not r['registered']]
     if bad_numeric:
         missing.append('numeric_registry:unregistered_fields')
-    complete = not missing and not acquisition.get('denials')
+    acquisition_denials = projection.get('acquisition_denial_reconciliation', {}).get(
+        'effective_denials', acquisition.get('denials', []))
+    complete = not missing and not acquisition_denials
     return {'contract': 'bounded-financial-stock-owner-v1', 'ticker': plan['ticker'], 'market': plan['market'],
         'status': 'PASS' if complete else 'BLOCKED', 'mandatory_missing': sorted(set(missing)),
-        'acquisition_denials': acquisition.get('denials', []), 'comparison_denials': denied,
+        'acquisition_denials': acquisition_denials, 'comparison_denials': denied,
         'baseline_sha256': digest(baseline), 'projection': projection,
         'input_hashes': {'plan': digest(plan), 'acquisition': digest(acquisition), 'receipts': digest(receipts)},
         'packet': packet, 'packet_sha256': digest(packet) if complete else None,

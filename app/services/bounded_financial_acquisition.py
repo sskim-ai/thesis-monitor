@@ -149,19 +149,41 @@ def sec_base(plan, filing):
     return f'https://www.sec.gov/Archives/edgar/data/{int(plan["issuer"])}/{filing["accessionNumber"].replace("-", "")}/'
 
 
-def exhibit_selection(index, primary_text, plan, filing):
+def sec_document_identity(url, plan, filing):
+    """Drop only a fragment inside the exact SEC issuer/accession document."""
+    parsed = urlsplit(url)
     base = sec_base(plan, filing)
-    primary = base + filing["primaryDocument"]
+    canonical = parsed._replace(fragment='').geturl()
+    if (parsed.scheme != 'https' or parsed.netloc != 'www.sec.gov'
+            or '?' in url.split('#', 1)[0] or not canonical.startswith(base)
+            or not re.fullmatch(r'[A-Za-z0-9_][A-Za-z0-9_.-]*', canonical[len(base):])
+            or canonical[len(base):] in {'.', '..'}):
+        raise AcquisitionDenied('SEC_DOCUMENT_SOURCE_SCOPE_DENIED')
+    return canonical
+
+
+def exhibit_identities(index, primary_text, plan, filing):
+    """Retain original aliases for audit; intra-primary anchors need no request."""
+    base = sec_base(plan, filing)
+    primary = base + filing['primaryDocument']
     urls = set()
-    for item in index.get("directory", {}).get("item", []):
-        name = str(item.get("name", ""))
-        if re.search(r"(?:ex-?99|earn|result|release|financial)", name.lower()):
+    for item in index.get('directory', {}).get('item', []):
+        name = str(item.get('name', ''))
+        if re.search(r'(?:ex-?99|earn|result|release|financial)', name.lower()):
             urls.add(base + name)
     for href, _label in _linked_documents(primary_text):
+        # Reject traversal before URL joining can erase it.
+        if any(p in {'.', '..'} for p in urlsplit(href).path.split('/')) or '%' in urlsplit(href).path:
+            raise AcquisitionDenied('SEC_DOCUMENT_SOURCE_SCOPE_DENIED')
         urls.add(str(httpx.URL(primary).join(href)))
-    urls.discard(primary)
-    if any(not u.startswith(base) or not re.fullmatch(r"[A-Za-z0-9_.-]+", u[len(base):]) for u in urls):
-        raise AcquisitionDenied("SEC_DOCUMENT_SOURCE_SCOPE_DENIED")
+    return [{'original_url': u, 'document_identity': sec_document_identity(u, plan, filing),
+             'already_captured_primary': sec_document_identity(u, plan, filing) == primary}
+            for u in sorted(urls)]
+
+
+def exhibit_selection(index, primary_text, plan, filing):
+    aliases = exhibit_identities(index, primary_text, plan, filing)
+    urls = {r['document_identity'] for r in aliases if not r['already_captured_primary']}
     if len(urls) > plan["limits"]["linked_exhibits"]:
         raise AcquisitionDenied("SEC_DOCUMENT_BOUND_EXHAUSTED")
     return sorted(urls)
