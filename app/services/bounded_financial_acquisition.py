@@ -212,6 +212,11 @@ def retryable(exc=None, status=None, provider_status=None):
 
 
 class BoundedReader:
+    authorization_denial_is_systemic = True
+
+    def response_metadata(self, response):
+        return {}
+
     def __init__(self, plan, output, *, api_key=None, user_agent=None, transport=None, guard=None):
         self.plan = json.loads(json.dumps(plan))
         self.plan_sha = digest(plan)
@@ -316,9 +321,10 @@ class BoundedReader:
                 async with httpx.AsyncClient(timeout=600, follow_redirects=False, headers=headers, transport=self.transport) as client:
                     response = await asyncio.wait_for(client.get(url, params=wire_params), timeout=600)
                 raw, status = response.content, response.status_code
+                receipt.update(self.response_metadata(response))
                 if self.api_key and self.api_key.encode() in raw:
                     raise SystemicStop("provider_response_secret_echo")
-                if status in {401, 403}:
+                if status in {401, 403} and self.authorization_denial_is_systemic:
                     raise SystemicStop("provider_authorization_denied")
                 if self.plan["provider"] == "opendart" and status == 200:
                     provider_status = response.json().get("status")

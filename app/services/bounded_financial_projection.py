@@ -173,14 +173,14 @@ def reconcile_fragment_denials(plan, acquisition, directory, receipts):
         'resolved_count': expected if expected and proven == expected else 0, 'diagnostics': diagnostics}
 
 
-def project(plan, acquisition, directory, receipts, *, followup_directory=None):
+def project(plan, acquisition, directory, receipts, *, followup_directory=None, phase2=None):
     if acquisition["plan_sha256"] != digest(plan):
         raise ValueError("financial_plan_binding_mismatch")
     verify_capture(plan,acquisition,directory,receipts)
     snapshots, witnesses, denied = [], {}, []
     filings = list(acquisition["selected_filings"])
     created = datetime.fromisoformat(plan["cutoff"])
-    followup, inventory, uncaptured = None, None, []
+    followup, inventory, uncaptured, second = None, None, [], None
     if plan["provider"] == "sec_edgar":
         source_documents = [{**d, 'raw': _raw(directory, d['artifact'], receipts)} for d in acquisition['documents']]
         if '6-K' in plan['forms']:
@@ -193,6 +193,14 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None):
                 selected = {f['accessionNumber']: f for f in filings}
                 selected.update({f['accessionNumber']: f for f in followup['plan']['candidates']})
                 filings = list(selected.values())
+            if phase2 is not None:
+                from app.services.fpi_discovered_exhibit_phase2 import verify_phase2
+                if followup is None:
+                    raise ValueError('phase2_requires_verified_phase1')
+                second = verify_phase2(plan, phase2['source'], phase2['directory'])
+                if second['plan']['phase1_plan_sha256'] != digest(followup['plan']) or second['plan']['phase1_receipts_sha256'] != followup['receipt_sha256']:
+                    raise ValueError('phase2_consumed_phase1_mismatch')
+                source_documents.extend(second['documents'])
             captured = {d['url'] for d in source_documents}
             uncaptured = [f for f in inventory['inspection_window']
                           if sec_base(plan, f) + f['primaryDocument'] not in captured]
@@ -427,4 +435,14 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None):
         result['acquisition_denial_reconciliation'] = reconcile_fragment_denials(plan, acquisition, directory, receipts)
         if followup:
             result['fpi_followup'] = {k: v for k, v in followup.items() if k != 'documents'}
+        if second:
+            result['fpi_phase2'] = {k: v for k, v in second.items() if k != 'documents'}
+            phase2_denials = sorted({r['reason'] for r in second['denials']} | {
+                r['reason'] for r in second['plan']['excluded'] if r['reason'] == 'FPI_PHASE2_EXHIBIT_BOUND_EXHAUSTED'})
+            if second['unattempted']:
+                phase2_denials.append('FPI_PHASE2_PLANNED_REQUESTS_UNATTEMPTED')
+            result['acquisition_denial_reconciliation']['effective_denials'] = sorted(set(
+                result['acquisition_denial_reconciliation']['effective_denials'] + phase2_denials))
+            if not second['plan']['exact_requests'] and purpose_selection['status'] != 'PASS':
+                result['denials'].append({'field': 'all', 'reason': 'NO_FINANCIAL_PURPOSE_SOURCE_WITHIN_PHASE1_AND_NO_PHASE2_ELIGIBLE_EXHIBIT'})
     return result
