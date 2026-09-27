@@ -66,6 +66,12 @@ def verify_followup(parent, discovery_raw, captured_documents, directory):
     plan = json.loads((directory / 'plan.json').read_bytes())
     if plan != make_followup_plan(parent, discovery_raw, captured_documents):
         raise ValueError('fpi_plan_source_binding_mismatch')
+    return verify_frozen_followup(plan, captured_documents, directory)
+
+
+def verify_frozen_followup(plan, captured_documents, directory):
+    if json.loads((directory / 'plan.json').read_bytes()) != plan:
+        raise ValueError('fpi_expected_plan_mismatch')
     manifest = request_manifest(plan)
     frozen_manifest = json.loads((directory / 'request-manifest.json').read_bytes())
     if frozen_manifest != [{'request': r, 'request_sha256': digest(r)} for r in manifest]:

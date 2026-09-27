@@ -6,6 +6,7 @@ parser grants financial purpose. Nonfinancial text labels grant no field use.
 from datetime import date
 from html.parser import HTMLParser
 import re
+from urllib.parse import urljoin
 
 from app.services.bounded_financial_acquisition import sec_selection, sec_document_identity
 from app.services.sec_foreign_comparison_service import parse_document, occurrence_errors
@@ -50,9 +51,9 @@ def classify_document(raw, *, url, filing, plan):
         for state, pattern in (
             ('RUMOR_OR_DISCLOSURE_RESPONSE', r'(?i)response to (?:a |the )?(?:disclosure |media )?(?:inquiry|rumou?r)|(?:clarification|disclosure) (?:of|regarding) (?:a |the )?rumou?r'),
             ('DIVIDEND_OR_CAPITAL_RETURN', r'(?i)dividend(?: per share| adjustment| distribution| payment)|cash dividend'),
-            ('GOVERNANCE_OR_COMPENSATION', r'(?i)restricted share|share (?:award|incentive) (?:plan|scheme)|compensation|share option|equity incentive|monthly return.*(?:equity issuer|securities)'),
+            ('GOVERNANCE_OR_COMPENSATION', r'(?i)restricted share|share (?:award|incentive) (?:plan|scheme)|compensation|share option|equity incentive|monthly return.*(?:equity issuer|securities)|changes in (?:the )?shareholdings of'),
             ('REVENUE_DISCLOSURE_ONLY', r'(?i)monthly (?:net )?revenue|revenue for (?:the month|august|july|june|may|april|march|february|january|september|october|november|december)'),
-            ('CORPORATE_EVENT_NONFINANCIAL', r'(?i)lock-up|lockup|initial public offering|annual general meeting|resignation|board of directors.*(?:resolution|meeting)'),
+            ('CORPORATE_EVENT_NONFINANCIAL', r'(?i)lock-up|lockup|initial public offering|annual general meeting|resignation|board of directors.*(?:resolution|meeting)|waiver from (?:strict )?compliance with (?:rule|the listing rules)'),
         ):
             match = re.search(pattern, text)
             if match:
@@ -88,6 +89,37 @@ def candidate_inventory(payload, plan):
         'inspection_window': selected, 'uninspected_count': max(0, len(rows) - len(selected)),
         'exhaustion_reason': 'FPI_FINANCIAL_PURPOSE_BOUND_EXHAUSTED' if len(rows) > len(selected) else None,
         'order': 'filingDate_reportDate_accessionNumber_descending_no_filename_or_value_ranking'}
+
+
+def bind_nonfinancial_embedded_assets(documents, source_documents, plan):
+    """An exact IMG resource belongs to its captured nonfinancial filing, not a new report."""
+    class Images(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.refs = []
+
+        def handle_starttag(self, tag, attrs):
+            if tag == 'img' and dict(attrs).get('src'):
+                self.refs.append(dict(attrs)['src'])
+
+    for doc, source in zip(documents, source_documents, strict=True):
+        if doc['purpose'] != 'UNKNOWN_PURPOSE' or not source['raw'].startswith((b'\xff\xd8\xff', b'\x89PNG\r\n\x1a\n')):
+            continue
+        parents = []
+        for owner, raw_owner in zip(documents, source_documents, strict=True):
+            if owner['accession'] != doc['accession'] or owner['purpose'] in FINANCIAL | {'UNKNOWN_PURPOSE'}:
+                continue
+            parser = Images()
+            parser.feed(raw_owner['raw'].decode(errors='replace'))
+            for ref in parser.refs:
+                url = urljoin(owner['source_url'], ref)
+                if url == doc['source_url'] and sec_document_identity(url, plan, source['filing']) == url:
+                    parents.append({'source_url': owner['source_url'], 'source_payload_sha256': owner['source_payload_sha256'],
+                        'purpose': owner['purpose'], 'source_element': {'tag': 'img', 'src': ref}})
+        if parents:
+            doc.update(purpose='NONFINANCIAL_EMBEDDED_ASSET', original_purpose='UNKNOWN_PURPOSE',
+                purpose_evidence=parents, financial_authority=False, asset_content_interpreted=False)
+            doc['receipt_sha256'] = digest({k: v for k, v in doc.items() if k != 'receipt_sha256'})
 
 
 def select_economic_period(documents, *, required_role='single-quarter', uncaptured=()):

@@ -148,6 +148,12 @@ def verify_phase2(parent, source, directory):
     plan = json.loads((directory / 'plan.json').read_bytes())
     if plan != make_phase2_plan(parent, source):
         raise ValueError('phase2_plan_source_binding_mismatch')
+    return verify_phase2_capture(plan, directory)
+
+
+def verify_phase2_capture(plan, directory):
+    if json.loads((directory / 'plan.json').read_bytes()) != plan:
+        raise ValueError('phase2_expected_plan_mismatch')
     manifest = request_manifest(plan)
     if json.loads((directory / 'request-manifest.json').read_bytes()) != [
             {'request': r, 'request_sha256': digest(r)} for r in manifest]:

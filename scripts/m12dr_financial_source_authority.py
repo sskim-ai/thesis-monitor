@@ -45,6 +45,7 @@ def source_quality(bundle):
             formal=FinancialSnapshot.model_validate(inputs["formal"]),
             candidates=[FinancialSnapshot.model_validate(r) for r in inputs.get("foreign_candidates", [])],
             ticker=inputs["ticker"], cutoff=date.fromisoformat(inputs["cutoff"]),
+            allow_reported_half_year=inputs.get('foreign_period_policy') == 'EXACT_REPORTED_QUARTER_OR_HALF_YEAR_NO_SUBTRACTION',
         )
     return build_reported_observation_quality(
         formal=FinancialSnapshot.model_validate(inputs["formal"]),
@@ -131,7 +132,7 @@ def comparative_facts(quality, *, ticker, issuer_id, projection=None):
             "growth_pct": comparison["growth_pct"], "direction": comparison["direction"],
             "period_start": current["amount_period_start"], "period_end": current["amount_period_end"],
             "prior_period_start": prior["amount_period_start"], "prior_period_end": prior["amount_period_end"],
-            "period_type": "single_quarter", "currency": current["currency"],
+            "period_type": "half_year" if current.get('occurrence', {}).get('period_scope') == 'half-year' else "single_quarter", "currency": current["currency"],
             "statement_basis": current["statement_basis"], "issuer_id": issuer_id,
             "source_ticker": quality["ticker"], "source_receipt": quality["formal_receipt"],
             "source_occurrences": [current["source_row_identity"], prior["source_row_identity"]],

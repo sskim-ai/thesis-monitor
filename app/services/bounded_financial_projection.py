@@ -173,14 +173,14 @@ def reconcile_fragment_denials(plan, acquisition, directory, receipts):
         'resolved_count': expected if expected and proven == expected else 0, 'diagnostics': diagnostics}
 
 
-def project(plan, acquisition, directory, receipts, *, followup_directory=None, phase2=None):
+def project(plan, acquisition, directory, receipts, *, followup_directory=None, phase2=None, field_semantics=False, coverage_window=None):
     if acquisition["plan_sha256"] != digest(plan):
         raise ValueError("financial_plan_binding_mismatch")
     verify_capture(plan,acquisition,directory,receipts)
     snapshots, witnesses, denied = [], {}, []
     filings = list(acquisition["selected_filings"])
     created = datetime.fromisoformat(plan["cutoff"])
-    followup, inventory, uncaptured, second = None, None, [], None
+    followup, inventory, uncaptured, second, window = None, None, [], None, None
     if plan["provider"] == "sec_edgar":
         source_documents = [{**d, 'raw': _raw(directory, d['artifact'], receipts)} for d in acquisition['documents']]
         if '6-K' in plan['forms']:
@@ -201,9 +201,19 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
                 if second['plan']['phase1_plan_sha256'] != digest(followup['plan']) or second['plan']['phase1_receipts_sha256'] != followup['receipt_sha256']:
                     raise ValueError('phase2_consumed_phase1_mismatch')
                 source_documents.extend(second['documents'])
+            if coverage_window is not None:
+                from app.services.fpi_coverage_window import verify_window
+                first_urls = {sec_base(plan, f) + f['primaryDocument'] for f in followup['plan']['candidates']}
+                followup['captured_window_documents'] = [d for d in source_documents if d['url'] in first_urls
+                    and d['url'] not in {r['url'] for r in followup['documents']}]
+                window = verify_window(plan, discovery_raw, acquisition['documents'], followup, second, **coverage_window)
+                source_documents.extend(window['documents'])
+                filings.extend(window['plan']['candidates'])
             captured = {d['url'] for d in source_documents}
             uncaptured = [f for f in inventory['inspection_window']
                           if sec_base(plan, f) + f['primaryDocument'] not in captured]
+            if window:
+                uncaptured.extend(window['uncaptured'])
         artifact = acquisition.get("companyfacts_artifact")
         if artifact:
             raw = _raw(directory, artifact, receipts)
@@ -240,15 +250,26 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
                 foreign.append({"occurrence": occurrence,
                     "errors": occurrence_errors(occurrence, date.fromisoformat(plan["cutoff"][:10])),
                     "packet_consumption": "SEPARATE_FOREIGN_OWNER_NOT_COMPANYFACTS"})
+            role = 'single-quarter'
             current = current_projection(occurrences)
+            if field_semantics and current is None:
+                role = 'half-year'
+                current = current_projection(occurrences, required_role=role)
             if current and purpose['purpose'] in FINANCIAL:
                 end = date.fromisoformat(current['period_end'])
                 foreign_rows.append(FinancialSnapshot(ticker=plan['ticker'], period=end.isoformat(),
                     financial_period_end=end, financials_as_of=end, filing_date=date.fromisoformat(filing['filingDate']),
                     source_filing_id=filing['accessionNumber'], source=document['url'], provider='sec_foreign_filing',
-                    currency=current['currency'], period_scope='single-quarter', unit_scale=1, created_at=created,
+                    currency=current['currency'], period_scope=role, unit_scale=1, created_at=created,
                     raw_financial_fields=json.dumps([{'field':'foreign_business_occurrences','occurrences':occurrences}]),
                     **{k: current.get(k) for k in ('revenue','operating_income')}))
+                if role == 'half-year':
+                    foreign_rows[-1].is_cumulative = True
+                    foreign_rows[-1].period_type = 'half-year'
+        if field_semantics:
+            from app.services.sec_fpi_financial_purpose import bind_nonfinancial_embedded_assets
+            bind_nonfinancial_embedded_assets(purpose_documents,
+                [d for d in source_documents if d['filing']['form'].split('/')[0] in {'6-K', '20-F'}], plan)
     else:
         foreign, foreign_rows = [], []
         for filing_data in filings:
@@ -321,12 +342,16 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
     foreign_purpose = plan['provider'] == 'sec_edgar' and '6-K' in plan['forms']
     purpose_selection = None
     if foreign_purpose:
-        purpose_selection = select_economic_period(purpose_documents, uncaptured=uncaptured)
+        if field_semantics:
+            from app.services.sec_fpi_field_selection import select_fields
+            ordered, purpose_selection = select_fields(purpose_documents, foreign_rows, ticker=plan['ticker'], cutoff=plan['cutoff'], uncaptured=uncaptured)
+        else:
+            purpose_selection = select_economic_period(purpose_documents, uncaptured=uncaptured)
         if purpose_selection['status'] != 'PASS' and inventory['exhaustion_reason']:
             purpose_selection['denial_reasons'].append(inventory['exhaustion_reason'])
         expected_periods = [purpose_selection['period_end']] if purpose_selection['period_end'] else []
         denied.extend({'field': 'all', 'reason': reason} for reason in purpose_selection['denial_reasons'])
-    current_gap = bool(expected_periods and (not ordered or str(ordered[0].financial_period_end)<max(expected_periods)))
+    current_gap = bool(expected_periods and (not ordered or max(str(r.financial_period_end) for r in ordered)<max(expected_periods)))
     if purpose_selection and purpose_selection['status'] != 'PASS':
         current_gap = True
     if current_gap:
@@ -338,7 +363,7 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
     for row in ordered:
         if current_gap or stale:
             continue
-        if row.financial_period_end != ordered[0].financial_period_end:
+        if not (field_semantics and foreign_purpose) and row.financial_period_end != ordered[0].financial_period_end:
             continue
         if purpose_selection and row.source_filing_id not in purpose_selection['source_accessions']:
             continue
@@ -351,6 +376,9 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
         inputs = {'ticker': plan['ticker'], 'cutoff': plan['cutoff'][:10], 'formal': row.model_dump(mode='json'),
             'comparison': comparison, 'preliminary': None,
             'foreign_candidates': [r.model_dump(mode='json') for r in foreign_rows]}
+        if field_semantics and foreign_purpose:
+            from app.services.sec_fpi_field_selection import POLICY
+            inputs['foreign_period_policy'] = POLICY
         bundle = {'source_inputs': inputs, 'source_inputs_sha256': quality_digest(inputs),
             'source_generation_id': plan['run_id']}
         quality_bundles.append({**bundle, 'quality': source_quality(bundle)})
@@ -433,8 +461,12 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
         result['fpi_purpose'] = {'documents': purpose_documents, 'selection': purpose_selection,
             'uncaptured_window': uncaptured, 'candidate_inventory': inventory}
         result['acquisition_denial_reconciliation'] = reconcile_fragment_denials(plan, acquisition, directory, receipts)
+        if field_semantics:
+            from app.services.sec_fpi_field_selection import reconcile_historical_denials
+            result['acquisition_denial_reconciliation'] = reconcile_historical_denials(
+                result['acquisition_denial_reconciliation'], purpose_documents, purpose_selection)
         if followup:
-            result['fpi_followup'] = {k: v for k, v in followup.items() if k != 'documents'}
+            result['fpi_followup'] = {k: v for k, v in followup.items() if k not in {'documents', 'captured_window_documents'}}
         if second:
             result['fpi_phase2'] = {k: v for k, v in second.items() if k != 'documents'}
             phase2_denials = sorted({r['reason'] for r in second['denials']} | {
@@ -445,4 +477,14 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
                 result['acquisition_denial_reconciliation']['effective_denials'] + phase2_denials))
             if not second['plan']['exact_requests'] and purpose_selection['status'] != 'PASS':
                 result['denials'].append({'field': 'all', 'reason': 'NO_FINANCIAL_PURPOSE_SOURCE_WITHIN_PHASE1_AND_NO_PHASE2_ELIGIBLE_EXHIBIT'})
+        if window:
+            result['fpi_coverage_window'] = {k: v for k, v in window.items() if k != 'documents'}
+            if purpose_selection['status'] != 'PASS' and window['final_coverage_exhausted']:
+                result['denials'].extend({'field': 'all', 'reason': r} for r in (
+                    'NO_FINANCIAL_PURPOSE_SOURCE_WITHIN_TWO_BOUNDED_WINDOWS', 'FPI_FINANCIAL_PURPOSE_COVERAGE_EXHAUSTED_FINAL'))
+            if window.get('phase2'):
+                result['acquisition_denial_reconciliation']['effective_denials'].extend(
+                    r['reason'] for r in window['phase2']['denials'])
+                if window['phase2']['unattempted']:
+                    result['acquisition_denial_reconciliation']['effective_denials'].append('FPI_PHASE2_PLANNED_REQUESTS_UNATTEMPTED')
     return result

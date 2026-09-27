@@ -77,7 +77,7 @@ def validate_frozen_baseline(baseline):
     return validate_assembled(replay, expected_result_sha256=digest(replay))
 
 
-def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, followup_directory=None, phase2=None):
+def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, followup_directory=None, phase2=None, field_semantics=False, coverage_window=None):
     validate_frozen_baseline(baseline)
     if baseline['ticker'] != plan['ticker'] or baseline['market'] != plan['market']:
         raise ValueError('financial_stock_subject_mismatch')
@@ -88,7 +88,8 @@ def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, fo
     if not identities or any(any(r.get(k)!=plan['security'].get(k) for k in
             ('canonical_company_id','canonical_security_id','cik','corp_code')) for r in identities):
         raise ValueError('financial_security_identity_mismatch')
-    projection = project(plan, acquisition, directory, receipts, followup_directory=followup_directory, phase2=phase2)
+    projection = project(plan, acquisition, directory, receipts, followup_directory=followup_directory, phase2=phase2,
+        field_semantics=field_semantics, coverage_window=coverage_window)
     issuer = ('CIK:' if plan['market'] == 'us' else 'DART:') + plan['issuer']
     candidates = []
     for bundle in projection['quality_bundles']:
