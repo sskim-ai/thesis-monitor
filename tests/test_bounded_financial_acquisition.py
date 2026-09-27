@@ -1,6 +1,7 @@
 import asyncio
 from copy import deepcopy
 from datetime import datetime, timezone
+import json
 
 import httpx
 import pytest
@@ -281,3 +282,64 @@ def test_shadow_numeric_binding_does_not_change_default_registry():
     fact['fields']['unowned_number']=999
     shadow=build_numeric_registry([fact],semantic_resolver=comparison_numeric_semantic)
     assert not shadow[-1]['registered']
+
+
+def test_amendment_is_selected_not_blindly_overwritten():
+    original=filing('10-Q')
+    amendment={**filing('10-Q/A',2),'filingDate':'2026-08-02'}
+    selected=sec_selection(submission([original,amendment]),plan())
+    assert selected[0]['form']=='10-Q/A'
+
+
+@pytest.mark.parametrize('mutation', ['selected','document_url','receipt','identity'])
+def test_raw_plan_document_lineage_tampering(tmp_path,mutation):
+    p,a,r=sec_fixture(tmp_path)
+    if mutation=='selected':
+        a['selected_filings'][0]['role']='prior'
+    elif mutation=='document_url':
+        a['documents'][0]['url']='https://www.sec.gov/Archives/edgar/data/123/000000012326000001/other.htm'
+    elif mutation=='receipt':
+        r[0]['request_sha256']='f'*64
+    else:
+        p['issuer']='0000000999'
+    with pytest.raises(ValueError):
+        project(p,a,tmp_path,r)
+
+
+def test_per_filing_budget_prevents_next_http(tmp_path):
+    p=plan()
+    f=filing('10-Q')
+    reader=BoundedReader(p,tmp_path,transport=httpx.MockTransport(lambda r:httpx.Response(200,text='document')))
+    reader.select([f])
+    url='https://www.sec.gov/Archives/edgar/data/123/000000012326000001/primary.htm'
+    asyncio.run(reader.read('document',url,filing=f))
+    with pytest.raises(SystemicStop,match='per_filing_document_budget'):
+        asyncio.run(reader.read('document',url,filing=f))
+    assert reader.attempts==1
+
+
+def test_missing_current_cannot_relabel_prior(tmp_path):
+    from app.services.unified_snapshot_contract import digest
+    from app.services.unified_run_artifacts import sha256_bytes
+    p,a,r=sec_fixture(tmp_path)
+    # A newer discovery period without corresponding source occurrences cannot
+    # substitute the older successful financial period for the selected current.
+    receipt=r[0]
+    raw=json.loads((tmp_path/receipt['artifact']).read_bytes())
+    raw['filings']['recent']['reportDate']=['2026-08-31']
+    data=json.dumps(raw).encode()
+    (tmp_path/receipt['artifact']).write_bytes(data)
+    receipt['raw_sha256']=sha256_bytes(data)
+    a['selected_filings'][0]['reportDate']='2026-08-31'
+    a['documents'][0]['filing']['reportDate']='2026-08-31'
+    for rr in r:
+        if rr.get('filing'):
+            rr['filing']['reportDate']='2026-08-31'
+            path=tmp_path/(rr['logical_id'].split(':')[-1]+'.plan.json')
+            request=json.loads(path.read_bytes())
+            request['filing']['reportDate']='2026-08-31'
+            path.write_text(json.dumps(request))
+            rr['request_sha256']=digest(request)
+    result=project(p,a,tmp_path,r)
+    assert result['latest_selected_period_unavailable']
+    assert not result['direction_eligible'] and not result['quality_bundles']

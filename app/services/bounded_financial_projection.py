@@ -6,8 +6,10 @@ requires an independently eligible comparable pair, never only a current amount.
 from __future__ import annotations
 
 from datetime import date, datetime
+from dataclasses import asdict
 import json
 import math
+from pydantic import TypeAdapter
 
 from app.models.financial import FinancialSnapshot
 from app.services.financial_freshness_service import evaluate_financial_freshness_records
@@ -15,6 +17,7 @@ from app.services.opendart_financial_recovery_service import (
     Filing, FIELD_SPECS, select_field_occurrence,
 )
 from app.services.kr_financial_lineage_service import opendart_field_lineage, opendart_lineage_records
+from app.services.kr_financial_lineage_service import _bounds
 from app.services.financial_observation_quality_service import build_reported_observation_quality
 from app.services.sec_business_field_quality_service import field_errors
 from app.services.sec_financial_snapshot_service import _companyfacts_snapshots
@@ -24,6 +27,7 @@ from scripts.m12dr_financial_source_authority import source_quality
 from app.services.financial_observation_quality_service import digest as quality_digest
 from app.services.unified_run_artifacts import sha256_bytes
 from app.services.unified_snapshot_contract import digest
+from app.services.bounded_financial_acquisition import sec_selection, dart_selection
 
 METRICS = ("revenue", "operating_income", "net_income")
 CONTRACT = "bounded-official-financial-projection-v1"
@@ -81,9 +85,56 @@ def _raw(directory, artifact, receipts):
     return raw
 
 
+def verify_capture(plan, acquisition, directory, receipts):
+    logical = {}
+    for receipt in receipts:
+        if receipt['plan_sha256'] != digest(plan) or not 1 <= receipt['attempt'] <= 3:
+            raise ValueError('receipt_plan_or_attempt_mismatch')
+        name = receipt['logical_id'].split(':')[-1]
+        frozen = json.loads((directory / (name + '.plan.json')).read_bytes())
+        if (digest(frozen) != receipt['request_sha256'] or frozen['plan_sha256'] != digest(plan)
+                or frozen['logical_id'] != receipt['logical_id'] or frozen['stage'] != receipt['stage']
+                or frozen.get('filing') != receipt.get('filing')):
+            raise ValueError('receipt_request_binding_mismatch')
+        attempts = logical.setdefault(receipt['logical_id'], [])
+        if receipt['attempt'] != len(attempts)+1 or (attempts and attempts[-1]['request_sha256'] != receipt['request_sha256']):
+            raise ValueError('receipt_retry_identity_mismatch')
+        attempts.append(receipt)
+    if len(logical) > plan['maximum_logical_requests'] or len(receipts) > plan['maximum_HTTP_attempts']:
+        raise ValueError('receipt_budget_exceeded')
+    discovery = [r for r in receipts if r['stage']=='discovery' and not r['failure_class']]
+    if plan['provider']=='sec_edgar':
+        if len(discovery)!=1:
+            raise ValueError('discovery_receipt_missing')
+        selected=sec_selection(json.loads(_raw(directory,discovery[0]['artifact'],receipts)),plan)
+    else:
+        rows=[]
+        for index,r in enumerate(discovery,1):
+            if r.get('page')!=index:
+                raise ValueError('discovery_page_gap')
+            payload=json.loads(_raw(directory,r['artifact'],receipts))
+            if int(payload.get('total_page') or 1) > len(discovery):
+                raise ValueError('OPENDART_DISCOVERY_BOUND_EXHAUSTED')
+            rows.extend(payload.get('list',[]))
+        if not discovery:
+            raise ValueError('discovery_receipt_missing')
+        selected=[{'role':role,**asdict(f),'receipt_date':f.receipt_date.isoformat()} for role,f in dart_selection(rows,plan)]
+    if acquisition['selected_filings'] != selected:
+        raise ValueError('selected_filing_discovery_replay_mismatch')
+    for doc in acquisition['documents']:
+        receipt=next((r for r in receipts if r.get('artifact')==doc['artifact']),None)
+        if not receipt or receipt.get('filing')!=doc['filing'] or receipt['stage'] not in {'document','statement'}:
+            raise ValueError('document_receipt_filing_mismatch')
+        frozen=json.loads((directory/(receipt['logical_id'].split(':')[-1]+'.plan.json')).read_bytes())
+        if doc.get('url') and frozen['url']!=doc['url']:
+            raise ValueError('document_receipt_url_mismatch')
+        _raw(directory,doc['artifact'],receipts)
+
+
 def project(plan, acquisition, directory, receipts):
     if acquisition["plan_sha256"] != digest(plan):
         raise ValueError("financial_plan_binding_mismatch")
+    verify_capture(plan,acquisition,directory,receipts)
     snapshots, witnesses, denied = [], {}, []
     filings = acquisition["selected_filings"]
     created = datetime.fromisoformat(plan["cutoff"])
@@ -114,7 +165,7 @@ def project(plan, acquisition, directory, receipts):
         foreign, foreign_rows = [], []
         for document in acquisition["documents"]:
             filing = document["filing"]
-            if filing["form"] not in {"6-K", "20-F"}:
+            if filing["form"].split('/')[0] not in {"6-K", "20-F"}:
                 continue
             raw = _raw(directory, document["artifact"], receipts)
             occurrences = parse_document(raw.decode('utf-8', errors='replace'), issuer_cik=plan["issuer"],
@@ -189,11 +240,29 @@ def project(plan, acquisition, directory, receipts):
                 raw_financial_fields=json.dumps(lineages), **values)
             snapshots.append(row)
             witnesses[row.id] = {'fields': fields, 'filing': filing_data, 'role': role}
-    _, _, validated = evaluate_financial_freshness_records([], snapshots, as_of=created.date())
+    snapshots.sort(key=lambda r:(r.financial_period_end or date.min,r.filing_date or date.min),reverse=True)
+    freshness, _, validated = evaluate_financial_freshness_records([], snapshots, as_of=created.date())
     records, quality_bundles = [], []
     ordered = sorted([*validated, *foreign_rows], key=lambda r: (r.financial_period_end or date.min, r.filing_date or date.min), reverse=True)
+    freshness, _, _ = evaluate_financial_freshness_records([],ordered,as_of=created.date())
+    expected_periods = [f['reportDate'] for f in filings if f.get('role')=='current' and f.get('reportDate')]
+    if plan['provider']=='opendart':
+        for filing in filings:
+            if filing['role']=='current':
+                _,_,end=_bounds(year=filing['business_year'],report_code=filing['report_code'],
+                    statement_type='IS',amount_role='current',amount_variant='standalone')
+                if end:
+                    expected_periods.append(end.isoformat())
+    current_gap = bool(expected_periods and (not ordered or str(ordered[0].financial_period_end)<max(expected_periods)))
+    if current_gap:
+        denied.append({'field':'all','reason':'LATEST_SELECTED_PERIOD_UNAVAILABLE_NO_OLDER_SUBSTITUTION'})
+    stale = freshness.full_financial_freshness=='stale'
+    if stale:
+        denied.append({'field':'all','reason':'EXISTING_FINANCIAL_FRESHNESS_STALE'})
     # Only the latest selected formal period can authorize current comparison.
     for row in ordered:
+        if current_gap or stale:
+            continue
         if row.financial_period_end != ordered[0].financial_period_end:
             continue
         if row.provider == 'sec_companyfacts':
@@ -226,9 +295,11 @@ def project(plan, acquisition, directory, receipts):
                     'semantic': str(source.get('taxonomy')) + ':' + str(source.get('concept')),
                     'period_start': source.get('period_start'), 'period_end': source.get('period_end'),
                     'period_role': scope, 'fiscal_year': row.fiscal_year, 'statement_basis': 'sec_companyfacts_entity_wide',
+                    'fiscal_year_basis':'SOURCE_FILING_REPORTED_FY', 'source_fiscal_period_label':row.period_type,
+                    'formal_state':'OFFICIAL_PROVISIONAL' if source.get('source_document_type','').startswith('6-K') else 'FORMAL',
                     'currency': source.get('currency'), 'unit': source.get('unit'), 'unit_scale': 1,
                     'source_reported_value': source.get('source_reported_value'), 'original_lineage': source}
-                role = 'current' if source.get('period_end') == witness['filing'].get('reportDate') else 'comparative'
+                role = witness['filing']['role'] if source.get('period_end') == witness['filing'].get('reportDate') else 'comparative'
                 raw_sha = witness['raw_sha']
             else:
                 original = source['lineage']
@@ -277,6 +348,7 @@ def project(plan, acquisition, directory, receipts):
             for c in b['quality']['comparative_observations']],
         'denials': denied, 'foreign_occurrences': foreign,
         'quality_bundles': quality_bundles,
+        'freshness': TypeAdapter(dict).dump_python(asdict(freshness),mode='json'), 'latest_selected_period_unavailable':current_gap,
         'context_eligible': any(r['context_eligible'] for r in records),
         'direction_eligible': any(b['quality']['status'] == 'PASS' for b in quality_bundles),
         'valuation_eligible': False, 'production_persistence': False}

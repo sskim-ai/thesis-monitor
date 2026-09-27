@@ -58,7 +58,7 @@ def freeze(args, root):
     offline()
     if git(root, 'status', '--porcelain'):
         raise ValueError('clean_implementation_commit_required')
-    validation = read(args.output, 'pre-network-validation.json')
+    validation = read(args.output, 'closure-validation.json')
     if validation['head'] != git(root, 'rev-parse', 'HEAD') or any(v['returncode'] for v in validation['commands'].values()):
         raise ValueError('exact_sha_full_validation_required')
     if not validation['skip_xfail_identity_unchanged'] or read(args.output, 'offline-baseline-proof.json')['status'] != 'PASS':
@@ -88,7 +88,7 @@ def freeze(args, root):
     raw_sha = sha256_bytes((args.output/'financial-acquisition-plan.json').read_bytes())
     durable_bytes(args.output/'financial-acquisition-plan.json.sha256', (raw_sha+'  financial-acquisition-plan.json\n').encode(), exclusive=True)
     save(args.output, 'pre-network-gate.json', {'status':'PASS','plan_sha256':raw_sha,'code_sha':state['head'],
-        'validation_sha256':sha256_bytes((args.output/'pre-network-validation.json').read_bytes()),
+        'validation_sha256':sha256_bytes((args.output/'closure-validation.json').read_bytes()),
         'maximum_logical_requests':sum(e['maximum_logical_requests'] for e in entries),
         'maximum_attempts':sum(e['maximum_HTTP_attempts'] for e in entries)})
     print(json.dumps(plan['budgets']), flush=True)

@@ -67,7 +67,7 @@ def make_plan(security, *, market, cutoff, run_id):
         if kind not in {"domestic_us", "foreign_private_issuer", "adr"} or not re.fullmatch(r"\d{1,10}", issuer):
             raise AcquisitionDenied("SECURITY_IDENTITY_UNRESOLVED")
         limits = DOMESTIC if kind == "domestic_us" else FOREIGN
-        forms = ["10-Q", "10-K"] if limits == DOMESTIC else ["6-K", "20-F"]
+        forms = ["10-Q", "10-K", "10-Q/A", "10-K/A"] if limits == DOMESTIC else ["6-K", "20-F", "6-K/A", "20-F/A"]
         provider = "sec_edgar"
         issuer = issuer.zfill(10)
     elif market == "kr":
@@ -126,8 +126,8 @@ def sec_selection(payload, plan):
         if not re.fullmatch(r"[A-Za-z0-9_.-]+", r["primaryDocument"]):
             raise AcquisitionDenied("DOCUMENT_UNAVAILABLE")
     selected = []
-    groups = [candidates] if plan["forms"] == ["10-Q", "10-K"] else [
-        [r for r in candidates if r["form"] == form] for form in plan["forms"]]
+    groups = [candidates] if '10-Q' in plan['forms'] else [
+        [r for r in candidates if r["form"].split('/')[0] == form] for form in ('6-K','20-F')]
     for group in groups:
         if not group:
             continue
@@ -137,7 +137,7 @@ def sec_selection(payload, plan):
         selected.append({**current, "role": "current"})
         if current["reportDate"]:
             end = date.fromisoformat(current["reportDate"])
-            peers = [r for r in group if r["reportDate"] and r["form"] == current["form"]
+            peers = [r for r in group if r["reportDate"] and r["form"].split('/')[0] == current["form"].split('/')[0]
                      and 330 <= (end - date.fromisoformat(r["reportDate"])).days <= 400]
             if peers:
                 prior = max(peers, key=lambda r: (r["reportDate"], r["filingDate"], r["accessionNumber"]))
@@ -172,6 +172,9 @@ def dart_selection(rows, plan):
         raise AcquisitionDenied("OPENDART_DISCOVERY_BOUND_EXHAUSTED")
     if any(r.get("corp_code") != plan["issuer"] for r in rows):
         raise AcquisitionDenied("SECURITY_IDENTITY_UNRESOLVED")
+    if any(not re.fullmatch(r'\d{8}', str(r.get('rcept_dt') or '')) or
+           not plan['begin'].replace('-','') <= r['rcept_dt'] <= plan['cutoff'][:10].replace('-','') for r in rows):
+        raise AcquisitionDenied('DISCOVERY_DATE_WINDOW_MISMATCH')
     selected, history = authoritative_filings(rows, ticker=plan["ticker"], corp_code=plan["issuer"], limit=1)
     if not selected:
         return []
@@ -336,11 +339,17 @@ async def collect(reader):
         filings = sec_selection(json.loads(raw), plan)
         output["selected_filings"] = filings
         reader.select(filings)
-        raw, receipt = await reader.read("companyfacts", f'https://data.sec.gov/api/xbrl/companyfacts/CIK{plan["issuer"]}.json')
-        payload = json.loads(raw)
-        if str(payload.get("cik", "")).lstrip("0") != plan["issuer"].lstrip("0"):
-            raise AcquisitionDenied("SECURITY_IDENTITY_UNRESOLVED")
-        output["companyfacts_artifact"] = receipt["artifact"]
+        try:
+            raw, receipt = await reader.read("companyfacts", f'https://data.sec.gov/api/xbrl/companyfacts/CIK{plan["issuer"]}.json')
+        except SystemicStop:
+            raise
+        except AcquisitionDenied as exc:
+            output['source_notes']=[{'stage':'companyfacts','reason':str(exc)}]
+        else:
+            payload = json.loads(raw)
+            if str(payload.get("cik", "")).lstrip("0") != plan["issuer"].lstrip("0"):
+                raise AcquisitionDenied("SECURITY_IDENTITY_UNRESOLVED")
+            output["companyfacts_artifact"] = receipt["artifact"]
         for filing in filings:
             base = sec_base(plan, filing)
             index = {}
