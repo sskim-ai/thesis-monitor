@@ -95,8 +95,9 @@ def purpose(html, f=None, name=None):
     ('Consolidated Statements of Income without actual cells', 'UNKNOWN_PURPOSE'),
     ('No recognized document purpose', 'UNKNOWN_PURPOSE'),
 ])
-def test_nonfinancial_or_title_only_never_authority(body, expected):
-    result = purpose('<p>' + body + '</p>')
+@pytest.mark.parametrize('cover', ['', 'The registrant files annual reports under cover of Form 20-F or Form 40-F.'])
+def test_nonfinancial_or_title_only_never_authority(body, expected, cover):
+    result = purpose('<p>' + cover + '</p><p>' + body + '</p>')
     assert result['purpose'] == expected
     assert not result['financial_authority'] and not result['economic_periods']
 
