@@ -152,3 +152,16 @@ def test_native_response_provider_requires_explicit_policy(tmp_path):
     with pytest.raises(ValueError, match="source_provider_not_authorized"):
         OhlcvReceiptObserver(root=tmp_path / "a", run_id="a", attempt_id="b", reads=(read,),
                             policy=UnifiedSourcePolicy(frozenset({"ohlcv_analyst"})))
+
+
+def test_only_real_native_transport_is_live(tmp_path, monkeypatch):
+    import asyncio
+    from app.services.unified_live_source_transport import LiveAsyncTransport, is_native_live_transport
+    assert is_native_live_transport(None)
+    mock = httpx.MockTransport(lambda r: httpx.Response(200, json={}))
+    assert not is_native_live_transport(mock)
+    wrapper = LiveAsyncTransport(recorder=recorder(tmp_path, monkeypatch), authorize=lambda r: None)
+    assert is_native_live_transport(wrapper)
+    asyncio.run(wrapper.shutdown())
+    wrapper.native = mock
+    assert not is_native_live_transport(wrapper)

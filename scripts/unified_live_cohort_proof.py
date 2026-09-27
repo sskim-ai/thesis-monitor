@@ -302,7 +302,7 @@ class NativeMarketTransport(httpx.AsyncBaseTransport):
 
 
 def worker_command(args, mode, expected):
-    return [sys.executable, str(ROOT / "scripts/unified_live_native_worker.py"), mode,
+    return [sys.executable, "-m", "scripts.unified_live_native_worker", mode,
         "--owner-root", str(args.native_owner), "--plan", str(args.output / "rev8-full-source-acquisition-plan.json"),
         "--sha256", expected, "--output", str(args.output / ("stock-acquisition" if mode == "stocks" else "us-market-native"))]
 
@@ -332,7 +332,9 @@ async def acquire(args):
         observer = OhlcvReceiptObserver(root=args.output / "us-market", run_id=plan["proof_run_id"],
             attempt_id=plan["market_attempts"]["us"], reads=tuple(OhlcvRead.model_validate(r) for r in plan["us_market_reads"]), policy=POLICY)
         provider = OhlcvMarketProvider(transport=native, source_observer=observer)
-        us = await provider.collect(datetime.now(timezone.utc))
+        us_at = datetime.now(timezone.utc)
+        save(args.output, "us-owner-query-time.json", {"observed_at": us_at.isoformat()})
+        us = await provider.collect(us_at)
         results["us_market"] = TypeAdapter(MacroProviderResult).dump_python(us, mode="json")
         save(args.output, "us-market-owner.json", results["us_market"])
         guard()
@@ -360,12 +362,36 @@ async def acquire(args):
             request_interval_seconds=settings.kiwoom_rest_request_interval_seconds,
             transport=LiveAsyncTransport(recorder=recorder, authorize=kr_authorize), source_observer=observer)
         try:
+            kr_at = datetime.now(timezone.utc)
+            save(args.output, "kr-owner-query-time.json", {"observed_at": kr_at.isoformat()})
             kr = await KiwoomKrMarketContextService(client, max_pages=plan["kr_max_pages"]).collect(
-                session_date=observer.session_date, observed_at=datetime.now(timezone.utc))
+                session_date=observer.session_date, observed_at=kr_at)
             results["kr_market"] = {"status": "OWNER_RETURNED", "cross_section": kr.cross_section.model_dump(mode="json"),
                                     "audit": kr.audit.model_dump(mode="json")}
         except Exception as exc:
             results["kr_market"] = {"status": "FAILED", "error_class": type(exc).__name__, "error": str(exc)}
+            # Preserve the owner's rejection, but capture independent planned
+            # reads it did not reach. They cannot retroactively make it PASS.
+            client.source_observer = None
+            remaining = []
+            for r in reads:
+                if any(key == r.key for key, _ in observer._counts):
+                    continue
+                cont, cursor = False, ""
+                for page in range(1, r.max_pages + 1):
+                    try:
+                        item = await client.request(endpoint=r.endpoint, api_id=r.api_id, body=r.body,
+                                                    continuation=cont, next_key=cursor)
+                    except Exception as failure:
+                        remaining.append({"read_key": r.key, "page": page, "status": "FAILED",
+                                          "error_class": type(failure).__name__})
+                        break
+                    remaining.append({"read_key": r.key, "page": page, "status": "CAPTURED_NOT_QUALIFIED",
+                                      "payload_sha256": item.payload_sha256})
+                    if not item.continuation:
+                        break
+                    cont, cursor = item.continuation, item.next_key
+            results["kr_market"]["independent_diagnostic_reads"] = remaining
         finally:
             counters["kr"] = recorder.counts()
             await client.transport.shutdown()
@@ -383,9 +409,11 @@ async def acquire(args):
             reads=night_reads, policy=POLICY)
         night_transport = LiveAsyncTransport(recorder=recorder, authorize=night_authorize)
         try:
+            night_at = datetime.now(timezone.utc)
+            save(args.output, "night-owner-query-time.json", {"observed_at": night_at.isoformat()})
             result = await KrxNightFuturesProvider(source_observer=observer,
                 transport=night_transport,
-                history_directory=args.output / "private-night-history").collect(datetime.now(timezone.utc))
+                history_directory=args.output / "private-night-history").collect(night_at)
             results["night"] = TypeAdapter(MacroProviderResult).dump_python(result, mode="json")
         except Exception as exc:
             results["night"] = {"status": "FAILED", "error_class": type(exc).__name__}

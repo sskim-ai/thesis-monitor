@@ -676,6 +676,8 @@ async def fetch_live_probe(
     max_lookback_days: int = 7,
     source_observer: RunAcquisitionObserver | None = None,
 ) -> KrxNightFuturesProbeResult:
+    from app.services.unified_live_source_transport import is_native_live_transport
+
     run_date = run_date or date.today()
     api_key = api_key if api_key is not None else get_settings().krx_open_api_key
     observed = observation_time or datetime.now(timezone.utc)
@@ -795,7 +797,7 @@ async def fetch_live_probe(
                     ),
                     payloads=payloads,
                     response_bodies=response_bodies,
-                    live_source=transport is None,
+                    live_source=is_native_live_transport(transport),
                 )
             if row_count:
                 skipped_warnings.append(
@@ -821,7 +823,7 @@ async def fetch_live_probe(
             ),
             payloads=payloads,
             response_bodies=response_bodies,
-            live_source=transport is None,
+            live_source=is_native_live_transport(transport),
         )
     if successful_response_count == 0 and last_fetch_error is not None:
         return _attach_source_captures(
@@ -839,7 +841,7 @@ async def fetch_live_probe(
             ),
             payloads=payloads,
             response_bodies=response_bodies,
-            live_source=transport is None,
+            live_source=is_native_live_transport(transport),
         )
     return _attach_source_captures(
         _attach_fetch_telemetry(
@@ -856,7 +858,7 @@ async def fetch_live_probe(
         ),
         payloads=payloads,
         response_bodies=response_bodies,
-        live_source=transport is None,
+        live_source=is_native_live_transport(transport),
     )
 
 

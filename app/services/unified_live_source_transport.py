@@ -143,3 +143,9 @@ class LiveAsyncTransport(httpx.AsyncBaseTransport):
 
     async def shutdown(self):
         await self.native.aclose()
+
+
+def is_native_live_transport(transport):
+    """A bounded real HTTP wrapper is live; injected/mock delegates are not."""
+    return transport is None or (type(transport) is LiveAsyncTransport
+        and type(transport.native) is httpx.AsyncHTTPTransport)
