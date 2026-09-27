@@ -50,11 +50,14 @@ def test_archive_wrong_entry_rejected(tmp_path, override):
 
 
 def test_source_gate_reuses_existing_policy_without_widening_context(monkeypatch):
+    fact = {"fact_id": "event:synthetic", "as_of_date": "2026-09-01",
+            "fields": {"revenue": 123}}
     metadata = {"ref_id": "canonical:event:synthetic", "category": "earnings",
-                "statement": '{"revenue":123}', "as_of": "2026-09-01"}
+                "source_ref": "stock.fact_catalog.event:synthetic",
+                "statement": json.dumps(fact["fields"], sort_keys=True), "as_of": "2026-09-01"}
     evidence = {"evidence": [metadata]}
     stock = {"ticker": "SYNTHETIC", "market": "us", "status": "PASS", "ownership": {},
-             "packet": {"stocks": [{"ticker": "SYNTHETIC", "fact_catalog": []}]},
+             "packet": {"stocks": [{"ticker": "SYNTHETIC", "fact_catalog": [fact]}]},
              "evidence_packet": evidence, "financial_state": {"status": "UNAVAILABLE"}}
     authority = {"authority": {"authority_records": [{"ref_id": metadata["ref_id"],
         "authority_state": "RESOLVED", "allowed_uses": ["CONTEXT"], "prohibited_uses": ["OVERALL_DIRECTION"]}]}}

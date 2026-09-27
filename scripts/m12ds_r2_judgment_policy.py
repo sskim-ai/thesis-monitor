@@ -5,6 +5,7 @@ from enum import StrEnum
 import json
 
 from app.services.cross_market_decision_engine_service import EvidenceClaim, _compact
+from app.services.canonical_evidence_time_service import validate_canonical_time
 from app.services.stage2_maturity_polarity_adapter_service import maturity_atomic_claim_ref
 from app.services.logical_condition_service import SourceLogicalCondition, ClaimLogicalCondition, source_claim_expression
 from scripts.m12cq_two_pass_contract import canonical_sha256
@@ -42,15 +43,21 @@ def statement(row):
 
 
 def frozen_fact_fields(packet, ticker, metadata):
-    stock = next(r for r in packet['stocks'] if r['ticker']==ticker)
+    matches = [r for r in packet['stocks'] if r['ticker']==ticker]
+    if len(matches) != 1:
+        raise ValueError('frozen_fact_subject_binding_mismatch')
+    stock = matches[0]
     facts = {'canonical:'+r['fact_id']:r for r in stock.get('fact_catalog') or []}
     result = {}
     for row in metadata:
         fact = facts.get(row['ref_id'])
-        if fact and row.get('source_ref') == 'stock.fact_catalog.'+fact['fact_id']:
-            if row.get('statement') != _compact(fact['fields']) or row.get('as_of') != fact['as_of_date']:
+        if fact:
+            if row.get('statement') != _compact(fact['fields']):
                 raise ValueError('frozen_fact_projection_mismatch')
+            validate_canonical_time(fact, row, ticker=ticker)
             result[row['ref_id']] = {'fields':deepcopy(fact['fields']), 'fact_sha256':canonical_sha256(fact)}
+        elif str(row['ref_id']).startswith('canonical:'):
+            raise ValueError('frozen_fact_unknown_canonical_ref')
     return result
 
 
