@@ -143,7 +143,7 @@ def b_input(view, cat, sub, chain, classification, capability):
     return ctx, entries, valuation
 
 
-def preflight_subject(stock, authority, local, *, generation, cutoff):
+def preflight_subject(stock, authority, local, *, generation, cutoff, defer_b=False):
     view, receipt = c.source_view(stock, authority, local, cutoff=cutoff)
     cat, sub, chain = subject_inputs(view, authority, receipt, generation=generation)
     owned = OwnedEvidencePacket.model_validate(view["ownership"])
@@ -203,6 +203,12 @@ def preflight_subject(stock, authority, local, *, generation, cutoff):
                        offline_availability_probes_only=True)
             return row, prepared
         classification = rows[0]
+        if defer_b:
+            prepared["b_probe_inputs"] = dict(cat=cat, sub=sub, chain=chain,
+                classification=classification, capability=cap)
+            row.update(status="A_READY", A="PASS", NewBuyer="PASS", B="DEFERRED", Holder="DEFERRED",
+                       blocker=None, offline_availability_probes_only=True)
+            return row, prepared
         bctx, entries, valuation = b_input(view, cat, sub, chain, classification, cap)
         row.update(B="PASS", NewBuyer="PASS", Holder="PASS", b_schema=schema_check(
             c.decision_schema(mode, cap, valuation, entries, {})), b_context_sha256=io.digest(bctx))

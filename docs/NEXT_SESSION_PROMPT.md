@@ -1,5 +1,17 @@
 # Next Session Prompt
 
+## Current Local Track: R2B-R3 Blind Disclosure Gate
+
+Read `operations/R2B_TYPED_QUALITY_OWNER.md` and the immutable R3 report first.
+Canonical quality owner reconstruction and actual Core/A/B 22-subject probes
+pass. Model calls remain zero: new concrete quality limitations are missing from
+the frozen blind source view. Terminal is
+`R2B_R3_BLIND_REVIEW_MATERIAL_SOURCE_VIEW_CHANGED`. Do not use schema readiness
+as permission to dispatch, alter the blind bundle, inspect independent judgment,
+or change quality reasons. A new instruction must resolve comparison fairness
+before a request freeze. Do not reacquire sources or modify production. Older
+entries below are historical.
+
 ## Current Local Track: R2B-R2 Quality Representation Gap
 
 Read `operations/R2B_WHOLE_DECISION_LIMIT.md` and the immutable R2B-R2 report.

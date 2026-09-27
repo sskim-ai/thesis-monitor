@@ -1,5 +1,19 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-28 R2B-R3 Handoff
+
+R2B-R2 final `9321a76b41b499879e75668348f84c2c1ad59a10` is the base. Instruction
+commit `e5ccd4cd606cd4ef00035ab39c695c8849233fe4` precedes the applicability audit
+and implementation. Read `operations/R2B_TYPED_QUALITY_OWNER.md` and the R3
+immutable report. Core/A/B mechanical readiness reaches 22/22; this is NOT an
+AI result. No model request binding is issued while the blind disclosure gate
+is blocked. Preserve original source/blind hashes and all independent judgments.
+The 003690 quality input had been computed but not canonically materialized;
+generic reconstruction closes it. SKHY follows 000660's issuer source without
+clearing sibling-field denials or transferring security valuation authority.
+CRCL/IBM/SKHY need an explicit fair-comparison disposition, not another silent
+rerun. All production mutation and source refresh remain forbidden.
+
 ## 2026-09-28 R2B-R2 Whole-Decision Handoff
 
 Implementation `1ad422c6f6243771740480411f927152ae2c7e7b`, based on R2B-R1
