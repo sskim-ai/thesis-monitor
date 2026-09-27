@@ -93,7 +93,7 @@ class VerifiedAggregate:
 
 
 def verify_aggregate(root: Path, receipt: AggregateReceipt, *, policy: UnifiedSourcePolicy,
-                     cutoff: datetime) -> VerifiedAggregate:
+                     cutoff: datetime, completion_observed_at: datetime | None = None) -> VerifiedAggregate:
     policy.require(receipt.provider)
     if cutoff.utcoffset() is None or receipt.received_at > cutoff:
         raise ValueError("aggregate_after_cutoff")
@@ -176,7 +176,14 @@ def verify_aggregate(root: Path, receipt: AggregateReceipt, *, policy: UnifiedSo
         pages.append(page)
     if ordinals != sorted(set(ordinals)):
         raise ValueError("aggregate_child_order_mismatch")
-    if any(cursor is not None for _number, cursor in cursors.values()):
-        raise ValueError("aggregate_page_set_incomplete")
     policy.check_lineage(json.loads(raw))
-    return VerifiedAggregate(receipt, plan, tuple(children), tuple(bodies), tuple(normalizations), raw, tuple(pages))
+    graph = VerifiedAggregate(receipt, plan, tuple(children), tuple(bodies), tuple(normalizations), raw, tuple(pages))
+    if completion_observed_at is not None:
+        from app.services.kiwoom_consumed_page_contract import CONTRACT, qualify
+        if (receipt.validator_contract != CONTRACT or completion_observed_at.utcoffset() is None
+                or completion_observed_at > receipt.requested_at):
+            raise ValueError("aggregate_completion_owner_mismatch")
+        qualify(graph, observed_at=completion_observed_at)
+    elif any(cursor is not None for _number, cursor in cursors.values()):
+        raise ValueError("aggregate_page_set_incomplete")
+    return graph

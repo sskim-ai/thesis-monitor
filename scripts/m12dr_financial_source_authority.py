@@ -155,7 +155,7 @@ def comparative_facts(quality, *, ticker, issuer_id, projection=None):
     return result
 
 
-def build_source_authority(*, quality_bundles, issuer_bindings, **kwargs):
+def build_source_authority(*, quality_bundles, issuer_bindings, versioned_business_inputs=None, **kwargs):
     current = build_current_source_authority(**kwargs)
     ticker = kwargs["ticker"]
     packet = kwargs["source_packet"]
@@ -164,12 +164,23 @@ def build_source_authority(*, quality_bundles, issuer_bindings, **kwargs):
     records = {r["ref_id"]: r for r in current["authority"]["authority_records"]}
     quality = None
     projection = None
-    if ticker in quality_bundles:
+    versioned = None
+    if versioned_business_inputs is not None:
+        from app.services.versioned_business_stock_owner import replay_version
+        if quality_bundles or issuer_bindings or versioned_business_inputs.get('ticker') != ticker:
+            raise ValueError('versioned_business_authority_ambiguous_owner')
+        if versioned_business_inputs['cutoff'].isoformat() != packet.get('generated_at'):
+            raise ValueError('versioned_business_authority_cutoff_mismatch')
+        versioned = replay_version(**versioned_business_inputs)
+        source_ticker = None
+    elif ticker in quality_bundles:
         source_ticker = ticker
     else:
         source_ticker = ((stock.get("valuation") or {}).get("security_identity_provenance") or {}).get(
             "evidence", {}).get("ordinary_share_identifier")
-    if source_ticker in quality_bundles:
+    if versioned is not None:
+        expected_facts = versioned['facts']
+    elif source_ticker in quality_bundles:
         bundle = quality_bundles[source_ticker]
         if (bundle.get("source_generation_id") != kwargs["source_generation_id"]
                 or bundle["source_inputs"].get("ticker") != source_ticker
@@ -204,6 +215,12 @@ def build_source_authority(*, quality_bundles, issuer_bindings, **kwargs):
         owner = quality["contract"] if quality else CONTRACT
         receipt.update(source_family=FAMILY, errors=errors, quality_contract=owner,
                        quality_receipt_sha256=quality["receipt_sha256"] if quality else None)
+        if versioned is not None:
+            receipt.update(source_acquisition_class='VERSIONED_PERSISTED_ALLOWED',
+                source_version_sha256=versioned['version_sha256'],
+                original_source_artifact_sha256=versioned['original_source_artifact_sha256'],
+                current_eligibility_sha256=digest(versioned['eligibility']),
+                quality_receipt_sha256=fact['quality_receipt_sha256'] if fact else None)
         if not errors:
             record.update(authority_state="RESOLVED", authority_basis=CONTRACT,
                           source_type=FAMILY, source_family=FAMILY,

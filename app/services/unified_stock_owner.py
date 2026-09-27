@@ -210,7 +210,8 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
                    local_seed: dict, financial: dict, components: dict,
                    expected_hashes: dict, policy: UnifiedSourcePolicy,
                    event_source: BoundNewsInput | None = None,
-                   business_cutoff: datetime | None = None) -> dict:
+                   business_cutoff: datetime | None = None,
+                   financial_tuple_denial: bool = False) -> dict:
     """No path lookup, providers, prior assessments or downstream model output."""
     for key, value in (("local", local_seed), ("financial", financial), ("components", components),
                        ("receipts", receipts), ("plan", plan.model_dump(mode="json"))):
@@ -257,7 +258,7 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
         valuation, financial_refs, financial_state = _financial(financial, ticker=ticker, market=market,
             cutoff=plan.frozen_at, policy=policy)
     except ValueError as exc:
-        if event_source is None or str(exc) != "financial_selected_tuple_mismatch":
+        if (event_source is None and not financial_tuple_denial) or str(exc) != "financial_selected_tuple_mismatch":
             raise
         valuation, financial_refs = {}, {}
         financial_state = {"status": "DENIED", "denials": [str(exc)],
@@ -405,11 +406,22 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
            if event_source is not None else {})}
 
 
-def validate_assembled(result, *, expected_result_sha256):
+def validate_assembled(result, *, expected_result_sha256, versioned_business_inputs=None):
     """Detect post-owner mutation without trusting packet or PASS labels."""
     if digest(result) != expected_result_sha256:
         raise ValueError("assembled_result_hash_mismatch")
     stock = result["packet"]["stocks"][0]
+    versioned = None
+    if 'versioned_business' in result['input_hashes']:
+        from app.services.versioned_business_stock_owner import replay_version
+        if versioned_business_inputs is None:
+            raise ValueError('versioned_business_source_replay_required')
+        versioned = replay_version(**versioned_business_inputs)
+        if (versioned['ticker'] != stock['ticker']
+                or versioned['current_cutoff'] != result['packet']['generated_at']
+                or versioned['version_sha256'] != result['input_hashes']['versioned_business']
+                or [f for f in stock['fact_catalog'] if f.get('fact_type') == 'earnings_comparison'] != versioned['facts']):
+            raise ValueError('versioned_business_source_binding_mismatch')
     if "event_source" in result:
         event_source = BoundNewsInput.model_validate(result["event_source"])
         if event_source.read.market != result["market"] or event_source.read.subject != stock["ticker"]:
@@ -429,7 +441,11 @@ def validate_assembled(result, *, expected_result_sha256):
         if domains.get("business_cutoff") != cutoff.isoformat() or result["packet"]["generated_at"] != cutoff.isoformat():
             raise ValueError("business_time_domain_mismatch")
     reject_downstream(stock)
-    if stock["ticker"] != result["ticker"] or stock["numeric_registry"] != build_numeric_registry(stock["fact_catalog"]):
+    registry_builder = build_numeric_registry
+    if versioned is not None:
+        from app.services.bounded_financial_stock_owner import build_shadow_numeric_registry
+        registry_builder = build_shadow_numeric_registry
+    if stock["ticker"] != result["ticker"] or stock["numeric_registry"] != registry_builder(stock["fact_catalog"]):
         raise ValueError("numeric_registry_or_subject_mismatch")
     if digest(result["packet"]) != result["diagnostic_packet_sha256"]:
         raise ValueError("packet_hash_mismatch")
@@ -458,18 +474,26 @@ def validate_assembled(result, *, expected_result_sha256):
         if binding["ticker"] != stock["ticker"] or binding["fact_sha256"] != digest(fact):
             raise ValueError("source_reference_mismatch")
         key = {"selected_financial": "financial", "local_seed": "local", "sealed_stock_roles": "receipts",
-               "business_events": "events"}[binding["source"]]
+               "business_events": "events", "versioned_reported_business": "versioned_business"}[binding["source"]]
         if binding["input_sha256"] != result["input_hashes"][key]:
             raise ValueError("source_input_hash_mismatch")
+        if binding['source'] == 'versioned_reported_business':
+            if (versioned is None or binding['original_source_artifact_sha256'] != versioned['original_source_artifact_sha256']
+                    or binding['current_eligibility_sha256'] != digest(versioned['eligibility'])
+                    or binding['original_occurrence_graph'] != versioned['source_graph'][fact['fact_id']]
+                    or binding['source_scope'] != 'issuer_business_only_no_current_price_or_security_valuation'):
+                raise ValueError('versioned_business_source_graph_mismatch')
     if result["numeric_registry_graph"] != [{"fact_id": r["fact_id"], "field_path": r["field_path"],
             "registry_entry_sha256": digest(r), "source_node_sha256": digest(result["source_graph"][r["fact_id"]])}
             for r in stock["numeric_registry"]]:
         raise ValueError("numeric_source_graph_mismatch")
-    if "event_source" in result:
+    if "event_source" in result or versioned is not None:
         from scripts.m12dk_current_source_authority import earnings_lineage_receipt
         refs = {r.ref_id for r in evidence.evidence if r.source_ref.startswith("stock.fact_catalog.event:")}
         refs.update(r.ref_id for r in evidence.evidence if r.source_ref.startswith("stock.fact_catalog.earnings:")
             and earnings_lineage_receipt(r.model_dump(mode="json"), stock, result["packet"])["status"] == "PASS")
+        if versioned is not None:
+            refs.update('canonical:' + f['fact_id'] for f in versioned['facts'])
         actual = [r["ref_id"] for r in result["observed_business_union"] if r["status"] == "PASS"]
         if set(actual) != refs or len(actual) != len(refs) or result["observed_business_cardinality"] != len(refs):
             raise ValueError("observed_business_union_replay_mismatch")

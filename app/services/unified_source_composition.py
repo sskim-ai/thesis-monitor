@@ -115,6 +115,7 @@ class OwnerAdapter:
     code_sha256: str
     project_and_validate: Callable[[bytes, datetime], OwnerProjection]
     project_aggregate_and_validate: Callable[[VerifiedAggregate, datetime], OwnerProjection] | None = None
+    page_completion_observed_at: datetime | None = None
 
 
 @dataclass(frozen=True)
@@ -182,7 +183,8 @@ def _resolve(item: SourceInput, role: SourceRole, *, root: Path, run_id: str,
         if any(receipt.get(k) != v for k, v in expected.items()):
             raise ValueError("source_acquisition_receipt_binding_mismatch")
         if receipt.get("contract") == "unified-transitive-source-receipt-v1":
-            aggregate = verify_aggregate(root, AggregateReceipt.model_validate(receipt), policy=policy, cutoff=cutoff)
+            aggregate = verify_aggregate(root, AggregateReceipt.model_validate(receipt), policy=policy, cutoff=cutoff,
+                                         completion_observed_at=owner.page_completion_observed_at)
             if aggregate.receipt.owner != role.owner or owner.project_aggregate_and_validate is None:
                 raise ValueError("aggregate_owner_replay_not_qualified")
         elif (receipt.get("request_sha256") != digest(receipt.get("request"))

@@ -81,7 +81,8 @@ def us_market_aggregate_owner(*, role: SourceRole, source_url: str,
 
 
 def kiwoom_aggregate_owner(*, role: SourceRole, observed_at: datetime, max_pages: int,
-                           max_requests_per_page: int, policy: UnifiedSourcePolicy) -> OwnerAdapter:
+                           max_requests_per_page: int, policy: UnifiedSourcePolicy,
+                           consumer_complete: bool = False) -> OwnerAdapter:
     from app.providers.kiwoom_rest_client import KiwoomCallStats, KiwoomRestResponse, payload_sha256
     from app.services.kiwoom_kr_market_context_service import (
         KiwoomKrMarketContextService, kiwoom_market_reads,
@@ -94,6 +95,8 @@ def kiwoom_aggregate_owner(*, role: SourceRole, observed_at: datetime, max_pages
                                max_requests_per_page=max_requests_per_page)
     if observed_at.utcoffset() is None:
         raise ValueError("source_timezone_required")
+    if consumer_complete and role.key != "kr_local_indices_sectors_breadth":
+        raise ValueError("consumed_page_owner_scope_mismatch")
 
     def replay(graph: VerifiedAggregate, cutoff: datetime) -> OwnerProjection:
         receipt = graph.receipt
@@ -125,6 +128,9 @@ def kiwoom_aggregate_owner(*, role: SourceRole, observed_at: datetime, max_pages
             policy.check_lineage(json.loads(body))
         if set(counts) != {r.key for r in reads}:
             raise ValueError("kiwoom_required_read_set_missing")
+        if consumer_complete:
+            from app.services.kiwoom_consumed_page_contract import qualify
+            qualify(graph, observed_at=observed_at)
 
         class ReplayClient:
             source_observer = None
@@ -179,4 +185,9 @@ def kiwoom_aggregate_owner(*, role: SourceRole, observed_at: datetime, max_pages
     fingerprint = digest({"files": _fingerprints("app/services/unified_aggregate_owners.py",
         "app/services/kiwoom_kr_market_context_service.py", "app/providers/kiwoom_rest_client.py"),
         "observed_at": observed_at.isoformat(), "reads": [r.model_dump(mode="json") for r in reads]})
+    if consumer_complete:
+        from app.services.kiwoom_consumed_page_contract import CONTRACT
+        fingerprint = digest({"base": fingerprint, "completion": _fingerprints(
+            "app/services/kiwoom_consumed_page_contract.py")})
+        return OwnerAdapter(CONTRACT, fingerprint, reject_single, replay, observed_at)
     return OwnerAdapter("kiwoom-child-owner-replay-v1", fingerprint, reject_single, replay)
