@@ -1154,4 +1154,3 @@ REV9 must not solve owner/composition defects by recollecting it.
 The task is to prove exactly which captured source bytes each consumer needs, bind already-accepted business evidence to the new price generation without importing old prices, and then construct one immutable source-authority graph.
 
 Only after that source packet is sealed may Monitoring AI be tested—and the source-only blind bundle must be frozen first so an independent assessment can be made without contamination from the Monitoring AI verdict.
-
