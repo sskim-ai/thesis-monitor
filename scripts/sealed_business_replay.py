@@ -29,7 +29,30 @@ def cohort_composition_gate(matrix):
             'whole_source_artifacts_produced': False}
 
 
-def replay(corpus, output):
+def current_stock_inputs(corpus, plan, local, ticker, policy=POLICY):
+    receipts, artifacts, roles = {}, {}, {}
+    for ordinal, entry in enumerate(plan.reads, 1):
+        if entry.subject != ticker:
+            continue
+        path = corpus / 'stock-acquisition' / f'role-{ordinal:03d}.receipt.json'
+        receipt = json.loads(path.read_bytes())
+        roles[entry.role] = load_owned_role(plan, entry, receipt, path.parent)
+        receipts[entry.role] = receipt
+        for name in [receipt['normalized_artifact'], *[p['artifact'] for p in receipt['pages']]]:
+            artifacts[name] = (path.parent / name).read_bytes()
+    entry = next(e for e in plan.reads if e.subject == ticker)
+    components = materialize_source_components(ticker=ticker, market=entry.market,
+        cutoff=date.fromisoformat(entry.latest_completed_session),
+        observed_at=plan.frozen_at.isoformat(), roles=roles)
+    financial = json.loads((corpus / f'class-c/financial-{ticker}.json').read_bytes())
+    hashes = {k: digest(v) for k, v in dict(local=local, financial=financial,
+        components=components, receipts=receipts, plan=plan.model_dump(mode='json')).items()}
+    return dict(plan=plan, ticker=ticker, receipts=receipts, artifacts=artifacts,
+        local_seed=local, financial=financial, components=components,
+        expected_hashes=hashes, policy=policy)
+
+
+def replay(corpus, output, *, persisted_events=None):
     counts = network_guard()
     def read(path):
         return json.loads(path.read_bytes())
@@ -43,32 +66,25 @@ def replay(corpus, output):
     matrix = []
     for market, tickers in UNIVERSE.items():
         for ticker in tickers:
-            receipts, artifacts, roles = {}, {}, {}
-            for ordinal, entry in enumerate(plan.reads, 1):
-                if entry.subject != ticker:
-                    continue
-                path = corpus / 'stock-acquisition' / f'role-{ordinal:03d}.receipt.json'
-                receipt = read(path)
-                roles[entry.role] = load_owned_role(plan, entry, receipt, path.parent)
-                receipts[entry.role] = receipt
-                for name in [receipt['normalized_artifact'], *[p['artifact'] for p in receipt['pages']]]:
-                    artifacts[name] = (path.parent / name).read_bytes()
-            session = next(e.latest_completed_session for e in plan.reads if e.subject == ticker)
-            components = materialize_source_components(ticker=ticker, market=market,
-                cutoff=date.fromisoformat(session), observed_at=plan.frozen_at.isoformat(), roles=roles)
-            financial = read(corpus / f'class-c/financial-{ticker}.json')
-            hashes = {k: digest(v) for k, v in dict(local=locals_[market], financial=financial,
-                components=components, receipts=receipts, plan=plan.model_dump(mode='json')).items()}
-            inputs = dict(plan=plan, ticker=ticker, receipts=receipts, artifacts=artifacts,
-                local_seed=locals_[market], financial=financial, components=components,
-                expected_hashes=hashes, policy=POLICY)
+            inputs = current_stock_inputs(corpus, plan, locals_[market], ticker)
+            receipts, components = inputs['receipts'], inputs['components']
             row = {'ticker': ticker, 'market': market, 'attempt_id': acquisition['market_attempts'][market],
                 'price_receipts_sha256': digest(receipts), 'fresh_price_roles': sorted(receipts),
                 'current_price_eligible': components['current_price_eligible'],
                 'technical_state': components['technical_status'], 'old_price_consumed': False}
             try:
-                bound = bind_current_stock(stock_inputs=inputs, versions=versions,
-                    version_hashes=acquisition['class_c_versions'], local_seeds=list(locals_.values()))
+                event_inputs = (persisted_events or {}).get(ticker)
+                if event_inputs is None:
+                    bound = bind_current_stock(stock_inputs=inputs, versions=versions,
+                        version_hashes=acquisition['class_c_versions'], local_seeds=list(locals_.values()))
+                else:
+                    from app.services.persisted_business_event_owner import bind_persisted_event
+                    from app.services.unified_source_policy import UnifiedSourcePolicy
+                    inputs['policy'] = UnifiedSourcePolicy(
+                        POLICY.allowed_providers | {event_inputs['policy_provider']})
+                    event_inputs = {k: v for k, v in event_inputs.items() if k != 'policy_provider'}
+                    event_inputs['policy'] = inputs['policy']
+                    bound = bind_persisted_event(stock_inputs=inputs, event_inputs=event_inputs)
                 result = bound['result']
                 version_inputs = dict(ticker=ticker, versions=versions,
                     version_hashes=acquisition['class_c_versions'], local_seeds=list(locals_.values()),
@@ -82,6 +98,7 @@ def replay(corpus, output):
                     metadata = [r for r in ep['evidence'] if r['ref_id'] in cat['all_evidence_refs']]
                     authority = build_source_authority(quality_bundles={}, issuer_bindings={},
                         versioned_business_inputs=version_inputs,
+                        persisted_event_inputs=event_inputs,
                         ticker=ticker, source_generation_id=generation, source_packet=packet,
                         evidence_packet=ep, catalog=cat, source_metadata=metadata,
                         frozen_binding=freeze_current_source_binding(source_generation_id=generation,
@@ -91,7 +108,9 @@ def replay(corpus, output):
                     row.update(authority_sha256=digest(authority), authority_errors=errors)
                 save('stocks/' + ticker + '.json', bound)
                 row.update({k: result[k] for k in ('status', 'mandatory_missing', 'packet_sha256')})
-                row.update(binding_kind=bound['binding_kind'], business_version_sha256=bound['business_version']['version_sha256'],
+                row.update(binding_kind=bound['binding_kind'], business_version_sha256=(
+                    bound['business_version']['version_sha256'] if event_inputs is None
+                    else digest(result['persisted_event_receipt'])),
                     business_refs=[r['ref_id'] for r in result['observed_business_union'] if r['status'] == 'PASS'],
                     fresh_price_technical_unchanged=bound.get('fresh_price_technical_unchanged', True))
             except (ValueError, KeyError, TypeError) as exc:

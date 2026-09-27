@@ -155,7 +155,8 @@ def comparative_facts(quality, *, ticker, issuer_id, projection=None):
     return result
 
 
-def build_source_authority(*, quality_bundles, issuer_bindings, versioned_business_inputs=None, **kwargs):
+def build_source_authority(*, quality_bundles, issuer_bindings, versioned_business_inputs=None,
+                           persisted_event_inputs=None, **kwargs):
     current = build_current_source_authority(**kwargs)
     ticker = kwargs["ticker"]
     packet = kwargs["source_packet"]
@@ -232,6 +233,38 @@ def build_source_authority(*, quality_bundles, issuer_bindings, versioned_busine
         receipt.update(allowed_uses=record["allowed_uses"], authority_state=record["authority_state"],
                        authority_basis=record["authority_basis"])
     manifest = current["authority"]
+    if persisted_event_inputs is not None:
+        from app.services.persisted_business_event_owner import replay_persisted_event
+        from app.services.unified_stock_event_input import replay_news
+        from app.services.canonical_fact_service import canonical_event_fact
+        source, receipt = replay_persisted_event(**persisted_event_inputs)
+        if (receipt['ticker'] != ticker or receipt['current_run_id'] != kwargs['source_generation_id']
+                or receipt['current_eligibility_cutoff'] != packet['generated_at']):
+            raise ValueError('persisted_event_authority_current_identity_mismatch')
+        replayed = replay_news(source, security=source.read.security,
+            business_cutoff=persisted_event_inputs['cutoff'], policy=persisted_event_inputs['policy'])
+        expected_events = [canonical_event_fact(r) for r in replayed['evidence']]
+        if (stock.get('evidence') != replayed['evidence'] or
+                [f for f in stock['fact_catalog'] if f['fact_id'].startswith('event:')] != expected_events):
+            raise ValueError('persisted_event_authority_source_mismatch')
+        manifest['persisted_business_event_source'] = receipt
+        for item in current['family_receipts']:
+            if item['ref_id'] in {'canonical:' + f['fact_id'] for f in expected_events}:
+                item['persisted_business_event_receipt_sha256'] = digest(receipt)
+                record = records[item['ref_id']]
+                # Resolving the source bytes is not permission to confirm the
+                # headline or use it as decisive directional/valuation evidence.
+                if (record['source_family'] == 'unclassified'
+                        and record['allowed_uses'] == [SourceUse.CONTEXT.value]):
+                    record.update(authority_state='RESOLVED', authority_basis=receipt['contract'],
+                        source_type=receipt['state'], source_family=receipt['state'],
+                        source_scope='source_verified_headline_context_only_requires_review',
+                        denial_reasons=['linked_headline_not_confirmed_contract_or_official_financial'],
+                        required_metadata=['exact_raw_source_replay', 'historical_acquisition_identity',
+                                           'current_eligibility', 'requires_review'],
+                        compatible_source_versions=[receipt['contract']])
+                    item.update(source_family=receipt['state'], authority_state=record['authority_state'],
+                                authority_basis=record['authority_basis'])
     manifest.update(reported_quality_owner_contract=CONTRACT,
                     current_source_family_receipts_sha256=canonical_sha256(current["family_receipts"]))
     manifest.pop("authority_manifest_sha256")
