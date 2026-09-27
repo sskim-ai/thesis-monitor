@@ -28,6 +28,9 @@ hashes, original quality/input hashes, subject/security/issuer ownership, source
 period/provider, owner version and reproducible receipt. Existing records are
 never replaced. Registration allows only CONTEXT and CONFIDENCE; existing source
 permissions remain unchanged. The raw sealed ZIP/packet hashes remain exact.
+Detached packet/evidence self-hashes are recomputed after annotation and final
+time/visibility projection, with the sealed parent packet identity preserved.
+The historical R2 default path is unchanged; only R3 opts into this view owner.
 
 ## Consumption Gate
 

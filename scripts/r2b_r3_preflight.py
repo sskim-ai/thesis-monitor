@@ -62,7 +62,8 @@ def run(args):
                     stock, authority = binding.bind_supplement(stock, authority, supplement, owner_inputs=owner_inputs)
                 projection = binding.require_quality_owner(stock, authority, decision_mode=item["decision_mode"])
                 row, inputs = previous.preflight_subject(stock, authority, locals_[market], generation=generation,
-                    cutoff=combined["seed"]["started_at"], defer_b=True)
+                    cutoff=combined["seed"]["started_at"], defer_b=True,
+                    source_view_owner=binding.quality_source_view)
                 row["quality_owner_projection"] = projection
                 row["original_source_sha256"] = digest(original)
                 row["quality_authority"] = [r for r in authority["authority"]["authority_records"]

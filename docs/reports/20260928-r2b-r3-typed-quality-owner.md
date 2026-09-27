@@ -36,6 +36,9 @@ relax validation, or proceed to models without a new fair-comparison decision.
 Implementation exact SHA: focused 519 passed; full 6154 passed / 63 unchanged
 skips; Ruff/diff/Investment Knowledge/Chart Knowledge passed. Final exact-SHA
 replay and validation receipts are in the immutable report ZIP.
+The final derivative-identity closure refreshes detached packet/evidence hashes
+after supplementation and visibility projection; parent sealed hashes survive.
+An additional regression verifies stable identity and evidence-change sensitivity.
 
 Existing thresholds, source authority, raw economic packets and blind identity
 are unchanged. New typed quality allows only CONTEXT/CONFIDENCE. 003690 generic

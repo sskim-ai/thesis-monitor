@@ -16,6 +16,24 @@ from tests.test_m12ds_r4_r1_sec_field_quality import fixture
 from tests.test_financial_observation_quality import snapshots
 
 
+def test_derivative_identity_tracks_final_view_without_relabeling_parent():
+    view = dict(packet={"stocks": []}, packet_sha256="original-seal", ownership={},
+        evidence_packet=dict(evidence=[{"statement": "initial"}], evidence_sha256="old",
+                             technical_context_id=None, technical_context_status="LEGACY_UNSPECIFIED"))
+    binding.refresh_view_identity(view)
+    first = deepcopy(view)
+    binding.refresh_view_identity(view)
+    assert view == first
+    assert view["parent_packet_sha256"] == "original-seal"
+    assert view["packet_sha256"] == view["diagnostic_packet_sha256"] == digest(view["packet"])
+    assert view["ownership"]["source_packet"] == view["evidence_packet"]
+    view["evidence_packet"]["evidence"][0]["statement"] = "derived"
+    binding.refresh_view_identity(view)
+    assert view["evidence_packet"]["evidence_sha256"] != first["evidence_packet"]["evidence_sha256"]
+    assert view["parent_packet_sha256"] == "original-seal"
+    assert view["ownership"]["source_packet"] == view["evidence_packet"]
+
+
 def bundle_for(provider):
     if provider == "sec_companyfacts":
         prior, current = fixture("FICTIVE")

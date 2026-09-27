@@ -143,8 +143,8 @@ def b_input(view, cat, sub, chain, classification, capability):
     return ctx, entries, valuation
 
 
-def preflight_subject(stock, authority, local, *, generation, cutoff, defer_b=False):
-    view, receipt = c.source_view(stock, authority, local, cutoff=cutoff)
+def preflight_subject(stock, authority, local, *, generation, cutoff, defer_b=False, source_view_owner=None):
+    view, receipt = (source_view_owner or c.source_view)(stock, authority, local, cutoff=cutoff)
     cat, sub, chain = subject_inputs(view, authority, receipt, generation=generation)
     owned = OwnedEvidencePacket.model_validate(view["ownership"])
     metadata = [r for r in sub["decision_evidence"] if r["ref_id"] in owned.core_refs]

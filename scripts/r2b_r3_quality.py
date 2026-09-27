@@ -3,12 +3,34 @@ from copy import deepcopy
 import json
 
 from app.services import canonical_business_quality_owner as canonical
-from app.services.cross_market_decision_engine_service import build_decision_evidence_packet
+from app.services.cross_market_decision_engine_service import _canonical_sha, build_decision_evidence_packet
 from app.services.direction_timing_ownership_service import build_owned_evidence_packet
 from app.services.packet_owned_technical_context_service import PacketOwnedTechnicalContext
 from app.services.unified_snapshot_contract import digest
 from scripts.m12cr_r1_typed_quality_contract import project_business_evidence_quality
 from scripts.m12da_source_use_contract import build_trusted_source_authority_manifest
+from scripts import r2b_r2_contract as previous_contract
+
+
+def refresh_view_identity(view):
+    """Bind the detached view, preserving the sealed packet's parent identity."""
+    view["parent_packet_sha256"] = view.get("parent_packet_sha256") or view.get("packet_sha256")
+    view["packet_sha256"] = digest(view["packet"])
+    view["diagnostic_packet_sha256"] = view["packet_sha256"]
+    ep = view["evidence_packet"]
+    ep["evidence_sha256"] = _canonical_sha({k: ep[k] for k in
+        ("evidence", "technical_context_id", "technical_context_status")})
+    view["ownership"]["source_packet"] = deepcopy(ep)
+
+
+def quality_source_view(stock, authority, local, *, cutoff):
+    view, receipt = previous_contract.source_view(stock, authority, local, cutoff=cutoff)
+    refresh_view_identity(view)
+    receipt["derived_evidence_sha256"] = digest(view["evidence_packet"])
+    receipt["derived_packet_sha256"] = view["packet_sha256"]
+    receipt.pop("receipt_sha256")
+    receipt["receipt_sha256"] = digest(receipt)
+    return view, receipt
 
 
 def bind_supplement(stock, authority, supplement, *, owner_inputs):
@@ -42,6 +64,12 @@ def bind_supplement(stock, authority, supplement, *, owner_inputs):
     bound["authority"]["authority_manifest_sha256"] = digest(bound["authority"])
     view["source_graph"][fact["fact_id"]] = dict(ticker=stock["ticker"], fact_sha256=digest(fact),
         source=canonical.CONTRACT, derivation_receipt_sha256=receipt["receipt_sha256"])
+    view["evidence_reference_graph"][ref] = dict(ticker=stock["ticker"],
+        source_ref=evidence[0]["source_ref"], evidence_sha256=digest(evidence[0]),
+        input_hashes=deepcopy(view["input_hashes"]),
+        technical_context_id=view["evidence_packet"]["technical_context_id"],
+        derivation_receipt_sha256=receipt["receipt_sha256"])
+    refresh_view_identity(view)
     return view, bound
 
 
