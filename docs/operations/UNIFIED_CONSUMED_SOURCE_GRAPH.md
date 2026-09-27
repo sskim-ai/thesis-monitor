@@ -76,3 +76,48 @@ they also read assessments, implicit caches/report paths and stored briefings.
 Calling them against an old assessment is not an acceptable shortcut. No older
 accepted AI output is a source. No whole-cohort qualification follows merely
 from passing individual owner tests.
+
+## REV7 Frozen-Input Prerequisite (2026-09-27)
+
+REV6 `febd3931fe6003f6d3d6f6c61b17607ebc67058a` closes the 22 stock/business
+packets, including SKHY's issuer-only OpenDART revenue bridge. This is NOT a
+whole-market run seed. The 24-role inventory remains unchanged (A5/B4/C12/D3).
+
+The REV7 local frozen-input audit stops at
+`M12DS_R6_R5F_R2B0_R5_REV7_FROZEN_MARKET_SOURCE_INPUT_GAP`:
+
+- `us_market_prices`: real full-symbol raw request/response receipts and their
+  source-time/session/attempt bindings were not located. Existing owner tests
+  exercise real normalization using synthetic transport only.
+- `kr_local_indices_sectors_breadth`: the historical 2026-09-07 saved payload
+  replays the parser/audit, but lacks the original request/page/cursor receipt
+  graph and attempt binding. It cannot join the 2026-09-26 stock price attempt.
+- `night_and_publication_context`: the accepted historical two-product native
+  replay remains valid, with output hash
+  `68991ed322b5d067f46e6d0a1ae4f9151533ff10177e4d31ab61997c39210937`.
+  This does not establish a new whole-run Class-B binding.
+
+Instruction sections 11/21/26 require the missing-input stop. No full-source
+assembler, authority integration, or R2B instruction is claimed by this audit.
+No full run seed, US/KR packet or combined authority hash is manufactured.
+`NETWORK_FREE_SOURCE_ADAPTER_PREQUALIFIED` and
+`complete_source_adapter_qualified` both remain false. Source/model/renderer
+policies, production activation and scheduler design are unchanged.
+
+The next composition implementation still needs one immutable proof seed binding
+each Class-A market/stock attempt, Class-B acquisition, eligible Class-C exact
+version and explicit optional denial. Its cutoff must remain a proof cutoff,
+not a replacement source timestamp. US/KR child packets must carry that same
+seed hash, while preserving every original acquisition/session/availability time.
+Each consumed field needs the existing owner/provider/receipt/quality/scope edge.
+Missing mandatory roles cannot be optional denials; excluded Alpha FX cannot be
+replaced with a cached value. Full composition and authority replay must match
+twice before a positive gate is possible.
+
+The financial authority consumer is unchanged. It still needs integration of
+the explicit issuer-business bridge, without using valuation identity backfill:
+SKHY security -> proven legal issuer -> OpenDART DART:00164779 -> original
+000660 revenue occurrences. SEC identity evidence cannot relabel those amounts
+as SEC-native. Per-share/valuation eligibility stays false and price/technical
+transfers stay zero. The bridge does not itself create a whole-source authority
+graph or authorize future Market/Core/A/B execution.
