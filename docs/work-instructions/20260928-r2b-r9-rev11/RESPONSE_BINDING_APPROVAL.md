@@ -15,5 +15,16 @@ only through the existing bounded source owners. No broader discovery, budget
 increase, fabricated completion or change to the REV10 analytical contracts is
 authorized by this clarification.
 
+Second user clarification, received on 2026-09-28:
+
+> 기존 상한 내 수집 후 완전성 검증 허용
+
+KR collection may use the existing request-local owner cap, within the accepted
+maximum of 20, without asserting a guaranteed minimum page size. Preserve the
+global configured capability of 50. After collection, prove consumer completeness;
+insufficient consumed data or an unresolved continuation at the bounded limit is
+SOURCE_PARTIAL and may not advance to AI. This is not permission to silently
+truncate, raise caps, broaden queries or relabel partial data as complete.
+
 The earlier literal-wire-only inventory is development evidence, not the final
 REV11 gate. All other REV11 restrictions remain unchanged.
