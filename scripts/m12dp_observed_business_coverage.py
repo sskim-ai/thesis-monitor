@@ -112,6 +112,8 @@ def evaluate_subject(
         status = "ISSUER_SECURITY_BINDING_UNRESOLVED"
     elif eligible:
         status = READY
+    elif observed and all(s["field_lineage"].get("status") == "PASS" for s in observed):
+        status = "ONLY_CONTEXT_OR_BASELINE_THESIS"
     elif observed and any(s["field_lineage"].get("fields") for s in observed):
         status = "SOURCE_QUALITY_UNUSABLE"
     elif observed or not source_metadata:

@@ -38,7 +38,8 @@ def test_verified_past_report_is_not_relabelled_current_and_inputs_immutable():
     data = subject()
     before = deepcopy(data)
     result = evaluate_subject(**data)
-    assert result["status"] == READY
+    assert result["status"] == "ONLY_CONTEXT_OR_BASELINE_THESIS"
+    assert result["directional_source_refs"] == []
     assert result["sources"][0]["as_of"] == PERIOD
     assert result["sources"][0]["field_lineage"]["status"] == "PASS"
     assert result["issuer_binding"]["issuer_id"] == "CIK:0000000001"
@@ -102,7 +103,9 @@ def test_issuer_only_mapping_does_not_require_adr_denominator():
         "security_identity_state": "unknown", "security_identity_verification_status": "unverified",
     }
     rebind(data)
-    assert evaluate_subject(**data)["status"] == READY
+    result = evaluate_subject(**data)
+    assert result["status"] == "ONLY_CONTEXT_OR_BASELINE_THESIS"
+    assert result["issuer_binding"]["status"] == "PASS"
 
 
 def test_failed_mapping_cannot_borrow_another_issuer():
@@ -121,12 +124,15 @@ def test_whole_cohort_failure_prevents_any_core_calls():
     bad["frozen_binding"]["binding_sha256"] = "0" * 64
     gate = evaluate_cohort([missing, bad, good], expected_subjects=["GOOD", "DRIFT", "MISSING"])
     assert len(gate["subjects"]) == 3
-    assert gate["ready_count"] == 1
+    assert gate["ready_count"] == 0
     assert gate["terminal"] == "M12DP_CURRENT_SOURCE_COLLECTION_OR_BINDING_FAILED"
     assert not gate["allow_core_preflight"] and not gate["allow_model_calls"]
 
 
-def test_coverage_pass_still_requires_core_schema_gate():
+def test_coverage_pass_still_requires_core_schema_gate(monkeypatch):
+    # Exercise cohort authorization separately from the current-only source fixture.
+    monkeypatch.setattr("scripts.m12dp_observed_business_coverage.evaluate_subject",
+                        lambda **data: {"ticker": data["ticker"], "status": READY})
     data = subject()
     result = evaluate_cohort([data], expected_subjects=[data["ticker"]])
     assert result["allow_core_preflight"]
@@ -138,7 +144,7 @@ def test_cohort_cannot_combine_independently_bound_different_generations():
     second["source_generation_id"] = "different-generation"
     second["issuer_binding"]["source_generation_id"] = "different-generation"
     rebind(second)
-    assert evaluate_subject(**second)["status"] == READY
+    assert evaluate_subject(**second)["status"] == "ONLY_CONTEXT_OR_BASELINE_THESIS"
     with pytest.raises(ValueError, match="coverage_cohort_generation_mismatch"):
         evaluate_cohort([first, second], expected_subjects=["ONE", "TWO"])
 
