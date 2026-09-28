@@ -191,6 +191,10 @@ def registered_projection(facts):
     for row in build_numeric_registry(projected):
         if row.get('registered') is True:
             continue
+        # Night references and D/W/M scalars have their own existing typed
+        # catalog/eligibility/arithmetic binder, checked after context creation.
+        if by_id[row['fact_id']]['fact_type'] in {'night_futures','night_futures_timeframe'}:
+            continue
         path = row['field_path']
         # Only optional observation scalars may be withheld here. Mandatory
         # identity and nested derivation owners must be closed, not stripped.

@@ -134,3 +134,10 @@ def test_unregistered_alias_cannot_hide_behind_registered_siblings():
     result=project(fixture('kr'))
     result['context']['facts']['source:index']['invented_number']=10
     assert numeric_alias_audit(result['context'],result['packet']['market_context'])['status']=='FAIL'
+
+
+def test_night_specific_numeric_owner_is_preserved_for_downstream_validation():
+    facts=[dict(fact_id='night',fact_type='night_futures',fields=dict(reference_price=10,
+        night_timeframes=dict(daily=dict(open=11,close=12))))]
+    projected,denied=registered_projection(facts)
+    assert projected==facts and denied==[]
