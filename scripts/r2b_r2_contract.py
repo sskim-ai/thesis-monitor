@@ -19,7 +19,7 @@ from scripts import m12ds_r4_r4_policy as policy
 from scripts import m12ds_r4_r4_schemas as schemas
 from scripts.m12cn_policy_contract import build_subject_catalog
 from scripts.m12da_source_use_contract import (
-    build_source_use_projection, canonical_source_metadata_sha256,
+    build_source_use_projection, canonical_sha256, canonical_source_metadata_sha256,
     freeze_source_use_binding, freeze_source_use_input_expectation,
     validate_source_use_current_input,
 )
@@ -177,7 +177,7 @@ def bound_chain(view, authority, *, atomic, generation, source_generation, view_
             record["source_period"] = view_receipt["strategy"]["version_created_at"]
         else:
             record["source_period"] = indexed[ref].get("as_of")
-    derivative.update(catalog_sha256=digest(cat), source_metadata_sha256=canonical_source_metadata_sha256(metadata),
+    derivative.update(catalog_sha256=canonical_sha256(cat), source_metadata_sha256=canonical_source_metadata_sha256(metadata),
         parent_authority_sha256=digest(original), source_view_receipt_sha256=view_receipt["receipt_sha256"])
     derivative.pop("authority_manifest_sha256")
     derivative["authority_manifest_sha256"] = digest(derivative)
