@@ -61,6 +61,9 @@ class CurrentMultiple(ContractModel):
                 raise ValueError('valuation_forward_horizon_required')
         if self.numerator_role == 'CURRENT_PRICE_CONTEXT_ONLY' and self.entry_use_eligible:
             raise ValueError('native_multiple_has_no_owned_current_price_arithmetic')
+        if (self.source_method == 'finnhub_native_current_metric' and self.status != 'UNAVAILABLE'
+                and self.numerator_role != 'CURRENT_PRICE_CONTEXT_ONLY'):
+            raise ValueError('native_multiple_must_preserve_provider_price_scope')
         return self
 
 
@@ -209,11 +212,17 @@ def _native_metrics(metrics, inputs, *, ticker, run_id, price, security):
         value = wire.get(key)
         return _positive_number(value) if type(value) in (int, float) and math.isfinite(value) else None
 
-    values = {'PER': positive('peTTM'), 'PBR': positive('pbQuarterly') or positive('pbAnnual')}
+    # A present but unusable quarterly multiple cannot be replaced by an older
+    # annual basis. The fallback is only for an absent quarterly field.
+    book_key = 'pbQuarterly' if wire.get('pbQuarterly') is not None else 'pbAnnual'
+    values = {'PER': positive('peTTM'), 'PBR': positive(book_key)}
     output = []
     for metric in metrics:
         value = values.get(metric.metric)
         denominator = wire.get('epsTTM') if metric.metric == 'PER' else None
+        if denominator is not None and (type(denominator) not in (int, float) or not math.isfinite(denominator)):
+            output.append(unavailable(metric, 'NATIVE_DENOMINATOR_VALUE_INVALID'))
+            continue
         nm = type(denominator) in (float, int) and denominator <= 0
         if value is None and not nm or metric.metric == 'fPER':
             output.append(unavailable(metric, 'NO_FRESH_ESTIMATE_HORIZON_PUBLICATION_CURRENTNESS'

@@ -133,3 +133,38 @@ def test_section_rejects_resigned_numerator_mismatch(tmp_path):
     value['metrics'][0]['numerator'] = 99
     with pytest.raises(ValueError, match='numerator_mismatch'):
         _valuation_rows(CurrentValuationView.model_validate(value))
+
+
+@pytest.mark.parametrize('quarterly', [-1, 0, True])
+def test_invalid_present_quarterly_book_never_falls_back_to_annual(tmp_path, quarterly):
+    import json
+    inputs = valuation_inputs(tmp_path)
+    native = inputs['valuation_inputs']
+    payload = json.loads(native['raw'])
+    payload['metric'].update(pbQuarterly=quarterly, pbAnnual=2)
+    native['raw'] = encoded(payload)
+    native['receipt']['source_sha256'] = sha256_bytes(native['raw'])
+    source = prepare_fresh_subject(inputs, execution_generation_id='offline-valuation')['stock']
+    pbr = next(r for r in source['valuation_view']['metrics'] if r['metric'] == 'PBR')
+    assert pbr['status'] == 'UNAVAILABLE' and pbr['value'] is None
+
+
+def test_native_boolean_eps_is_not_a_denominator(tmp_path):
+    import json
+    inputs = valuation_inputs(tmp_path)
+    native = inputs['valuation_inputs']
+    payload = json.loads(native['raw'])
+    payload['metric']['epsTTM'] = True
+    native['raw'] = encoded(payload)
+    native['receipt']['source_sha256'] = sha256_bytes(native['raw'])
+    source = prepare_fresh_subject(inputs, execution_generation_id='offline-valuation')['stock']
+    per = next(r for r in source['valuation_view']['metrics'] if r['metric'] == 'PER')
+    assert per['status'] == 'UNAVAILABLE' and per['denominator'] is None
+
+
+def test_native_multiple_cannot_claim_current_price_derivation():
+    with pytest.raises(ValueError, match='provider_price_scope'):
+        CurrentMultiple(metric='PER', status='QUALIFIED', value=10, numerator=20, denominator=2,
+            denominator_period='TTM', publication_date='2026-09-25', latest_published=True,
+            source_method='finnhub_native_current_metric', input_hashes=('a'*64,), denial_reason=None,
+            display_eligible=True, entry_use_eligible=True)
