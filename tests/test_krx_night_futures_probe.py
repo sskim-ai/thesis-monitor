@@ -112,18 +112,13 @@ def test_holiday_aware_pair_uses_preceding_eligible_day_for_both_products() -> N
     assert result.source_date == date(2026, 8, 18)
     by_product = {item.product: item for item in result.observations}
     kospi = by_product["KOSPI200"]
-    kosdaq = by_product["KOSDAQ150"]
+    assert set(by_product) == {"KOSPI200"}
     assert kospi.reference_date == date(2026, 8, 14)
     assert kospi.contract_code == "A0169000"
     assert kospi.point_change == -3.95
     assert kospi.change_pct == pytest.approx(-0.35945036)
     assert kospi.provider_change_point == -3.95
     assert kospi.provider_change_match is True
-    assert kosdaq.reference_date == date(2026, 8, 14)
-    assert kosdaq.contract_code == "A0669000"
-    assert kosdaq.point_change == -10.20
-    assert kosdaq.change_pct == pytest.approx(-0.68571429)
-    assert kosdaq.provider_change_match is True
     assert "source_timestamp" not in kospi.model_dump()
     assert "night_timestamp" not in kospi.model_dump()
 
@@ -180,8 +175,7 @@ def test_regular_preceding_session_control_uses_august_13_for_august_14() -> Non
     by_product = {item.product: item for item in result.observations}
     assert by_product["KOSPI200"].reference_date == date(2026, 8, 13)
     assert by_product["KOSPI200"].point_change == 21.70
-    assert by_product["KOSDAQ150"].reference_date == date(2026, 8, 13)
-    assert by_product["KOSDAQ150"].point_change == 12.30
+    assert set(by_product) == {"KOSPI200"}
 
 
 def test_provider_change_conflict_is_fail_closed() -> None:
@@ -369,7 +363,7 @@ def test_preceding_day_same_contract_rows_produce_verified_changes() -> None:
     assert by_product["KOSPI200"].contract_code == "KR4101V60003"
     assert by_product["KOSPI200"].point_change == 2.85
     assert by_product["KOSPI200"].change_pct == pytest.approx(0.66534376)
-    assert by_product["KOSDAQ150"].point_change == -4.2
+    assert set(by_product) == {"KOSPI200"}
 
 
 def test_zero_reference_price_is_not_promoted() -> None:
@@ -603,10 +597,10 @@ def test_run51_previous_xkrx_reference_is_ready_two_of_two() -> None:
 
     assert result.expected_reference_date == date(2026, 9, 1)
     assert result.provider_raw_bas_dd == date(2026, 9, 1)
-    assert result.reference_date_match_count == 2
+    assert result.reference_date_match_count == 1
     assert result.finality_valid is True
     assert result.session_freshness == "fresh"
-    assert [item.readiness for item in result.product_statuses] == ["READY", "READY"]
+    assert [item.readiness for item in result.product_statuses] == ["READY"]
     assert all(item.reference_date_match for item in result.product_statuses)
     assert all(item.finality_valid for item in result.product_statuses)
     by_product = {item.product: item for item in result.observations}
@@ -614,10 +608,7 @@ def test_run51_previous_xkrx_reference_is_ready_two_of_two() -> None:
     assert by_product["KOSPI200"].regular_close == 1067.85
     assert by_product["KOSPI200"].point_change == -3.35
     assert by_product["KOSPI200"].change_pct == pytest.approx(-0.31371447)
-    assert by_product["KOSDAQ150"].night_close == 1432.8
-    assert by_product["KOSDAQ150"].regular_close == 1440.1
-    assert by_product["KOSDAQ150"].point_change == -7.3
-    assert by_product["KOSDAQ150"].change_pct == pytest.approx(-0.50690924)
+    assert set(by_product) == {"KOSPI200"}
 
 
 def test_matching_run51_reference_before_finality_is_not_ready() -> None:

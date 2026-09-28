@@ -56,8 +56,10 @@ FOREIGN = Limits(1, 128, 2, 2, 3, 2, 1, 1)
 DART = Limits(2, 200, 1, 1, 2, 0, 0, 0)
 
 
-def make_plan(security, *, market, cutoff, run_id):
-    if cutoff.utcoffset() is None or security["ticker"] in RETAINED:
+def make_plan(security, *, market, cutoff, run_id, all_subjects_fresh=False):
+    if type(all_subjects_fresh) is not bool:
+        raise AcquisitionDenied('explicit_acquisition_mode_required')
+    if cutoff.utcoffset() is None or (security["ticker"] in RETAINED and not all_subjects_fresh):
         raise AcquisitionDenied("retained_or_naive_cutoff")
     if not all(security.get(k) for k in ("canonical_company_id", "canonical_security_id", "identity_provider")):
         raise AcquisitionDenied("SECURITY_IDENTITY_UNRESOLVED")

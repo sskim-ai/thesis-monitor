@@ -12,6 +12,7 @@ from app.services.unified_run_acquisition import RunAcquisitionObserver
 from pydantic import BaseModel, Field
 
 from app.config import get_settings
+from app.services.night_futures_product_scope import PRODUCTS as TARGET_PRODUCTS
 from app.services.market_session import preceding_exchange_session_date
 from app.services.night_futures_session_mapping_service import (
     KST,
@@ -24,7 +25,6 @@ from app.services.night_futures_session_mapping_service import (
 KRX_FUTURES_DAILY_URL = "https://data-dbg.krx.co.kr/svc/apis/drv/fut_bydd_trd"
 KRX_SERVICE_NAME = "fut_bydd_trd"
 USER_AGENT = "thesis-monitor/KRX-night-futures-probe"
-TARGET_PRODUCTS = ("KOSPI200", "KOSDAQ150")
 NIGHT_FUTURES_SESSION_BASIS_CONTRACT = "night-futures-session-basis-v1"
 NIGHT_COMPARISON_SEMANTIC = "completed_night_close_minus_immediately_preceding_day_close"
 
@@ -254,7 +254,8 @@ def _parse_row(item: dict[str, object]) -> KrxFuturesRow | None:
     contract_code = str(item.get("ISU_CD") or "").strip()
     contract_name = str(item.get("ISU_NM") or "").strip()
     close = _number(item.get("TDD_CLSPRC"))
-    if not all((business_date, product, session, contract_code, contract_name)) or close is None:
+    if (not all((business_date, product, session, contract_code, contract_name))
+            or close is None or product not in TARGET_PRODUCTS):
         return None
     return KrxFuturesRow(
         business_date=business_date,
@@ -328,7 +329,8 @@ def parse_krx_futures_payloads(
         ),
         reason=None if raw_rows else "empty_response",
     )
-    parsed = [row for item in raw_rows if (row := _parse_row(item)) is not None]
+    parsed = [row for item in raw_rows if (row := _parse_row(item)) is not None
+              and row.product in TARGET_PRODUCTS]
     result.parsed_row_count = len(parsed)
     result.parser_status = "PASS" if parsed or not raw_rows else "PARSER_ERROR"
     result.returned_business_dates = sorted({row.business_date for row in parsed})

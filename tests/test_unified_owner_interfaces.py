@@ -390,7 +390,7 @@ def test_night_run_acquisition_data_reads_and_product_denial(tmp_path, monkeypat
     result = asyncio.run(provider.collect(as_of))
     receipt = json.loads((root / "normalization.json").read_bytes())
     assert receipt["status"] == ("UNAVAILABLE" if unavailable else "OWNER_NORMALIZED")
-    assert len(result.observations) == (0 if unavailable else 2)
+    assert len(result.observations) == (0 if unavailable else 1)
     assert len(receipt["reads"]) == (7 if unavailable else 2)
     assert "synthetic-krx-secret" not in "".join(f.read_text() for f in root.iterdir())
     assert all(row["receipt"]["acquisition_id"] == "night-once" for row in receipt["reads"])

@@ -348,7 +348,7 @@ async def test_gate_holds_for_ai_pilot_after_both_contracts_are_ready(
 
 
 @pytest.mark.anyio
-async def test_gate_retries_only_krx_until_both_are_ready(monkeypatch) -> None:
+async def test_gate_retries_only_krx_until_configured_product_ready(monkeypatch) -> None:
     monkeypatch.setattr(
         "app.services.morning_gate.expected_latest_completed_krx_session",
         lambda run_date: EXPECTED_SESSION,
@@ -368,7 +368,7 @@ async def test_gate_retries_only_krx_until_both_are_ready(monkeypatch) -> None:
     with Session(_engine()) as session:
         _seed_morning(session)
 
-        for minute in (5, 10, 15):
+        for minute in (5, 10):
             result = await run_morning_night_futures_gate(
                 session,
                 date(2026, 8, 14),
@@ -381,18 +381,18 @@ async def test_gate_retries_only_krx_until_both_are_ready(monkeypatch) -> None:
         result = await run_morning_night_futures_gate(
             session,
             date(2026, 8, 14),
-            _at(8, 20),
+            _at(8, 15),
             provider=provider,
             notifier=notifier,
         )
         metadata = _gate_metadata(session)
 
     assert result.status == "dispatched"
-    assert len(provider.calls) == 4
+    assert len(provider.calls) == 3
     assert metadata["KOSPI200_first_available_at"].endswith("08:15:00+09:00")
-    assert metadata["KOSDAQ150_first_available_at"].endswith("08:20:00+09:00")
-    assert metadata["first_complete_at"].endswith("08:20:00+09:00")
-    assert metadata["retry_count"] == 4
+    assert not metadata.get("KOSDAQ150_first_available_at")
+    assert metadata["first_complete_at"].endswith("08:15:00+09:00")
+    assert metadata["retry_count"] == 3
 
 
 @pytest.mark.anyio

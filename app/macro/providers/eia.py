@@ -1,9 +1,11 @@
 from datetime import datetime, timezone
+from math import isfinite
 
 import httpx
 
 from app.config import get_settings
 from app.macro.providers.base import CollectedObservation, MacroProviderResult
+from app.services.macro_source_time import publication_context
 
 
 EIA_SERIES = {
@@ -41,24 +43,33 @@ class EiaProvider:
                         },
                     )
                     response.raise_for_status()
+                    retrieved_at = datetime.now(timezone.utc)
                     rows = response.json().get("response", {}).get("data", [])
                     if not rows:
                         result.warnings.append(f"{series_code}: no current observation")
                         continue
                     row = rows[0]
+                    value = float(row["value"])
+                    if not isfinite(value):
+                        raise ValueError("nonfinite_source_value")
                     observed_at = datetime.fromisoformat(str(row["period"])).replace(
                         tzinfo=timezone.utc
                     )
+                    temporal = publication_context(provider=self.name, series=series_code,
+                        period=row["period"], query_as_of=as_of, retrieved_at=retrieved_at,
+                        response_bytes=response.content, cadence="weekly", latest_verified=False,
+                        daily_required=True)
                     result.observations.append(
                         CollectedObservation(
                             series_code=series_code,
                             category=category,
                             observed_at=observed_at,
-                            value=float(row["value"]),
+                            value=value,
                             unit=str(row.get("units") or fallback_unit),
                             frequency="weekly",
                             source_url="https://www.eia.gov/petroleum/supply/weekly/",
-                            raw_payload={"series_id": series_id},
+                            raw_payload={"series_id": series_id, "source_period": row["period"],
+                                         "publication_context": temporal},
                         )
                     )
                 except (httpx.HTTPError, KeyError, TypeError, ValueError) as exc:

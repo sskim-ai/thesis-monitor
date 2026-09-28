@@ -23,17 +23,13 @@ from app.jobs.probe_krx_night_futures import (
     _target_product,
 )
 from app.services.market_session import is_exchange_session_date
+from app.services.night_futures_product_scope import SERIES_CODES
 
 
 KRX_NIGHT_DAILY_OHLC_CONTRACT = "krx-night-daily-ohlc-v1"
 KRX_NIGHT_HISTORY_CONTRACT = "krx-night-history-store-v1"
 KRX_NIGHT_DWM_CONTRACT = "krx-night-same-contract-dwm-v1"
 KRX_NIGHT_RAW_RECEIPT_CONTRACT = "krx-night-raw-response-receipt-v1"
-
-SERIES_CODES = {
-    "KOSPI200": "KRX_KOSPI200_NIGHT_FUT",
-    "KOSDAQ150": "KRX_KOSDAQ150_NIGHT_FUT",
-}
 
 KRX_NIGHT_OHLC_FIELD_MAPPING = {
     "date": "BAS_DD",
@@ -295,7 +291,7 @@ def normalize_krx_night_daily_bars(
         if _session(item.get("MKT_NM")) != "night":
             continue
         product = _target_product(item.get("PROD_NM"), item.get("ISU_NM"))
-        if product is None:
+        if product not in SERIES_CODES:
             continue
         reference_date = _date_value(item.get("BAS_DD"))
         contract_code = str(item.get("ISU_CD") or "").strip()

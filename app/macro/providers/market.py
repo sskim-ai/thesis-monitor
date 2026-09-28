@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 import hashlib
 from pathlib import Path
+from math import isfinite
 
 import httpx
 from pydantic import TypeAdapter
@@ -42,12 +43,30 @@ def normalize_market_observation(payload: dict, *, symbol: str, source_url: str)
     bars = payload.get("periods", {}).get("daily", [])
     if not bars:
         return None
-    latest = bars[-1]
+    ordered = sorted(bars, key=lambda row: str(row['date']))
+    if len({row['date'] for row in ordered}) != len(ordered):
+        raise ValueError('market_duplicate_daily_occurrence')
+    latest = ordered[-1]
+    value = float(latest['close'])
+    previous = float(ordered[-2]['close']) if len(ordered) > 1 else None
+    if not isfinite(value) or value <= 0 or (previous is not None and (not isfinite(previous) or previous <= 0)):
+        raise ValueError('market_nonpositive_or_nonfinite_close')
+    prior_date = str(ordered[-2]['date']) if previous is not None else None
+    if prior_date is not None:
+        expected_prior = us_market_session(datetime.fromisoformat(str(latest['date'])).replace(
+            hour=0, tzinfo=timezone.utc)).latest_completed_regular_session_date
+        if datetime.fromisoformat(prior_date).date() != expected_prior:
+            raise ValueError('market_nonadjacent_daily_baseline')
     return CollectedObservation(
         series_code=symbol, category=MARKET_SYMBOLS[symbol],
         observed_at=datetime.fromisoformat(str(latest["date"])).replace(tzinfo=timezone.utc),
-        value=float(latest["close"]), unit="usd", frequency="daily",
+        value=value, previous_value=previous,
+        change_value=value-previous if previous is not None else None,
+        change_pct=(value/previous-1)*100 if previous is not None else None,
+        unit="usd", frequency="daily",
         market_session="us_regular", source_url=source_url,
+        raw_payload={'previous_observation_date': prior_date,
+                     'return_basis': 'same_response_adjacent_adjusted_regular_closes'},
     )
 
 

@@ -21,10 +21,10 @@ from app.services.unified_aggregate_receipt import AggregateReceipt, ArtifactBin
 from app.services.unified_persisted_projection import _fingerprints
 from app.services.unified_snapshot_contract import ContractModel, digest
 from app.services.unified_source_replay import read_bound_artifact
+from app.services.night_futures_product_scope import PRODUCTS
 
 
 OWNER = "krx-declared-history-offline-replay-v1"
-PRODUCTS = ("KOSPI200", "KOSDAQ150")
 
 
 class HistoricalKrxChild(ContractModel):
@@ -53,7 +53,7 @@ class HistoricalKrxPlan(ContractModel):
     @model_validator(mode="after")
     def validate_identity(self):
         if self.products != PRODUCTS:
-            raise ValueError("krx_exact_two_products_required")
+            raise ValueError("krx_configured_products_required")
         if self.observed_at.utcoffset() is None:
             raise ValueError("krx_aware_observation_required")
         ids = tuple(c.child_id for c in self.children)
@@ -76,6 +76,7 @@ class HistoricalKrxPlan(ContractModel):
 def krx_replay_fingerprint() -> str:
     return digest(_fingerprints("app/services/unified_krx_history_replay.py",
         "app/jobs/probe_krx_night_futures.py", "app/macro/providers/krx.py",
+        "app/services/night_futures_product_scope.py",
         "app/services/krx_night_history_service.py", "app/services/market_session.py"))
 
 
@@ -189,7 +190,7 @@ async def replay_krx_history_aggregate(*, root: Path, receipt: AggregateReceipt,
     if {**probe.model_dump(mode="json"), "live_source": probe.live_source} != expected_probe:
         raise ValueError("krx_probe_not_reproduced")
     if tuple(o.product for o in probe.observations) != PRODUCTS:
-        raise ValueError("krx_exact_two_products_required")
+        raise ValueError("krx_configured_products_required")
     with TemporaryDirectory(prefix="krx-offline-replay-") as temporary:
         storage = Path(temporary)
         for child, original, body in originals:

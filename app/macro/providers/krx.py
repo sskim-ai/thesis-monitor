@@ -16,13 +16,10 @@ from app.services.krx_night_history_service import (
     persist_live_probe_history,
 )
 from app.services.unified_run_acquisition import RunAcquisitionObserver
+from app.services.night_futures_product_scope import SERIES_CODES, complete_series
 
 
 KST = ZoneInfo("Asia/Seoul")
-SERIES_CODES = {
-    "KOSPI200": "KRX_KOSPI200_NIGHT_FUT",
-    "KOSDAQ150": "KRX_KOSDAQ150_NIGHT_FUT",
-}
 
 
 class KrxNightFuturesProvider:
@@ -56,7 +53,7 @@ class KrxNightFuturesProvider:
         if observer is not None:
             observer.finish(normalized=TypeAdapter(MacroProviderResult).dump_python(result, mode="json"),
                 contract="night-futures-session-basis-v1", fingerprint=fingerprint,
-                denial=None if len(result.observations) == 2 else "night_products_unavailable")
+                denial=None if complete_series(result.observations) else "night_products_unavailable")
         return result
 
     async def _collect(self, as_of: datetime) -> MacroProviderResult:
@@ -94,6 +91,8 @@ def materialize_night_probe(probe: KrxNightFuturesProbeResult, *, history_direct
         )
     observations: list[CollectedObservation] = []
     for item in probe.observations:
+        if item.product not in SERIES_CODES:
+            continue
         observed_at = datetime.combine(item.session_date, time(6), tzinfo=KST)
         timeframes = build_same_contract_timeframes(
             history_directory or default_krx_night_history_directory(),

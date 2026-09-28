@@ -11,6 +11,7 @@ from app.services.krx_night_history_service import (
 )
 from app.services.leading_market_snapshot_service import leading_market_block_from_context
 from app.services.night_futures import NIGHT_FUTURES_FACT_IDS
+from app.services.night_futures_product_scope import SERIES_CODES, LABELS as DWM_LABELS
 from app.services.official_night_market_eligibility_service import night_market_eligibility
 from app.services.night_futures_visibility_service import (
     night_futures_user_facing_visibility,
@@ -27,14 +28,8 @@ from app.services.us_market_digest_plan_service import (
 
 CONTRACT_VERSION = "us-morning-full-message-v1"
 INDEX_SYMBOLS = ("SPY", "QQQ", "IWM", "SOXX", "RSP")
-NIGHT_LABELS = {
-    "KRX_KOSPI200_NIGHT_FUT": "KOSPI200 야간선물",
-    "KRX_KOSDAQ150_NIGHT_FUT": "KOSDAQ150 야간선물",
-}
-DWM_LABELS = {
-    "KRX_KOSPI200_NIGHT_FUT": "KOSPI200 최근월물",
-    "KRX_KOSDAQ150_NIGHT_FUT": "KOSDAQ150 최근월물",
-}
+
+NIGHT_LABELS = {series: f"{product} 야간선물" for product, series in SERIES_CODES.items()}
 TREASURY_CURVE = (
     ("DGS3", "3년"),
     ("DGS5", "5년"),
@@ -142,6 +137,8 @@ def _night_timeframe_block(
     *,
     series: str,
 ) -> tuple[str, tuple[str, ...]] | None:
+    if series not in DWM_LABELS:
+        return None
     raw = row.get("night_timeframes")
     if not isinstance(raw, Mapping):
         return None

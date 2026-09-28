@@ -443,6 +443,12 @@ NUMERIC_SEMANTICS = {
         "signed_percentage",
         scope="market",
     ),
+    "index_proxy_close": _spec("index_proxy_close", ("USD",), ("지수 ETF 종가",),
+        (r"(?:SPY|QQQ|IWM).*종가",), "number", scope="market"),
+    "index_proxy_prior_close": _spec("index_proxy_prior_close", ("USD",), ("지수 ETF 직전 종가",),
+        (r"(?:SPY|QQQ|IWM).*직전.*종가",), "number", scope="market"),
+    "index_proxy_price_change": _spec("index_proxy_price_change", ("USD",), ("지수 ETF 가격 변화",),
+        (r"(?:SPY|QQQ|IWM).*(?:변화|등락)",), "number", scope="market"),
     "index_return_pct": _spec(
         "index_return_pct",
         ("pct",),
@@ -1847,6 +1853,9 @@ _FIELD_RULES = (
         "pct",
     ),
     NumericFieldRule(("market_index",), r"fields\.return_pct", "index_return_pct", "pct"),
+    NumericFieldRule(("market_index",), r"fields\.close", "index_proxy_close", "USD"),
+    NumericFieldRule(("market_index",), r"fields\.previous_close", "index_proxy_prior_close", "USD"),
+    NumericFieldRule(("market_index",), r"fields\.change_value", "index_proxy_price_change", "USD"),
     NumericFieldRule(("market_sector",), r"fields\.return_pct", "sector_return_pct", "pct"),
     NumericFieldRule(("market_sector",), r"fields\.level", "sector_proxy_level", "index"),
     NumericFieldRule(("market_style",), r"fields\.return_pct", "style_return_pct", "pct"),
@@ -2201,6 +2210,7 @@ _FINANCIAL_PERIOD_LABEL_SEMANTICS = {
 }
 _INSTRUMENT_LABEL_SEMANTICS = {
     "index_return_pct",
+    "index_proxy_close", "index_proxy_prior_close", "index_proxy_price_change",
     "sector_return_pct",
     "sector_proxy_level",
     "style_return_pct",
@@ -2278,6 +2288,12 @@ def _source_aware_label(
         if fields.get("financial_period_required") is True:
             return None
     series = str(fields.get("series_code") or "")
+    if semantic_type in {'index_proxy_close', 'index_proxy_prior_close', 'index_proxy_price_change'}:
+        if series in {'SPY', 'QQQ', 'IWM'} and fields.get('currency') == 'USD':
+            suffix = {'index_proxy_close': '종가', 'index_proxy_prior_close': '직전 종가',
+                      'index_proxy_price_change': '가격 변화'}[semantic_type]
+            return series + ' ' + suffix
+        return None
     if label := _MARKET_SERIES_LABELS.get((semantic_type, series)):
         return label
     if semantic_type in {"forward_eps", "forward_pe"}:
@@ -2297,6 +2313,10 @@ def _source_aware_label(
         if label := _INDEX_SERIES_LABELS.get(series):
             return f"{label} 등락률"
     if semantic_type == "sector_return_pct":
+        if (fields.get('taxonomy') == 'kiwoom-sector-index-v1'
+                and fields.get('market_scope') in {'KOSPI', 'KOSDAQ'}
+                and fields.get('sector') and fields.get('sector_code') and fields.get('source_ref')):
+            return f"{fields['market_scope']} {fields['sector']} 업종 등락률"
         series = str(fields.get("series_code") or "")
         if series == "SOXX":
             return "반도체 업종 등락률"

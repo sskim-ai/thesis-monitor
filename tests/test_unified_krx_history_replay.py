@@ -98,7 +98,7 @@ def test_real_owner_mechanics_deterministic_without_production_storage(frozen, m
     assert result["source_child_count"] == 4
     assert result["external_provider_calls"] == 0
     assert not result["complete_source_adapter_qualified"]
-    assert [p["product"] for p in result["products"]] == ["KOSPI200", "KOSDAQ150"]
+    assert [p["product"] for p in result["products"]] == ["KOSPI200"]
 
 
 def test_historical_graph_cannot_be_used_as_live_aggregate(frozen):
@@ -120,7 +120,7 @@ def test_rehashed_aggregate_identity_cannot_change_authority(frozen, updates):
 
 
 @pytest.mark.parametrize("change", [
-    lambda p: p.update(products=["KOSPI200"]),
+    lambda p: p.update(products=["KOSDAQ150"]),
     lambda p: p.update(products=["KOSPI200", "KOSDAQ150", "OTHER"]),
     lambda p: p["children"].append(p["children"][0]),
     lambda p: p["children"].pop(0),

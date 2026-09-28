@@ -8,6 +8,7 @@ from pydantic import Field
 from app.services.cross_market_decision_engine_service import FrozenModel
 from app.services.directional_balance_service import render_directional_balance
 from app.services.accepted_directional_balance_service import accepted_directional_balance
+from app.services.market_display_plan import MarketDisplayPlan, render_display_plan, final_display_audit
 
 
 def digest(value):
@@ -38,6 +39,7 @@ class AcceptedMarketCalibration(FrozenModel):
     acceptance: dict[str, object]
     acceptance_sha256: str
     numeric_catalog: dict[str, object] | None = None
+    display_plan: MarketDisplayPlan | None = None
 
 
 def calibration_market_render(plan):
@@ -48,6 +50,8 @@ def calibration_market_render(plan):
         decision_sha256=digest(plan.decision))
     if plan.numeric_catalog is not None:
         expected["numeric_catalog_sha256"] = digest(plan.numeric_catalog)
+    if plan.display_plan is not None:
+        expected['display_plan_sha256'] = digest(plan.display_plan.model_dump(mode='json'))
     if plan.acceptance != expected or plan.acceptance_sha256 != digest(expected):
         raise ValueError("accepted_market_binding_mismatch")
     if plan.market not in ("us", "kr") or plan.decision["market"] != plan.market.upper():
@@ -58,6 +62,15 @@ def calibration_market_render(plan):
     lines = ["시장 판단: " + labels[plan.decision["regime"]],
         "판단 확신도: " + confidence[plan.decision["confidence"]]]
     lines.extend(str(plan.decision[k]) for k in ("breadth_state", "leadership", "flows_or_participation", "rates_or_macro_context"))
+    if plan.display_plan is not None:
+        if (plan.display_plan.market != plan.market
+                or plan.display_plan.assessment_date != plan.assessment_date):
+            raise ValueError('accepted_market_display_identity_invalid')
+        narrative = '\n'.join(lines)
+        text = render_display_plan(plan.display_plan, plan.source_context, narrative)
+        if final_display_audit(text, plan.display_plan, plan.source_context, narrative)['status'] != 'PASS':
+            raise ValueError('accepted_market_selected_numeric_binding_invalid')
+        return text
     if plan.numeric_catalog is not None:
         from app.services.market_numeric_claim_service import (
             render_typed_market_facts, final_market_numeric_audit, narrative_errors,
