@@ -179,6 +179,11 @@ def main():
         try:
             _args,whole,receipt=replay_twice(args.output,frozen,outcome,POLICY)
             durable_json(args.output/'whole-source.json',whole,exclusive=True)
+            from scripts.r9_rev11_market_qualification import qualify_markets
+            coverage = qualify_markets(whole)
+            durable_json(args.output/'market-source-qualification.json',coverage,exclusive=True)
+            if any(row['status'] != 'PASS' for row in coverage.values()):
+                raise ValueError('SOURCE_PARTIAL:mandatory_market_display_coverage')
             durable_json(args.output/'source-qualification.json',dict(status='PASS',**receipt,
                 NETWORK_FREE_SOURCE_ADAPTER_PREQUALIFIED=True, COMPLETE_SOURCE_ADAPTER_QUALIFIED=True),exclusive=True)
         except Exception as exc:

@@ -74,6 +74,9 @@ class FreshExecution(Execution):
         p.require(qualified['status']=='PASS', 'whole_fresh_source_not_qualified')
         args,whole,receipt=replay_twice(self.sources,self.source_frozen,p.read(self.sources/'acquisition-outcome.json'),POLICY)
         p.require(receipt['first_sha256']==qualified['first_sha256'], 'source_qualification_drift')
+        from scripts.r9_rev11_market_qualification import qualify_markets
+        coverage=qualify_markets(whole)
+        p.require(all(r['status']=='PASS' for r in coverage.values()),'mandatory_market_source_partial')
         self.whole=whole
         self.locals={}
         for t, item in args['stock_inputs'].items():

@@ -81,3 +81,36 @@ def test_private_command_receipt_binds_result_and_only_used_sealed_receipts(tmp_
     assert receipt['sealed_receipts']=={}
     assert receipt['generation_id']=='new'
     assert 'wire' not in receipt
+
+
+def test_mandatory_market_source_not_inferred_from_renderable_unavailable():
+    from scripts.r9_rev11_market_qualification import check_projection
+    from tests.test_r9_rev6_display_and_source_time import source, temporal, NOW
+    from app.services.market_intelligence_service import _observation_fact
+    from app.services.numeric_semantic_registry import build_numeric_registry
+    s=source()
+    projected=dict(packet=dict(assessment_date='2026-09-28',market_context=s),
+        context=dict(request_eligible_refs=[f['fact_id'] for f in s['fact_catalog']]))
+    assert check_projection(projected,'us')['status']=='SOURCE_PARTIAL'
+    for series in ('DGS3','DGS5','DGS30','DTWEXBGS'):
+        s['fact_catalog'].append(_observation_fact(series,dict(value=4.,quality_status='fresh',observed_at='2026-09-25',
+            raw_payload={'publication_context':temporal(series)}),NOW.date()))
+    s['numeric_registry']=build_numeric_registry(s['fact_catalog'])
+    projected['context']['request_eligible_refs']=[f['fact_id'] for f in s['fact_catalog']]
+    assert check_projection(projected,'us')['status']=='PASS'
+    dollar=next(f for f in s['fact_catalog'] if f['fields'].get('series_code')=='DTWEXBGS')
+    dollar['fields']['publication_context']['latest_available_at_query_time']=False
+    assert check_projection(projected,'us')['mandatory_missing']==['DTWEXBGS']
+
+
+def test_kr_source_requires_both_current_indices_and_qualified_fx():
+    from scripts.r9_rev11_market_qualification import check_projection
+    from tests.test_r9_rev6_display_and_source_time import source
+    s=source('kr')
+    for t in ('KOSPI','KOSDAQ'):
+        s['fact_catalog'].append(dict(fact_id=t,fact_type='market_cross_section_index',as_of_date='2026-09-25',fields=dict(symbol=t)))
+    projected=dict(packet=dict(assessment_date='2026-09-28',market_context=s),
+        context=dict(request_eligible_refs=[f['fact_id'] for f in s['fact_catalog']]))
+    assert check_projection(projected,'kr')['status']=='PASS'
+    s['fact_catalog'][-1]['as_of_date']='2026-09-24'
+    assert check_projection(projected,'kr')['mandatory_missing']==['KOSDAQ']

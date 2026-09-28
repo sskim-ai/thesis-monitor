@@ -71,6 +71,10 @@ Market, macro, night and event owners consume current-generation receipts.
 `r9_rev11_replay` verifies source bindings and composes the full graph twice
 with network disabled. Capture success alone does not qualify a financial fact
 or complete source adapter. Mandatory partial sources stop before AI.
+The existing display/source-time owners must also qualify the required US
+index/macro/dollar rows and both KR indices plus USD/KRW before issuing complete
+source qualification. Honest sector or night-horizon unavailability stays
+permitted; a renderable unavailable block is not proof of mandatory coverage.
 
 Only a qualified fresh corpus can reach `r9_rev11_models`. It preserves the
 existing signed-in official sol/xhigh transport (1200 seconds, no retry),
