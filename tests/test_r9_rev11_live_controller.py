@@ -114,3 +114,55 @@ def test_kr_source_requires_both_current_indices_and_qualified_fx():
     assert check_projection(projected,'kr')['status']=='PASS'
     s['fact_catalog'][-1]['as_of_date']='2026-09-24'
     assert check_projection(projected,'kr')['mandatory_missing']==['KOSDAQ']
+
+
+def test_root_receipt_file_and_content_identities_are_not_interchangeable(tmp_path, monkeypatch):
+    from scripts import r9_rev11_live as live
+    from app.services.unified_run_artifacts import sha256_bytes
+    receipt = dict(status='PASS', dispatch_allowed=True)
+    receipt['receipt_sha256'] = digest(receipt)
+    raw = encoded(receipt) + b'\n'
+    path = tmp_path/'root.json'
+    path.write_bytes(raw)
+    monkeypatch.setattr(live, 'REV10_ROOT_FILE_SHA256', sha256_bytes(raw))
+    monkeypatch.setattr(live, 'REV10_ROOT_RECEIPT_SHA256', receipt['receipt_sha256'])
+    assert live.exact_rev10_receipt(path) == receipt
+    path.write_bytes(raw + b'\n')
+    with pytest.raises(ValueError, match='rev10_exact_receipt_required'):
+        live.exact_rev10_receipt(path)
+    receipt['dispatch_allowed'] = False
+    raw = encoded(receipt) + b'\n'
+    path.write_bytes(raw)
+    monkeypatch.setattr(live, 'REV10_ROOT_FILE_SHA256', sha256_bytes(raw))
+    with pytest.raises(ValueError, match='rev10_exact_receipt_required'):
+        live.exact_rev10_receipt(path)
+
+
+def test_systemic_stop_never_continues_independent_phases(tmp_path, monkeypatch):
+    from scripts import r9_rev11_collect as collect
+    from app.services.unified_live_source_transport import SourceSafetyStop
+    from types import SimpleNamespace
+    calls = []
+    class Bridge:
+        exit_receipt = {'closed':True}
+        def __init__(self, **kwargs):
+            pass
+        async def command(self, command):
+            calls.append(command)
+            raise SourceSafetyStop('test_safety_stop')
+        async def shutdown(self):
+            pass
+    class Transport:
+        def __init__(self, *args, **kwargs):
+            pass
+        async def shutdown(self):
+            pass
+    monkeypatch.setattr(collect, 'SealedNativeBridge', Bridge)
+    monkeypatch.setattr(collect, 'SealedSourceTransport', Transport)
+    dispatcher = SimpleNamespace(plan=SimpleNamespace(plan_sha256='a'*64,descriptors=()),results={})
+    frozen = dict(native_owner={},stock_plan={},us_market_symbols=[],native_owner_root=str(tmp_path),us_market_reads=[])
+    result = asyncio.run(collect.acquire_all(root=tmp_path,frozen=frozen,settings=None,dispatcher=dispatcher,
+        inner=None,policy=None,guard=lambda:None))
+    assert calls == [{'stocks':True}]
+    assert result['systemic_stop']['reason'] == 'test_safety_stop'
+    assert json.loads((tmp_path/'acquisition-outcome.json').read_bytes())['provider_attempts'] == 0

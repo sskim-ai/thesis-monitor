@@ -35,6 +35,8 @@ PROVIDERS = frozenset({'local','canonical_local','kiwoom','kiwoom_rest','ohlcv_a
     'sec_companyfacts','sec_foreign_filing','sec_official_identity','opendart','fred','eia','ecos',
     'krx_night_futures','google_news_rss','naver_news'})
 POLICY = UnifiedSourcePolicy(PROVIDERS)
+REV10_ROOT_FILE_SHA256 = '8f2508cdb874a089cddc21c0ad50cc485f9d2063388249d5df68fb7d37d59e4c'
+REV10_ROOT_RECEIPT_SHA256 = '1fd9656d434312def42bf4d61874f96916223d2c934ac51ce009f1c2447fb44c'
 
 
 def read(path):
@@ -51,6 +53,16 @@ def credentials(s):
         google_news_rss=['NO_CREDENTIAL_REQUIRED'],naver_news=[s.naver_client_id,s.naver_client_secret])
 
 
+def exact_rev10_receipt(path):
+    raw = path.read_bytes()
+    receipt = json.loads(raw)
+    if (sha256_bytes(raw) != REV10_ROOT_FILE_SHA256
+            or receipt.get('receipt_sha256') != REV10_ROOT_RECEIPT_SHA256
+            or digest({k:v for k,v in receipt.items() if k != 'receipt_sha256'}) != REV10_ROOT_RECEIPT_SHA256):
+        raise ValueError('rev10_exact_receipt_required')
+    return receipt
+
+
 def freeze(args):
     from scripts.sealed_cohort_offline_proof import network_guard
     network_guard()
@@ -60,9 +72,7 @@ def freeze(args):
     validation = read(args.validation)
     if validation.get('status') != 'PASS' or validation.get('head') != head:
         raise ValueError('exact_head_full_validation_required')
-    root_receipt = read(args.rev10_receipt)
-    if sha256_bytes(args.rev10_receipt.read_bytes()) != '1fd9656d434312def42bf4d61874f96916223d2c934ac51ce009f1c2447fb44c':
-        raise ValueError('rev10_exact_receipt_required')
+    root_receipt = exact_rev10_receipt(args.rev10_receipt)
     args.output.mkdir(mode=0o700,parents=True)
     native_path = args.output/'native-owner.json'
     subprocess.run([sys.executable,'-m','scripts.unified_stock_source_worker','inspect','--owner-root',str(args.native_owner),

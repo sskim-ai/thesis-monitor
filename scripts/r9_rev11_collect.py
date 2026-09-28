@@ -75,6 +75,8 @@ async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guar
         try:
             value = await action()
             result[name] = {'status': 'CAPTURED_NOT_QUALIFIED', 'value': value}
+        except (SourceSafetyStop, SystemicStop):
+            raise
         except Exception as exc:
             # Never archive exception strings that may contain request credentials.
             result[name] = {'status': 'FAILED', 'error_class': type(exc).__name__}
@@ -102,6 +104,8 @@ async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guar
         durable_json(root/'markets/kr-query.json', {'observed_at': at.isoformat()}, exclusive=True)
         try:
             value = await KiwoomKrMarketContextService(client, max_pages=frozen['kr_local_cap']).collect(session_date=observer.session_date, observed_at=at)
+        except (SourceSafetyStop, SystemicStop):
+            raise
         except Exception:
             # Preserve the failed owner's receipt. Independent frozen reads may
             # still be collected, but cannot retroactively qualify that owner.
@@ -118,6 +122,8 @@ async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guar
                         if not response.continuation:
                             break
                         cursor = response.next_key
+                    except (SourceSafetyStop, SystemicStop):
+                        raise
                     except Exception:
                         break
             raise
