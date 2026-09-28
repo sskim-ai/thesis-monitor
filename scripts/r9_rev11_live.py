@@ -31,7 +31,7 @@ from scripts.unified_adapter_preflight import current_universe
 from scripts.r9_phase_a_gate import code_fingerprints
 
 ROOT = Path(__file__).resolve().parents[1]
-PROVIDERS = frozenset({'local','canonical_local','kiwoom','kiwoom_rest','ohlcv_analyst','sec_edgar',
+PROVIDERS = frozenset({'local','local+openfigi','canonical_local','kiwoom','kiwoom_rest','ohlcv_analyst','sec_edgar',
     'sec_companyfacts','sec_foreign_filing','sec_official_identity','opendart','fred','eia','ecos',
     'krx_night_futures','google_news_rss','naver_news'})
 POLICY = UnifiedSourcePolicy(PROVIDERS)

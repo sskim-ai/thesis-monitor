@@ -138,6 +138,17 @@ def test_root_receipt_file_and_content_identities_are_not_interchangeable(tmp_pa
         live.exact_rev10_receipt(path)
 
 
+def test_existing_local_identity_lineage_does_not_add_a_provider_call():
+    from scripts.r9_rev11_live import POLICY
+    from scripts.unified_stock_owner_proof import POLICY as existing_policy
+    from app.services.sealed_fresh_dispatch import HOSTS
+    assert existing_policy.permits('local+openfigi')
+    assert POLICY.permits('local+openfigi')
+    assert not POLICY.permits('openfigi')
+    assert 'openfigi' not in HOSTS and 'local+openfigi' not in HOSTS
+    assert not POLICY.permits('alphavantage')
+
+
 def test_systemic_stop_never_continues_independent_phases(tmp_path, monkeypatch):
     from scripts import r9_rev11_collect as collect
     from app.services.unified_live_source_transport import SourceSafetyStop
