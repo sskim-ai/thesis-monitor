@@ -301,6 +301,24 @@ def build_source_authority(*, quality_bundles, issuer_bindings, versioned_busine
                         compatible_source_versions=[receipt['contract']])
                     item.update(source_family=receipt['state'], authority_state=record['authority_state'],
                                 authority_basis=record['authority_basis'])
+    if fresh is not None and fresh.get('event_view') is not None:
+        event = fresh['event_view']['receipt']
+        manifest['fresh_controller_event_source'] = event
+        for item in current['family_receipts']:
+            if item['ref_id'] not in fresh['event_fact_refs']:
+                continue
+            record = records[item['ref_id']]
+            if record['source_family'] != 'unclassified' or record['allowed_uses'] != ['CONTEXT']:
+                raise ValueError('fresh_event_existing_restrictive_authority')
+            family = ('PERSISTED_SOURCE_OWNED_BUSINESS_EVENT' if event['acquisition_class'] ==
+                      'PERSISTED_SOURCE_RECHECK' else 'FRESH_SOURCE_OWNED_BUSINESS_EVENT')
+            record.update(source_family=family, source_type=family, authority_state='RESOLVED',
+                authority_basis=event['contract'], source_scope='source_verified_headline_context_only_requires_review',
+                allowed_uses=event['allowed_uses'], prohibited_uses=event['prohibited_uses'],
+                denial_reasons=['linked_headline_not_confirmed_contract_or_official_financial'])
+            item.update(errors=[], source_family=family, authority_state='RESOLVED',
+                authority_basis=event['contract'], allowed_uses=event['allowed_uses'],
+                current_event_eligibility_sha256=event['receipt_sha256'])
     manifest.update(reported_quality_owner_contract=CONTRACT,
                     current_source_family_receipts_sha256=canonical_sha256(current["family_receipts"]))
     manifest.pop("authority_manifest_sha256")

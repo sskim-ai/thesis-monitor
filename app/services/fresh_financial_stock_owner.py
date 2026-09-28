@@ -30,12 +30,20 @@ def fresh_stock_baseline(technical_inputs):
     return assemble_stock(**tech)
 
 
-def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs=None):
+def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs=None, event_inputs=None,
+                         source_window=None):
     """Rebuild all owners; never accept a caller's prebuilt stock or quality."""
     tech, fin = dict(technical_inputs), dict(financial_inputs)
     if set(fin) - {'plan', 'acquisition', 'directory', 'receipts', 'field_semantics', 'issuer_business'}:
         raise ValueError('fresh_financial_input_owner_unrecognized')
     plan, fp = tech['plan'], fin['plan']
+    window = None
+    if source_window is not None or event_inputs is not None:
+        from app.services.fresh_event_carrier import EventRunWindow
+        window = EventRunWindow.model_validate(source_window or event_inputs['window'])
+        if (window.run_id != plan.run_id or window.collection_started_at != plan.frozen_at
+                or event_inputs is not None and window != EventRunWindow.model_validate(event_inputs['window'])):
+            raise ValueError('fresh_business_window_generation_mismatch')
     validate_local_seed(tech['local_seed'])
     reject_current_carryin(fp)
     if (fp['run_id'] != plan.run_id or fp['cutoff'] != plan.frozen_at.isoformat()
@@ -52,6 +60,12 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
         times = [datetime.fromisoformat(receipt[key]) for key in ('started_at', 'finished_at')]
         if any(at.utcoffset() is None for at in times) or not plan.frozen_at <= times[0] <= times[1]:
             raise ValueError('fresh_financial_receipt_predates_generation')
+        if window is not None and times[1] > window.business_availability_cutoff:
+            raise ValueError('financial_response_after_business_availability')
+    if window is not None:
+        for receipt in tech['receipts'].values():
+            if datetime.fromisoformat(receipt['completed_at']) > window.business_availability_cutoff:
+                raise ValueError('technical_response_after_business_availability')
     baseline = fresh_stock_baseline(tech)
     result = financial.assemble(baseline=baseline, local_seed=tech['local_seed'], **fin)
     facts = [f for f in result['packet']['stocks'][0]['fact_catalog']
@@ -68,6 +82,8 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
             start, end = (datetime.fromisoformat(receipt[k]) for k in ('started_at', 'finished_at'))
             if start.utcoffset() is None or end.utcoffset() is None or not plan.frozen_at <= start <= end:
                 raise ValueError('fresh_bridge_source_receipt_predates_generation')
+            if window is not None and end > window.business_availability_cutoff:
+                raise ValueError('bridge_response_after_business_availability')
         source_result = financial.assemble(**source_inputs)
         projection = source_result['projection']
         source_ticker = source_inputs['plan']['ticker']
@@ -77,6 +93,9 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
         security_id=fp['security']['canonical_security_id'], run_id=plan.run_id,
         source_ticker=source_ticker, bridge=bridge)
     packet = deepcopy(result['packet'])
+    if window is not None:
+        packet.update(generated_at=window.business_availability_cutoff.isoformat(),
+                      assessment_date=window.business_availability_cutoff.date().isoformat())
     stock = packet['stocks'][0]
     context_facts = []
     if quality['fact'] is not None:
@@ -84,6 +103,17 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
     else:
         context_facts = _current_context_facts(projection, quality['receipt'])
         stock['fact_catalog'].extend(context_facts)
+    event = None
+    if event_inputs is not None:
+        from app.services.fresh_event_carrier import replay_carrier
+        event = replay_carrier(event_inputs, plan=plan, ticker=fp['ticker'],
+            security=fp['security'], policy=tech['policy'])
+        cutoff = event['receipt']['window']['business_availability_cutoff']
+        if any(datetime.fromisoformat(r['finished_at']) > datetime.fromisoformat(cutoff) for r in fin['receipts']):
+            raise ValueError('financial_response_after_business_availability')
+        stock['evidence'] = event['evidence']
+        stock['fact_catalog'].extend(event['facts'])
+        packet.update(generated_at=cutoff, assessment_date=cutoff[:10])
     stock['numeric_registry'] = financial.build_shadow_numeric_registry(stock['fact_catalog'])
     # Issuer business bridges deliberately cannot supply a security denominator.
     valuation_projection = result['projection']
@@ -91,9 +121,12 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
     if valuation_inputs is not None and (valuation_inputs['run_started_at'] != plan.frozen_at
             or valuation_inputs['policy'] != tech['policy']):
         raise ValueError('fresh_valuation_generation_policy_mismatch')
+    if valuation_inputs is not None and window is not None and valuation_inputs['cutoff'] > window.business_availability_cutoff:
+        raise ValueError('valuation_window_after_business_availability')
     valuation = derive_current_valuation(ticker=fp['ticker'], run_id=plan.run_id,
         security=fp['security'], price=stock['current_price_context'], projection=valuation_projection,
-        issuer_bridge=bridge, native_input=valuation_inputs, unadjusted_price_binding=price_binding)
+        issuer_bridge=bridge, native_input=valuation_inputs, unadjusted_price_binding=price_binding,
+        denominator_source_inputs=fin)
     valuation_denial = 'ISSUER_BRIDGE_HAS_NO_SECURITY_VALUATION_AUTHORITY' if bridge else None
     stock['current_valuation_view'] = valuation.model_dump(mode='json')
     stock['current_valuation_denial'] = valuation_denial
@@ -104,14 +137,19 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
     if qref is not None and qref not in {r.ref_id for r in evidence.evidence}:
         raise ValueError('fresh_quality_typed_ref_missing')
     missing = list(result['mandatory_missing'])
-    if context_facts:
+    if context_facts or (event and event['facts']):
         missing = [m for m in missing if m != 'observed_business_union:eligible_reported_financial_or_event']
     if result['acquisition_denials']:
         missing.append('fresh_financial_acquisition:source_denied')
-    if quality['receipt']['state'] in {'denied', 'unknown'}:
+    if quality['receipt']['state'] == 'unknown':
         missing.append('fresh_financial_quality:' + quality['receipt']['state'])
     packet['source_time_domains'] = dict(scope='FRESH_CURRENT_RUN', run_id=plan.run_id,
         started_at=plan.frozen_at.isoformat(), financial_plan_sha256=digest(fp))
+    if window is not None:
+        packet['source_time_domains']['business_window'] = window.model_dump(mode='json')
+    if event:
+        packet['source_time_domains'].update(event_window=event['receipt']['window'],
+            event_acquisition_class=event['receipt']['acquisition_class'])
     # Packet metadata participates in the evidence identity, so build it only
     # after all deterministic source owners have completed.
     evidence = build_decision_evidence_packet(packet=packet, stock=stock,
@@ -126,8 +164,14 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
         graph[fact['fact_id']] = dict(fact_sha256=digest(fact), ticker=fp['ticker'],
             source='reported_absolute_context', projection_sha256=digest(projection),
             receipt_sha256=quality['receipt']['receipt_sha256'])
+    for fact in (event or {}).get('facts', []):
+        graph[fact['fact_id']] = dict(fact_sha256=digest(fact), ticker=fp['ticker'],
+            source='source_owned_event_context', event_receipt_sha256=event['receipt']['receipt_sha256'],
+            acquisition_class=event['receipt']['acquisition_class'])
     input_hashes = {**result['input_hashes'], 'technical_owner': digest(baseline),
                    'quality': digest(quality), 'valuation': digest(stock['current_valuation_view'])}
+    if event:
+        input_hashes['events'] = digest(event)
     return {**result, 'contract': 'fresh-financial-stock-owner-v1',
         'status': 'BLOCKED' if missing else 'PASS', 'mandatory_missing': sorted(set(missing)),
         'packet': packet, 'packet_sha256': digest(packet) if not missing else None,
@@ -143,7 +187,8 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
             evidence_sha256=digest(r.model_dump(mode='json')), input_hashes=input_hashes)
             for r in evidence.evidence},
         'quality_view': quality, 'valuation_view': stock['current_valuation_view'],
-        'observed_business_cardinality': result['observed_business_cardinality'] + len(context_facts),
+        'observed_business_cardinality': result['observed_business_cardinality'] + len(context_facts) + len((event or {}).get('facts', [])),
+        **(dict(event_view=event, event_fact_refs=['canonical:' + f['fact_id'] for f in event['facts']]) if event else {}),
         'context_fact_refs': ['canonical:' + f['fact_id'] for f in context_facts],
         'input_hashes': input_hashes,
         'fresh_run_id': plan.run_id, 'complete_source_adapter_qualified': False}

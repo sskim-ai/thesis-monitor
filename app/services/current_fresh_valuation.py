@@ -84,10 +84,11 @@ class CurrentValuationView(ContractModel):
     historical_distribution: Literal['UNAVAILABLE_NO_CURRENT_COMPATIBLE_OWNER'] = 'UNAVAILABLE_NO_CURRENT_COMPATIBLE_OWNER'
     overall_direction_use: Literal[False] = False
     unadjusted_price_binding: dict | None = None
+    denominator_scope_receipt: dict | None = None
 
 
 def derive_current_valuation(*, ticker, run_id, security, price, projection, issuer_bridge=None,
-                             native_input=None, unadjusted_price_binding=None):
+                             native_input=None, unadjusted_price_binding=None, denominator_source_inputs=None):
     if security['ticker'] != ticker or not security.get('canonical_security_id'):
         raise ValueError('valuation_security_identity_mismatch')
     if (price.get('contract') != 'current-price-context-v1' or not price.get('currency')
@@ -131,6 +132,9 @@ def derive_current_valuation(*, ticker, run_id, security, price, projection, iss
 
     owner = ValuationSnapshotService(transport=httpx.MockTransport(deny))
     owner._apply_derived_trailing(snapshot, rows, basis)
+    from app.services.fresh_valuation_capability import denominator_scope
+    scope = denominator_scope(projection, security=security, issuer_bridge=issuer_bridge,
+                              source_inputs=denominator_source_inputs)
     # The bounded revenue/operating-income/net-income collector deliberately
     # grants no EPS/book/share denominator entitlement. Preserve that boundary
     # even when companyfacts happens to contain extra financial fields.
@@ -157,7 +161,7 @@ def derive_current_valuation(*, ticker, run_id, security, price, projection, iss
         currency=price['currency'], price=current_price, price_session=price['as_of_date'],
         price_basis=price['price_basis'], price_context_sha256=digest(price), security_sha256=digest(security),
         financial_projection_sha256=digest(projection), owner_output_sha256=digest(snapshot.model_dump(mode='json')),
-        metrics=metrics, unadjusted_price_binding=unadjusted_price_binding)
+        metrics=metrics, unadjusted_price_binding=unadjusted_price_binding, denominator_scope_receipt=scope)
 
 
 def _native_metrics(metrics, inputs, *, ticker, run_id, price, security):

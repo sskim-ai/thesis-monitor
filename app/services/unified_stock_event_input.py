@@ -138,12 +138,16 @@ def _publication_records(response, market, source_url):
              "published": n.get("pubDate")} for n in response.json().get("items", [])]
 
 
-def replay_news(source: BoundNewsInput, *, security: dict, business_cutoff: datetime, policy):
+def replay_news(source: BoundNewsInput, *, security: dict, business_cutoff: datetime, policy,
+                source_query_cutoff: datetime | None = None):
     """No network/files/database side effects; all source inputs are explicit."""
     source = BoundNewsInput.model_validate(source.model_dump(mode="json"))
     read = source.read
     if business_cutoff.utcoffset() is None:
         raise ValueError("aware_business_cutoff_required")
+    query_cutoff = source_query_cutoff or business_cutoff
+    if query_cutoff.utcoffset() is None or query_cutoff > business_cutoff:
+        raise ValueError('source_query_cutoff_after_availability')
     policy.require(read.provider)
     policy.require(security["identity_provider"])
     if SecurityMaster.model_validate(security).model_dump(mode="json") != read.security:
@@ -167,7 +171,8 @@ def replay_news(source: BoundNewsInput, *, security: dict, business_cutoff: date
     if norm.get("security_record_sha256") != digest(read.security) or norm.get("ticker") != read.subject:
         raise ValueError("news_normalization_identity_mismatch")
     norm_cutoff = datetime.fromisoformat(norm["cutoff"])
-    if norm_cutoff.utcoffset() is None or norm_cutoff > business_cutoff or norm_cutoff.date() != business_cutoff.date():
+    if (norm_cutoff.utcoffset() is None or norm_cutoff > query_cutoff
+            or norm_cutoff.date() != query_cutoff.date()):
         raise ValueError("news_normalization_cutoff_mismatch")
     if norm.get("lookback_days") != read.lookback_days or len(norm.get("attempts", [])) != 1:
         raise ValueError("news_attempt_or_lookback_mismatch")
@@ -236,7 +241,7 @@ def replay_news(source: BoundNewsInput, *, security: dict, business_cutoff: date
             if len(times) != 1:
                 raise ValueError("ambiguous_publication")
             at = next(iter(times))
-            if at.utcoffset() is None or at > business_cutoff:
+            if at.utcoffset() is None or at > query_cutoff:
                 raise ValueError("future_or_unverified_publication")
             audit["published_at"] = at.astimezone(timezone.utc).isoformat()
         except (TypeError, ValueError, IndexError, StopIteration):

@@ -36,7 +36,7 @@ def load_stock_inputs(root, descriptor, stock_plan, *, _bridge_source=False):
     """Explicit data-only inputs; no dynamic imports, callbacks or old result."""
     required = {'ticker', 'local', 'receipts', 'components', 'artifacts', 'financial_plan',
                 'financial_acquisition', 'financial_receipts', 'financial_raw', 'allowed_providers'}
-    if (set(descriptor) - {'issuer_bridge', 'valuation'} != required or descriptor['ticker'] not in ALL22
+    if (set(descriptor) - {'issuer_bridge', 'valuation', 'event_carrier', 'source_window'} != required or descriptor['ticker'] not in ALL22
             or (_bridge_source and descriptor.get('issuer_bridge') is not None)):
         raise ValueError('fresh_stock_descriptor_shape_or_subject')
     def read(name):
@@ -68,6 +68,12 @@ def load_stock_inputs(root, descriptor, stock_plan, *, _bridge_source=False):
     result = dict(technical_inputs=technical, financial_inputs=dict(plan=read('financial_plan'),
         acquisition=read('financial_acquisition'), receipts=financial_receipts, directory=raw_directory,
         field_semantics=True))
+    if descriptor.get('source_window') is not None:
+        from app.services.fresh_event_carrier import EventRunWindow
+        result['source_window'] = EventRunWindow.model_validate(read('source_window')).model_dump(mode='json')
+    if descriptor.get('event_carrier') is not None:
+        from app.services.fresh_event_carrier import FreshEventCarrier
+        result['event_inputs'] = FreshEventCarrier.model_validate(read('event_carrier')).model_dump(mode='json')
     if descriptor.get('valuation') is not None:
         native = descriptor['valuation']
         if set(native) != {'raw', 'receipt', 'cutoff'}:
@@ -129,42 +135,43 @@ def replay_current_stocks(root, manifest):
 
 def prepare_fresh_subject(inputs, *, execution_generation_id):
     """Use the existing Core/A/B preflight on a freshly replayed source owner."""
-    from scripts.m12cn_policy_contract import build_subject_catalog
-    from scripts.m12dk_current_source_authority import freeze_current_source_binding
     from scripts.m12dr_financial_source_authority import build_source_authority
     from scripts.r2b_r2_preflight import preflight_subject
-    from app.services.direction_timing_ownership_service import OwnedEvidencePacket
     stock = assemble_fresh_stock(**inputs)
     if stock['status'] != 'PASS':
         raise ValueError('fresh_model_source_incomplete:' + ','.join(stock['mandatory_missing']))
-    owned = OwnedEvidencePacket.model_validate(stock['ownership'])
-    context = dict(evidence_packets=[stock['evidence_packet']], evidence_ownership=[dict(
-        ticker=stock['ticker'], core_ref_ids=sorted(owned.core_refs), timing_ref_ids=sorted(owned.timing_refs))])
-    catalog = build_subject_catalog(context=context, ticker=stock['ticker'], atomic_claims=[])
-    metadata = [r for r in stock['evidence_packet']['evidence'] if r['ref_id'] in catalog['all_evidence_refs']]
-    args = dict(ticker=stock['ticker'], source_generation_id=stock['fresh_run_id'],
-        source_packet=stock['packet'], evidence_packet=stock['evidence_packet'], catalog=catalog,
-        source_metadata=metadata, frozen_binding=freeze_current_source_binding(
-            source_generation_id=stock['fresh_run_id'], source_packet=stock['packet'], evidence_packet=stock['evidence_packet']),
-        quality_bundles={}, issuer_bindings={}, fresh_business_inputs=inputs)
-    authority = build_source_authority(**args)
+    authority = build_source_authority(**fresh_authority_inputs(stock, inputs))
     readiness, prepared = preflight_subject(stock, authority, inputs['technical_inputs']['local_seed'],
         generation=execution_generation_id, cutoff=stock['packet']['generated_at'])
     return dict(stock=stock, authority=authority, readiness=readiness, prepared=prepared)
 
 
-def candidate_plan(stock_plan, identities, *, kr_max_pages):
+def fresh_authority_inputs(stock, inputs):
+    """Exact source replay arguments shared by single-subject and whole-cohort owners."""
+    from scripts.m12cn_policy_contract import build_subject_catalog
+    from scripts.m12dk_current_source_authority import freeze_current_source_binding
+    from app.services.direction_timing_ownership_service import OwnedEvidencePacket
+    owned = OwnedEvidencePacket.model_validate(stock['ownership'])
+    context = dict(evidence_packets=[stock['evidence_packet']], evidence_ownership=[dict(
+        ticker=stock['ticker'], core_ref_ids=sorted(owned.core_refs), timing_ref_ids=sorted(owned.timing_refs))])
+    catalog = build_subject_catalog(context=context, ticker=stock['ticker'], atomic_claims=[])
+    metadata = [r for r in stock['evidence_packet']['evidence'] if r['ref_id'] in catalog['all_evidence_refs']]
+    return dict(ticker=stock['ticker'], source_generation_id=stock['fresh_run_id'],
+        source_packet=stock['packet'], evidence_packet=stock['evidence_packet'], catalog=catalog,
+        source_metadata=metadata, frozen_binding=freeze_current_source_binding(
+            source_generation_id=stock['fresh_run_id'], source_packet=stock['packet'], evidence_packet=stock['evidence_packet']),
+        quality_bundles={}, issuer_bindings={}, fresh_business_inputs=inputs)
+
+
+def candidate_plan(stock_plan, identities, *, kr_max_pages, phase_a_inputs=None):
     plan = acquisition_plan(stock_plan, identities, kr_max_pages=kr_max_pages)
-    # These gaps are explicitly about unimplemented end-to-end routes. An
-    # existing source collector or a synthetic row test alone cannot close one.
-    gaps = [
-        'FRESH_WHOLE_SOURCE_ALL22_MARKET_CONTEXT_REPLAY_NOT_QUALIFIED',
-        'HETEROGENEOUS_EVENT_AND_DETAILED_ARCHETYPE_PROOF_NOT_CLOSED',
-        'DETERMINISTIC_FORWARD_HISTORICAL_VALUATION_OWNER_PROOF_NOT_CLOSED',
-        'COMPLETE_DETAILED_SECTION_OWNERS_AND_END_TO_END_24_CAPTURE_NOT_CLOSED',
-    ]
-    return dict(contract=CONTRACT, source_candidate=plan, phase_a='R2B_R9_REV9_PREFLIGHT_CONTRACT_GAP',
-        blockers=gaps, dispatch_allowed=False, final_provider_plan_qualified=False,
+    from scripts.r9_phase_a_gate import root_gate
+    receipt, _ = root_gate(phase_a_inputs)
+    return dict(contract=CONTRACT, source_candidate=plan, phase_a=receipt['status'],
+        blockers=receipt['blockers'], phase_a_receipt=receipt,
+        phase_a_dispatch_eligible=receipt['dispatch_allowed'],
+        dispatch_allowed=receipt['dispatch_allowed'] and plan['dispatch_allowed'],
+        final_provider_plan_qualified=plan['dispatch_allowed'],
         candidate_maximum_transport_attempts=sum(b['maximum_HTTP_attempts'] for b in plan['budgets'].values()),
         external_calls=0, model_calls=0, production_side_effects=0)
 

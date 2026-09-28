@@ -28,8 +28,9 @@ POLICY = UnifiedSourcePolicy(frozenset({'kiwoom', 'local', 'canonical_local', 's
 
 
 def fresh_inputs(root, ticker, *, current_only=False, conflict=False, insurance=False,
-                 verified_identity=False, policy=POLICY, security_overrides=None, empty_financial=False):
-    plan = stock_plan_fixture.__wrapped__()
+                 verified_identity=False, policy=POLICY, security_overrides=None, empty_financial=False,
+                 denied_quality=False, plan=None, cohort_securities=None):
+    plan = plan or stock_plan_fixture.__wrapped__()
     reads = [r for r in plan.reads if r.subject == ticker]
     market, session_key = reads[0].market, reads[0].latest_completed_session
     foreign = ticker in {'TSM', 'WRD', 'SKHY'}
@@ -46,11 +47,16 @@ def fresh_inputs(root, ticker, *, current_only=False, conflict=False, insurance=
     engine = create_engine('sqlite://')
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
-        session.add(security)
-        session.add(WatchlistItem(ticker=ticker, company_name=security.company_name,
-            exchange=security.exchange, created_at=plan.frozen_at, activated_at=plan.frozen_at))
-        session.add(InvestmentThesis(ticker=ticker, version=1, core_thesis='Synthetic configured business',
-                                     created_at=plan.frozen_at))
+        records = [SecurityMaster.model_validate(s) for s in cohort_securities] if cohort_securities else [security]
+        if cohort_securities:
+            security = next(s for s in records if s.ticker == ticker)
+        for s in records:
+            session.add(s)
+            session.add(WatchlistItem(ticker=s.ticker, company_name=s.company_name,
+                exchange=s.exchange, created_at=plan.frozen_at, activated_at=plan.frozen_at,
+                registration_requested_at=plan.frozen_at))
+            session.add(InvestmentThesis(ticker=s.ticker, version=1, core_thesis='Synthetic configured business',
+                                         created_at=plan.frozen_at))
         session.commit()
         local = project_local_seed(session, market=market, session_key=session_key,
                                     cutoff=plan.frozen_at, policy=policy)
@@ -95,7 +101,7 @@ def fresh_inputs(root, ticker, *, current_only=False, conflict=False, insurance=
     dart_rows = []
     for i, (account, label, amount, prior) in enumerate([
         ('ifrs-full_InsuranceRevenue' if insurance else 'ifrs-full_Revenue', '매출액', 100, 80), ('dart_OperatingIncomeLoss', '영업이익', 20, 15),
-        ('ifrs-full_ProfitLoss', '당기순이익', 10, 8)]):
+        ('ifrs-full_ProfitLoss', '당기순이익', 1000 if denied_quality else 10, 8)]):
         dart_rows.append(dict(corp_code=fp['issuer'], rcept_no='20260814000001', bsns_year='2026', reprt_code='11012',
             fs_div='CFS', sj_div='CIS', account_id=account, account_nm=label, account_detail='-', ord=str(i+1),
             currency='KRW', thstrm_amount=str(amount), frmtrm_q_amount=str(prior),

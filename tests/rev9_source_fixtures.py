@@ -31,6 +31,10 @@ def write_descriptor(root, inputs):
         native = inputs['valuation_inputs']
         result['valuation'] = dict(raw=put('valuation.body', native['raw'], True),
             receipt=put('valuation-receipt.json', native['receipt']), cutoff=native['cutoff'].isoformat())
+    if 'event_inputs' in inputs:
+        result['event_carrier'] = put('event-carrier.json', inputs['event_inputs'])
+    if 'source_window' in inputs:
+        result['source_window'] = put('source-window.json', inputs['source_window'])
     return result
 
 

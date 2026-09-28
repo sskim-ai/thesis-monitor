@@ -16,7 +16,7 @@ STATE = "PERSISTED_SOURCE_OWNED_BUSINESS_EVENT"
 
 
 def replay_persisted_event(*, artifacts, hashes, security_records, ticker, market,
-                           current_run_id, cutoff, current_news_denial, policy):
+                           current_run_id, cutoff, current_news_denial, policy, source_query_cutoff=None):
     if set(artifacts) != FILES or set(hashes) != FILES:
         raise ValueError("persisted_event_exact_source_set_required")
     if any(sha256_bytes(artifacts[n]) != hashes[n] for n in FILES):
@@ -57,7 +57,8 @@ def replay_persisted_event(*, artifacts, hashes, security_records, ticker, marke
         response_receipt_b64=base64.b64encode(artifacts["read-0001.response.json"]).decode(),
         normalization_b64=base64.b64encode(artifacts["normalization.json"]).decode(),
         raw_response_b64=base64.b64encode(artifacts["read-0001.body"]).decode())
-    replayed = replay_news(source, security=security[0], business_cutoff=cutoff, policy=policy)
+    replayed = replay_news(source, security=security[0], business_cutoff=cutoff, policy=policy,
+        source_query_cutoff=source_query_cutoff)
     # The existing source query lookback remains the temporal policy. Never
     # extend a frozen query window to make a historical article pass.
     from datetime import timedelta

@@ -98,8 +98,10 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
             'app/services/persisted_business_event_owner.py', 'scripts/m12dr_financial_source_authority.py'}
         if isinstance(seed, FreshFullSourceRunSeed):
             required |= {'app/services/fresh_financial_stock_owner.py', 'app/services/fresh_publication_replay.py',
-                'app/services/current_fresh_valuation.py', 'app/services/bounded_financial_projection.py',
+                'app/services/current_fresh_valuation.py', 'app/services/fresh_valuation_capability.py', 'app/services/bounded_financial_projection.py',
                 'app/services/canonical_business_quality_owner.py', 'app/services/bounded_financial_stock_owner.py'}
+            if any(i.get('fresh_financial_binding', {}).get('event_inputs') for i in stock_inputs.values()):
+                required |= {'app/services/fresh_event_carrier.py', 'app/services/unified_stock_event_input.py'}
         if (set(code) != required or any(sha256_bytes((root / n).read_bytes()) != h for n, h in code.items())
                 or digest(code) != seed.code_config_sha256 or digest(code) != seed.source_authority_contract_sha256):
             raise ValueError('whole_source_code_contract_identity_mismatch')
@@ -109,8 +111,6 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
     fresh_mode = isinstance(seed, FreshFullSourceRunSeed)
     if fresh_mode:
         from app.services.fresh_source_run_contract import validate_local_seed
-        if seed.persisted_event_evidence_sha256 is not None:
-            raise ValueError('fresh_cohort_persisted_event_not_qualified')
         for ticker, inputs in stock_inputs.items():
             if set(inputs) != {'fresh_financial_binding'}:
                 raise ValueError('fresh_whole_cohort_requires_exact_fresh_owner:' + ticker)
@@ -167,6 +167,9 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
                     raise ValueError('fresh_stock_seed_binding_required')
                 from app.services.fresh_financial_stock_owner import assemble_fresh_stock
                 stock = assemble_fresh_stock(**fresh)
+                event = stock.get('event_view', {}).get('receipt')
+                if event and event['acquisition_class'] == 'PERSISTED_SOURCE_RECHECK':
+                    persisted_events[ticker] = event
             elif versioned is not None:
                 from app.services.versioned_business_stock_owner import bind_current_stock
                 stock = bind_current_stock(**versioned)["result"]

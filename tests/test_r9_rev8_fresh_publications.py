@@ -15,7 +15,13 @@ from scripts.r2b_r5_market_adapter import _publication_facts
 
 @pytest.fixture
 def sources():
-    start = datetime(2026, 9, 28, tzinfo=timezone.utc)
+    return publication_sources(datetime(2026, 9, 28, tzinfo=timezone.utc), 'synthetic-rev8')
+
+
+def publication_sources(start, run_id, *, as_of=None):
+    as_of = as_of or start
+    latest = start.date() - timedelta(days=3)
+    prior = latest - timedelta(days=1)
     providers = {name: dict(receipts=[], bodies={}, body_hashes={}) for name in ('fred', 'eia', 'ecos')}
 
     def add(name, url, params, payload):
@@ -24,26 +30,26 @@ def sources():
         raw = encoded(payload)
         target['bodies'][path] = raw
         target['body_hashes'][path] = sha256_bytes(raw)
-        target['receipts'].append(dict(run_id='synthetic-rev8', provider=name, artifact=path,
+        target['receipts'].append(dict(run_id=run_id, provider=name, artifact=path,
             artifact_sha256=sha256_bytes(raw), outcome='HTTP_RESPONSE', http_status=200,
-            requested_at=start.isoformat(), received_at=(start + timedelta(seconds=1)).isoformat(),
+            requested_at=as_of.isoformat(), received_at=(as_of + timedelta(seconds=1)).isoformat(),
             request=public_request(httpx.Request('GET', url, params=params))))
 
     for series in FRED_SERIES:
         add('fred', 'https://api.stlouisfed.org/fred/series/observations',
             dict(series_id=series, api_key='fixture-secret', file_type='json', sort_order='desc', limit=5,
-                 observation_end='2026-09-28'),
-            {'observations': [{'date': '2026-09-25', 'value': '4.2'}, {'date': '2026-09-24', 'value': '4.1'}]})
+                 observation_end=start.date().isoformat()),
+            {'observations': [{'date': latest.isoformat(), 'value': '4.2'}, {'date': prior.isoformat(), 'value': '4.1'}]})
     for series in EIA_SERIES:
         add('eia', 'https://api.eia.gov/v2/seriesid/' + series, dict(api_key='fixture-secret', length=1),
             {'response': {'data': [{'period': '2026-09-18', 'value': '12', 'units': 'fixture_unit'}]}})
     add('ecos', 'https://ecos.bok.or.kr/api/KeyStatisticList/fixture-secret/json/kr/1/100', {},
         {'KeyStatisticList': {'row': [
             {'KEYSTAT_NAME': name, 'TIME': period, 'DATA_VALUE': value, 'UNIT_NAME': unit}
-            for name, period, value, unit in [('한국은행 기준금리', '20260925', '2.5', 'percent'),
-                ('원/달러 환율', '20260925', '1300', 'KRW'), ('소비자물가지수', '202608', '120', 'index'),
+            for name, period, value, unit in [('한국은행 기준금리', latest.strftime('%Y%m%d'), '2.5', 'percent'),
+                ('원/달러 환율', latest.strftime('%Y%m%d'), '1300', 'KRW'), ('소비자물가지수', '202608', '120', 'index'),
                 ('M2', '202607', '200', 'KRW')]]}})
-    return dict(run_id='synthetic-rev8', run_started_at=start, as_of=start,
+    return dict(run_id=run_id, run_started_at=start, as_of=as_of,
         acquisition_cutoff=start + timedelta(minutes=1), providers=providers,
         policy=UnifiedSourcePolicy(frozenset(providers)))
 
