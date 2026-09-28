@@ -26,10 +26,10 @@ def test_fresh_stock_reaches_existing_core_a_b_preflight(tmp_path, ticker):
     assert result['readiness']['offline_availability_probes_only'] is True
 
 
-def test_current_only_source_gap_stays_closed_before_model_preflight(tmp_path):
+def test_current_only_source_reaches_unknown_limit_without_fake_quality(tmp_path):
     from scripts.r2b_r9_full_fresh_requalification import prepare_fresh_subject
     inputs = fresh_inputs(tmp_path, 'CORZ', current_only=True)
-    # This is a recorded REV8 integration gap, not a successful UNKNOWN_LIMIT
-    # proof. A caller must not turn missing comparison ownership into PASS.
-    with pytest.raises(ValueError, match='EXPECTED_BUSINESS_QUALITY_OWNER_OUTPUT_MISSING'):
-        prepare_fresh_subject(inputs, execution_generation_id='synthetic-no-dispatch')
+    result = prepare_fresh_subject(inputs, execution_generation_id='synthetic-no-dispatch')
+    assert result['readiness']['status'] == 'PASS'
+    assert result['prepared']['mode'] == 'UNKNOWN_LIMIT'
+    assert result['stock']['quality_view']['fact'] is None

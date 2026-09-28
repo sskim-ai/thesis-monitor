@@ -82,6 +82,24 @@ def derive_fresh(*, projection, facts, ticker, security_id, run_id, source_ticke
     function never accepts stored quality state as an alternative input.
     """
     source_ticker = source_ticker or ticker
+    if not facts:
+        from app.services.bounded_financial_projection import comparison_applicability
+        applicability = comparison_applicability(projection)
+        require(projection.get('comparison_applicability') == applicability,
+                MISSING + ':comparison_absence_owner_missing')
+        require(not bridge and applicability['state'] ==
+                'QUALITY_NOT_APPLICABLE_NO_DIRECTIONAL_COMPARISON', MISSING)
+        require(all(b['source_generation_id'] == run_id and b['source_inputs']['ticker'] == source_ticker
+                    for b in projection['quality_bundles']), 'fresh_quality_generation_or_subject_mismatch')
+        require(all(r['ticker'] == ticker and r['canonical_security_id'] == security_id
+                    for r in projection['fields']), 'fresh_context_security_mismatch')
+        receipt = dict(contract=CONTRACT, acquisition_class='FRESH_CURRENT_RUN', ticker=ticker,
+            source_generation_id=run_id, canonical_ref=None, fact_sha256=None,
+            projection_sha256=digest(projection), inputs_complete=True,
+            applicability=applicability['state'], comparison_applicability=applicability,
+            state='not_applicable', directional_use_allowed=False, security_valuation_transfer=False)
+        receipt['receipt_sha256'] = digest(receipt)
+        return dict(fact=None, receipt=receipt)
     wanted = {f['quality_receipt_sha256'] for f in facts}
     bundles = [b for b in projection['quality_bundles'] if b['quality']['receipt_sha256'] in wanted]
     require(wanted and {b['quality']['receipt_sha256'] for b in bundles} == wanted, MISSING)

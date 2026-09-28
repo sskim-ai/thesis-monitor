@@ -27,7 +27,8 @@ POLICY = UnifiedSourcePolicy(frozenset({'kiwoom', 'local', 'canonical_local', 's
                                       'sec_foreign_filing', 'opendart', 'sec_official_identity'}))
 
 
-def fresh_inputs(root, ticker, *, current_only=False, conflict=False):
+def fresh_inputs(root, ticker, *, current_only=False, conflict=False, insurance=False,
+                 verified_identity=False, policy=POLICY, security_overrides=None, empty_financial=False):
     plan = stock_plan_fixture.__wrapped__()
     reads = [r for r in plan.reads if r.subject == ticker]
     market, session_key = reads[0].market, reads[0].latest_completed_session
@@ -38,7 +39,10 @@ def fresh_inputs(root, ticker, *, current_only=False, conflict=False):
         cik='1234' if market == 'us' else None, corp_code='00123456' if market == 'kr' else None,
         issuer_type='foreign_private_issuer' if foreign else 'domestic_us' if market == 'us' else 'domestic_kr',
         security_type='common_stock', identity_provider='sec_edgar' if market == 'us' else 'opendart',
+        identity_quality='verified' if verified_identity else 'partial',
         updated_at=plan.frozen_at)
+    if security_overrides:
+        security = SecurityMaster.model_validate({**security.model_dump(), **security_overrides})
     engine = create_engine('sqlite://')
     SQLModel.metadata.create_all(engine)
     with Session(engine) as session:
@@ -49,7 +53,7 @@ def fresh_inputs(root, ticker, *, current_only=False, conflict=False):
                                      created_at=plan.frozen_at))
         session.commit()
         local = project_local_seed(session, market=market, session_key=session_key,
-                                    cutoff=plan.frozen_at, policy=POLICY)
+                                    cutoff=plan.frozen_at, policy=policy)
         identity = security.model_dump(mode='json')
     engine.dispose()
     receipts, artifacts, roles = {}, {}, {}
@@ -75,7 +79,7 @@ def fresh_inputs(root, ticker, *, current_only=False, conflict=False):
     components = materialize_source_components(ticker=ticker, market=market,
         cutoff=date.fromisoformat(session_key), observed_at=plan.frozen_at.isoformat(), roles=roles)
     technical = freeze_hashes(dict(plan=plan, ticker=ticker, receipts=receipts, artifacts=artifacts,
-        local_seed=local, financial=None, components=components, policy=POLICY))
+        local_seed=local, financial=None, components=components, policy=policy))
     fp = make_plan(identity, market=market, cutoff=plan.frozen_at, run_id=plan.run_id, all_subjects_fresh=True)
     f = filing('6-K' if foreign else '10-Q')
     f['accessionNumber'] = '0000001234-26-000001'
@@ -90,7 +94,7 @@ def fresh_inputs(root, ticker, *, current_only=False, conflict=False):
     companyfacts['cik'] = 1234
     dart_rows = []
     for i, (account, label, amount, prior) in enumerate([
-        ('ifrs-full_Revenue', '매출액', 100, 80), ('dart_OperatingIncomeLoss', '영업이익', 20, 15),
+        ('ifrs-full_InsuranceRevenue' if insurance else 'ifrs-full_Revenue', '매출액', 100, 80), ('dart_OperatingIncomeLoss', '영업이익', 20, 15),
         ('ifrs-full_ProfitLoss', '당기순이익', 10, 8)]):
         dart_rows.append(dict(corp_code=fp['issuer'], rcept_no='20260814000001', bsns_year='2026', reprt_code='11012',
             fs_div='CFS', sj_div='CIS', account_id=account, account_nm=label, account_detail='-', ord=str(i+1),
@@ -105,9 +109,9 @@ def fresh_inputs(root, ticker, *, current_only=False, conflict=False):
                     report_nm='반기보고서 (2026.06)', rcept_no='20260814000001', rcept_dt='20260814')]})
             return httpx.Response(200, json={'status': '000', 'list': dart_rows if request.url.params['fs_div'] == 'CFS' else []})
         if '/submissions/' in str(request.url):
-            return httpx.Response(200, json={**submission([f]), 'cik': 1234})
+            return httpx.Response(200, json={**submission([] if empty_financial else [f]), 'cik': 1234})
         if '/companyfacts/' in str(request.url):
-            return httpx.Response(200, json=companyfacts)
+            return httpx.Response(200, json={'cik': 1234, 'facts': {}} if empty_financial else companyfacts)
         if request.url.path.endswith('index.json'):
             return httpx.Response(200, json={'directory': {'item': [{'name': 'primary.htm'}]}})
         return httpx.Response(200, text=html_statement() if foreign else '<html>Synthetic filing</html>')

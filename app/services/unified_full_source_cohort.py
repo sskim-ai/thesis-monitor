@@ -80,7 +80,9 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
         # The legacy publication bridge replays persisted Class-C records, not
         # fresh macro requests. Never silently route a fresh seed through it.
         raise ValueError('fresh_whole_context_replay_not_closed')
-    if publication_inputs is not None or night_inputs is not None:
+    if isinstance(seed, FreshFullSourceRunSeed) and (fresh_context_inputs is None or composition_metadata is None):
+        raise ValueError('fresh_complete_context_and_code_inventory_required')
+    if publication_inputs is not None or night_inputs is not None or fresh_context_inputs is not None:
         from pathlib import Path
         import json
         from app.services.unified_run_artifacts import sha256_bytes
@@ -94,6 +96,10 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
         code = composition_metadata.get('code_fingerprints', {})
         required = {'app/services/unified_full_source_cohort.py', 'app/services/unified_sealed_context.py',
             'app/services/persisted_business_event_owner.py', 'scripts/m12dr_financial_source_authority.py'}
+        if isinstance(seed, FreshFullSourceRunSeed):
+            required |= {'app/services/fresh_financial_stock_owner.py', 'app/services/fresh_publication_replay.py',
+                'app/services/current_fresh_valuation.py', 'app/services/bounded_financial_projection.py',
+                'app/services/canonical_business_quality_owner.py', 'app/services/bounded_financial_stock_owner.py'}
         if (set(code) != required or any(sha256_bytes((root / n).read_bytes()) != h for n, h in code.items())
                 or digest(code) != seed.code_config_sha256 or digest(code) != seed.source_authority_contract_sha256):
             raise ValueError('whole_source_code_contract_identity_mismatch')

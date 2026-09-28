@@ -36,7 +36,7 @@ def load_stock_inputs(root, descriptor, stock_plan, *, _bridge_source=False):
     """Explicit data-only inputs; no dynamic imports, callbacks or old result."""
     required = {'ticker', 'local', 'receipts', 'components', 'artifacts', 'financial_plan',
                 'financial_acquisition', 'financial_receipts', 'financial_raw', 'allowed_providers'}
-    if (set(descriptor) - {'issuer_bridge'} != required or descriptor['ticker'] not in ALL22
+    if (set(descriptor) - {'issuer_bridge', 'valuation'} != required or descriptor['ticker'] not in ALL22
             or (_bridge_source and descriptor.get('issuer_bridge') is not None)):
         raise ValueError('fresh_stock_descriptor_shape_or_subject')
     def read(name):
@@ -68,8 +68,15 @@ def load_stock_inputs(root, descriptor, stock_plan, *, _bridge_source=False):
     result = dict(technical_inputs=technical, financial_inputs=dict(plan=read('financial_plan'),
         acquisition=read('financial_acquisition'), receipts=financial_receipts, directory=raw_directory,
         field_semantics=True))
+    if descriptor.get('valuation') is not None:
+        native = descriptor['valuation']
+        if set(native) != {'raw', 'receipt', 'cutoff'}:
+            raise ValueError('fresh_valuation_descriptor_shape')
+        result['valuation_inputs'] = dict(raw=_read(root, native['raw']),
+            receipt=json.loads(_read(root, native['receipt'])), policy=technical['policy'],
+            run_started_at=stock_plan.frozen_at, cutoff=datetime.fromisoformat(native['cutoff']))
     if descriptor.get('issuer_bridge') is not None:
-        from app.services.unified_stock_owner import assemble_stock
+        from app.services.fresh_financial_stock_owner import fresh_stock_baseline
         from app.services.bounded_financial_stock_owner import assemble
         bridge = descriptor['issuer_bridge']
         if set(bridge) != {'source_descriptor', 'official_identity', 'source_result_sha256'}:
@@ -77,7 +84,7 @@ def load_stock_inputs(root, descriptor, stock_plan, *, _bridge_source=False):
         source = load_stock_inputs(root, bridge['source_descriptor'], stock_plan, _bridge_source=True)
         if source['financial_inputs']['plan']['ticker'] == descriptor['ticker']:
             raise ValueError('fresh_bridge_cross_security_required')
-        inputs = dict(baseline=assemble_stock(**{**source['technical_inputs'], 'fresh_financial_pending': True}),
+        inputs = dict(baseline=fresh_stock_baseline(source['technical_inputs']),
             local_seed=source['technical_inputs']['local_seed'], **source['financial_inputs'])
         if digest(assemble(**inputs)) != bridge['source_result_sha256']:
             raise ValueError('fresh_bridge_source_result_hash_mismatch')
@@ -152,12 +159,11 @@ def candidate_plan(stock_plan, identities, *, kr_max_pages):
     # existing source collector or a synthetic row test alone cannot close one.
     gaps = [
         'FRESH_WHOLE_SOURCE_ALL22_MARKET_CONTEXT_REPLAY_NOT_QUALIFIED',
-        'ISSUER_BRIDGE_DESCRIPTOR_ALL22_ARCHETYPE_PROOF_NOT_CLOSED',
-        'FRESH_QUALITY_REQUIRES_COMPARISON_NO_UNKNOWN_LIMIT_SOURCE_PATH',
-        'QUALIFIED_VALUATION_SECTION_OWNER_PATH_NOT_CLOSED',
+        'HETEROGENEOUS_EVENT_AND_DETAILED_ARCHETYPE_PROOF_NOT_CLOSED',
+        'DETERMINISTIC_FORWARD_HISTORICAL_VALUATION_OWNER_PROOF_NOT_CLOSED',
         'COMPLETE_DETAILED_SECTION_OWNERS_AND_END_TO_END_24_CAPTURE_NOT_CLOSED',
     ]
-    return dict(contract=CONTRACT, source_candidate=plan, phase_a='R2B_R9_REV8_PREFLIGHT_CONTRACT_GAP',
+    return dict(contract=CONTRACT, source_candidate=plan, phase_a='R2B_R9_REV9_PREFLIGHT_CONTRACT_GAP',
         blockers=gaps, dispatch_allowed=False, final_provider_plan_qualified=False,
         candidate_maximum_transport_attempts=sum(b['maximum_HTTP_attempts'] for b in plan['budgets'].values()),
         external_calls=0, model_calls=0, production_side_effects=0)

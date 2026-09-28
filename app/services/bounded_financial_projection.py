@@ -83,6 +83,54 @@ def field_record(plan, *, metric, value, lineage, quality, raw_sha, role):
     return result
 
 
+def comparison_applicability(projection):
+    """Grade comparison availability, not financial health, from replayed fields.
+
+    Only an absent prior occurrence is currently qualified here. Incompatible
+    or erroneous prior data stays blocked until its own absence owner exists.
+    """
+    projection = {k: v for k, v in projection.items() if k != 'comparison_applicability'}
+    result = dict(contract='reported-comparison-applicability-v1',
+        state='QUALITY_EXPECTED_OWNER_OUTPUT_MISSING', current_field_hashes=[],
+        reasons=[], direction_eligible=False)
+    if projection['comparisons']:
+        result.update(state='QUALITY_RECORD_PRESENT')
+    else:
+        fields = projection['fields']
+        current = [r for r in fields if r['current_prior_role'] == 'current']
+        allowed = {'PERIOD_NOT_COMPARABLE', 'FIELD_ABSENT', 'account_not_found'}
+        bad = [r for r in projection['denials'] if r['reason'] not in allowed]
+        eligible = (current and len(current) == len(fields)
+            and all(r['context_eligible'] and not r['quality_errors'] for r in current)
+            and all(r['normalized_hash'] == digest({k: v for k, v in r.items()
+                                                   if k != 'normalized_hash'}) for r in current)
+            and len({r['metric'] for r in current}) == len(current)
+            and not projection['comparison_candidates'] and not bad
+            and not projection['latest_selected_period_unavailable']
+            and projection['freshness']['full_financial_freshness'] == 'current'
+            and projection['quality_bundles'])
+        # A replayed comparison owner must explicitly diagnose missing prior
+        # input. An empty comparison list alone never proves non-applicability.
+        for bundle in projection['quality_bundles']:
+            quality = source_quality(bundle)
+            eligible = eligible and quality == bundle['quality'] and not quality['comparative_observations']
+            for field in current:
+                q = quality['fields'].get('current.' + field['metric'], {})
+                prior = quality['fields'].get('comparison.' + field['metric'], {})
+                eligible = (eligible and not q.get('hard_denial_reasons') and q.get('prose_eligible')
+                    and 'missing_comparison' in prior.get('hard_denial_reasons', [])
+                    and set(prior['hard_denial_reasons']) <= {'missing_comparison', 'exact_sec_occurrence_missing'})
+        if eligible:
+            result.update(state='QUALITY_NOT_APPLICABLE_NO_DIRECTIONAL_COMPARISON',
+                current_field_hashes=sorted(r['normalized_hash'] for r in current),
+                reasons=['PRIOR_OCCURRENCE_ABSENT_WITHIN_BOUNDED_OWNER'])
+        else:
+            result['reasons'] = ['NO_PROVEN_CONTEXT_ONLY_COMPARISON_ABSENCE']
+    result['projection_sha256'] = digest(projection)
+    result['receipt_sha256'] = digest(result)
+    return result
+
+
 def _raw(directory, artifact, receipts):
     matches = [r for r in receipts if r.get("artifact") == artifact and not r.get("failure_class")]
     if len(matches) != 1:
@@ -487,4 +535,6 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
                     r['reason'] for r in window['phase2']['denials'])
                 if window['phase2']['unattempted']:
                     result['acquisition_denial_reconciliation']['effective_denials'].append('FPI_PHASE2_PLANNED_REQUESTS_UNATTEMPTED')
+    if field_semantics:
+        result['comparison_applicability'] = comparison_applicability(result)
     return result

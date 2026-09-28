@@ -11,7 +11,8 @@ from typing import Literal
 from pydantic import Field, model_validator
 
 from app.services.accepted_calibration_message_service import AcceptedDetailedCalibrationPlan, calibration_render
-from app.services.current_fresh_valuation import CurrentValuationView
+from app.services.accepted_decision_v2_service import AcceptedRenderValidationResult
+from app.services.current_fresh_valuation import CurrentValuationView, valuation_numeric_bindings
 from app.services.unified_snapshot_contract import ContractModel, digest
 
 SECTION_ORDER = ('judgment', 'reevaluation', 'thesis_state', 'core', 'business',
@@ -88,7 +89,7 @@ class RenderedDetailedUnknown(ContractModel):
     accepted_decision: Literal['OBSERVE'] = 'OBSERVE'
     accepted_directional_balance: None = None
     text: str
-    validation: dict
+    validation: AcceptedRenderValidationResult
 
 
 def _require(condition, reason):
@@ -120,21 +121,41 @@ def section_coverage(rows):
         core='accepted_decision', business='accepted_business_claim', warnings='current_display_approved_warning',
         monitoring='accepted_structured_checkpoint', price='fresh_numeric_registry',
         flow='fresh_numeric_registry_or_explicit_unavailable', valuation='current_security_valuation_view')
-    return {section: dict(owner=owners[section], rows=[r.row_id for r in rows if r.section == section],
-        state='OWNED_ROWS' if any(r.section == section for r in rows) else 'OMITTED_NO_ACCEPTED_CURRENT_OWNER')
-        for section in SECTION_ORDER}
+    result = {}
+    for section in SECTION_ORDER:
+        selected = [r for r in rows if r.section == section]
+        value = dict(owner=owners[section], rows=[r.row_id for r in selected],
+            state='OWNED_ROWS' if selected else 'OMITTED_NO_ACCEPTED_CURRENT_OWNER',
+            input_contracts=sorted({r.formatting_contract for r in selected}),
+            visibility_rule='MANDATORY' if section in {'judgment', 'core', 'price', 'valuation'}
+                else 'ONLY_BOUND_ACCEPTED_ROWS',
+            omitted_reason=None if selected else 'NO_BOUND_ACCEPTED_ROW_FROM_CURRENT_OWNER',
+            row_source_bindings={r.row_id: dict(fact_ids=list(r.source_fact_ids), hashes=list(r.source_hashes),
+                                               numeric_keys=list(r.numeric_registry_keys)) for r in selected})
+        value['acceptance_sha256'] = digest(value)
+        result[section] = value
+    return result
 
 
 def _valuation_rows(valuation):
     _require({m.metric for m in valuation.metrics} == {'PER', 'PBR', 'fPER'}
              and len(valuation.metrics) == 3, 'detailed_valuation_section_incomplete')
     rows = []
+    bindings = valuation_numeric_bindings(valuation)
     for metric in valuation.metrics:
         _require(not metric.overall_direction_use, 'detailed_valuation_direction_misuse')
-        _require(metric.status == 'UNAVAILABLE' and metric.value is None
-                 and not metric.display_eligible and bool(metric.denial_reason), 'detailed_unqualified_multiple')
-        rows.append(_row('valuation', metric.metric, metric.metric + ': 판단 자료 부족',
-            hashes=(digest(valuation.model_dump(mode='json')),), formatting='current-valuation-unavailable-v1'))
+        # Re-validate even model_copy objects before emitting any exact number.
+        type(metric).model_validate(metric.model_dump(mode='json'))
+        _require(metric.numerator == valuation.price, 'detailed_valuation_numerator_mismatch')
+        text = ('판단 자료 부족' if metric.status == 'UNAVAILABLE' else 'N/M'
+                if metric.status == 'NOT_MEANINGFUL' else f'{metric.value:,.2f}배')
+        bound = bindings.get(metric.metric)
+        rows.append(_row('valuation', metric.metric, metric.metric + ': ' + text,
+            facts=(bound['fact']['fact_id'],) if bound else (),
+            hashes=(digest(valuation.model_dump(mode='json')), *metric.input_hashes)
+                + ((digest(bound['fact']), digest(bound['registry'])) if bound else ()),
+            numeric=(bound['registry']['fact_id'] + ':' + bound['registry']['field_path'],)
+                if bound else (), formatting='current-valuation-typed-state-v1'))
     return rows
 
 

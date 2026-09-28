@@ -251,6 +251,24 @@ def build_source_authority(*, quality_bundles, issuer_bindings, versioned_busine
         receipt.update(allowed_uses=record["allowed_uses"], authority_state=record["authority_state"],
                        authority_basis=record["authority_basis"])
     manifest = current["authority"]
+    if fresh is not None and fresh.get('context_fact_refs'):
+        for receipt in current['family_receipts']:
+            if receipt['ref_id'] not in fresh['context_fact_refs']:
+                continue
+            record = records[receipt['ref_id']]
+            if record['source_family'] != 'unclassified':
+                raise ValueError('fresh_context_existing_restrictive_owner')
+            allowed = {SourceUse.CONTEXT.value}
+            record.update(authority_state='RESOLVED', authority_basis='reported-comparison-applicability-v1',
+                source_family='REPORTED_ABSOLUTE_CONTEXT', source_type='REPORTED_ABSOLUTE_CONTEXT',
+                source_scope='current_reported_context_no_comparison_quality_or_direction',
+                allowed_uses=sorted(allowed), prohibited_uses=sorted({u.value for u in SourceUse} - allowed),
+                denial_reasons=['ABSOLUTE_CURRENT_FINANCIAL_IS_NOT_DIRECTIONAL_EVIDENCE'])
+            receipt.update(errors=[], source_family=record['source_family'],
+                authority_state=record['authority_state'], authority_basis=record['authority_basis'],
+                allowed_uses=record['allowed_uses'],
+                fresh_owner_sha256=digest(fresh), comparison_applicability=fresh['quality_view']['receipt'])
+            receipt.pop('earnings_lineage', None)
     if persisted_event_inputs is not None:
         from app.services.persisted_business_event_owner import replay_persisted_event
         from app.services.unified_stock_event_input import replay_news
