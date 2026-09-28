@@ -66,6 +66,31 @@ class DetailedStockMessagePlan(ContractModel):
     acceptance_sha256: str
 
 
+class DetailedUnknownMessagePlan(ContractModel):
+    contract: Literal['accepted-detailed-unknown-message-v1'] = 'accepted-detailed-unknown-message-v1'
+    ticker: str
+    source_generation_id: str
+    execution_generation_id: str
+    source_stock: dict
+    source_authority: dict
+    local_seed: dict
+    decision: dict
+    valuation: CurrentValuationView
+    rows: tuple[DetailedRow, ...]
+    acceptance: dict
+    acceptance_sha256: str
+
+
+class RenderedDetailedUnknown(ContractModel):
+    contract: Literal['accepted-detailed-unknown-render-v1'] = 'accepted-detailed-unknown-render-v1'
+    ticker: str
+    decision_mode: Literal['UNKNOWN_LIMIT'] = 'UNKNOWN_LIMIT'
+    accepted_decision: Literal['OBSERVE'] = 'OBSERVE'
+    accepted_directional_balance: None = None
+    text: str
+    validation: dict
+
+
 def _require(condition, reason):
     if not condition:
         raise ValueError(reason)
@@ -87,6 +112,81 @@ def _row(section, key, text, *, facts=(), hashes=(), numeric=(), formatting='acc
         source_hashes=tuple(hashes), numeric_registry_keys=tuple(numeric), formatting_contract=formatting,
         visibility='VISIBLE')
     return DetailedRow(**values, acceptance_sha256=digest(values))
+
+
+def section_coverage(rows):
+    owners = dict(judgment='accepted_three_axis_or_whole_decision_limit',
+        reevaluation='accepted_structured_condition', thesis_state='current_accepted_state_materializer',
+        core='accepted_decision', business='accepted_business_claim', warnings='current_display_approved_warning',
+        monitoring='accepted_structured_checkpoint', price='fresh_numeric_registry',
+        flow='fresh_numeric_registry_or_explicit_unavailable', valuation='current_security_valuation_view')
+    return {section: dict(owner=owners[section], rows=[r.row_id for r in rows if r.section == section],
+        state='OWNED_ROWS' if any(r.section == section for r in rows) else 'OMITTED_NO_ACCEPTED_CURRENT_OWNER')
+        for section in SECTION_ORDER}
+
+
+def _valuation_rows(valuation):
+    _require({m.metric for m in valuation.metrics} == {'PER', 'PBR', 'fPER'}
+             and len(valuation.metrics) == 3, 'detailed_valuation_section_incomplete')
+    rows = []
+    for metric in valuation.metrics:
+        _require(not metric.overall_direction_use, 'detailed_valuation_direction_misuse')
+        _require(metric.status == 'UNAVAILABLE' and metric.value is None
+                 and not metric.display_eligible and bool(metric.denial_reason), 'detailed_unqualified_multiple')
+        rows.append(_row('valuation', metric.metric, metric.metric + ': 판단 자료 부족',
+            hashes=(digest(valuation.model_dump(mode='json')),), formatting='current-valuation-unavailable-v1'))
+    return rows
+
+
+def build_unknown_plan(*, source_stock, source_authority, local_seed, decision,
+                       execution_generation_id, valuation):
+    from scripts.r2b_r2_preflight import preflight_subject
+    from scripts.r2b_r2_contract import DIRECTION_BUCKETS, validate_unknown
+    source = source_stock
+    _require(source['contract'] == 'fresh-financial-stock-owner-v1', 'detailed_fresh_owner_required')
+    stock = source['packet']['stocks'][0]
+    _require(source['packet_sha256'] == digest(source['packet']), 'detailed_packet_binding_mismatch')
+    readiness, prepared = preflight_subject(source, source_authority, local_seed,
+        generation=execution_generation_id, cutoff=source['packet']['generated_at'])
+    _require(readiness['status'] == 'PASS' and prepared['mode'] == 'UNKNOWN_LIMIT',
+             'detailed_unknown_not_source_qualified')
+    check = validate_unknown(decision, mode=prepared['mode'], recovery=prepared['recovery'],
+                             capability={k: [] for k in DIRECTION_BUCKETS})
+    _require(valuation.model_dump(mode='json') == source['valuation_view']
+             and valuation.ticker == source['ticker'] and valuation.run_id == source['fresh_run_id']
+             and valuation.price_context_sha256 == digest(stock['current_price_context']),
+             'detailed_valuation_source_mismatch')
+    rows = [
+        _row('judgment', 'limit', 'AI 분석 판단: OBSERVE\n판단 균형: 판단 자료 부족\n판단 확신도: 판단 자료 부족\n신규 매수자: OBSERVE\n보유자: OBSERVE',
+             hashes=(digest(check),), formatting='whole-decision-limit-v1'),
+        _row('core', 'limit', '방향 판단에 사용할 사업 증거가 부족합니다. 중립 의견이나 보유 권고를 뜻하지 않습니다.',
+             hashes=(digest(check),), formatting='whole-decision-limit-v1')]
+    labels = {'QUALIFIED_FINANCIAL_LINEAGE': '기간·기업 기준과 출처 연결이 검증된 정식 재무 공시',
+              'COMPARABLE_FINANCIAL_OBSERVATION': '기간·기업·통화·연결 기준이 일치하는 비교 재무 수치',
+              'VERIFIED_BUSINESS_EVENT': '공식 원문으로 확인된 사업 성과'}
+    for key in decision['required_next_evidence']:
+        recovery = prepared['recovery'][key]
+        _require(recovery['kind'] in labels, 'detailed_unowned_recovery_label')
+        rows.append(_row('reevaluation', key, labels[recovery['kind']],
+            hashes=(digest(recovery),), formatting='source-recovery-catalog-v1'))
+    quote = stock['current_price_context']
+    prices = [f for f in stock['fact_catalog'] if f['fact_type'] == 'price'
+              and f.get('fields', {}).get('current_price') == quote['current_price']]
+    _require(len(prices) == 1, 'detailed_current_price_owner_not_unique')
+    rows.append(_numeric(RowSelection(section='price', owner='source_numeric', ref=prices[0]['fact_id'],
+                                      field_path='fields.current_price'), source))
+    rows.append(_row('flow', 'unavailable', '자료 부족', hashes=(digest(source),), formatting='explicit-unavailable-v1'))
+    rows.extend(_valuation_rows(valuation))
+    rows.sort(key=lambda r: SECTION_ORDER.index(r.section))
+    receipt = dict(contract='detailed-unknown-acceptance-v1', source_stock_sha256=digest(source),
+        source_authority_sha256=digest(source_authority), local_seed_sha256=digest(local_seed),
+        decision_sha256=digest(decision), preflight_sha256=digest(readiness),
+        valuation_sha256=digest(valuation.model_dump(mode='json')), execution_generation_id=execution_generation_id,
+        rows_sha256=digest([r.model_dump(mode='json') for r in rows]), section_coverage=section_coverage(rows))
+    return DetailedUnknownMessagePlan(ticker=source['ticker'], source_generation_id=source['fresh_run_id'],
+        execution_generation_id=execution_generation_id, source_stock=source, source_authority=source_authority,
+        local_seed=local_seed, decision=decision, valuation=valuation, rows=tuple(rows),
+        acceptance=receipt, acceptance_sha256=digest(receipt))
 
 
 def _numeric(selection, source):
@@ -182,6 +282,18 @@ def build_detailed_plan(*, packet, accepted, source_stock, core, pass_a, valuati
     rows.append(_row('core', 'reason', _safe_prose(decision['overall_reason'], refs),
         facts=owned_refs, hashes=(digest(core), accepted.acceptance_sha256)))
     selections = tuple(RowSelection.model_validate(r) for r in selections)
+    automatic = []
+    selected_claims = {r.ref for r in selections if r.owner == 'core_claim'}
+    for ref in (*decision['supporting_refs'], *decision['contradicting_refs'], *decision['reevaluation_refs']):
+        if ref in selected_claims:
+            continue
+        _require(ref in claims, 'detailed_unaccepted_claim')
+        effect = core['effects'][ref]['effect']
+        if effect.startswith('DIRECTIONAL_'):
+            automatic.append(RowSelection(section='business', owner='core_claim', ref=ref))
+        elif effect == 'REEVALUATION_CONDITION':
+            automatic.append(RowSelection(section='reevaluation', owner='core_claim', ref=ref))
+        selected_claims.add(ref)
     _require(len(set((r.section, r.owner, r.ref, r.field_path) for r in selections)) == len(selections),
              'detailed_duplicate_row_selection')
     prices = [f for f in stock['fact_catalog'] if f['fact_type'] == 'price'
@@ -189,7 +301,9 @@ def build_detailed_plan(*, packet, accepted, source_stock, core, pass_a, valuati
     _require(len(prices) == 1, 'detailed_current_price_owner_not_unique')
     mandatory_price = RowSelection(section='price', owner='source_numeric', ref=prices[0]['fact_id'],
                                     field_path='fields.current_price')
-    effective_selections = selections if mandatory_price in selections else (*selections, mandatory_price)
+    effective_selections = (*selections, *automatic)
+    if mandatory_price not in effective_selections:
+        effective_selections = (*effective_selections, mandatory_price)
     for selected in effective_selections:
         if selected.owner == 'source_numeric':
             rows.append(_numeric(selected, source))
@@ -209,16 +323,7 @@ def build_detailed_plan(*, packet, accepted, source_stock, core, pass_a, valuati
     if not any(r.section == 'flow' for r in rows):
         rows.append(_row('flow', 'unavailable', '자료 부족', hashes=(digest(source),),
                          formatting='explicit-unavailable-v1'))
-    _require({m.metric for m in valuation.metrics} == {'PER', 'PBR', 'fPER'}
-             and len(valuation.metrics) == 3, 'detailed_valuation_section_incomplete')
-    for metric in valuation.metrics:
-        _require(not metric.overall_direction_use, 'detailed_valuation_direction_misuse')
-        # Qualified multiples will need a source-owned denominator registry.
-        # The current reported-business collector cannot supply that authority.
-        _require(metric.status == 'UNAVAILABLE' and metric.value is None
-                 and not metric.display_eligible and bool(metric.denial_reason), 'detailed_unqualified_multiple')
-        rows.append(_row('valuation', metric.metric, metric.metric + ': 판단 자료 부족',
-            hashes=(digest(valuation.model_dump(mode='json')),), formatting='current-valuation-unavailable-v1'))
+    rows.extend(_valuation_rows(valuation))
     rows.sort(key=lambda r: SECTION_ORDER.index(r.section))
     receipt = dict(contract='detailed-stock-acceptance-v1', ticker=packet.ticker,
         source_generation_id=accepted.source_generation_id, execution_generation_id=accepted.execution_generation_id,
@@ -226,7 +331,7 @@ def build_detailed_plan(*, packet, accepted, source_stock, core, pass_a, valuati
         calibration_sha256=digest(accepted.model_dump(mode='json')), core_sha256=digest(core), pass_a_sha256=digest(pass_a),
         valuation_sha256=digest(valuation.model_dump(mode='json')),
         selections_sha256=digest([r.model_dump(mode='json') for r in selections]),
-        rows_sha256=digest([r.model_dump(mode='json') for r in rows]))
+        rows_sha256=digest([r.model_dump(mode='json') for r in rows]), section_coverage=section_coverage(rows))
     return DetailedStockMessagePlan(ticker=packet.ticker, source_generation_id=accepted.source_generation_id,
         execution_generation_id=accepted.execution_generation_id, evidence_packet_sha256=receipt['evidence_packet_sha256'],
         source_stock_sha256=receipt['source_stock_sha256'], accepted_calibration=accepted, source_stock=source,
@@ -235,21 +340,33 @@ def build_detailed_plan(*, packet, accepted, source_stock, core, pass_a, valuati
 
 
 def detailed_render(packet, plan):
+    if isinstance(plan, DetailedUnknownMessagePlan):
+        expected = build_unknown_plan(source_stock=plan.source_stock, source_authority=plan.source_authority,
+            local_seed=plan.local_seed, decision=plan.decision, execution_generation_id=plan.execution_generation_id,
+            valuation=plan.valuation)
+        _require(expected == plan and packet.model_dump(mode='json') == plan.source_stock['evidence_packet'],
+                 'detailed_unknown_acceptance_plan_mismatch')
+        return RenderedDetailedUnknown(ticker=plan.ticker, text=_render_rows(packet, plan.rows),
+                                        validation={'valid': True, 'errors': []})
     expected = build_detailed_plan(packet=packet, accepted=plan.accepted_calibration,
         source_stock=plan.source_stock, core=plan.core, pass_a=plan.pass_a, valuation=plan.valuation,
         selections=plan.selections)
     _require(expected == plan, 'detailed_acceptance_plan_mismatch')
     original = calibration_render(packet, plan.accepted_calibration)
-    lines = [f'{packet.company_name}({packet.ticker})']
+    return original.model_copy(update={'text': _render_rows(packet, plan.rows)})
+
+
+def _render_rows(packet, rows):
+    lines = [f'{packet.company_name}({packet.ticker})', f'판단 기준일: {packet.assessment_date}']
     for section in SECTION_ORDER:
-        selected = [r for r in plan.rows if r.section == section]
+        selected = [r for r in rows if r.section == section]
         if not selected:
             continue
         lines.append('')
         if section in HEADINGS:
             lines.append(HEADINGS[section])
         lines.extend(r.text for r in selected)
-    return original.model_copy(update={'text': '\n'.join(lines)})
+    return '\n'.join(lines)
 
 
 def final_detailed_audit(text, packet, plan):

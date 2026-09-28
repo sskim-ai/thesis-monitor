@@ -55,18 +55,28 @@ class CurrentValuationView(ContractModel):
     overall_direction_use: Literal[False] = False
 
 
-def derive_current_valuation(*, ticker, run_id, security, price, projection):
+def derive_current_valuation(*, ticker, run_id, security, price, projection, issuer_bridge=None):
     if security['ticker'] != ticker or not security.get('canonical_security_id'):
         raise ValueError('valuation_security_identity_mismatch')
     if (price.get('contract') != 'current-price-context-v1' or not price.get('currency')
             or isinstance(price.get('current_price'), bool) or not price.get('current_price')):
         raise ValueError('valuation_current_price_missing')
-    if not projection.get('quality_bundles') or any(
+    if issuer_bridge is not None:
+        if (issuer_bridge.get('status') != 'PASS' or issuer_bridge.get('security_ticker') != ticker
+                or issuer_bridge.get('monitored_security_id') != security['canonical_security_id']
+                or issuer_bridge.get('security_valuation_transfer') is not False
+                or issuer_bridge.get('SECURITY_PER_SHARE_BRIDGE_ELIGIBLE') is not False
+                or issuer_bridge.get('SECURITY_VALUATION_BRIDGE_ELIGIBLE') is not False
+                or issuer_bridge.get('receipt_sha256') != digest({k: v for k, v in issuer_bridge.items()
+                                                                 if k != 'receipt_sha256'})):
+            raise ValueError('valuation_issuer_bridge_scope_invalid')
+    elif not projection.get('quality_bundles') or any(
         b['source_generation_id'] != run_id or b['source_inputs']['ticker'] != ticker
         for b in projection['quality_bundles']
     ):
         raise ValueError('valuation_financial_generation_or_security_mismatch')
-    rows = [FinancialSnapshot.model_validate(r) for r in projection['snapshots']]
+    # The bridge may own issuer income, but never target-security denominators.
+    rows = [] if issuer_bridge else [FinancialSnapshot.model_validate(r) for r in projection['snapshots']]
     if any(r.ticker != ticker for r in rows):
         raise ValueError('valuation_cross_security_denominator_denied')
     current_price = price['current_price']
@@ -87,7 +97,9 @@ def derive_current_valuation(*, ticker, run_id, security, price, projection):
         reason = 'TRADED_SECURITY_UNADJUSTED_PRICE_BASIS_UNQUALIFIED'
     if basis.is_depositary_security or basis.identity_warning:
         reason = 'TRADED_SECURITY_PER_SHARE_BASIS_REQUIRES_SEPARATE_QUALIFICATION'
-    bindings = (digest(projection), digest(price), digest(security))
+    if issuer_bridge:
+        reason = 'ISSUER_BRIDGE_HAS_NO_SECURITY_VALUATION_AUTHORITY'
+    bindings = (digest(projection), digest(price), digest(security)) + ((digest(issuer_bridge),) if issuer_bridge else ())
     metrics = tuple(CurrentMultiple(metric=metric, status='UNAVAILABLE', numerator=current_price,
         source_method='existing_derived_trailing_owner_scope_checked' if metric != 'fPER' else 'no_fresh_estimate_owner',
         input_hashes=bindings, denial_reason=reason if metric != 'fPER' else 'NO_FRESH_ESTIMATE_HORIZON_PUBLICATION_CURRENTNESS')

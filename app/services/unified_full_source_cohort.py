@@ -67,7 +67,8 @@ class FreshFullSourceRunSeed(FullSourceRunSeed):
 
 def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
                         authority_inputs, version_set, optional_denials, issuer_bridge,
-                        publication_inputs=None, night_inputs=None, composition_metadata=None):
+                        publication_inputs=None, night_inputs=None, composition_metadata=None,
+                        fresh_context_inputs=None):
     """All external artifact resolvers are already owned by compose_attempt."""
     if (digest(version_set) != seed.class_c_version_set_sha256 or
             digest(optional_denials) != seed.optional_denial_set_sha256 or
@@ -192,6 +193,24 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
     elif persisted_events:
         raise ValueError("persisted_event_seed_binding_required")
     publications, night = None, None
+    if fresh_context_inputs is not None:
+        if (not fresh_mode or publication_inputs is not None or night_inputs is not None
+                or set(fresh_context_inputs) != {'publications', 'night'}):
+            raise ValueError('fresh_context_requires_exclusive_fresh_seed')
+        from app.services.fresh_publication_replay import replay_fresh_publications
+        from app.services.unified_sealed_context import replay_night
+        pub, night_source = (fresh_context_inputs[k] for k in ('publications', 'night'))
+        for inputs in (pub, night_source):
+            if (inputs['run_id'] != seed.parent_run_id or inputs['run_started_at'] != seed.started_at
+                    or digest(sorted(inputs['policy'].allowed_providers)) != seed.source_policy_sha256):
+                raise ValueError('fresh_context_generation_or_policy_mismatch')
+        publications = replay_fresh_publications(**pub)
+        night = replay_night(**night_source)
+        if (digest(publications) != seed.run_acquisitions.get('publications')
+                or night['value_sha256'] != seed.run_acquisitions.get('night')
+                or digest({'probe': night['original_receipts'], 'history': night.get('history_receipts', [])})
+                   != seed.night_publication_receipt_sha256):
+            raise ValueError('fresh_context_run_binding_mismatch')
     if publication_inputs is not None or night_inputs is not None:
         if publication_inputs is None or night_inputs is None:
             raise ValueError("complete_publication_and_night_inputs_required")

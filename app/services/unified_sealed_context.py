@@ -61,14 +61,17 @@ def replay_publications(*, documents, hashes, cutoff, policy):
 
 
 def replay_night(*, receipts, bodies, body_hashes, observed_at, run_id, acquisition_id,
-                 expected_value_sha256, policy, run_started_at, acquisition_cutoff):
+                 expected_value_sha256, policy, run_started_at, acquisition_cutoff,
+                 history_receipts=None):
     policy.require("krx_night_futures")
     if not receipts or set(bodies) != set(body_hashes):
         raise ValueError("night_exact_source_set_required")
     if any(sha256_bytes(b) != body_hashes[n] for n, b in bodies.items()):
         raise ValueError("night_source_hash_mismatch")
     used = set()
-    for row in receipts:
+    history_receipts = history_receipts or []
+    history_dates = []
+    for row in [*history_receipts, *receipts]:
         if (row['run_id'] != run_id or row['acquisition_id'] != acquisition_id
                 or row['provider'] != 'krx_night_futures'
                 or row['outcome'] != 'HTTP_RESPONSE' or row['http_status'] != 200
@@ -76,6 +79,15 @@ def replay_night(*, receipts, bodies, body_hashes, observed_at, run_id, acquisit
                 or row['artifact'] in used):
             raise ValueError("night_original_receipt_mismatch")
         used.add(row['artifact'])
+        request = row['request']
+        if (request['method'] != 'GET' or request['route'] != KRX_FUTURES_DAILY_URL
+                or set(request['params']) != {'basDd'}):
+            raise ValueError('night_original_request_mismatch')
+        query_date = datetime.strptime(request['params']['basDd'], '%Y%m%d').date()
+        if query_date > observed_at.astimezone(KST).date():
+            raise ValueError('night_future_query_date')
+        if row in history_receipts:
+            history_dates.append(query_date)
         start, end = (datetime.fromisoformat(row[k]) for k in ('requested_at', 'received_at'))
         if (any(t.utcoffset() is None for t in (start, end, observed_at, run_started_at, acquisition_cutoff))
                 or not run_started_at <= observed_at <= acquisition_cutoff
@@ -83,6 +95,9 @@ def replay_night(*, receipts, bodies, body_hashes, observed_at, run_id, acquisit
             raise ValueError("night_original_receipt_time_mismatch")
     if used != set(bodies):
         raise ValueError("night_unused_source_body")
+    probe_dates = [datetime.strptime(r['request']['params']['basDd'], '%Y%m%d').date() for r in receipts]
+    if history_dates and (history_dates != sorted(set(history_dates)) or max(history_dates) >= min(probe_dates)):
+        raise ValueError('night_history_order_or_probe_overlap')
 
     class CapturedTransport(httpx.AsyncBaseTransport):
         index = 0
@@ -109,12 +124,21 @@ def replay_night(*, receipts, bodies, body_hashes, observed_at, run_id, acquisit
         # live_source describes verified original acquisition, not this replay.
         probe.live_source = True
         with TemporaryDirectory(prefix="sealed-night-replay-") as tmp:
+            from app.services.krx_night_history_service import persist_krx_response
+            for row in history_receipts:
+                persist_krx_response(root=Path(tmp),
+                    query_date=datetime.strptime(row['request']['params']['basDd'], '%Y%m%d').date(),
+                    fetched_at=datetime.fromisoformat(row['received_at']), http_status=row['http_status'],
+                    raw_body=bodies[row['artifact']])
             result = TypeAdapter(MacroProviderResult).dump_python(
                 materialize_night_probe(probe, history_directory=Path(tmp)), mode="json")
         if digest(result) != expected_value_sha256:
             raise ValueError("night_owner_value_mismatch")
-        return {"value": result, "value_sha256": digest(result),
+        output = {"value": result, "value_sha256": digest(result),
             "original_receipts": receipts, "source_hashes": body_hashes,
             "original_run_id": run_id, "original_acquisition_id": acquisition_id,
             "observed_at": observed_at.isoformat(), "network_calls": 0}
+        if history_receipts:
+            output['history_receipts'] = history_receipts
+        return output
     return asyncio.run(run())

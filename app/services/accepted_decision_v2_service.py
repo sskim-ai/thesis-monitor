@@ -880,8 +880,8 @@ def render_accepted_v2_production(
     *,
     frozen_core_numeric_scope: AcceptedDecisionFrozenCoreNumericScope | None = None,
 ) -> RenderedProductionAcceptedDecision:
-    from app.services.detailed_stock_message_service import DetailedStockMessagePlan, detailed_render
-    if isinstance(plan, DetailedStockMessagePlan):
+    from app.services.detailed_stock_message_service import DetailedStockMessagePlan, DetailedUnknownMessagePlan, detailed_render
+    if isinstance(plan, (DetailedStockMessagePlan, DetailedUnknownMessagePlan)):
         return detailed_render(packet, plan)
     if isinstance(plan, AcceptedCalibrationPlan):
         return calibration_render(packet, plan)

@@ -1,5 +1,6 @@
 from datetime import datetime, timezone
 from math import isfinite
+from collections.abc import Callable
 
 import httpx
 
@@ -19,9 +20,11 @@ KEY_STAT_FILTERS = {
 class EcosProvider:
     name = "ecos"
 
-    def __init__(self, transport: httpx.AsyncBaseTransport | None = None) -> None:
+    def __init__(self, transport: httpx.AsyncBaseTransport | None = None, *,
+                 clock: Callable[[], datetime] | None = None) -> None:
         self.settings = get_settings()
         self.transport = transport
+        self.clock = clock or (lambda: datetime.now(timezone.utc))
 
     async def collect(self, as_of: datetime) -> MacroProviderResult:
         result = MacroProviderResult(provider=self.name)
@@ -37,7 +40,7 @@ class EcosProvider:
             ) as client:
                 response = await client.get(url)
                 response.raise_for_status()
-                retrieved_at = datetime.now(timezone.utc)
+                retrieved_at = self.clock()
             rows = response.json().get("KeyStatisticList", {}).get("row", [])
             for name_fragment, (series_code, category) in KEY_STAT_FILTERS.items():
                 matches = [item for item in rows if name_fragment in str(item.get("KEYSTAT_NAME", ""))]

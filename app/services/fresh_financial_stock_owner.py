@@ -45,8 +45,13 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs):
         # Native source must itself be reassembled, not a previously stored
         # bridge output. Both plans and source receipt epochs are bound above.
         source_inputs = fin['issuer_business']['source_inputs']
-        if source_inputs['plan']['run_id'] != plan.run_id:
+        if (source_inputs['plan']['run_id'] != plan.run_id
+                or source_inputs['plan']['cutoff'] != plan.frozen_at.isoformat()):
             raise ValueError('fresh_bridge_source_generation_mismatch')
+        for receipt in source_inputs['receipts']:
+            start, end = (datetime.fromisoformat(receipt[k]) for k in ('started_at', 'finished_at'))
+            if start.utcoffset() is None or end.utcoffset() is None or not plan.frozen_at <= start <= end:
+                raise ValueError('fresh_bridge_source_receipt_predates_generation')
         source_result = financial.assemble(**source_inputs)
         projection = source_result['projection']
         source_ticker = source_inputs['plan']['ticker']
@@ -61,14 +66,11 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs):
     stock['numeric_registry'] = financial.build_shadow_numeric_registry(stock['fact_catalog'])
     # Issuer business bridges deliberately cannot supply a security denominator.
     valuation_projection = result['projection']
-    if bridge:
-        valuation = None
-        valuation_denial = 'ISSUER_BRIDGE_HAS_NO_SECURITY_VALUATION_AUTHORITY'
-    else:
-        valuation = derive_current_valuation(ticker=fp['ticker'], run_id=plan.run_id,
-            security=fp['security'], price=stock['current_price_context'], projection=valuation_projection)
-        valuation_denial = None
-    stock['current_valuation_view'] = valuation.model_dump(mode='json') if valuation else None
+    valuation = derive_current_valuation(ticker=fp['ticker'], run_id=plan.run_id,
+        security=fp['security'], price=stock['current_price_context'], projection=valuation_projection,
+        issuer_bridge=bridge)
+    valuation_denial = 'ISSUER_BRIDGE_HAS_NO_SECURITY_VALUATION_AUTHORITY' if bridge else None
+    stock['current_valuation_view'] = valuation.model_dump(mode='json')
     stock['current_valuation_denial'] = valuation_denial
     evidence = build_decision_evidence_packet(packet=packet, stock=stock,
         technical_context=PacketOwnedTechnicalContext.model_validate(stock['technical_context']))
@@ -79,8 +81,6 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs):
     missing = list(result['mandatory_missing'])
     if result['acquisition_denials']:
         missing.append('fresh_financial_acquisition:source_denied')
-    if valuation is None:
-        missing.append('current_valuation_view:' + valuation_denial)
     if quality['receipt']['state'] in {'denied', 'unknown'}:
         missing.append('fresh_financial_quality:' + quality['receipt']['state'])
     packet['source_time_domains'] = dict(scope='FRESH_CURRENT_RUN', run_id=plan.run_id,
@@ -94,12 +94,22 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs):
              quality['fact']['fact_id']: dict(fact_sha256=digest(quality['fact']),
                  ticker=fp['ticker'], source='current_financial_quality',
                  receipt_sha256=quality['receipt']['receipt_sha256'])}
+    input_hashes = {**result['input_hashes'], 'technical_owner': digest(baseline),
+                   'quality': digest(quality), 'valuation': digest(stock['current_valuation_view'])}
     return {**result, 'contract': 'fresh-financial-stock-owner-v1',
         'status': 'BLOCKED' if missing else 'PASS', 'mandatory_missing': sorted(set(missing)),
         'packet': packet, 'packet_sha256': digest(packet) if not missing else None,
         'diagnostic_packet_sha256': digest(packet), 'evidence_packet': evidence.model_dump(mode='json'),
         'ownership': owned.model_dump(mode='json'), 'source_graph': graph,
+        'component_binding': baseline['component_binding'],
+        'financial_state': dict(status='FRESH_SELECTED_SOURCE', quality=quality['receipt']['state'],
+            denials=result['acquisition_denials'], receipt_sha256=quality['receipt']['receipt_sha256']),
+        'numeric_registry_graph': [dict(fact_id=r['fact_id'], field_path=r['field_path'],
+            registry_entry_sha256=digest(r), source_node_sha256=digest(graph[r['fact_id']]))
+            for r in stock['numeric_registry']],
+        'evidence_reference_graph': {r.ref_id: dict(ticker=fp['ticker'], source_ref=r.source_ref,
+            evidence_sha256=digest(r.model_dump(mode='json')), input_hashes=input_hashes)
+            for r in evidence.evidence},
         'quality_view': quality, 'valuation_view': stock['current_valuation_view'],
-        'input_hashes': {**result['input_hashes'], 'technical_owner': digest(baseline),
-                         'quality': digest(quality), 'valuation': digest(stock['current_valuation_view'])},
+        'input_hashes': input_hashes,
         'fresh_run_id': plan.run_id, 'complete_source_adapter_qualified': False}

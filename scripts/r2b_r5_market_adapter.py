@@ -104,6 +104,35 @@ def _authority(packet, seed, graph, expected):
 
 def _publication_facts(packet, assessed):
     facts, denials, refs = {}, [], {}
+    context = packet['publication_context']
+    if context.get('contract') == 'fresh-publication-replay-v1':
+        require(context['run_id'] == packet['market_sources']['run_id'], 'fresh_publication_run_mismatch')
+        require(context['value_sha256'] == digest(context['providers']), 'fresh_publication_value_mismatch')
+        for provider, doc in sorted(context['providers'].items()):
+            require(doc['value_sha256'] == digest(doc['value']), 'fresh_publication_provider_value_mismatch')
+            for i, observation in enumerate(doc['value']['observations']):
+                path = f'publication_context/providers/{provider}/value/observations/{i}'
+                temporal = observation['raw_payload']['publication_context']
+                require(temporal['response_sha256'] in doc['source_hashes'].values(), 'fresh_publication_raw_unbound')
+                if observation['series_code'] not in _SERIES or not temporal['display_eligible']:
+                    denials.append(dict(path=path, reason='not_consumed_or_publication_currentness_unproven',
+                                        source_sha256=digest(observation)))
+                    continue
+                item = {**observation, 'provider': provider,
+                    'previous_observation_date': observation['raw_payload'].get('previous_observation_date'),
+                    'temporal': {**temporal, 'temporal_role': 'REFERENCE_LAGGING',
+                        'today_signal_eligible': False, 'important_change_eligible': False,
+                        'structured_state': 'SOURCE_UNAVAILABLE',
+                        'reason': 'fresh_publication_level_and_source_period_delta_only_no_briefing_comparison'}}
+                fact = _observation_fact(observation['series_code'], item, assessed)
+                fact['as_of_date'] = temporal['observation_date']
+                fact['source'] = provider
+                fact.setdefault('fields', {})['publication_context'] = temporal
+                ref = fact['fact_id']
+                require(ref not in facts or facts[ref] == fact, 'ambiguous_publication_occurrence:' + ref)
+                facts[ref] = fact
+                refs.setdefault(ref, []).append(path)
+        return list(facts.values()), denials, refs
     for role in PUBLICATIONS:
         name = 'class-c/' + role + '.json'
         doc = packet['publication_context'][name]
