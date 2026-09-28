@@ -44,24 +44,38 @@ A finite envelope is not an exact set of requests:
 - Kiwoom page two and later require response-owned continuation keys.
 - The native US market owner resolves exchange identity from symbol discovery.
 
-Under REV11 sections 3 and 5 these response-derived child requests cannot be
-created after any provider data has been observed. Guessing them, importing old
-mutable selection, or silently reinterpreting a wildcard as an exact request
-is forbidden. `r9_rev11_provider_inventory.py` therefore emits a diagnostic
-inventory and `R2B_R9_REV11_PROVIDER_PLAN_GAP`, not a live plan.
+The user's response-binding approval is recorded in the REV11 work instruction
+directory. Every child slot, selector, parent set and maximum is frozen before
+network access. Only the declared response fields may fill that slot. The
+resolved wire and parent receipt hashes are recorded before its first attempt.
+No slot can be added or widened after observing a response. Parent artifacts,
+selection policy, issuer, filing and cursor ancestry are checked again on use.
 
-The static subset includes first stock pages, SEC discovery/companyfacts,
-bounded OpenDART discovery pages, KR single-response market reads, configured
-FRED/EIA/ECOS requests and the finite KOSPI200 history window. These descriptors
-are not dispatched independently of the missing mandatory roles.
+The separate KR approval retains global configuration 50 and permits existing
+request-local caps within `MAX_KR_REQUEST_PAGES`. This is not a pre-acquisition
+guarantee of enough rows. Original consumer normalization, requested-window
+completion and continuation state must pass after capture. Unresolved cap
+exhaustion is SOURCE_PARTIAL and prohibits model execution.
 
-KR global capability is unchanged. `MAX_KR_REQUEST_PAGES` names the existing
-20-page bound without changing it. A request-local required cap needs verified
-minimum rows per page plus consumer-completeness semantics. A maximum page
-size or an owner heuristic is not such a proof; unknown remains unproven.
+## Opt-In Whole-Run Controller
 
-The next decision is operational, not analytical: authorize a specifically
-bounded, response-bound child-request protocol, or provide an independently
-sealed complete exact request set. REV11 does neither implicitly. Any later
-protocol must retain issuer/window/selection rules, child-slot and attempt
-limits, no widening, and provenance for every cursor/document selection.
+`r9_rev11_live` freezes the whole finite provider plan only from a clean,
+fully validated local commit and the exact REV10 receipt. It snapshots static
+identity and local investment logic, never prior mutable financial packets.
+`r9_rev11_collect` routes all provider HTTP through the dispatcher. Native
+Kiwoom normalization runs in a separate, network-disabled worker whose private
+stdio protocol is never exported. Credential exchanges remain memory-only.
+
+Raw stock pages are replayed through the original native parser. Financial,
+Market, macro, night and event owners consume current-generation receipts.
+`r9_rev11_replay` verifies source bindings and composes the full graph twice
+with network disabled. Capture success alone does not qualify a financial fact
+or complete source adapter. Mandatory partial sources stop before AI.
+
+Only a qualified fresh corpus can reach `r9_rev11_models`. It preserves the
+existing signed-in official sol/xhigh transport (1200 seconds, no retry),
+Market/Core/A/B contracts and detailed rendering, while using only the new
+generation's source inputs. Source and code hashes remain frozen through all
+stages. Sender-boundary capture is local and delivery-disabled. No main merge,
+push, deploy, scheduler mutation or production database write is part of this
+opt-in execution path.

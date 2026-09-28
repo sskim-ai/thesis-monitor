@@ -152,3 +152,66 @@ def sec_response_dependency_probe():
     return dict(same_static_plan_sha256=digest(p), possible_document_urls=urls,
         different_exact_request=urls[0] != urls[1], fixture_only=True, network_calls=0,
         conclusion='Exact child requests require fresh discovery or an explicitly authorized response-bound descriptor contract.')
+
+
+def response_slot_inventory(**kwargs):
+    """Amended inventory: response binding is authorized, not itself a plan gap.
+
+    Preserve unrelated role gaps and the strict KR page-proof result. Compiling
+    slots is distinct from registering a whole-source controller or qualifying
+    provider data; no inventory flag silently does either.
+    """
+    from app.services.sealed_chart_slots import chart_slots
+    from app.services.sealed_financial_slots import financial_slots
+    from app.services.sealed_response_binding import binding_owner_hash
+    original = inventory(**kwargs)
+    stock = kwargs['stock']
+    candidate = acquisition_plan(stock, kwargs['identities'], kr_max_pages=MAX_KR_REQUEST_PAGES)
+    root = Path(__file__).resolve().parents[1]
+    descriptors = []
+    replacements = {}
+    for t, p in candidate['financial_plans'].items():
+        owner = 'app/services/bounded_financial_projection.py'
+        rows = financial_slots(p, owner=owner, owner_sha256=sha256_bytes((root / owner).read_bytes()),
+                               config_sha256=kwargs['config_identities'][p['provider']])
+        descriptors.extend(rows)
+        replacements['financial:' + t] = rows
+    stock_caps = {'stock:' + r.entry_id: r.max_pages for r in stock.reads}
+    kr_caps = {'kr_market:' + r['key']: r['max_pages'] for r in candidate['kr_market_reads']}
+    for raw in original['diagnostic_plan']['descriptors']:
+        d = FreshRequestDescriptor.model_validate(raw)
+        if d.role_id in replacements:
+            continue
+        maximum = stock_caps.get(d.role_id, kr_caps.get(d.role_id, 1))
+        if d.provider == 'kiwoom' and maximum > 1:
+            rows = chart_slots(d, maximum_pages=maximum)
+            descriptors.extend(rows)
+            replacements[d.role_id] = rows
+        else:
+            descriptors.append(d)
+    coverage = []
+    for row in original['role_coverage']:
+        if row['role'] in replacements:
+            financial = row['role'].startswith('financial:')
+            row = dict(row, status='SEALED_FINANCIAL_OWNER_BOUND' if financial else 'SEALED_PAGINATION_SLOTS',
+                descriptor_ids=[d.logical_request_id for d in replacements[row['role']]],
+                reason='Existing collect/project owner bound to immutable request slots and verified parent receipts.' if financial else
+                    'Continuation values bound only to preceding sealed page; native consumer completion still required.')
+        coverage.append(row)
+    owners = {d.normalizer: d.owner_sha256 for d in descriptors}
+    gaps = [r['role'] for r in coverage if r['status'] not in {'EXACT_DESCRIPTOR', 'SEALED_FINANCIAL_OWNER_BOUND'}]
+    page_proof = original['kr_page_proof']
+    gaps += ['kr_page_requirement:' + r['role'] for r in page_proof if r['status'] != 'PASS']
+    plan = ProviderPlan(generation_id=stock.run_id, code_sha=kwargs['code_sha'],
+        policy_schema_sha256=digest({'candidate': candidate['plan_sha256'], 'descriptor': FreshRequestDescriptor.model_json_schema()}),
+        rev10_receipt_sha256=sha256_bytes(encoded(kwargs['rev10_receipt']) + b'\n'), frozen_at=stock.frozen_at,
+        descriptors=tuple(descriptors), mandatory_roles=tuple(r['role'] for r in coverage if r['mandatory']),
+        unresolved_roles=tuple(gaps), binding_owner_sha256=binding_owner_hash())
+    result = dict(original)
+    result.update(diagnostic_plan=plan.model_dump(mode='json'), role_coverage=coverage,
+        descriptor_inventory=[dict(d.model_dump(mode='json'), descriptor_sha256=d.descriptor_sha256,
+            request_semantic_sha256=d.request_semantic_sha256, max_transport_attempts=d.max_transport_attempts) for d in descriptors],
+        admission=plan.admission(rev10_receipt=kwargs['rev10_receipt'], owners=owners,
+            config_identities=kwargs['config_identities'], credential_presence=kwargs['credential_presence']),
+        response_slot_authorization='20260928_FROZEN_SLOT_RESPONSE_BINDING_ALLOWED')
+    return result
