@@ -29,6 +29,8 @@ def test_current_only_actual_sender_boundary(tmp_path, ticker):
     source, prepared = result['stock'], result['prepared']
     assert source['quality_view']['receipt']['applicability'] == 'QUALITY_NOT_APPLICABLE_NO_DIRECTIONAL_COMPARISON'
     assert source['quality_view']['fact'] is None
+    assert source['observed_business_cardinality'] == len(source['context_fact_refs']) == 1
+    assert source['comparative_fact_refs'] == []
     assert all(f['fact_type'] != 'financial_quality' for f in source['packet']['stocks'][0]['fact_catalog'])
     assert all('OVERALL_DIRECTION' not in r['allowed_uses'] for r in prepared['initial_chain']['authority']['authority_records'])
     plan = build_unknown_plan(source_stock=source, source_authority=result['authority'],

@@ -143,6 +143,7 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
             evidence_sha256=digest(r.model_dump(mode='json')), input_hashes=input_hashes)
             for r in evidence.evidence},
         'quality_view': quality, 'valuation_view': stock['current_valuation_view'],
+        'observed_business_cardinality': result['observed_business_cardinality'] + len(context_facts),
         'context_fact_refs': ['canonical:' + f['fact_id'] for f in context_facts],
         'input_hashes': input_hashes,
         'fresh_run_id': plan.run_id, 'complete_source_adapter_qualified': False}

@@ -33,6 +33,9 @@ def test_archetype_data_descriptor_same_fresh_controller(tmp_path, ticker, optio
         assert quality['fact'] is not None and quality['receipt']['directional_use_allowed'] is False
         effect = first['readiness']['a_materialization']
         assert effect['status'] == 'PASS'
+        projection = first['readiness']['business_quality_projection']
+        assert projection['effect'] == 'CONFIDENCE_ONLY' and not projection['directional_use_allowed']
+        assert projection['source_refs'] == [quality['receipt']['canonical_ref']]
 
 
 def test_native_valuation_descriptor_roundtrip(tmp_path):

@@ -84,6 +84,9 @@ def derive_fresh(*, projection, facts, ticker, security_id, run_id, source_ticke
     source_ticker = source_ticker or ticker
     if not facts:
         from app.services.bounded_financial_projection import comparison_applicability
+        require(all(k in projection for k in ('comparison_applicability', 'comparisons', 'fields',
+            'denials', 'comparison_candidates', 'latest_selected_period_unavailable', 'freshness', 'quality_bundles')),
+            MISSING + ':comparison_absence_owner_missing')
         applicability = comparison_applicability(projection)
         require(projection.get('comparison_applicability') == applicability,
                 MISSING + ':comparison_absence_owner_missing')
