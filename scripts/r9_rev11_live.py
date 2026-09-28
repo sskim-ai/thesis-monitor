@@ -63,6 +63,14 @@ def exact_rev10_receipt(path):
     return receipt
 
 
+def static_official_identity():
+    path = ROOT/'docs/reports/20260815-phase7-2-6-skhy-official-identity-evidence.json'
+    raw = path.read_bytes()
+    if sha256_bytes(raw) != 'e1b5ec547e2974b75d9b33869172ff136e34105777f3f37476b310afe8ca3064':
+        raise ValueError('official_static_identity_changed')
+    return json.loads(raw)
+
+
 def freeze(args):
     from scripts.sealed_cohort_offline_proof import network_guard
     network_guard()
@@ -114,9 +122,7 @@ def freeze(args):
             validate_local_seed(local)
             durable_json(args.output/f'class-c/local-{market}.json',local,exclusive=True)
     engine.dispose()
-    official=read(ROOT/'docs/reports/20260815-phase7-2-6-skhy-official-identity-evidence.json')
-    if digest(official) != 'd6cdf130e4971d0f3292e9e3cca3ebdfd7597589d121d7f8dfe2b95f01b6d82e':
-        raise ValueError('official_static_identity_changed')
+    official=static_official_identity()
     durable_json(args.output/'static/official-security-identity.json',official,exclusive=True)
     news=[make_read(security=identities[t],market=m,run_id=run,lookback_days=s.monitor_lookback_days,security_records=records)
           for m,ts in UNIVERSE.items() for t in ts]

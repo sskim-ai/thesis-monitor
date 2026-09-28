@@ -149,6 +149,22 @@ def test_existing_local_identity_lineage_does_not_add_a_provider_call():
     assert not POLICY.permits('alphavantage')
 
 
+def test_static_identity_matches_preserved_repository_evidence(tmp_path, monkeypatch):
+    from scripts import r9_rev11_live as live
+    name = 'docs/reports/20260815-phase7-2-6-skhy-official-identity-evidence.json'
+    original = (live.ROOT/name).read_bytes()
+    official = live.static_official_identity()
+    assert official['evidence']['ticker'] == 'SKHY'
+    assert official['evidence']['ordinary_share_identifier'] == '000660'
+    assert official['provider'] == 'sec_official_identity'
+    target = tmp_path/name
+    target.parent.mkdir(parents=True)
+    target.write_bytes(original + b'\n')
+    monkeypatch.setattr(live, 'ROOT', tmp_path)
+    with pytest.raises(ValueError, match='official_static_identity_changed'):
+        live.static_official_identity()
+
+
 def test_systemic_stop_never_continues_independent_phases(tmp_path, monkeypatch):
     from scripts import r9_rev11_collect as collect
     from app.services.unified_live_source_transport import SourceSafetyStop
