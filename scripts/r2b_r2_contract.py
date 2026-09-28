@@ -24,6 +24,7 @@ from scripts.m12da_source_use_contract import (
     validate_source_use_current_input,
 )
 from scripts.r2b_r1_offline_closure import reproject_time
+from scripts.financial_direction_eligibility import DENIAL, is_financial, narrow_financial_authority
 
 CONTRACT = "r2b-whole-decision-limitation-v1"
 STRATEGY = "versioned-strategy-metadata-v1"
@@ -170,8 +171,13 @@ def bound_chain(view, authority, *, atomic, generation, source_generation, view_
     derivative["authority_records"] = [deepcopy(r) for r in original["authority_records"]
                                         if r["ref_id"] in indexed]
     _require({r["ref_id"] for r in derivative["authority_records"]} == set(indexed), "authority_set")
+    financial_metadata = [indexed[r["ref_id"]] for r in derivative["authority_records"]
+                          if is_financial(r, indexed[r["ref_id"]])]
+    financial_fields = (policy.frozen_fact_fields(view["packet"], view["ticker"], financial_metadata)
+                        if financial_metadata else {})
     for record in derivative["authority_records"]:
         ref = record["ref_id"]
+        record.update(narrow_financial_authority(record, indexed[ref], financial_fields.get(ref)))
         record["source_metadata_sha256"] = digest(indexed[ref])
         if ref == RULE_REF:
             record["source_period"] = view_receipt["strategy"]["version_created_at"]
@@ -224,6 +230,10 @@ def limitation_catalog(stock, authority):
         result[key] = {"kind": "QUALIFIED_FINANCIAL_LINEAGE", "source_denial": denial,
                        "authority_sha256": digest(authority)}
     for row in authority["authority_records"]:
+        if DENIAL in row["denial_reasons"]:
+            key = "source-recovery:" + digest({"ticker": stock["ticker"], "ref": row["ref_id"], "reason": DENIAL})
+            result[key] = {"kind": "COMPARABLE_FINANCIAL_OBSERVATION", "source_ref": row["ref_id"],
+                           "source_denial": row["denial_reasons"], "authority_sha256": digest(authority)}
         if row["ref_id"].startswith("canonical:event:") and "OVERALL_DIRECTION" not in row["allowed_uses"]:
             key = "source-recovery:" + digest({"ticker": stock["ticker"], "ref": row["ref_id"]})
             result[key] = {"kind": "VERIFIED_BUSINESS_EVENT", "source_ref": row["ref_id"],
@@ -288,6 +298,8 @@ def render_unknown(ticker, raw, *, recovery, capability):
     next_evidence = []
     if "QUALIFIED_FINANCIAL_LINEAGE" in kinds:
         next_evidence.append("동일 기간·기업 기준으로 검증된 정식 재무 공시의 수치와 출처 연결")
+    if "COMPARABLE_FINANCIAL_OBSERVATION" in kinds:
+        next_evidence.append("현재 재무 수치는 맥락으로만 사용하며, 방향 판단에는 기간·기업·통화·연결 기준이 맞는 과거 비교 수치가 필요")
     if "VERIFIED_BUSINESS_EVENT" in kinds:
         next_evidence.append("검토 대기 중인 사업 소식을 확인할 공식 원문과 관측된 사업 성과")
     return (f"{ticker} · 판단 근거 제한\n전체·신규 매수자·보유자: 판단 유보\n"

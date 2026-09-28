@@ -10,6 +10,7 @@ from app.services.stage2_maturity_polarity_adapter_service import maturity_atomi
 from app.services.logical_condition_service import SourceLogicalCondition, ClaimLogicalCondition, source_claim_expression
 from scripts.m12cq_two_pass_contract import canonical_sha256
 from scripts.m12da_source_use_contract import SourceUse, validate_selected_refs, validate_source_use_current_input
+from scripts.financial_direction_eligibility import direction_allowed, validate_atomic_direction
 
 CONTRACT = 'm12ds-r2-judgment-policy-calibration-v1'
 
@@ -63,8 +64,9 @@ def frozen_fact_fields(packet, ticker, metadata):
 
 def observations(metadata, authority, fact_fields=None):
     """Mechanical observed propositions, never confidence prose or configured conditions."""
-    permitted = {r['ref_id'] for r in authority['authority_records']
-                 if r['authority_state'] == 'RESOLVED' and 'OVERALL_DIRECTION' in r['allowed_uses']}
+    records = {r['ref_id']: r for r in authority['authority_records']}
+    permitted = {row['ref_id'] for row in metadata if row['ref_id'] in records
+                 and direction_allowed(records[row['ref_id']], row, (fact_fields or {}).get(row['ref_id']))}
     result = {}
 
     def add(row, metric, value, prior=None, fields=None):
@@ -73,10 +75,6 @@ def observations(metadata, authority, fact_fields=None):
         effect = None
         if prior is not None and value != prior:
             effect = Effect.POSITIVE if value > prior else Effect.NEGATIVE
-        elif metric in ('operating_income', 'operating_margin_pct', 'operating_cash_flow') and value != 0:
-            effect = Effect.POSITIVE if value > 0 else Effect.NEGATIVE
-        elif metric == 'revenue' and value > 0:
-            effect = Effect.POSITIVE
         if effect is None:
             return
         kind = ('OBSERVED_OPERATING_STRESS' if metric == 'operating_income' and value < 0
@@ -175,6 +173,7 @@ def materialize_core(ticker, raw, metadata, authority, fact_fields=None):
                 'reason_role': 'FUNDAMENTAL'}))
     if not atomic:
         raise ValueError('core_empty')
+    validate_atomic_direction(atomic, metadata, authority, fact_fields)
     return {'atomic_claims': atomic, 'effects': effects, 'observations': obs,
             'binding_sha256': canonical_sha256({'atomic': atomic, 'effects': effects})}
 
@@ -208,6 +207,9 @@ def axis_capability(core, chain, catalog, metadata):
                 out['holder_support'].append(ref)
             if effect['materiality'] == 'PERSISTENT_OR_IMPAIRED':
                 out['holder_reduce'].append(ref)
+    fields = {o['source_ref']: o.get('fact_binding') or {'fields': o['financial_scope']}
+              for o in core.get('observations', {}).values()}
+    validate_atomic_direction(core['atomic_claims'], metadata, chain['authority'], fields)
     out.update(contract=CONTRACT, ticker=catalog['ticker'], raw_authority_widened=False,
                holder_projection='ELIGIBLE_OBSERVED_BUSINESS_CLAIM_EFFECT_AND_MATERIALITY',
                core_binding_sha256=core['binding_sha256'], source_binding_sha256=chain['binding']['binding_sha256'])

@@ -19,9 +19,12 @@ from scripts.m12cr_r1_typed_quality_contract import project_security_valuation_b
 
 
 def data(value=20, prior=None, ticker='FICTIONAL'):
-    payload = {'operating_income':{'value':value}}
-    if prior is not None:
-        payload = {'metric':'operating_income','current_value':value,'prior_comparable_value':prior}
+    # Directional policy tests need an observed change, not an absolute amount.
+    payload = {'metric':'operating_income','current_value':value,
+               'prior_comparable_value':0 if prior is None else prior}
+    basis = dict(period_type='QTD', currency='USD', unit='currency', entity_scope='issuer', statement_basis='CFS')
+    payload.update(comparison_type='YOY', current_period=dict(start='2026-04-01', end='2026-06-30', **basis),
+                   prior_period=dict(start='2025-04-01', end='2025-06-30', **basis))
     rows = [{'ref_id':'source:business','category':'earnings','statement':json.dumps(payload),'as_of':'2026-06-30'}]
     authority = {'authority_records':[{'ref_id':rows[0]['ref_id'],'authority_state':'RESOLVED',
                                       'allowed_uses':['OVERALL_DIRECTION','CONTEXT']}]}
@@ -315,7 +318,4 @@ def test_truncated_fact_projection_exact_binding_without_new_source():
 def test_revenue_presence_never_claims_growth_or_profitability():
     rows,authority,_ = data()
     rows[0]['statement']=json.dumps({'revenue':{'value':25}})
-    observation = next(iter(p.observations(rows,authority).values()))
-    assert observation['prior_value'] is None
-    assert 'does not establish growth, profitability or durability' in observation['text']
-    assert 'higher' not in observation['text']
+    assert not p.observations(rows, authority)

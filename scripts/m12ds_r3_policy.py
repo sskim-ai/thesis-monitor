@@ -1,10 +1,10 @@
 """Shadow severity and axis policy, with canonical order owned by atomic claims."""
 from copy import deepcopy
-from datetime import date
 from enum import StrEnum
 
 from scripts import m12ds_r2_judgment_policy as r2
 from scripts.m12dr_financial_source_authority import FAMILY, CONTRACT as COMPARISON_CONTRACT
+from scripts.financial_direction_eligibility import comparable
 
 CONTRACT = 'm12ds-r3-residual-judgment-policy-v1'
 frozen_fact_fields = r2.frozen_fact_fields
@@ -23,21 +23,6 @@ class Effect(StrEnum):
 
 
 ADVERSE = {Effect.CURRENT, Effect.DETERIORATION, Effect.IMPAIRMENT}
-
-
-def comparable(fields):
-    current, prior = fields.get('current_period'), fields.get('prior_period')
-    if not isinstance(current, dict) or not isinstance(prior, dict):
-        return False
-    try:
-        dates = [date.fromisoformat(p[k]) for p in (current, prior) for k in ('start', 'end')]
-        return (dates[0] <= dates[1] and dates[2] <= dates[3] < dates[1]
-                and fields.get('comparison_type') in ('YOY', 'QOQ', 'SAME_DURATION_BASELINE')
-                and (dates[1] - dates[0]).days == (dates[3] - dates[2]).days
-                and all(current.get(k) and current[k] == prior.get(k)
-                        for k in ('period_type', 'currency', 'unit', 'entity_scope', 'statement_basis')))
-    except (ValueError, TypeError, KeyError):
-        return False
 
 
 def observations(metadata, authority, fact_fields=None):

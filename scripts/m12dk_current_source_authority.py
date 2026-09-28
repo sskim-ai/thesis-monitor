@@ -21,6 +21,7 @@ from scripts.m12da_source_use_contract import (
     build_trusted_source_authority_manifest,
     canonical_sha256,
 )
+from scripts.financial_direction_eligibility import narrow_financial_authority
 
 
 CONTRACT = "m12dk-current-source-authority-v1"
@@ -411,6 +412,8 @@ def build_current_source_authority(
                 )
             else:
                 record["denial_reasons"] = sorted(set(record["denial_reasons"] + receipt["errors"]))
+        if rule and rule["id"] == "OBSERVED_EARNINGS_FACT":
+            record.update(narrow_financial_authority(record, row))
         receipt["allowed_uses"] = record["allowed_uses"]
         receipt["authority_state"] = record["authority_state"]
         receipt["authority_basis"] = record["authority_basis"]
