@@ -83,13 +83,14 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs):
         return DisplayBinding(fact_id=fact['fact_id'], field_path='fields.' + field,
             value=fields[field], unit=row['unit'], registry_row_sha256=digest(row), fact_sha256=digest(fact))
 
-    def add(block, label, rows=(), bindings=(), *, text=None, proof=None, formatter='canonical-two-decimal'):
+    def add(block, label, rows=(), bindings=(), *, text=None, proof=None,
+            formatter='canonical-two-decimal', unavailable_text=None):
         available = text is not None
         items.append(DisplayItem(block_id=block, display_order=len(items), label=label,
             fact_ids=tuple(r['fact_id'] for r in rows), bindings=tuple(bindings),
             observation_dates=tuple(sorted({r['as_of_date'] for r in rows})),
             status='AVAILABLE' if available else 'UNAVAILABLE', format_id=formatter,
-            text=text if available else label + ': 자료 부족', proof=proof or {}))
+            text=text if available else (unavailable_text or label + ': 자료 부족'), proof=proof or {}))
 
     def current(fact):
         f = fact['fields']
@@ -133,6 +134,8 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs):
         valid = bool(fact and binding and publication.get('contract') == TIME_CONTRACT
             and publication.get('latest_available_at_query_time') is True
             and publication.get('display_eligible') is True
+            and publication.get('series_code') == series
+            and publication.get('freshness_state') in {'CURRENT_SESSION_OR_DATE', 'LATEST_PUBLISHED_VERIFIED'}
             and publication.get('observation_date') == fact['as_of_date']
             and fact['as_of_date'] <= assessment_date
             and publication.get('response_sha256')
@@ -192,8 +195,11 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs):
         night = [c for c in catalog['claims'] if c['claim_type'] == 'OFFICIAL_NIGHT']
         if len(night) > 1:
             raise ValueError('configured_night_display_ambiguous')
-        add('night', '한국 야간선물 · KOSPI200', text=('한국 야간선물 · KOSPI200\n' + night[0]['rendered_text']) if night else None,
-            proof={'typed_numeric_claims': night}, formatter='official-night-dwm')
+        refs = {part['source_fact_ref'] for claim in night for part in claim['components']}
+        add('night', '한국 야간선물 · KOSPI200', [by_id[ref] for ref in sorted(refs) if ref in by_id],
+            text=('한국 야간선물 · KOSPI200\n' + night[0]['rendered_text']) if night else None,
+            proof={'typed_numeric_claims': night}, formatter='official-night-dwm',
+            unavailable_text='한국 야간선물 · KOSPI200\n일: 자료 부족\n주: 자료 부족\n월: 자료 부족')
     return MarketDisplayPlan(market=market, assessment_date=assessment_date, completed_session=completed,
         internal_source_sha256=digest(source), eligible_refs=tuple(sorted(eligible)), items=tuple(items))
 

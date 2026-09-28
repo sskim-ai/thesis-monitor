@@ -51,6 +51,8 @@ def test_internal_vs_display_and_exact_order():
     assert 'SPY: 101.00 USD · +1.00 USD (+1.00%)' in text
     assert '2026-09-25 관측' in text
     assert '원/달러' not in text and 'KOSDAQ150' not in text
+    assert all(label + ': 자료 부족' in text for label in ('일', '주', '월'))
+    assert p.items[-1].status == 'UNAVAILABLE'
     assert len(s['fact_catalog']) > len({ref for item in p.items for ref in item.fact_ids})
     assert final_display_audit(text, p, s, '시장 판단: 방향 혼재')['status'] == 'PASS'
     assert final_display_audit(text+' invented 999', p, s, '시장 판단: 방향 혼재')['status'] == 'FAIL'

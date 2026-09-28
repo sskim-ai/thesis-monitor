@@ -11,7 +11,7 @@ R9 preflight proved that network execution must not start yet. Four P1 contracts
 3. The old all-source controller imports persisted macro and parent business/quality artifacts and is not a true all22 fresh-generation controller.
 4. Macro provider normalization does not consistently preserve the source-owned observation/publication period; ECOS in particular currently substitutes the query `as_of`.
 
-REV6 must close these four contracts **offline first**.  
+REV6 must close these four contracts **offline first**.
 Only after all four preflight contracts PASS may it freeze finite provider budgets and perform the full fresh acquisition.
 
 No comparison ZIP is required.
