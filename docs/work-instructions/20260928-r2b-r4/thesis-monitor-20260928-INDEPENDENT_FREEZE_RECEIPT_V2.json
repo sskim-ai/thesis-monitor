@@ -1,0 +1,20 @@
+{
+  "blind_source_review_sha256": "d705d36dabfa99f8d096a2bce4ddf996229680650cb09a45abffb5d7e9213ec3",
+  "contract": "external-independent-blind-freeze-receipt-v2-quality-supplement",
+  "independent_assessment_content_included": false,
+  "independent_assessment_v2_bundle_sha256": "b025e86ba211fafe89d56be8268652c6482d589ea12e8510dbf040442e40ed77",
+  "independent_assessment_v2_json_sha256": "9a083de6bef2b5b0e617136e10a67eed00ff5cacffc79809825f2ea51d34557d",
+  "independent_assessment_v2_md_sha256": "ab9eb7c506960db9ce2066f2037024d45dad420d2348e66c6bff325f603a9008",
+  "instruction_for_controller": "Verify hashes only. Do not read or inject V1/V2 independent assessment content into Monitoring AI prompts, validators, materializers, or model outputs before the Monitoring AI result bundle is sealed.",
+  "monitoring_ai_calls_before_freeze": {
+    "A": 0,
+    "B": 0,
+    "Core": 0,
+    "Market": 0
+  },
+  "monitoring_ai_model_outputs_seen_before_freeze": false,
+  "parent_v1_assessment_sha256": "95776285ba2653ec102517315f16259c7d9f0f314ab5af01b715308b87dda50b",
+  "quality_supplement_sha256": "2d59748a3064a91d1ddcbbb68aefb90a961eaf4e9baa4334619c4e0db38f7edd",
+  "review_order": "BLIND_SOURCE_PLUS_QUALITY_SUPPLEMENT_FIRST_THEN_MONITORING_AI",
+  "status": "INDEPENDENT_ASSESSMENT_V2_FROZEN"
+}
