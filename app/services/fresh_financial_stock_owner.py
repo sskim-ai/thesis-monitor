@@ -18,16 +18,16 @@ from app.services.unified_stock_owner import assemble_stock
 def fresh_stock_baseline(technical_inputs):
     """Canonical JSON order at the opt-in fresh boundary, not legacy outputs.
 
-    Component traversal emits binding arrays. Sorting the input object keys
-    before traversal gives disk and in-memory callers the same array/hash.
-    Source arrays and their economic order are preserved.
+    Component traversal and subsequent numeric-registry traversal emit binding
+    arrays. Canonicalize objects at both boundaries so stored issuer-bridge
+    baselines replay identically. Source arrays keep their economic order.
     """
     tech = dict(technical_inputs)
     if tech.get('financial') is not None or tech.get('event_source') is not None:
         raise ValueError('fresh_stock_no_parent_mutable_input')
     tech.update(financial=None, fresh_financial_pending=True,
                 components=json.loads(encoded(tech['components'])))
-    return assemble_stock(**tech)
+    return json.loads(encoded(assemble_stock(**tech)))
 
 
 def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs=None, event_inputs=None,
