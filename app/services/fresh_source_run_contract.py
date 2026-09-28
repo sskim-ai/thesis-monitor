@@ -16,6 +16,7 @@ from app.services.unified_stock_acquisition import StockPlan, UNIVERSE
 from app.services.unified_stock_owner import reject_downstream
 
 CONTRACT = 'r9-fresh-source-run-v1'
+MAX_KR_REQUEST_PAGES = 20
 STATIC_TABLES = frozenset({'watchlistitem', 'securitymaster', 'investmentthesis', 'company'})
 CURRENT_FORBIDDEN = frozenset({'parent_zip_sha256', 'parent_result_zip', 'versioned_business',
     'versioned_binding', 'accepted_stock_packet', 'old_quality_bundle', 'prior_model_output',
@@ -65,7 +66,7 @@ def _budget(count):
 def acquisition_plan(stock_plan, identities, *, kr_max_pages):
     """Freeze every source class before network. No retained-subject exemption."""
     stock = StockPlan.model_validate(stock_plan)
-    if type(kr_max_pages) is not int or not 1 <= kr_max_pages <= 20:
+    if type(kr_max_pages) is not int or not 1 <= kr_max_pages <= MAX_KR_REQUEST_PAGES:
         raise ValueError('finite_kr_page_cap_required')
     expected = {t for subjects in UNIVERSE.values() for t in subjects}
     if set(identities) != expected:
