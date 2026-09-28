@@ -65,7 +65,8 @@ async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guar
         'plan_sha256': dispatcher.plan.plan_sha256}, exclusive=True)
     sealed = SealedSourceTransport(dispatcher, inner, providers={d.provider for d in dispatcher.plan.descriptors})
     native_input = root / 'native-input.json'
-    durable_json(native_input, {k: frozen[k] for k in ('native_owner', 'stock_plan', 'us_market_symbols')}, exclusive=True)
+    durable_json(native_input, {**{k: frozen[k] for k in ('native_owner', 'stock_plan', 'us_market_symbols')},
+        'latest_completed_us_session': frozen['sessions']['us']}, exclusive=True)
     bridge = SealedNativeBridge(owner_root=Path(frozen['native_owner_root']), input_path=native_input,
         input_sha256=sha256_bytes(native_input.read_bytes()), output=root/'native', transport=sealed,
         market_reads=frozen['us_market_reads'])

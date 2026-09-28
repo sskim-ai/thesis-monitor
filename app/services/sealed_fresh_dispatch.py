@@ -21,6 +21,7 @@ from app.services.unified_live_source_transport import BoundedTransport, SourceS
 from app.services.unified_run_artifacts import durable_bytes, durable_json, sha256_bytes
 from app.services.unified_snapshot_contract import ContractModel, digest, encoded
 from app.services.unified_source_observer import _secret_field
+from app.services.secret_safe_redirect import redirect_metadata
 
 HOSTS = {
     'kiwoom': {'api.kiwoom.com'}, 'sec_edgar': {'data.sec.gov', 'www.sec.gov'},
@@ -355,6 +356,8 @@ The live source controller has no route here until the *whole* plan is admitted.
                     raw = response.content
                     row['status'] = response.status_code
                     row['response_headers'] = {k: v for k, v in response.headers.items() if k in {'cont-yn', 'next-key'}}
+                    if not 200 <= response.status_code < 300:
+                        row['redirect_metadata'] = redirect_metadata(request, response, self.secrets).model_dump(mode='json')
                     if credential_exchange:
                         # The actual credential body stays in memory. Its hash
                         # and a minimal sanitized receipt are the only artifacts.

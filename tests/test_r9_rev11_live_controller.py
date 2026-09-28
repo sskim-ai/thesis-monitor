@@ -187,7 +187,8 @@ def test_systemic_stop_never_continues_independent_phases(tmp_path, monkeypatch)
     monkeypatch.setattr(collect, 'SealedNativeBridge', Bridge)
     monkeypatch.setattr(collect, 'SealedSourceTransport', Transport)
     dispatcher = SimpleNamespace(plan=SimpleNamespace(plan_sha256='a'*64,descriptors=()),results={})
-    frozen = dict(native_owner={},stock_plan={},us_market_symbols=[],native_owner_root=str(tmp_path),us_market_reads=[])
+    frozen = dict(native_owner={},stock_plan={},us_market_symbols=[],native_owner_root=str(tmp_path),us_market_reads=[],
+                  sessions={'us':'2026-09-25'})
     result = asyncio.run(collect.acquire_all(root=tmp_path,frozen=frozen,settings=None,dispatcher=dispatcher,
         inner=None,policy=None,guard=lambda:None))
     assert calls == [{'stocks':True}]

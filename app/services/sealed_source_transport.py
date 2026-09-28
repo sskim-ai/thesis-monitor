@@ -36,6 +36,8 @@ class SealedSourceTransport(httpx.AsyncBaseTransport):
         if run.halted:
             raise SourceSafetyStop('systemic_stop_latched')
         public = wire_identity(request, run.secrets)
+        public_request = json.loads(public)
+        public_route = httpx.URL(public_request['url'])
         auth = str(request.url) == 'https://api.kiwoom.com/oauth2/token'
         if auth and run.credential_response is not None:
             if public != self.auth_request_hash:
@@ -48,7 +50,8 @@ class SealedSourceTransport(httpx.AsyncBaseTransport):
                 continue
             template = json.loads(d.request_json)
             route = httpx.URL(template['url'])
-            if (template['method'], route.host, route.path) != (request.method, request.url.host, request.url.path):
+            if (template['method'], route.host, route.path) != (
+                    public_request['method'], public_route.host, public_route.path):
                 continue
             if request.method == 'POST':
                 body, planned = json.loads(request.content), json.loads(template['body'])

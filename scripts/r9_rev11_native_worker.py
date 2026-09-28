@@ -11,11 +11,13 @@ import json
 from pathlib import Path
 import socket
 import sys
+import traceback
 from types import SimpleNamespace
 
 import httpx
 
 from scripts import unified_stock_source_worker as stock_worker
+from app.services.native_completed_market import select_completed_daily_rows
 
 
 def main():
@@ -64,8 +66,16 @@ def main():
                               headers=r['headers'], request=request)
     bounded = settings.model_copy(update={'kiwoom_max_retries': 0, 'kiwoom_timeout_seconds': 600})
     owner.httpx = SimpleNamespace(post=post, HTTPError=httpx.HTTPError)
+    class CompletedMarketProvider(owner.KiwoomProvider):
+        def _normalize_rows(self, rows, count):
+            target = frozen.get('latest_completed_us_session')
+            if not target:
+                raise ValueError('native_market_frozen_session_missing')
+            normalized = super()._normalize_rows(rows, max(count, len(rows)))
+            return select_completed_daily_rows(normalized, target_session=target, count=count)
+
     service = OhlcvService(SymbolResolver(settings.sector_map_path),
-        owner.KiwoomProvider(owner.KiwoomClient(bounded, owner.KiwoomAuth(bounded))))
+        CompletedMarketProvider(owner.KiwoomClient(bounded, owner.KiwoomAuth(bounded))))
     class Client:
         def __enter__(self):
             return self
@@ -126,7 +136,13 @@ def main():
                     include_indicators=False, indicator_limit=0, adjusted=True)
                 result = dict(status=200, body=value.model_dump(mode='json'))
             except Exception as exc:
-                result = dict(status=502, body={'error_class': type(exc).__name__})
+                frames = traceback.extract_tb(exc.__traceback__)[-4:]
+                allowed = {'native_market_frozen_session_missing', 'native_market_exact_two_completed_rows_required',
+                    'native_market_duplicate_session', 'native_market_target_completed_session_missing',
+                    'native_market_adjacent_completed_baseline_missing'}
+                result = dict(status=502, body={'error_class': type(exc).__name__,
+                    'contract_error': str(exc) if str(exc) in allowed else 'native_market_owner_failure',
+                    'stack': [{'module': Path(f.filename).name, 'function': f.name, 'line': f.lineno} for f in frames]})
             emit({'result': result})
         else:
             raise ValueError('native_unplanned_command')

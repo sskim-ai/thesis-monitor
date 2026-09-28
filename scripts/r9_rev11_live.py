@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 import sqlite3
+import shutil
 import subprocess
 import sys
 from zoneinfo import ZoneInfo
@@ -71,11 +72,19 @@ def static_official_identity():
     return json.loads(raw)
 
 
+def require_disk_capacity(path):
+    disk = shutil.disk_usage(path)
+    if disk.free < 10 * 1024**3:
+        raise SourceSafetyStop('R2B_R9_REV12_REV2_DISK_GUARD')
+    return dict(total=disk.total, used=disk.used, free=disk.free, threshold=10 * 1024**3)
+
+
 def freeze(args):
     from scripts.sealed_cohort_offline_proof import network_guard
     network_guard()
     if args.output.exists() or git('status','--porcelain'):
         raise ValueError('new_output_clean_exact_commit_required')
+    disk_guard = require_disk_capacity(args.output.parent)
     head = git('rev-parse','HEAD')
     validation = read(args.validation)
     if validation.get('status') != 'PASS' or validation.get('head') != head:
@@ -112,9 +121,9 @@ def freeze(args):
         records=[r.model_dump(mode='json') for r in session.exec(select(SecurityMaster)).all()
                  if r.ticker in {t for ts in UNIVERSE.values() for t in ts}]
         identities={r['ticker']:r for r in records}
-        run='rev11-live-'+at.strftime('%Y%m%dT%H%M%SZ')
+        run=args.generation_prefix+'-'+at.strftime('%Y%m%dT%H%M%SZ')
         stock=StockPlan(run_id=run,acquisition_id=run+':stock',frozen_at=at,
-            instruction_sha=git('rev-parse','fe909d26'),implementation_sha=head,universe_sha256=digest(universe),
+            instruction_sha=git('rev-parse',args.instruction_ref),implementation_sha=head,universe_sha256=digest(universe),
             reads=make_reads(universe,identities,at=at,counts=counts),
             **{k:native[k] for k in ('owner_head','owner_files','settings_sha256','request_environment_sha256')})
         for market in UNIVERSE:
@@ -148,6 +157,7 @@ def freeze(args):
         protected_input_hashes={str(p.relative_to(args.output)):sha256_bytes(p.read_bytes()) for p in args.output.rglob('*.json')},
         execution_mode='AD_HOC_LIVE_REQUALIFICATION',model_policy='EXISTING_OFFICIAL_SOL_XHIGH_CONTRACT_NO_FALLBACK',
         production_side_effects=0)
+    frozen['disk_guard_at_freeze'] = disk_guard
     durable_json(args.output/'r9-rev11-final-provider-plan.json',frozen,exclusive=True)
     durable_json(args.output/'r9-rev11-provider-role-coverage.json',result['role_coverage'],exclusive=True)
     durable_json(args.output/'preflight.json',dict(admission,implementation=head,final_plan_sha256=digest(frozen)),exclusive=True)
@@ -157,6 +167,8 @@ def freeze(args):
 def main():
     p=argparse.ArgumentParser()
     p.add_argument('mode',choices=['freeze','acquire','replay'])
+    p.add_argument('--generation-prefix', default='rev11-live')
+    p.add_argument('--instruction-ref', default='fe909d26')
     for name in ('output','operating','native-owner','validation','rev10-receipt'):
         p.add_argument('--'+name,type=Path,required=True)
     args=p.parse_args()
@@ -176,6 +188,7 @@ def main():
                 raise SourceSafetyStop('frozen_static_input_drift')
     guard()
     if args.mode=='acquire':
+        require_disk_capacity(args.output)
         s=Settings(_env_file=args.operating/'.env')
         config=credentials(s)
         run=SealedDispatcher(plan=ProviderPlan.model_validate(frozen['plan']),root=args.output/'dispatch',
