@@ -1,5 +1,20 @@
 # Next Session Prompt
 
+## Current Local Track: R2B-R9-REV8 Contract Gap
+
+Read `operations/R9_REV8_OFFLINE_INTEGRATION.md` and
+`reports/20260928-r2b-r9-rev8-offline-integration.md` first. The tested implementation
+is `af7f85eba085748265609b27cda42aefdc58faf6`; tests pass but Phase A does not.
+Do not run providers/models from the synthetic 22/22 direct-source result.
+First close current-only financial source ownership without requiring a comparison
+or granting direction, and prove UNKNOWN_LIMIT through the real local sender.
+Then complete bridge/insurance/taint/event/qualified valuation archetypes, complete
+accepted detailed section owners, all22 whole-source plus Market replay, and exact
+24 capture. Reissue a finite source plan only after every offline gate passes.
+Do not reuse old sources/model outputs, weaken safety, change recipients/schedulers,
+or merge/push/deploy. REV8 created no live generation or human-review messages.
+Older track entries below are historical.
+
 ## Current Local Track: R2B-R9-REV7 Contract Gap
 
 Read `operations/R9_REV7_FRESH_DETAILED_PREFLIGHT.md` first. The offline partial

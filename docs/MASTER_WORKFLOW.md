@@ -1,5 +1,20 @@
 # Thesis Monitor Master Workflow
 
+## 2026-09-28 R2B-R9-REV8 Offline Integration
+
+Newest tested local implementation: `af7f85eba085748265609b27cda42aefdc58faf6`.
+Terminal: `R2B_R9_REV8_PREFLIGHT_CONTRACT_GAP`. See
+`operations/R9_REV8_OFFLINE_INTEGRATION.md` and
+`reports/20260928-r2b-r9-rev8-offline-integration.md`.
+Direct synthetic SEC/FPI/DART stock integration and existing Core/A/B preflight
+pass 22/22, but required heterogeneous archetypes and whole-source/Market/detailed
+24-message qualification remain open. Current-only SEC raw input reproduces
+`EXPECTED_BUSINESS_QUALITY_OWNER_OUTPUT_MISSING` before UNKNOWN_LIMIT.
+Focused 1163 and full 6358 pass; 63 existing skips unchanged. Provider/model calls,
+live messages, production mutations and push/merge/deploy remain zero. Five P1
+integration gates are documented, not five failed live attempts. Older entries
+below are historical. No fresh live generation or human-review message ZIP exists.
+
 ## 2026-09-28 R2B-R9-REV7 Partial Offline Closure
 
 Newest local checkpoint: `c75222d2b75252e6ab44bd34a71c4f83dc6e59bf`.

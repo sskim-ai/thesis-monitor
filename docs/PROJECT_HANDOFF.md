@@ -1,5 +1,26 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-28 R2B-R9-REV8 Handoff
+
+Base `3b8ebcfbe07b91e510013cd07236404fc04e71f0`; instruction-only commit
+`0ae7d84b441921989432437a52b29f4ef2d26d55`; exact tested implementation
+`af7f85eba085748265609b27cda42aefdc58faf6`. Local integration branch only.
+Read `operations/R9_REV8_OFFLINE_INTEGRATION.md` and the REV8 report first.
+Fresh macro raw/time replay, same-run KOSPI200 history, bridge-denied security
+valuation, all22 direct-source Core/A/B probes and NORMAL sender capture pass.
+All22 fixtures are synthetic comparisons, not all required owner archetypes.
+Current-only financial input fails the comparison-dependent quality owner before
+UNKNOWN_LIMIT. Do not clear missing fields or upgrade absolute amounts to direction.
+Whole source/Market replay, exact bridge descriptor, qualified/N-M valuation,
+complete detailed sections and exact24 route are still unqualified. Existing
+valuation capabilities were audited; no universal source-unavailability claim.
+Terminal `R2B_R9_REV8_PREFLIGHT_CONTRACT_GAP`; five P1 integration gates open.
+Focused 1163 / full 6358 PASS, 63 identical skips. Public Action 0.4.5 unchanged,
+20 unique operationIds; Knowledge/Ruff/diff PASS. No external source/model calls,
+live capture, production mutation, main merge, push or deploy. Operating remains
+`b610e6de0a8c33d199961e821ff1b130e1fa9ad4`. Full report ZIP/SHA stay local and are
+delivered to iCloud; final identities and sync receipt are outside the code tree.
+
 ## 2026-09-28 R2B-R9-REV7 Handoff
 
 Base `30efc244288d42c13a9b80aa5c4e70c386be26a3`; instruction-only commit
