@@ -207,16 +207,19 @@ def component_binding(components):
 
 
 def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: dict[str, bytes],
-                   local_seed: dict, financial: dict, components: dict,
+                   local_seed: dict, financial: dict | None, components: dict,
                    expected_hashes: dict, policy: UnifiedSourcePolicy,
                    event_source: BoundNewsInput | None = None,
                    business_cutoff: datetime | None = None,
-                   financial_tuple_denial: bool = False) -> dict:
+                   financial_tuple_denial: bool = False,
+                   fresh_financial_pending: bool = False) -> dict:
     """No path lookup, providers, prior assessments or downstream model output."""
     for key, value in (("local", local_seed), ("financial", financial), ("components", components),
                        ("receipts", receipts), ("plan", plan.model_dump(mode="json"))):
         _exact(value, expected_hashes[key])
     event_binding = None
+    if fresh_financial_pending and (financial is not None or event_source is not None):
+        raise ValueError('fresh_technical_baseline_must_not_import_financial_or_event_state')
     if (event_source is None) != (business_cutoff is None):
         raise ValueError("event_source_and_business_cutoff_required_together")
     if event_source is not None:
@@ -255,8 +258,13 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
             raise ValueError("event_stock_market_mismatch")
         event_binding = replay_news(event_source, security=security, business_cutoff=business_cutoff, policy=policy)
     try:
-        valuation, financial_refs, financial_state = _financial(financial, ticker=ticker, market=market,
-            cutoff=plan.frozen_at, policy=policy)
+        if fresh_financial_pending:
+            valuation, financial_refs = {}, {}
+            financial_state = {'status': 'UNAVAILABLE', 'owner': 'fresh_financial_pending',
+                               'run_id': plan.run_id}
+        else:
+            valuation, financial_refs, financial_state = _financial(financial, ticker=ticker, market=market,
+                cutoff=plan.frozen_at, policy=policy)
     except ValueError as exc:
         if (event_source is None and not financial_tuple_denial) or str(exc) != "financial_selected_tuple_mismatch":
             raise

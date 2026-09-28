@@ -31,6 +31,10 @@ class AcceptedCalibrationPlan(FrozenModel):
     render_schema: int = Field(default=1, ge=1, le=1)
 
 
+class AcceptedDetailedCalibrationPlan(AcceptedCalibrationPlan):
+    stage_provenance: dict[str, str]
+
+
 class AcceptedMarketCalibration(FrozenModel):
     market: str
     assessment_date: str
@@ -111,6 +115,8 @@ def calibration_render(packet, plan):
         "claim_lineage_sha256": digest(plan.claim_lineage)}
     if plan.quote_context is not None:
         expected['quote_context_sha256'] = digest(plan.quote_context)
+    if isinstance(plan, AcceptedDetailedCalibrationPlan):
+        expected['stage_provenance_sha256'] = digest(plan.stage_provenance)
     if (not plan.source_generation_id or not plan.execution_generation_id
             or plan.ticker != packet.ticker or expected != plan.acceptance
             or digest(expected) != plan.acceptance_sha256

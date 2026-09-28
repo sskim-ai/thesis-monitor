@@ -75,6 +75,52 @@ def _replay_quality(bundle):
         original_source_ticker=inputs["ticker"], source_generation_id=bundle["source_generation_id"])
 
 
+def derive_fresh(*, projection, facts, ticker, security_id, run_id, source_ticker=None, bridge=None):
+    """Same quality owner, bound to a newly replayed acquisition projection.
+
+    The caller must replay the bounded raw financial acquisition first. This
+    function never accepts stored quality state as an alternative input.
+    """
+    source_ticker = source_ticker or ticker
+    wanted = {f['quality_receipt_sha256'] for f in facts}
+    bundles = [b for b in projection['quality_bundles'] if b['quality']['receipt_sha256'] in wanted]
+    require(wanted and {b['quality']['receipt_sha256'] for b in bundles} == wanted, MISSING)
+    require(all(b['source_generation_id'] == run_id and b['source_inputs']['ticker'] == source_ticker
+                for b in bundles), 'fresh_quality_generation_or_subject_mismatch')
+    outputs = [_replay_quality(b) for b in bundles]
+    periods = {f['fields']['period_end'] for f in facts}
+    issuers = {f['fields']['issuer_id'] for f in facts}
+    providers = {o['metadata']['provider'] for o in outputs}
+    types = {o['metadata']['source_type'] for o in outputs}
+    require(len(periods) == len(issuers) == len(providers) == len(types) == 1,
+            'fresh_quality_selected_tuple_ambiguous')
+    period = next(iter(periods))
+    require(all(o['metadata']['period'] == period for o in outputs), 'fresh_quality_period_mismatch')
+    merged = {'fields': {str(i) + ':' + k: v for i, out in enumerate(outputs)
+                         for k, v in out['quality']['fields'].items()}}
+    state = aggregate_state(merged)
+    fields = dict(state=state, reason_codes=sorted({r for o in outputs for r in o['quality']['quality_reason_codes']}),
+        source_type=next(iter(types)), source_period=period, provider=next(iter(providers)),
+        decision_version=outputs[0]['quality']['decision_version'],
+        quality_scope='selected_reported_business_source_inputs')
+    bindings = [dict(source_inputs_sha256=o['input_sha256'], formal_sha256=o['formal_sha256'],
+        quality_receipt_sha256=o['source_quality']['receipt_sha256'], source_generation_id=run_id) for o in outputs]
+    fact = dict(fact_id='financial_quality:' + period, fact_type='financial_quality', as_of_date=period,
+        source='deterministic_financial_validation', fields=fields, prose_eligible=True,
+        interpretation_eligible=False, numeric_registry_eligible=False, ticker=ticker,
+        source_ticker=source_ticker, issuer_id=next(iter(issuers)), canonical_security_id=security_id,
+        derivation_owner=CONTRACT, source_input_bindings=bindings,
+        input_fact_ids=sorted(f['fact_id'] for f in facts), issuer_business_bridge=deepcopy(bridge))
+    receipt = dict(contract=CONTRACT, acquisition_class='FRESH_CURRENT_RUN', ticker=ticker,
+        source_generation_id=run_id, canonical_ref='canonical:' + fact['fact_id'],
+        fact_sha256=digest(fact), projection_sha256=digest(projection), inputs=bindings,
+        input_fact_sha256={f['fact_id']: digest(f) for f in facts}, owner_outputs=outputs,
+        applicability='APPLICABLE', inputs_complete=bool(merged['fields']), state=state,
+        directional_use_allowed=False, security_valuation_transfer=False)
+    receipt['receipt_sha256'] = digest(receipt)
+    return dict(fact=fact, receipt=receipt)
+
+
 def derive(*, stock, versions, version_hashes, local_seeds, cutoff, policy):
     """Create a supplement only from an exact replay of the sealed business version."""
     ticker = stock["ticker"]

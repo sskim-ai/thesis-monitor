@@ -60,6 +60,11 @@ class FullSourceRunSeed(ContractModel):
         return digest(self.model_dump(mode="json"))
 
 
+class FreshFullSourceRunSeed(FullSourceRunSeed):
+    """Opt-in extension; legacy run-seed serialization remains byte-compatible."""
+    fresh_stock_owner_set_sha256: str
+
+
 def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
                         authority_inputs, version_set, optional_denials, issuer_bridge,
                         publication_inputs=None, night_inputs=None, composition_metadata=None):
@@ -70,6 +75,10 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
         raise ValueError("run_component_hash_mismatch")
     if issuer_bridge.get("security_valuation_transfer") or issuer_bridge.get("per_share_transfer"):
         raise ValueError("issuer_bridge_security_transfer_denied")
+    if isinstance(seed, FreshFullSourceRunSeed) and (publication_inputs is not None or night_inputs is not None):
+        # The legacy publication bridge replays persisted Class-C records, not
+        # fresh macro requests. Never silently route a fresh seed through it.
+        raise ValueError('fresh_whole_context_replay_not_closed')
     if publication_inputs is not None or night_inputs is not None:
         from pathlib import Path
         import json
@@ -90,6 +99,19 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
     expected = {t for tickers in UNIVERSE.values() for t in tickers}
     if set(stock_inputs) != expected or set(authority_inputs) != expected or set(market_inputs) != {"us", "kr"}:
         raise ValueError("whole_universe_required")
+    fresh_mode = isinstance(seed, FreshFullSourceRunSeed)
+    if fresh_mode:
+        from app.services.fresh_source_run_contract import validate_local_seed
+        if seed.persisted_event_evidence_sha256 is not None:
+            raise ValueError('fresh_cohort_persisted_event_not_qualified')
+        for ticker, inputs in stock_inputs.items():
+            if set(inputs) != {'fresh_financial_binding'}:
+                raise ValueError('fresh_whole_cohort_requires_exact_fresh_owner:' + ticker)
+            validate_local_seed(inputs['fresh_financial_binding']['technical_inputs']['local_seed'])
+        bindings = {t: digest({'technical_plan': inputs['fresh_financial_binding']['technical_inputs']['plan'].model_dump(mode='json'),
+            'financial_plan': inputs['fresh_financial_binding']['financial_inputs']['plan']}) for t, inputs in stock_inputs.items()}
+        if digest(bindings) != seed.fresh_stock_owner_set_sha256:
+            raise ValueError('fresh_stock_plan_set_mismatch')
     markets, stocks, authorities = {}, {}, {}
     persisted_events = {}
     for market in ("us", "kr"):
@@ -117,20 +139,28 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
             inputs = stock_inputs[ticker]
             versioned = inputs.get("versioned_binding")
             persisted = inputs.get("persisted_binding")
+            fresh = inputs.get('fresh_financial_binding')
             if versioned is not None and persisted is not None:
                 raise ValueError("ambiguous_stock_business_owner")
-            direct = (versioned or persisted or {}).get("stock_inputs", inputs)
+            direct = fresh['technical_inputs'] if fresh is not None else (versioned or persisted or {}).get("stock_inputs", inputs)
             plan = direct["plan"]
             if plan.run_id != seed.parent_run_id or plan.frozen_at != seed.started_at:
                 raise ValueError("inherited_class_a_stock_denied")
             if composition_metadata is not None:
                 if seed.run_acquisitions.get('stock') != digest(plan.model_dump(mode='json')):
                     raise ValueError('stock_acquisition_seed_mismatch')
-                for name, value in ((f'class-c/local-{market}.json', direct['local_seed']),
-                                    (f'class-c/financial-{ticker}.json', direct['financial'])):
+                required_versions = [(f'class-c/local-{market}.json', direct['local_seed'])]
+                if not fresh_mode:
+                    required_versions.append((f'class-c/financial-{ticker}.json', direct['financial']))
+                for name, value in required_versions:
                     if sha256_bytes(encoded(value) + b'\n') != version_set.get(name):
                         raise ValueError('stock_persisted_version_seed_mismatch')
-            if versioned is not None:
+            if fresh is not None:
+                if not fresh_mode:
+                    raise ValueError('fresh_stock_seed_binding_required')
+                from app.services.fresh_financial_stock_owner import assemble_fresh_stock
+                stock = assemble_fresh_stock(**fresh)
+            elif versioned is not None:
                 from app.services.versioned_business_stock_owner import bind_current_stock
                 stock = bind_current_stock(**versioned)["result"]
             elif persisted is not None:
@@ -142,6 +172,8 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
             if stock["status"] != "PASS" or stock["market"] != market:
                 raise ValueError("current_complete_stock_required:" + ticker)
             authority = authority_inputs[ticker]
+            if fresh is not None and authority.get('fresh_business_inputs') != fresh:
+                raise ValueError('fresh_authority_owner_input_mismatch')
             if (authority["source_packet"] != stock["packet"] or authority["ticker"] != ticker
                     or authority["evidence_packet"] != stock["evidence_packet"]):
                 raise ValueError("authority_stock_packet_mismatch")

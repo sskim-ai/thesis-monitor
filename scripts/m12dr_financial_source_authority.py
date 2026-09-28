@@ -156,7 +156,7 @@ def comparative_facts(quality, *, ticker, issuer_id, projection=None):
 
 
 def build_source_authority(*, quality_bundles, issuer_bindings, versioned_business_inputs=None,
-                           persisted_event_inputs=None, **kwargs):
+                           persisted_event_inputs=None, fresh_business_inputs=None, **kwargs):
     current = build_current_source_authority(**kwargs)
     ticker = kwargs["ticker"]
     packet = kwargs["source_packet"]
@@ -166,7 +166,18 @@ def build_source_authority(*, quality_bundles, issuer_bindings, versioned_busine
     quality = None
     projection = None
     versioned = None
-    if versioned_business_inputs is not None:
+    fresh = None
+    if fresh_business_inputs is not None:
+        from app.services.fresh_financial_stock_owner import assemble_fresh_stock
+        if quality_bundles or issuer_bindings or versioned_business_inputs or persisted_event_inputs:
+            raise ValueError('fresh_business_authority_ambiguous_owner')
+        fresh = assemble_fresh_stock(**fresh_business_inputs)
+        if (fresh['status'] != 'PASS' or fresh['packet'] != packet
+                or fresh['evidence_packet'] != kwargs['evidence_packet']
+                or fresh['fresh_run_id'] != kwargs['source_generation_id']):
+            raise ValueError('fresh_business_authority_replay_mismatch')
+        source_ticker = None
+    elif versioned_business_inputs is not None:
         from app.services.versioned_business_stock_owner import replay_version
         if quality_bundles or issuer_bindings or versioned_business_inputs.get('ticker') != ticker:
             raise ValueError('versioned_business_authority_ambiguous_owner')
@@ -179,7 +190,10 @@ def build_source_authority(*, quality_bundles, issuer_bindings, versioned_busine
     else:
         source_ticker = ((stock.get("valuation") or {}).get("security_identity_provenance") or {}).get(
             "evidence", {}).get("ordinary_share_identifier")
-    if versioned is not None:
+    if fresh is not None:
+        expected_facts = [f for f in fresh['packet']['stocks'][0]['fact_catalog']
+                          if 'canonical:' + f['fact_id'] in fresh['comparative_fact_refs']]
+    elif versioned is not None:
         expected_facts = versioned['facts']
     elif source_ticker in quality_bundles:
         bundle = quality_bundles[source_ticker]
@@ -216,6 +230,10 @@ def build_source_authority(*, quality_bundles, issuer_bindings, versioned_busine
         owner = quality["contract"] if quality else CONTRACT
         receipt.update(source_family=FAMILY, errors=errors, quality_contract=owner,
                        quality_receipt_sha256=quality["receipt_sha256"] if quality else None)
+        if fresh is not None:
+            receipt.update(source_acquisition_class='FRESH_CURRENT_RUN',
+                fresh_run_id=fresh['fresh_run_id'], fresh_owner_sha256=digest(fresh),
+                quality_receipt_sha256=fact['quality_receipt_sha256'] if fact else None)
         if versioned is not None:
             receipt.update(source_acquisition_class='VERSIONED_PERSISTED_ALLOWED',
                 source_version_sha256=versioned['version_sha256'],

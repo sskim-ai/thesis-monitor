@@ -34,12 +34,26 @@ class BoundedTransport:
         if self.logical >= self.maximum_logical:
             raise SourceSafetyStop("transport_budget_exhausted")
         self.logical += 1
+        public = self.public_request(request) if not secret else None
         row = {"logical_ordinal": self.logical, "requested_at": utc_now(),
-               "request": None if secret else request,
-               "request_sha256": None if secret else digest(request),
+               "request": public,
+               "request_sha256": digest(public) if public is not None else None,
                "secret_exchange": secret, "timeout_seconds": 600, "maximum_attempts": 3}
         durable_json(self.root / f"logical-{self.logical:04d}.json", row, exclusive=True)
         return row
+
+    def public_request(self, value):
+        """Credentials can appear in ECOS paths or FRED query parameters."""
+        if isinstance(value, dict):
+            return {k: '[REDACTED]' if k.lower() in {'api_key', 'crtfc_key', 'token', 'authorization',
+                'appkey', 'secretkey', 'appsecret'} else self.public_request(v) for k, v in value.items()}
+        if isinstance(value, list):
+            return [self.public_request(v) for v in value]
+        if isinstance(value, str):
+            from urllib.parse import quote
+            for secret in self.secrets:
+                value = value.replace(secret, '[REDACTED]').replace(quote(secret, safe=''), '[REDACTED]')
+        return value
 
     def record(self, row, attempt, response=None, error=None):
         self.attempts += 1

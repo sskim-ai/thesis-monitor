@@ -880,6 +880,9 @@ def render_accepted_v2_production(
     *,
     frozen_core_numeric_scope: AcceptedDecisionFrozenCoreNumericScope | None = None,
 ) -> RenderedProductionAcceptedDecision:
+    from app.services.detailed_stock_message_service import DetailedStockMessagePlan, detailed_render
+    if isinstance(plan, DetailedStockMessagePlan):
+        return detailed_render(packet, plan)
     if isinstance(plan, AcceptedCalibrationPlan):
         return calibration_render(packet, plan)
     plan = normalize_accepted_plan_conditions(plan)
