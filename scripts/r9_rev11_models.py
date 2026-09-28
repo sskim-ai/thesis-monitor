@@ -27,6 +27,8 @@ c, owner = pre.c, pre.owner
 
 class FreshExecution(Execution):
     DETAILED_PRESENTATION = True
+    # Match REV10 detailed capture; the older typed path expects legacy packets.
+    TYPED_PRESENTATION = False
 
     def __init__(self, root, sources):
         self.root, self.sources = root, sources

@@ -56,6 +56,7 @@ def test_new_model_controller_loads_only_new_generation_inputs(tmp_path):
     assert proof.gen == proof.source_gen == 'new-only'
     assert proof.prepared == proof.markets == proof.cores == proof.arows == proof.brows == {}
     assert proof.frozen is None and proof.ledger == []
+    assert proof.DETAILED_PRESENTATION is True and proof.TYPED_PRESENTATION is False
 
 
 def test_private_command_receipt_binds_result_and_only_used_sealed_receipts(tmp_path, monkeypatch):
