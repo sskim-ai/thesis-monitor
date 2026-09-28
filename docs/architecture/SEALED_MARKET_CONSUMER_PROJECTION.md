@@ -41,6 +41,12 @@ repair, fallback and judge calls are zero. A failure stops all subsequent work.
 This contract does not claim a stronger runtime isolation guarantee than the
 existing official transport provides.
 
+The host-context inventory JSON was restored byte-for-byte from instruction
+commit `f1c22493` (blob `eaca7ae4ffa3d21ec758347bbc99cbedd66e9479`), because
+the retained launch helper still consumes that path. It contains environment
+variable names and handling rules, not credentials or past model outputs. Its
+SHA is frozen with the execution binding; host/auth policy is unchanged.
+
 Only fully validated outputs may enter local production-renderer capture. No
 recipient or outbound delivery is created. Independent assessment contents
 remain unread until result sealing; a partial result is not comparison-ready.

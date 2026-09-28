@@ -89,6 +89,8 @@ class Execution(OfficialLaunch):
         p.require(p.manifest(self.root/'inputs')==self.frozen['inputs'], 'sealed_input_drift')
         p.require(p.sha(self.root/'validation/validation.json')==self.frozen['validation_sha256'], 'validation_drift')
         p.require(p.sha(self.report/'host-context.json')==self.frozen['host_context_sha256'], 'host_context_drift')
+        p.require(p.sha(launch.INSTRUCTION/'m12ds-launch-context-parity-contract.json')==
+                  self.frozen['launch_contract_sha256'], 'launch_contract_drift')
         p.require(shutil.disk_usage(self.root).free >= 10*1024**3, 'disk_budget_blocked')
         p.transport.validate_binding(p.binding(),str(p.BIN))
         for stage, expected in self.stage_manifests.items():
@@ -138,6 +140,7 @@ class Execution(OfficialLaunch):
             inputs=p.manifest(self.root/'inputs'), validation_sha256=p.sha(self.root/'validation/validation.json'),
             stage_manifests=self.stage_manifests, initial_request_manifest_sha256=p.sha(self.sealed/'initial-requests.json'),
             host_context_sha256=p.sha(self.report/'host-context.json'), frozen_at=p.now(),
+            launch_contract_sha256=p.sha(launch.INSTRUCTION/'m12ds-launch-context-parity-contract.json'),
             model='gpt-5.6-sol', effort='xhigh', timeout_seconds=1200, max_calls=MAX_CALLS,
             retries=0, repair=0, fallback=0, judge=0, provider_refresh=0,
             decision_modes={t:d['mode'] for t,d in self.prepared.items()},

@@ -1,4 +1,5 @@
 from copy import deepcopy
+import hashlib
 from types import SimpleNamespace
 
 import pytest
@@ -33,3 +34,9 @@ def test_call_budget_blocks_before_dispatch():
     with pytest.raises(Exception,match='stage_call_budget'):
         Execution.bounded(fake,'market',dict(market='kr',batch=1,subjects=[]),{})
     assert sum(MAX_CALLS.values())==26
+
+
+def test_restored_host_contract_has_exact_historical_bytes():
+    from scripts import m12ds_launch_context as launch
+    raw=(launch.INSTRUCTION/'m12ds-launch-context-parity-contract.json').read_bytes()
+    assert hashlib.sha256(raw).hexdigest()=='9a65cc4768f86d4b05441c5a4d8db58f55b36e374314b47fa63c896683259de0'
