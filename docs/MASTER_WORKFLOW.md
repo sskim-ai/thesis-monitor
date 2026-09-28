@@ -1,5 +1,16 @@
 # Thesis Monitor Master Workflow
 
+## 2026-09-28 R2B-R4 Pre-Model Boundary
+
+V2 neutral receipt verified: blind fairness is PASS_V2. R3 stock Core/A/B
+readiness reproduces 22/22 with unchanged supplement and source hashes.
+The accepted Market consumer fails on both sealed market packets: the unified
+producer emits `market_sources.component`, not its required `market_context`.
+Terminal: `R2B_R4_PREMODEL_CONTRACT_DRIFT`. No input binding/model calls/messages.
+No source/quality/decision/renderer repair is authorized in R4. See
+`reports/20260928-r2b-r4-pre-model-contract-boundary.md`. Independent V1/V2 content
+remains unread, reveal closed, all production/provider effects zero.
+
 ## 2026-09-28 R2B-R3 Quality Owner Closure
 
 See `operations/R2B_TYPED_QUALITY_OWNER.md`. Fourteen missing canonical quality

@@ -1,5 +1,19 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-28 R2B-R4 Handoff
+
+Instruction `9e825f499baa18ba985a8eda2cea1402c49e1825`; preflight implementation
+`691c53a3d5258da04637e24acdbafb3d59ed5d05`. V2 neutral receipt SHA
+`9c9eec930400db3e7390984b6045e72961684e3db774eedd633b3f6fa1e9650d` matches.
+This resolves the missing-file and blind-supplement gate, not the Market input
+contract. Stocks pass Core/A/B 22/22, price-rule versions 20/20, unclassified
+model-visible time refs zero. Market adapter readiness is 0/2 with actual
+`KeyError('market_context')`. This is not source hash drift or an AI rejection.
+Do not silently construct an empty/old Market context or skip Market to run
+stocks. A separate bounded owner-approved Market projection needs authorization
+before the unchanged whole-cohort execution can resume. No independent content
+was read; no model input binding, calls, previews or comparison-ready receipt.
+
 ## 2026-09-28 R2B-R3 Handoff
 
 R2B-R2 final `9321a76b41b499879e75668348f84c2c1ad59a10` is the base. Instruction

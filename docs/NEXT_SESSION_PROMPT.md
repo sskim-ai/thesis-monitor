@@ -1,5 +1,16 @@
 # Next Session Prompt
 
+## Current Local Track: R2B-R4 Market Input Boundary
+
+Read `reports/20260928-r2b-r4-pre-model-contract-boundary.md` and the latest local
+R4 report. V2 fairness now passes; do not ask again for the received neutral
+receipt. Stock Core/A/B input readiness is 22/22, but the accepted Market owner
+requires `market_context` absent from the unified sealed producer. R4 forbids
+source-policy repair, so no model calls or whole-cohort binding were issued.
+Wait for a bounded Market producer/consumer projection instruction; preserve
+sealed source hashes, independent assessment secrecy and all zero-side-effect
+limits. Do not treat offline stock probes as 24-message readiness.
+
 ## Current Local Track: R2B-R3 Blind Disclosure Gate
 
 Read `operations/R2B_TYPED_QUALITY_OWNER.md` and the immutable R3 report first.
