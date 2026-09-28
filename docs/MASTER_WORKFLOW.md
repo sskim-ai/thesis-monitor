@@ -1,5 +1,17 @@
 # Thesis Monitor Master Workflow
 
+## 2026-09-28 R2B-R9-REV7 Partial Offline Closure
+
+Newest local checkpoint: `c75222d2b75252e6ab44bd34a71c4f83dc6e59bf`.
+Terminal: `R2B_R9_REV7_PREFLIGHT_CONTRACT_GAP`. See
+`operations/R9_REV7_FRESH_DETAILED_PREFLIGHT.md` and
+`reports/20260928-r2b-r9-rev7-partial-offline-closure.md`.
+Fresh financial/quality/valuation and normal detailed-plan foundations are
+implemented, but whole-source fresh composition and complete detailed ownership
+remain open P1s. Focused 1103; full 6298 passed / 63 identical skips. Providers,
+models, exact messages, production mutation, push/merge/deploy: zero. No current
+source generation or human-review ZIP exists. Earlier track entries are historical.
+
 ## 2026-09-28 R2B-R4 Pre-Model Boundary
 
 V2 neutral receipt verified: blind fairness is PASS_V2. R3 stock Core/A/B

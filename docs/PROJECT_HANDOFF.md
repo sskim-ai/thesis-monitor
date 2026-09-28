@@ -1,5 +1,20 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-28 R2B-R9-REV7 Handoff
+
+Base `30efc244288d42c13a9b80aa5c4e70c386be26a3`; instruction-only commit
+`bf82dc5fba0362b43bc35a9261e2b01e414b8505`; exact tested implementation
+`c75222d2b75252e6ab44bd34a71c4f83dc6e59bf`.
+Two P1s remain open: fresh macro/night/bridge-to-whole-source composition and
+full detailed normal/UNKNOWN_LIMIT section ownership plus fresh consumer/capture.
+The stock-only offline CLI and synthetic detailed-plan proof do not qualify the
+whole adapter. `CurrentValuationView` deliberately reports unavailable optional
+multiples where fresh denominator rights are absent. No old data substitutions.
+1103 focused and 6298 full tests pass; 63 unchanged skips. Historical R7 diff
+finds two inherited REV6 report EOF blanks; the actual REV7 diff passes. Preserve
+both receipts and do not rewrite old evidence. Source/model calls and messages
+are NOT_RUN, not failed live attempts. Operating remains unchanged. Local only.
+
 ## 2026-09-28 R2B-R4 Handoff
 
 Instruction `9e825f499baa18ba985a8eda2cea1402c49e1825`; preflight implementation

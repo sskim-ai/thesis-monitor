@@ -1,5 +1,18 @@
 # Next Session Prompt
 
+## Current Local Track: R2B-R9-REV7 Contract Gap
+
+Read `operations/R9_REV7_FRESH_DETAILED_PREFLIGHT.md` first. The offline partial
+implementation is `c75222d2b75252e6ab44bd34a71c4f83dc6e59bf`; full validation
+passed, but both end-to-end P1s remain OPEN. Close fresh macro/night/issuer-bridge
+composition and complete detailed normal/UNKNOWN_LIMIT ownership, then prove
+all22 and bind the fresh Market/Core/A/B adapter and exact capture route. No
+provider/model call until all offline contracts and the final finite plan pass.
+Do not treat candidate 2526 attempts, synthetic fixtures, or stock-only replay
+as whole-source qualification. No source/model generation has started; no 24
+messages or human-review/cutover artifacts exist. Preserve no main/push/deploy
+and zero production side effects. Entries below are historical.
+
 ## Current Local Track: R2B-R4 Market Input Boundary
 
 Read `reports/20260928-r2b-r4-pre-model-contract-boundary.md` and the latest local
