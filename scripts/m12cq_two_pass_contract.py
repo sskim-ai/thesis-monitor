@@ -438,9 +438,14 @@ def build_pass_a_subject_context(
     evidence_rows = []
     family_exclusions = set()
     for ref_id, row in source_by_ref.items():
-        uses = tuple(use.value for use in PASS_A_SOURCE_USES if source_use_view is not None
-                     and eligible_refs_for_use(source_use_view, refs=[ref_id], use=use,
-                                               binding=source_use_binding))
+        stage_eligible = ref_id in core_refs and _eligible_pass_a_evidence(row)
+        uses = ()
+        if source_use_view is not None and stage_eligible:
+            for use in PASS_A_SOURCE_USES:
+                if eligible_refs_for_use(source_use_view, refs=[ref_id], use=use,
+                                         binding=source_use_binding):
+                    uses = (use.value,)
+                    break
         decision = decide_pass_a_visibility(
             row,
             authority=(source_use_view.get("source_records", {}).get(ref_id)
@@ -448,7 +453,7 @@ def build_pass_a_subject_context(
             source_authority_contract=(source_use_view.get("authority_contract")
                                        if source_use_view is not None else None),
             eligible_uses=uses,
-            stage_contract_permits=ref_id in core_refs and _eligible_pass_a_evidence(row),
+            stage_contract_permits=stage_eligible,
             legacy_without_source_use=source_use_view is None,
         )
         if visibility_audit is not None:

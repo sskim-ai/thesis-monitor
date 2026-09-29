@@ -19,6 +19,7 @@ class PassAVisibleEvidenceDecision(BaseModel):
     source_family: str
     authority_state: str
     allowed_uses: tuple[str, ...]
+    validated_pass_a_use_witness: tuple[str, ...]
     evidence_category: str
     current_stage: str
     explicit_family_visibility: str
@@ -69,7 +70,8 @@ def decide_pass_a_visibility(
     payload = dict(contract="pass-a-visible-evidence-v1", ref_id=str(row.get("ref_id") or ""),
         source_ref=str(row.get("source_ref") or ""), source_family=family,
         authority_state=str(record.get("authority_state") or "LEGACY_NO_SOURCE_USE"),
-        allowed_uses=uses, evidence_category=str(row.get("category") or ""),
+        allowed_uses=tuple(sorted(set(record.get("allowed_uses") or uses))),
+        validated_pass_a_use_witness=uses, evidence_category=str(row.get("category") or ""),
         current_stage=current_stage, explicit_family_visibility=classification,
         source_authority_contract=source_authority_contract,
         source_family_policy_contract=CONTRACT, source_family_policy_sha256=POLICY_SHA256,

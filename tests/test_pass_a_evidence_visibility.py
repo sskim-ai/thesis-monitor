@@ -82,3 +82,17 @@ def test_family_denied_parent_cannot_hide_in_a_claim():
     row['source_ref'] = 'stock.technical_context'
     result = build_pass_a_subject_context(context=context, ticker='RENAMED', catalog=catalog)
     assert not result['eligible_claim_refs']
+
+
+def test_stage_excluded_rows_do_not_trigger_repeated_authority_validation(monkeypatch):
+    import scripts.m12cq_two_pass_contract as owner
+    context, catalog = _context(), _catalog()
+    catalog['atomic_claims'] = []
+    catalog['core_evidence_refs'] = []
+    def unexpected(*args, **kwargs):
+        raise AssertionError('stage-excluded row must not trigger permission hashing')
+    monkeypatch.setattr(owner, 'eligible_refs_for_use', unexpected)
+    monkeypatch.setattr(owner, 'model_source_use_projection', lambda *args, **kwargs: {})
+    result = build_pass_a_subject_context(context=context, ticker='RENAMED', catalog=catalog,
+                                         source_use_view={'source_records': {}})
+    assert not result['eligible_non_price_evidence']
