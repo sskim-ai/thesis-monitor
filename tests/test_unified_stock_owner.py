@@ -212,8 +212,18 @@ def test_preserved_historical_anomaly_is_optional_not_whole_stock_failure(source
 
 def test_mandatory_current_anomaly_fails(source):
     mutate_bars(source, -1)
-    with pytest.raises(ValueError, match="technical_component_fact_parity"):
-        assemble_stock(**source)
+    before = deepcopy(source["artifacts"])
+    result = assemble_stock(**source)
+    assert result["status"] == "BLOCKED"
+    assert "price_and_positioning.price.current_price" in result["mandatory_missing"]
+    assert result["packet_sha256"] is None
+    stock = result["packet"]["stocks"][0]
+    assert stock["price_and_positioning"]["price"]["current_price"] is None
+    assert stock["technical_context"]["features"]["daily"]["facts"] == []
+    assert source["components"]["features"]["daily"]["source_invalid_rows"]
+    assert source["components"]["historical_technical_inventory"]["current_authority"] is False
+    assert source["artifacts"] == before
+    assert result == assemble_stock(**source)
 
 
 def test_encoded_prior_model_injection():
