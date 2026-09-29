@@ -63,7 +63,7 @@ def _budget(count):
         timeout_seconds=600, transient_retries=2, semantic_retries=0)
 
 
-def acquisition_plan(stock_plan, identities, *, kr_max_pages):
+def acquisition_plan(stock_plan, identities, *, kr_max_pages, exact_financial_owner=False):
     """Freeze every source class before network. No retained-subject exemption."""
     stock = StockPlan.model_validate(stock_plan)
     if type(kr_max_pages) is not int or not 1 <= kr_max_pages <= MAX_KR_REQUEST_PAGES:
@@ -72,7 +72,8 @@ def acquisition_plan(stock_plan, identities, *, kr_max_pages):
     if set(identities) != expected:
         raise ValueError('exact_22_current_security_identities_required')
     financial = {t: make_plan(identities[t], market=m, cutoff=stock.frozen_at,
-        run_id=stock.run_id, all_subjects_fresh=True) for m, subjects in UNIVERSE.items() for t in subjects}
+        run_id=stock.run_id, all_subjects_fresh=True, exact_financial_owner=exact_financial_owner)
+        for m, subjects in UNIVERSE.items() for t in subjects}
     kr = kiwoom_market_reads(session_date=korea_market_session(stock.frozen_at).latest_completed_regular_session_date,
         max_pages=kr_max_pages, max_requests_per_page=1)
     at = stock.frozen_at.astimezone(ZoneInfo('Asia/Seoul')).date()

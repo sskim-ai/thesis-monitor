@@ -8,10 +8,11 @@ from app.services.sec_fpi_financial_purpose import FINANCIAL
 POLICY = 'EXACT_REPORTED_QUARTER_OR_HALF_YEAR_NO_SUBTRACTION'
 
 
-def select_fields(documents, rows, *, ticker, cutoff, uncaptured=()):
+def select_fields(documents, rows, *, ticker, cutoff, uncaptured=(), allow_inline_annual=False):
     selected, audit = [], {}
     qualities = {i: foreign_comparison_quality(formal=r, candidates=rows, ticker=ticker,
-        cutoff=date.fromisoformat(cutoff[:10]), allow_reported_half_year=True) for i, r in enumerate(rows)}
+        cutoff=date.fromisoformat(cutoff[:10]), allow_reported_half_year=True,
+        allow_inline_annual=allow_inline_annual) for i, r in enumerate(rows)}
     for metric in FIELDS:
         candidates = [(i, r) for i, r in enumerate(rows) if getattr(r, metric) is not None]
         reasons = []
@@ -21,7 +22,7 @@ def select_fields(documents, rows, *, ticker, cutoff, uncaptured=()):
         end = max(r.financial_period_end for _, r in candidates)
         latest = [(i, r) for i, r in candidates if r.financial_period_end == end]
         # Prefer an explicitly reported quarter at the same endpoint, never subtract H1.
-        role = 'single-quarter' if any(r.period_scope == 'single-quarter' for _, r in latest) else 'half-year'
+        role = next((p for p in ('single-quarter', 'half-year', 'annual') if any(r.period_scope == p for _, r in latest)), None)
         latest = [(i, r) for i, r in latest if r.period_scope == role]
         eligible = [(i, r) for i, r in latest if qualities[i]['fields'][metric]['status'] == 'PASS']
         if not eligible:
@@ -43,7 +44,10 @@ def select_fields(documents, rows, *, ticker, cutoff, uncaptured=()):
         relevant_unknowns = []
         financial_accessions = {d['accession'] for d in documents if d['financial_authority']}
         for doc in documents:
-            if doc['accession'] in financial_accessions:
+            if any(c['field'] == metric for c in doc.get('source_precedence_conflicts', [])) and doc['filing_date'] >= selected_date:
+                reasons.append('INLINE_TABLE_CONFLICT')
+            if (doc['accession'] in financial_accessions
+                    and not (allow_inline_annual and doc.get('unresolved_financial_content'))):
                 continue
             if (doc['purpose'] == 'UNKNOWN_PURPOSE' or doc['purpose'] in FINANCIAL) and doc['filing_date'] >= selected_date:
                 relevant_unknowns.append(doc['document_identity'])

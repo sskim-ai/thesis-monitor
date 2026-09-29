@@ -137,7 +137,8 @@ def freeze(args):
           for m,ts in UNIVERSE.items() for t in ts]
     hashes={k:digest(v) for k,v in config.items()}
     result=compile_plan(stock=stock,identities=identities,news_reads=news,config_identities=hashes,
-        rev10_receipt=root_receipt,configured_kr_pages=s.kiwoom_rest_max_pages,kr_post_acquisition_completeness_approved=True)
+        rev10_receipt=root_receipt,configured_kr_pages=s.kiwoom_rest_max_pages,kr_post_acquisition_completeness_approved=True,
+        exact_financial_owner=args.exact_financial_owner)
     plan=result.pop('plan')
     admission=plan.admission(rev10_receipt=root_receipt,owners=result['owners'],config_identities=hashes,
         credential_presence={k:all(v) for k,v in config.items()})
@@ -169,6 +170,7 @@ def main():
     p.add_argument('mode',choices=['freeze','acquire','replay'])
     p.add_argument('--generation-prefix', default='rev11-live')
     p.add_argument('--instruction-ref', default='fe909d26')
+    p.add_argument('--exact-financial-owner', action='store_true')
     for name in ('output','operating','native-owner','validation','rev10-receipt'):
         p.add_argument('--'+name,type=Path,required=True)
     args=p.parse_args()

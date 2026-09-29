@@ -51,7 +51,13 @@ def paired(current, prior):
     try:
         cs, ce = [date.fromisoformat(current[k]) for k in ("period_start", "period_end")]
         ps, pe = [date.fromisoformat(prior[k]) for k in ("period_start", "period_end")]
-        return cs < ce and ps < pe < ce and (ce - cs).days == (pe - ps).days and 330 <= (ce - pe).days <= 400
+        same = cs < ce and ps < pe < ce and (ce - cs).days == (pe - ps).days and 330 <= (ce - pe).days <= 400
+        if same:
+            return True
+        from app.services.issuer_fiscal_week_policy import annual_comparability
+        def fiscal(row):
+            return {**row, 'issuer': row['provider_issuer_id']}
+        return bool(annual_comparability(fiscal(current), fiscal(prior), current.get('issuer_fiscal_policy')))
     except (ValueError, KeyError, TypeError):
         return False
 
@@ -96,6 +102,17 @@ def comparison_applicability(projection):
     if projection['comparisons']:
         result.update(state='QUALITY_RECORD_PRESENT')
     else:
+        from app.services.sec_financial_source_completeness import UNAVAILABLE
+        complete = projection.get('source_completeness') or {}
+        if (complete.get('state') == UNAVAILABLE and complete.get('bounded_plan_complete') is True
+                and not complete.get('reasons') and not projection['fields'] and not projection['quality_bundles']
+                and complete.get('receipt_sha256') == digest({k: v for k, v in complete.items() if k != 'receipt_sha256'})
+                and complete.get('documents_sha256') == digest(projection['fpi_purpose']['documents'])):
+            result.update(state='QUALITY_NOT_APPLICABLE_NO_DIRECTIONAL_COMPARISON',
+                reasons=[UNAVAILABLE], source_completeness_sha256=complete['receipt_sha256'])
+            result['projection_sha256'] = digest(projection)
+            result['receipt_sha256'] = digest(result)
+            return result
         fields = projection['fields']
         current = [r for r in fields if r['current_prior_role'] == 'current']
         allowed = {'PERIOD_NOT_COMPARABLE', 'FIELD_ABSENT', 'account_not_found'}
@@ -177,6 +194,10 @@ def verify_capture(plan, acquisition, directory, receipts):
         selected=[{'role':role,**asdict(f),'receipt_date':f.receipt_date.isoformat()} for role,f in dart_selection(rows,plan)]
     if acquisition['selected_filings'] != selected:
         raise ValueError('selected_filing_discovery_replay_mismatch')
+    if plan.get('financial_owner_policy') and '6-K' in plan['forms']:
+        inventory = candidate_inventory(json.loads(_raw(directory, discovery[0]['artifact'], receipts)), plan)
+        if acquisition.get('current_candidate_plan') != inventory['current_financial_plan']:
+            raise ValueError('current_fpi_candidate_plan_replay_mismatch')
     for doc in acquisition['documents']:
         receipt=next((r for r in receipts if r.get('artifact')==doc['artifact']),None)
         if not receipt or receipt.get('filing')!=doc['filing'] or receipt['stage'] not in {'document','statement'}:
@@ -222,6 +243,8 @@ def reconcile_fragment_denials(plan, acquisition, directory, receipts):
 
 
 def project(plan, acquisition, directory, receipts, *, followup_directory=None, phase2=None, field_semantics=False, coverage_window=None):
+    if plan.get('financial_owner_policy') not in {None, 'EXACT_FISCAL_ANNUAL_AND_CURRENT_FPI_V1'}:
+        raise ValueError('unknown_exact_financial_owner_policy')
     if acquisition["plan_sha256"] != digest(plan):
         raise ValueError("financial_plan_binding_mismatch")
     verify_capture(plan,acquisition,directory,receipts)
@@ -229,8 +252,15 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
     filings = list(acquisition["selected_filings"])
     created = datetime.fromisoformat(plan["cutoff"])
     followup, inventory, uncaptured, second, window = None, None, [], None, None
+    exact_owner = bool(plan.get('financial_owner_policy'))
+    fiscal_policies = {}
     if plan["provider"] == "sec_edgar":
         source_documents = [{**d, 'raw': _raw(directory, d['artifact'], receipts)} for d in acquisition['documents']]
+        if exact_owner:
+            from app.services.issuer_fiscal_week_policy import extract_policy
+            for doc in source_documents:
+                if doc['filing']['form'].split('/')[0] == '10-K' and doc['url'].endswith('/' + doc['filing']['primaryDocument']):
+                    fiscal_policies[doc['filing']['accessionNumber']] = extract_policy(doc['raw'], issuer=plan['issuer'], filing=doc['filing'])
         if '6-K' in plan['forms']:
             discovery = next(r for r in receipts if r['stage'] == 'discovery' and not r['failure_class'])
             discovery_raw = _raw(directory, discovery['artifact'], receipts)
@@ -263,7 +293,7 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
             if window:
                 uncaptured.extend(window['uncaptured'])
         artifact = acquisition.get("companyfacts_artifact")
-        if artifact:
+        if artifact and not (exact_owner and '6-K' in plan['forms']):
             raw = _raw(directory, artifact, receipts)
             payload = json.loads(raw)
             if str(payload.get("cik", "")).lstrip('0') != plan["issuer"].lstrip('0'):
@@ -299,10 +329,17 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
                     "errors": occurrence_errors(occurrence, date.fromisoformat(plan["cutoff"][:10])),
                     "packet_consumption": "SEPARATE_FOREIGN_OWNER_NOT_COMPANYFACTS"})
             role = 'single-quarter'
-            current = current_projection(occurrences)
+            current = current_projection(occurrences, inline_currency_pair=exact_owner)
             if field_semantics and current is None:
                 role = 'half-year'
-                current = current_projection(occurrences, required_role=role)
+                current = current_projection(occurrences, required_role=role, inline_currency_pair=exact_owner)
+            if exact_owner:
+                choices = [(r, current_projection(occurrences, required_role=r, inline_currency_pair=True))
+                           for r in ('single-quarter', 'half-year', 'annual')]
+                choices = [(r, value) for r, value in choices if value]
+                if choices:
+                    role, current = max(choices, key=lambda pair: (pair[1]['period_end'],
+                        {'single-quarter': 3, 'half-year': 2, 'annual': 1}[pair[0]]))
             if current and purpose['purpose'] in FINANCIAL:
                 end = date.fromisoformat(current['period_end'])
                 foreign_rows.append(FinancialSnapshot(ticker=plan['ticker'], period=end.isoformat(),
@@ -311,9 +348,9 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
                     currency=current['currency'], period_scope=role, unit_scale=1, created_at=created,
                     raw_financial_fields=json.dumps([{'field':'foreign_business_occurrences','occurrences':occurrences}]),
                     **{k: current.get(k) for k in ('revenue','operating_income')}))
-                if role == 'half-year':
+                if role in {'half-year', 'annual'}:
                     foreign_rows[-1].is_cumulative = True
-                    foreign_rows[-1].period_type = 'half-year'
+                    foreign_rows[-1].period_type = role
         if field_semantics:
             from app.services.sec_fpi_financial_purpose import bind_nonfinancial_embedded_assets
             bind_nonfinancial_embedded_assets(purpose_documents,
@@ -392,7 +429,8 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
     if foreign_purpose:
         if field_semantics:
             from app.services.sec_fpi_field_selection import select_fields
-            ordered, purpose_selection = select_fields(purpose_documents, foreign_rows, ticker=plan['ticker'], cutoff=plan['cutoff'], uncaptured=uncaptured)
+            ordered, purpose_selection = select_fields(purpose_documents, foreign_rows, ticker=plan['ticker'], cutoff=plan['cutoff'],
+                uncaptured=uncaptured, allow_inline_annual=exact_owner)
         else:
             purpose_selection = select_economic_period(purpose_documents, uncaptured=uncaptured)
         if purpose_selection['status'] != 'PASS' and inventory['exhaustion_reason']:
@@ -404,6 +442,8 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
         current_gap = True
     if current_gap:
         denied.append({'field':'all','reason':'LATEST_SELECTED_PERIOD_UNAVAILABLE_NO_OLDER_SUBSTITUTION'})
+    if exact_owner and ordered:
+        freshness, _, _ = evaluate_financial_freshness_records([], ordered, as_of=created.date())
     stale = freshness.full_financial_freshness=='stale'
     if stale:
         denied.append({'field':'all','reason':'EXISTING_FINANCIAL_FRESHNESS_STALE'})
@@ -424,6 +464,8 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
         inputs = {'ticker': plan['ticker'], 'cutoff': plan['cutoff'][:10], 'formal': row.model_dump(mode='json'),
             'comparison': comparison, 'preliminary': None,
             'foreign_candidates': [r.model_dump(mode='json') for r in foreign_rows]}
+        if exact_owner:
+            inputs.update(exact_annual_owner=True, issuer_fiscal_policy=fiscal_policies.get(row.source_filing_id))
         if field_semantics and foreign_purpose:
             from app.services.sec_fpi_field_selection import POLICY
             inputs['foreign_period_policy'] = POLICY
@@ -452,6 +494,8 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
                     'formal_state':'OFFICIAL_PROVISIONAL' if source.get('source_document_type','').startswith('6-K') else 'FORMAL',
                     'currency': source.get('currency'), 'unit': source.get('unit'), 'unit_scale': 1,
                     'source_reported_value': source.get('source_reported_value'), 'original_lineage': source}
+                if exact_owner and row.source_filing_id in fiscal_policies:
+                    lineage['issuer_fiscal_policy'] = fiscal_policies[row.source_filing_id]
                 role = witness['filing']['role'] if source.get('period_end') == witness['filing'].get('reportDate') else 'comparative'
                 raw_sha = witness['raw_sha']
             else:
@@ -535,6 +579,13 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
                     r['reason'] for r in window['phase2']['denials'])
                 if window['phase2']['unattempted']:
                     result['acquisition_denial_reconciliation']['effective_denials'].append('FPI_PHASE2_PLANNED_REQUESTS_UNATTEMPTED')
+        if exact_owner:
+            from app.services.sec_financial_source_completeness import completeness
+            result['source_completeness'] = completeness(plan=plan, acquisition=acquisition,
+                inventory=inventory, documents=purpose_documents, uncaptured=uncaptured,
+                acquisition_denials=result['acquisition_denial_reconciliation']['effective_denials'])
+    if exact_owner:
+        result['issuer_fiscal_policies'] = fiscal_policies
     if field_semantics:
         result['comparison_applicability'] = comparison_applicability(result)
     return result

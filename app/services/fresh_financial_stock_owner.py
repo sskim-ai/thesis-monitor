@@ -137,7 +137,11 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
     if qref is not None and qref not in {r.ref_id for r in evidence.evidence}:
         raise ValueError('fresh_quality_typed_ref_missing')
     missing = list(result['mandatory_missing'])
-    if context_facts or (event and event['facts']):
+    source_absent = (projection.get('source_completeness', {}).get('state') ==
+        'FORMAL_FINANCIAL_SOURCE_COMPLETE_NO_QUALIFIED_FIELD' and
+        quality['receipt'].get('comparison_applicability', {}).get('source_completeness_sha256') ==
+        projection.get('source_completeness', {}).get('receipt_sha256'))
+    if context_facts or (event and event['facts']) or source_absent:
         missing = [m for m in missing if m != 'observed_business_union:eligible_reported_financial_or_event']
     if result['acquisition_denials']:
         missing.append('fresh_financial_acquisition:source_denied')
@@ -178,7 +182,8 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
         'diagnostic_packet_sha256': digest(packet), 'evidence_packet': evidence.model_dump(mode='json'),
         'ownership': owned.model_dump(mode='json'), 'source_graph': graph,
         'component_binding': baseline['component_binding'],
-        'financial_state': dict(status='FRESH_SELECTED_SOURCE', quality=quality['receipt']['state'],
+        'financial_state': dict(status='FORMAL_FINANCIAL_SOURCE_COMPLETE_NO_QUALIFIED_FIELD' if source_absent else 'FRESH_SELECTED_SOURCE',
+            quality=quality['receipt']['state'],
             denials=result['acquisition_denials'], receipt_sha256=quality['receipt']['receipt_sha256']),
         'numeric_registry_graph': [dict(fact_id=r['fact_id'], field_path=r['field_path'],
             registry_entry_sha256=digest(r), source_node_sha256=digest(graph[r['fact_id']]))
@@ -197,6 +202,8 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
 def _current_context_facts(projection, receipt):
     """Keep absolute reported values in the existing earnings fact family."""
     fields = projection['fields']
+    if not fields and receipt.get('comparison_applicability', {}).get('source_completeness_sha256'):
+        return []
     periods = {r['period_end'] for r in fields}
     if len(periods) != 1:
         raise ValueError('fresh_context_period_ambiguous')

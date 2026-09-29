@@ -56,9 +56,11 @@ FOREIGN = Limits(1, 128, 2, 2, 3, 2, 1, 1)
 DART = Limits(2, 200, 1, 1, 2, 0, 0, 0)
 
 
-def make_plan(security, *, market, cutoff, run_id, all_subjects_fresh=False):
+def make_plan(security, *, market, cutoff, run_id, all_subjects_fresh=False, exact_financial_owner=False):
     if type(all_subjects_fresh) is not bool:
         raise AcquisitionDenied('explicit_acquisition_mode_required')
+    if type(exact_financial_owner) is not bool:
+        raise AcquisitionDenied('explicit_financial_owner_mode_required')
     if cutoff.utcoffset() is None or (security["ticker"] in RETAINED and not all_subjects_fresh):
         raise AcquisitionDenied("retained_or_naive_cutoff")
     if not all(security.get(k) for k in ("canonical_company_id", "canonical_security_id", "identity_provider")):
@@ -79,6 +81,8 @@ def make_plan(security, *, market, cutoff, run_id, all_subjects_fresh=False):
         limits, forms, provider = DART, ["11013", "11012", "11014", "11011"], "opendart"
     else:
         raise AcquisitionDenied("unsupported_market")
+    if exact_financial_owner and limits == FOREIGN:
+        limits = Limits(1, 128, 3, 0, 3, 2, 1, 1)
     names = ({'SEC_MAX_DISCOVERY_REQUESTS':limits.discovery,
         'SEC_MAX_DISCOVERY_PAGES_OR_INDEX_FILES':limits.discovery + (limits.current+limits.prior)*limits.indexes_per_filing,
         'SEC_MAX_CANDIDATE_FILINGS':limits.candidates, 'SEC_MAX_SELECTED_CURRENT_FILINGS':limits.current,
@@ -89,7 +93,8 @@ def make_plan(security, *, market, cutoff, run_id, all_subjects_fresh=False):
         'DART_MAX_SELECTED_CURRENT_FILINGS':limits.current, 'DART_MAX_SELECTED_PRIOR_FILINGS':limits.prior,
         'DART_MAX_STATEMENT_REQUESTS_PER_FILING':limits.documents_per_filing,
         'DART_MAX_TOTAL_LOGICAL_REQUESTS_PER_SUBJECT':limits.maximum_logical})
-    return {"contract": CONTRACT, "run_id": run_id, "ticker": security["ticker"],
+    return {**({'financial_owner_policy': 'EXACT_FISCAL_ANNUAL_AND_CURRENT_FPI_V1'} if exact_financial_owner else {}),
+        "contract": CONTRACT, "run_id": run_id, "ticker": security["ticker"],
         "market": market, "provider": provider, "issuer": issuer,
         "security": security, "identity_sha256": digest(security),
         "cutoff": cutoff.isoformat(), "begin": (cutoff.date() - timedelta(days=550)).isoformat(),
@@ -127,6 +132,9 @@ def sec_selection(payload, plan):
             raise AcquisitionDenied("LINEAGE_UNRESOLVED")
         if not re.fullmatch(r"[A-Za-z0-9_.-]+", r["primaryDocument"]):
             raise AcquisitionDenied("DOCUMENT_UNAVAILABLE")
+    if plan.get('financial_owner_policy') == 'EXACT_FISCAL_ANNUAL_AND_CURRENT_FPI_V1' and '6-K' in plan['forms']:
+        from app.services.sec_current_financial_candidates import candidate_plan
+        return candidate_plan(candidates, plan)['candidates']
     selected = []
     groups = [candidates] if '10-Q' in plan['forms'] else [
         [r for r in candidates if r["form"].split('/')[0] == form] for form in ('6-K','20-F')]
@@ -367,6 +375,14 @@ async def collect(reader):
     if plan["provider"] == "sec_edgar":
         raw, _receipt = await reader.read("discovery", f'https://data.sec.gov/submissions/CIK{plan["issuer"]}.json')
         filings = sec_selection(json.loads(raw), plan)
+        if plan.get('financial_owner_policy') and '6-K' in plan['forms']:
+            from app.services.sec_current_financial_candidates import candidate_plan
+            payload = json.loads(raw)['filings']['recent']
+            names = ('form', 'accessionNumber', 'primaryDocument', 'filingDate', 'reportDate')
+            rows = [dict(zip(names, values, strict=True)) for values in zip(*(payload[n] for n in names), strict=True)]
+            rows = [r for r in rows if r['form'] in plan['forms'] and plan['begin'] <= r['filingDate'] <= plan['cutoff'][:10]]
+            output['current_candidate_plan'] = candidate_plan(rows, plan)
+            durable_json(reader.output / 'fpi-current-financial-candidate-plan.json', output['current_candidate_plan'], exclusive=True)
         output["selected_filings"] = filings
         reader.select(filings)
         try:

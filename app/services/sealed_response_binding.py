@@ -57,7 +57,8 @@ class ResponseBinding(ContractModel):
             from app.services.bounded_financial_acquisition import make_plan
             from datetime import datetime
             rebuilt = make_plan(policy['security'], market=policy['market'],
-                cutoff=datetime.fromisoformat(policy['cutoff']), run_id=policy['run_id'], all_subjects_fresh=True)
+                cutoff=datetime.fromisoformat(policy['cutoff']), run_id=policy['run_id'], all_subjects_fresh=True,
+                exact_financial_owner=bool(policy.get('financial_owner_policy')))
             if rebuilt != policy:
                 raise ValueError('binding_not_existing_financial_policy')
             market = 'us' if self.kind.startswith('SEC_') else 'kr'
@@ -74,6 +75,7 @@ def binding_owner_hash():
     root = Path(__file__).resolve().parents[2]
     names = ('app/services/sealed_response_binding.py',
              'app/services/bounded_financial_acquisition.py',
+             'app/services/sec_current_financial_candidates.py',
              'app/services/sec_financial_snapshot_service.py',
              'app/services/opendart_financial_recovery_service.py')
     return digest({p: sha256_bytes((root / p).read_bytes()) for p in names})

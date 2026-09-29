@@ -92,7 +92,7 @@ def independently_usable_business(row):
     return any(getattr(row, field) is not None and not field_errors(row, field) for field in FIELDS)
 
 
-def reported_comparison_quality(*, formal, comparison, ticker, cutoff):
+def reported_comparison_quality(*, formal, comparison, ticker, cutoff, fiscal_policy=None, allow_annual=False):
     """An absolute observation is insufficient; require same-filing annual comparison."""
     fields, comparisons = {}, []
     for role, row in (("current", formal), ("comparison", comparison)):
@@ -123,20 +123,37 @@ def reported_comparison_quality(*, formal, comparison, ticker, cutoff):
         if current["hard_denial_reasons"] or prior["hard_denial_reasons"]:
             continue
         a, b = current["lineage"], prior["lineage"]
+        annual = None
         try:
             starts = [date.fromisoformat(x["amount_period_start"]) for x in (a, b)]
             ends = [date.fromisoformat(x["amount_period_end"]) for x in (a, b)]
-            compatible = (all(a[k] == b[k] for k in (
+            basis = all(a[k] == b[k] for k in (
                 "issuer_cik", "currency", "statement_basis", "concept", "taxonomy", "receipt", "source_payload_sha256"))
-                and (ends[0] - starts[0]).days == (ends[1] - starts[1]).days
+            equal_duration = (ends[0] - starts[0]).days == (ends[1] - starts[1]).days
+            compatible = (basis and equal_duration
                 and 330 <= (ends[0] - ends[1]).days <= 400
                 and formal.period_scope == comparison.period_scope == "single-quarter")
+            if allow_annual and basis and formal.period_scope == comparison.period_scope == 'annual':
+                from app.services.issuer_fiscal_week_policy import annual_comparability
+                def fiscal_tuple(lineage):
+                    return dict(issuer=lineage['issuer_cik'], metric=metric,
+                        semantic=lineage['taxonomy'] + ':' + lineage['concept'],
+                        statement_basis=lineage['statement_basis'], currency=lineage['currency'], unit=lineage['currency'], unit_scale=1,
+                        formal_state='FORMAL', period_role='ANNUAL', period_start=lineage['amount_period_start'],
+                        period_end=lineage['amount_period_end'], source_document_id=lineage['receipt'])
+                annual = annual_comparability(fiscal_tuple(a), fiscal_tuple(b), fiscal_policy)
+                normal = (equal_duration and (ends[0]-starts[0]).days+1 in {364, 365, 366}
+                    and starts[0].year == starts[1].year+1 and ends[0].year == ends[1].year+1
+                    and 330 <= (ends[0]-ends[1]).days <= 400)
+                compatible = bool(annual) or normal
         except (TypeError, ValueError):
             compatible = False
         if not compatible:
             continue
         av, bv = a["amount"], b["amount"]
-        comparisons.append({"metric": metric, "current": current, "comparison": prior,
+        comparisons.append({**({'fiscal_comparability': annual} if annual else {}),
+            **({'reported_period_scope': 'annual'} if allow_annual and formal.period_scope == 'annual' else {}),
+            "metric": metric, "current": current, "comparison": prior,
             "delta": av - bv, "direction": "higher" if av > bv else "lower" if av < bv else "unchanged",
             "growth_pct": (av - bv) / bv * 100 if bv > 0 else None,
             "formula": "current - prior_year_comparable"})
@@ -147,5 +164,8 @@ def reported_comparison_quality(*, formal, comparison, ticker, cutoff):
         "limitations": ["Revenue ambiguity is not resolved by independent operating income.",
                         "No recurring-profit, EPS, margin or valuation authority.",
                         "Absolute amounts alone do not authorize direction."]}
+    if any(c.get('fiscal_comparability', {}).get('quality_reason_codes') for c in comparisons):
+        result['quality_reason_codes'] = ['FISCAL_WEEK_COUNT_DIFFERENCE']
+        result['limitations'].append('Reported 53/52-week annual comparison; no week adjustment or annualization.')
     result["receipt_sha256"] = sha(result)
     return result

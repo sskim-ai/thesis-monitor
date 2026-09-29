@@ -35,11 +35,17 @@ def classify_document(raw, *, url, filing, plan):
     occurrences = parse_document(html, issuer_cik=plan['issuer'],
         accession=filing['accessionNumber'], document_type=filing['form'],
         filing_date=filing['filingDate'], source_url=identity, raw_payload=raw)
+    inline = None
+    conflicts = []
+    if plan.get('financial_owner_policy'):
+        from app.services.sec_primary_inline_financial import extract, merge_occurrences
+        inline = extract(raw, issuer_cik=plan['issuer'], filing=filing, source_url=identity)
+        occurrences, conflicts = merge_occurrences(inline['occurrences'], occurrences, date.fromisoformat(plan['cutoff'][:10]))
     parser = PlainText()
     parser.feed(html)
     text = re.sub(r'\s+', ' ', ' '.join(parser.parts))
     purpose, evidence = 'UNKNOWN_PURPOSE', []
-    if occurrences:
+    if occurrences or inline and inline['qualified_document_purpose']:
         purpose = 'FINANCIAL_STATEMENTS'
         if re.search(r'\b(?:financial results|earnings release|quarterly results)\b', text, re.I):
             purpose = 'FINANCIAL_RESULTS_OR_EARNINGS'
@@ -71,6 +77,13 @@ def classify_document(raw, *, url, filing, plan):
         'occurrences': occurrences, 'financial_authority': purpose in FINANCIAL and bool(valid),
         'valid_occurrence_ids': [o['occurrence_id'] for o in valid],
         'document_captured': True}
+    if inline is not None:
+        result.update(inline_owner=inline, source_precedence_conflicts=conflicts, table_owner_ran=True,
+            unresolved_financial_content=purpose == 'UNKNOWN_PURPOSE' and bool(re.search(
+                r'(?i)(?:financial|interim|quarterly)\s+(?:statements?|results|report|information)'
+                r'|(?:consolidated|separate).*?statements? of|earnings release', text)))
+        for period in result['economic_periods']:
+            period['source'] = 'EXACT_INLINE_OR_STATEMENT_CONTEXT'
     result['receipt_sha256'] = digest(result)
     return result
 
@@ -82,6 +95,13 @@ def candidate_inventory(payload, plan):
     names = ('form', 'accessionNumber', 'primaryDocument', 'filingDate', 'reportDate')
     rows = [dict(zip(names, values, strict=True)) for values in zip(*(recent[n] for n in names), strict=True)]
     rows = [r for r in rows if r['form'] in plan['forms'] and plan['begin'] <= r['filingDate'] <= plan['cutoff'][:10]]
+    if plan.get('financial_owner_policy'):
+        from app.services.sec_current_financial_candidates import candidate_plan
+        frozen = candidate_plan(rows, plan)
+        return dict(contract=CONTRACT, candidate_count=len(rows), candidate_cap=3,
+            candidates=rows, inspection_window=frozen['candidates'],
+            uninspected_count=len(frozen['outside_bound']), exhaustion_reason=None,
+            current_financial_plan=frozen, order='FINITE_CURRENT_FINANCIAL_CANDIDATES_METADATA_ONLY')
     rows.sort(key=lambda r: (r['filingDate'], r['reportDate'], r['accessionNumber']), reverse=True)
     selected = rows[:SEC_FPI_MAX_PURPOSE_CANDIDATES]
     return {'contract': CONTRACT, 'candidate_count': len(rows),

@@ -204,6 +204,9 @@ def extract_occurrences(html, *, issuer_cik, accession, document_type, filing_da
 
 
 def occurrence_errors(o, cutoff):
+    if o.get('contract') == 'sec-primary-inline-financial-v1':
+        from app.services.sec_primary_inline_financial import errors
+        return errors(o, cutoff)
     errors = []
     if o.get("contract") != CONTRACT or o.get("provider") != PROVIDER or o.get("parse_method") != PARSE_METHOD:
         errors.append("foreign_occurrence_owner_missing")
@@ -319,7 +322,7 @@ def authoritative_prior(current, pool, cutoff):
                 denial_reasons=["ambiguous_prior_document_authority"] if invalid else [])
 
 
-def foreign_comparison_quality(*, formal, candidates, ticker, cutoff, allow_reported_half_year=False):
+def foreign_comparison_quality(*, formal, candidates, ticker, cutoff, allow_reported_half_year=False, allow_inline_annual=False):
     """Recompute exact comparisons, preferring same-document then latest comparable filing."""
     fields, comparisons, attempts, version_receipts = {}, [], [], []
     own = occurrences(formal)
@@ -361,8 +364,14 @@ def foreign_comparison_quality(*, formal, candidates, ticker, cutoff, allow_repo
                 checks = {k: a.get(k) is not None and a[k] == b.get(k) for k in (
                     "provider", "issuer_cik", "field", "semantic", "currency", "unit_scale", "statement_basis",
                     "period_scope", "period_type", "is_cumulative", "duration_days")}
+                if allow_inline_annual:
+                    from app.services.sec_primary_inline_financial import comparable_calendar_period
+                    if comparable_calendar_period(a, b):
+                        checks['duration_days'] = True
                 denials += ["comparison_" + k + "_mismatch" for k, ok in checks.items() if not ok]
                 allowed_scopes = {"single-quarter", "half-year"} if allow_reported_half_year else {"single-quarter"}
+                if allow_inline_annual and all(o.get('contract') == 'sec-primary-inline-financial-v1' for o in (a, b)):
+                    allowed_scopes.add('annual')
                 if a["period_scope"] not in allowed_scopes or b["period_scope"] not in allowed_scopes:
                     denials.append("discrete_quarter_required")
                 try:
@@ -413,12 +422,19 @@ def foreign_comparison_quality(*, formal, candidates, ticker, cutoff, allow_repo
     return result
 
 
-def current_projection(occurrence_list, *, required_role='single-quarter'):
+def current_projection(occurrence_list, *, required_role='single-quarter', inline_currency_pair=False):
     """Select the latest explicitly reported discrete statement, never the largest amount."""
-    if required_role not in {'single-quarter', 'half-year'}:
+    if required_role not in {'single-quarter', 'half-year', 'annual'}:
         raise ValueError('unsupported_reported_period_role')
     exact = [o for o in occurrence_list if o["period_scope"] == required_role
              and not occurrence_errors(o, date.max)]
+    if inline_currency_pair:
+        from app.services.sec_primary_inline_financial import comparable_calendar_period
+        paired = [a for a in exact if any(comparable_calendar_period(a, b)
+            and a['currency'] == b['currency'] and a['field'] == b['field'] for b in exact)]
+        currencies = {a['currency'] for a in paired}
+        if len(currencies) == 1:
+            exact = [a for a in exact if a['currency'] in currencies]
     if not exact:
         return None
     end = max(o["period_end"] for o in exact)

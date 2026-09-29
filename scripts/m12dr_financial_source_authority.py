@@ -38,6 +38,7 @@ def source_quality(bundle):
             comparison=(FinancialSnapshot.model_validate(inputs["comparison"])
                         if inputs.get("comparison") else None),
             ticker=inputs["ticker"], cutoff=date.fromisoformat(inputs["cutoff"]),
+            fiscal_policy=inputs.get('issuer_fiscal_policy'), allow_annual=inputs.get('exact_annual_owner') is True,
         )
     if inputs["formal"].get("provider") == "sec_foreign_filing":
         from app.services.sec_foreign_comparison_service import foreign_comparison_quality
@@ -46,6 +47,7 @@ def source_quality(bundle):
             candidates=[FinancialSnapshot.model_validate(r) for r in inputs.get("foreign_candidates", [])],
             ticker=inputs["ticker"], cutoff=date.fromisoformat(inputs["cutoff"]),
             allow_reported_half_year=inputs.get('foreign_period_policy') == 'EXACT_REPORTED_QUARTER_OR_HALF_YEAR_NO_SUBTRACTION',
+            allow_inline_annual=inputs.get('exact_annual_owner') is True,
         )
     return build_reported_observation_quality(
         formal=FinancialSnapshot.model_validate(inputs["formal"]),
@@ -139,6 +141,11 @@ def comparative_facts(quality, *, ticker, issuer_id, projection=None):
             "anomaly_cautions": quality["quality_reason_codes"],
             "limitations": quality["limitations"], "recurrence_verified": False,
         }
+        if comparison.get('fiscal_comparability'):
+            fields['period_type'] = 'annual'
+            fields['fiscal_comparability'] = deepcopy(comparison['fiscal_comparability'])
+        elif current.get('occurrence', {}).get('period_scope') == 'annual' or comparison.get('reported_period_scope') == 'annual':
+            fields['period_type'] = 'annual'
         document_class = (current.get('occurrence') or {}).get('document_evidence_class')
         if document_class:
             fields['document_evidence_class'] = deepcopy(document_class)
