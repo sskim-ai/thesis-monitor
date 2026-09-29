@@ -6,7 +6,6 @@ used here. A reported-business projection does not confer denominator rights.
 
 from datetime import date, datetime
 import json
-import math
 from typing import Literal
 
 import httpx
@@ -16,6 +15,10 @@ from app.models.financial import FinancialSnapshot
 from app.models.security import SecurityMaster
 from app.schemas.thesis import ValuationSnapshot
 from app.services.unified_snapshot_contract import ContractModel, digest
+from app.services.security_valuation_basis import (
+    SecurityValuationBasisReceipt, UnavailableState, candidate_inventory,
+    unavailable_state, unresolved_basis,
+)
 from app.services.valuation_snapshot_service import (
     ValuationSnapshotService, _resolve_per_share_basis_context,
 )
@@ -24,6 +27,7 @@ from app.services.valuation_snapshot_service import (
 class CurrentMultiple(ContractModel):
     metric: Literal['PER', 'PBR', 'fPER']
     status: Literal['UNAVAILABLE', 'NOT_MEANINGFUL', 'QUALIFIED']
+    ownership_state: Literal['QUALIFIED', 'NOT_MEANINGFUL'] | UnavailableState | None = None
     value: float | None = Field(default=None, allow_inf_nan=False)
     numerator: float = Field(gt=0, allow_inf_nan=False)
     numerator_role: Literal['CURRENT_PRICE', 'CURRENT_PRICE_CONTEXT_ONLY'] = 'CURRENT_PRICE'
@@ -41,6 +45,11 @@ class CurrentMultiple(ContractModel):
 
     @model_validator(mode='after')
     def owned_metric_state(self):
+        expected = (unavailable_state(metric=self.metric, reason=self.denial_reason or '')
+                    if self.status == 'UNAVAILABLE' else self.status)
+        if self.ownership_state is not None and self.ownership_state != expected:
+            raise ValueError('valuation_ownership_state_mismatch')
+        object.__setattr__(self, 'ownership_state', expected)
         if (not self.input_hashes or any(len(h) != 64 or any(c not in '0123456789abcdef' for c in h)
                                        for h in self.input_hashes)):
             raise ValueError('valuation_source_binding_required')
@@ -85,6 +94,24 @@ class CurrentValuationView(ContractModel):
     overall_direction_use: Literal[False] = False
     unadjusted_price_binding: dict | None = None
     denominator_scope_receipt: dict | None = None
+    security_basis_receipt: SecurityValuationBasisReceipt | None = None
+    denominator_candidate_inventory: tuple[dict, ...] = ()
+
+    @model_validator(mode='after')
+    def basis_receipt_binding(self):
+        receipt = self.security_basis_receipt
+        if receipt is not None:
+            if (receipt.ticker != self.ticker or receipt.run_id != self.run_id
+                    or receipt.monitored_security_id != self.security_id
+                    or receipt.security_sha256 != self.security_sha256
+                    or receipt.price_sha256 != self.price_context_sha256
+                    or receipt.currency != self.currency or receipt.as_of != self.price_session
+                    or receipt.price_adjustment_basis != self.price_basis
+                    or receipt.candidate_inventory_sha256 != digest(self.denominator_candidate_inventory)):
+                raise ValueError('valuation_view_basis_binding_mismatch')
+            if any(metric.status != 'UNAVAILABLE' for metric in self.metrics):
+                raise ValueError('valuation_unresolved_basis_cannot_display_number')
+        return self
 
 
 def derive_current_valuation(*, ticker, run_id, security, price, projection, issuer_bridge=None,
@@ -135,6 +162,9 @@ def derive_current_valuation(*, ticker, run_id, security, price, projection, iss
     from app.services.fresh_valuation_capability import denominator_scope
     scope = denominator_scope(projection, security=security, issuer_bridge=issuer_bridge,
                               source_inputs=denominator_source_inputs)
+    inventory = candidate_inventory(scope.get('raw_source_projection'))
+    basis_receipt = unresolved_basis(ticker=ticker, run_id=run_id, security=security, price=price,
+                                    inventory=inventory, issuer_bridge=issuer_bridge)
     # The bounded revenue/operating-income/net-income collector deliberately
     # grants no EPS/book/share denominator entitlement. Preserve that boundary
     # even when companyfacts happens to contain extra financial fields.
@@ -161,7 +191,8 @@ def derive_current_valuation(*, ticker, run_id, security, price, projection, iss
         currency=price['currency'], price=current_price, price_session=price['as_of_date'],
         price_basis=price['price_basis'], price_context_sha256=digest(price), security_sha256=digest(security),
         financial_projection_sha256=digest(projection), owner_output_sha256=digest(snapshot.model_dump(mode='json')),
-        metrics=metrics, unadjusted_price_binding=unadjusted_price_binding, denominator_scope_receipt=scope)
+        metrics=metrics, unadjusted_price_binding=unadjusted_price_binding, denominator_scope_receipt=scope,
+        security_basis_receipt=basis_receipt, denominator_candidate_inventory=tuple(inventory))
 
 
 def _native_metrics(metrics, inputs, *, ticker, run_id, price, security):
@@ -171,7 +202,6 @@ def _native_metrics(metrics, inputs, *, ticker, run_id, price, security):
     forwardPE alone has no owned horizon and therefore remains unavailable.
     """
     from app.services.unified_run_artifacts import sha256_bytes
-    from app.services.valuation_snapshot_service import _positive_number
     receipt, raw = inputs['receipt'], inputs['raw']
     inputs['policy'].require('finnhub')
     if (receipt.get('run_id') != run_id or receipt.get('provider') != 'finnhub'
@@ -203,44 +233,17 @@ def _native_metrics(metrics, inputs, *, ticker, run_id, price, security):
         reason = 'NATIVE_SECURITY_IDENTITY_UNQUALIFIED'
     elif payload.get('currency') != price['currency']:
         reason = 'NATIVE_SOURCE_CURRENCY_MISSING_OR_MISMATCH'
-    elif payload.get('shareClass', security.get('share_class')) != security.get('share_class'):
+    elif not payload.get('shareClass') or not security.get('share_class'):
+        reason = 'NATIVE_SOURCE_SHARE_CLASS_MISSING'
+    elif payload.get('shareClass') != security.get('share_class'):
         reason = 'NATIVE_SOURCE_SHARE_CLASS_MISMATCH'
     elif date.fromisoformat(as_of) > inputs['cutoff'].date():
         reason = 'NATIVE_SOURCE_ASOF_AFTER_CUTOFF'
-    if reason:
-        return tuple(unavailable(metric, reason) for metric in metrics)
-    wire = payload.get('metric', {})
-    if not isinstance(wire, dict):
-        raise ValueError('native_metric_object_required')
-    def positive(key):
-        value = wire.get(key)
-        return _positive_number(value) if type(value) in (int, float) and math.isfinite(value) else None
-
-    # A present but unusable quarterly multiple cannot be replaced by an older
-    # annual basis. The fallback is only for an absent quarterly field.
-    book_key = 'pbQuarterly' if wire.get('pbQuarterly') is not None else 'pbAnnual'
-    values = {'PER': positive('peTTM'), 'PBR': positive(book_key)}
-    output = []
-    for metric in metrics:
-        value = values.get(metric.metric)
-        denominator = wire.get('epsTTM') if metric.metric == 'PER' else None
-        if denominator is not None and (type(denominator) not in (int, float) or not math.isfinite(denominator)):
-            output.append(unavailable(metric, 'NATIVE_DENOMINATOR_VALUE_INVALID'))
-            continue
-        nm = type(denominator) in (float, int) and denominator <= 0
-        if value is None and not nm or metric.metric == 'fPER':
-            output.append(unavailable(metric, 'NO_FRESH_ESTIMATE_HORIZON_PUBLICATION_CURRENTNESS'
-                if metric.metric == 'fPER' else 'NATIVE_METRIC_VALUE_UNAVAILABLE'))
-            continue
-        output.append(CurrentMultiple(metric=metric.metric, status='NOT_MEANINGFUL' if nm else 'QUALIFIED',
-            value=None if nm else value, numerator=price['current_price'], denominator=denominator,
-            numerator_role='CURRENT_PRICE_CONTEXT_ONLY',
-            denominator_period='TTM' if metric.metric == 'PER' else 'provider_reported_book',
-            publication_date=as_of, latest_published=True, source_method='finnhub_native_current_metric',
-            input_hashes=metric.input_hashes + native_hashes,
-            denial_reason='NONPOSITIVE_DENOMINATOR' if nm else None,
-            display_eligible=True, entry_use_eligible=False))
-    return tuple(output)
+    # The configured wire has no qualified split/denominator authority adapter.
+    # A fresh receipt or plausible native multiple cannot substitute for it.
+    reason = reason or 'NATIVE_SECURITY_SPLIT_DENOMINATOR_AUTHORITY_OWNER_ABSENT'
+    return tuple(unavailable(metric, 'NO_FRESH_ESTIMATE_HORIZON_PUBLICATION_CURRENTNESS'
+        if metric.metric == 'fPER' else reason) for metric in metrics)
 
 
 def verify_current_valuation(view, **inputs):

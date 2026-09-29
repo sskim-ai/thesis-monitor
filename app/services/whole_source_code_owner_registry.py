@@ -32,6 +32,7 @@ _OWNER_SPECS = (
     ("app/services/market_display_plan.py", "market_display_materialization", False),
     ("app/services/persisted_business_event_owner.py", "persisted_event", True),
     ("app/services/selected_financial_owner.py", "selected_financial_owner", False),
+    ("app/services/security_valuation_basis.py", "security_valuation_basis", False),
     ("app/services/sec_logical_cell_reference.py", "sec_logical_reference_structure", False),
     ("app/services/unified_full_source_cohort.py", "full_source_composition", True),
     ("app/services/unified_sealed_context.py", "sealed_context", True),

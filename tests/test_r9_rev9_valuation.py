@@ -45,21 +45,22 @@ def test_native_metrics_cannot_bootstrap_direction_and_detailed_unknown_capture(
     source = result['stock']
     view = CurrentValuationView.model_validate(source['valuation_view'])
     per, pbr, forward = view.metrics
-    assert per.status == ('NOT_MEANINGFUL' if negative else 'QUALIFIED')
-    assert pbr.status == 'QUALIFIED' and pbr.value == 1.5
+    # REV25: fresh native values do not prove class/split ownership. Even a
+    # negative EPS must not be promoted to N/M without that qualification.
+    assert per.status == pbr.status == 'UNAVAILABLE'
+    assert per.ownership_state == pbr.ownership_state == 'UNAVAILABLE_SECURITY_BASIS'
     assert forward.status == 'UNAVAILABLE' and forward.estimate_horizon is None
     assert all(not row.overall_direction_use for row in view.metrics)
-    assert not per.entry_use_eligible and per.numerator_role == 'CURRENT_PRICE_CONTEXT_ONLY'
+    assert not per.entry_use_eligible
     bindings = valuation_numeric_bindings(view)
-    assert bindings['PBR']['registry']['semantic_type'] == 'price_to_book'
-    assert bindings['PBR']['registry']['value'] == pbr.value
+    assert bindings == {}
     plan = build_unknown_plan(source_stock=source, source_authority=result['authority'],
         local_seed=inputs['technical_inputs']['local_seed'], decision=unknown_decision(result['prepared']),
         execution_generation_id='offline-valuation', valuation=view)
     ep = DecisionEvidencePacket.model_validate(source['evidence_packet'])
     rendered = render_accepted_v2_production(ep, plan)
-    assert ('PER: N/M' if negative else 'PER: 10.00배') in rendered.text
-    assert 'PBR: 1.50배' in rendered.text and 'fPER: 판단 자료 부족' in rendered.text
+    assert 'PER: 판단 자료 부족' in rendered.text
+    assert 'PBR: 판단 자료 부족' in rendered.text and 'fPER: 판단 자료 부족' in rendered.text
     capture = asyncio.run(capture_payload(dict(type='thesis_assessment', text=rendered.text,
                                               ticker='IBM', use_llm=False)))
     assert capture['prepared_text'] == rendered.text and capture['network_requests'] == 0
