@@ -87,6 +87,7 @@ class _InventoryParser(HTMLParser):
         for line in source.splitlines(keepends=True):
             self.lines.append(self.lines[-1] + len(line))
         self.tables, self.rows, self.cells = [], [], []
+        self.row_tables, self.cell_tables, self.malformed_rows = {}, {}, set()
         self.anchors, self.events, self.ambiguous_cells = [], [], set()
         self.active = None
 
@@ -119,14 +120,23 @@ class _InventoryParser(HTMLParser):
                     self.ambiguous()
                 self.tables.append(self.source_offset())
             elif tag == "tr":
-                if self.rows or self.cells:
+                table = self.tables[-1] if self.tables else None
+                row = "tr:" + str(self.source_offset())
+                if self.rows and self.row_tables[self.rows[-1]] == table:
                     self.ambiguous()
-                self.rows.append("tr:" + str(self.source_offset()))
+                    self.malformed_rows.add(row)
+                self.rows.append(row)
+                self.row_tables[row] = table
             else:
+                table = self.tables[-1] if self.tables else None
+                nested_cell = bool(self.cells and self.cell_tables[self.cells[-1]] == table)
                 if self.cells:
                     self.ambiguous()
                 self.cells.append(tag + ":" + str(self.source_offset()))
-                if tag != "td" or not self.rows:
+                self.cell_tables[self.cells[-1]] = table
+                if (tag != "td" or not self.rows or nested_cell
+                        or self.rows[-1] in self.malformed_rows
+                        or self.row_tables[self.rows[-1]] != table):
                     self.ambiguous()
         elif tag == "a":
             if self.active is not None:
@@ -244,5 +254,5 @@ def logical_reference_inventory(source, *, accession, filing_form, source_docume
     value = dict(contract=CONTRACT, accession=accession, filing_form=filing_form,
         source_document=source_document, source_sha256=source_hash, anchors=inventory,
         events=[dict(**e, byte_start=offsets[e["char_start"]]) for e in parser.events],
-        ambiguous_cells=sorted(parser.ambiguous_cells), groups=groups)
+        ambiguous_cells=sorted(parser.ambiguous_cells), malformed_rows=sorted(parser.malformed_rows), groups=groups)
     return dict(**value, inventory_sha256=digest(value))

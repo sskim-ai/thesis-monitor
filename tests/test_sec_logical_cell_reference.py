@@ -82,6 +82,8 @@ def test_typed_group_rejects_forged_membership(mutation):
     '<table><tr><td><a href="ex.htm">Articles of Incorporation</a></th></tr></table>',
     '<table><tr><td><a href="ex.htm" href="other.htm">Articles of Incorporation</a></td></tr></table>',
     '<table><tr><td><a href="ex.htm">Articles of Incorporation</a><table><tr><td>x</td></tr></table></td></tr></table>',
+    '<table><tr><td>outer<tr><td><a href="ex.htm">Articles of </a><a href="ex.htm">Incorporation</a></td></tr></td></tr></table>',
+    '<table><tr><td>outer<td><a href="ex.htm">Articles of </a><a href="ex.htm">Incorporation</a></td></td></tr></table>',
 ])
 def test_ambiguous_html_does_not_authorize_grouping(source):
     result = inventory(source)
@@ -93,6 +95,13 @@ def test_single_outside_cell_allowed_but_multiple_never_join():
     result = inventory(anchor("Articles of Incorporation") + anchor("continued"))
     assert len(result["groups"]) == 2
     assert not logical_document_purpose(result["groups"], filing("20-F"))[0]
+
+
+def test_valid_nested_table_owns_a_distinct_row_and_cell():
+    result = inventory(cell(cell(anchor("Articles of ") + anchor("Incorporation"))))
+    assert len(result["groups"]) == 1
+    assert len(result["groups"][0]["anchors"]) == 2
+    assert not result["malformed_rows"]
 
 
 @pytest.mark.parametrize("label", ["Land Lease with Government and lease liabilities",
