@@ -68,6 +68,7 @@ def test_calibration_preserves_nonprompt_code_and_other_owners():
         "tests/test_morning_gate.py",
         "tests/test_night_futures_publication_telemetry.py",
         "tests/test_night_futures_summary_canonicalization.py",
+        "tests/test_providers.py",
         "tests/test_synthetic_canary_fixture_repair_ownership_resume.py",
     ]
     before = m12u.e.prompt_value(

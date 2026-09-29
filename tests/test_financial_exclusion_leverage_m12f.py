@@ -62,6 +62,7 @@ def test_complete_scope_freeze_preserves_every_unapproved_owner():
         "tests/test_morning_gate.py",
         "tests/test_night_futures_publication_telemetry.py",
         "tests/test_night_futures_summary_canonicalization.py",
+        "tests/test_providers.py",
         "tests/test_synthetic_canary_fixture_repair_ownership_resume.py",
     ]
     before = m12u.e.prompt_value(m12u.read(m12u.BASELINE)["approved_module_before"][m12u.BALANCE])

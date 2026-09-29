@@ -98,6 +98,7 @@ def test_scope_is_portable_and_only_approved_surfaces_changed():
         "tests/test_morning_gate.py",
         "tests/test_night_futures_publication_telemetry.py",
         "tests/test_night_futures_summary_canonicalization.py",
+        "tests/test_providers.py",
         "tests/test_synthetic_canary_fixture_repair_ownership_resume.py",
     ]
     before = u.e.prompt_value(u.read(u.BASELINE)["approved_module_before"][u.BALANCE])
