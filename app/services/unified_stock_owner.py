@@ -195,12 +195,21 @@ def _technical(components, roles, *, ticker, market, cutoff, observed_at):
     return context, periods
 
 
-def component_binding(components):
+def component_binding(components, price_projection=None):
     result = []
     for role, rows in components["role_consumer_matrix"].items():
         for c in rows:
             feature = "owner_dependency" in c
             requirement = "MANDATORY" if c["requirement"] == "MANDATORY_CURRENT_PRICE" else "OPTIONAL"
+            if requirement == "MANDATORY" and price_projection is not None:
+                eligible = price_projection.availability == "AVAILABLE"
+                result.append(dict(role=role, consumer=c["consumer"],
+                    packet_path="price_and_positioning.price.current_price", requirement=requirement,
+                    Core=False, A=False, B=True, renderer_requires=True, eligible=eligible,
+                    selected_value_in_packet=eligible, behavior="INCLUDE" if eligible else "COMPLETED_SESSION_PRICE_UNAVAILABLE",
+                    owner=price_projection.contract, projection_sha256=price_projection.projection_sha256,
+                    dependency_span=[price_projection.target_session], anomalies=price_projection.target_integrity["issues"]))
+                continue
             path = ("technical_context.features." + role.removeprefix("adjusted_") + ".facts:" + c["consumer"]
                 if feature else "price_and_positioning.price.current_price" if requirement == "MANDATORY"
                 else "chart_context:" + role + ":" + c["consumer"])
@@ -262,13 +271,19 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     if digest(materialize_source_components(**params,
             completed_session="completed_session_bar_set" in components)) != digest(components):
         raise ValueError("sealed_component_replay_mismatch")
-    binding = component_binding(components)
-    missing = [r["packet_path"] for r in binding if r["requirement"] == "MANDATORY" and not r["eligible"]]
     tables = _local(local_seed, market=market, session_key=session_key, cutoff=plan.frozen_at,
         ticker=ticker, policy=policy)
     security, watch, thesis = (tables[k] for k in ("securitymaster", "watchlistitem", "investmentthesis"))
     if security["canonical_security_id"] != reads[0].canonical_security_id:
         raise ValueError("stock_local_security_receipt_mismatch")
+    price_projection = None
+    if fresh_financial_pending:
+        from app.services.completed_session_current_price import project_completed_price
+        daily = next(r for r in reads if r.role == "adjusted_daily")
+        price_projection = project_completed_price(plan=plan, read=daily, receipt=receipts[daily.role],
+            artifact_reader=artifact, security=security, currency="USD" if market == "us" else "KRW")
+    binding = component_binding(components, price_projection)
+    missing = [r["packet_path"] for r in binding if r["requirement"] == "MANDATORY" and not r["eligible"]]
     if event_source is not None:
         if event_source.read.market != market:
             raise ValueError("event_stock_market_mismatch")
@@ -291,6 +306,9 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     currency = technical.currency
     decision = {"current_price": components["current_price"], "currency": currency,
         "price_as_of": session_key, "price_basis": "adjusted_close"}
+    if price_projection is not None:
+        decision.update(current_price=price_projection.current_price, currency=price_projection.currency,
+                        price_as_of=price_projection.price_as_of, price_basis=price_projection.adjustment_basis)
     timeframes = {}
     for tf in periods:
         consumers = {c["consumer"]: c for c in components["role_consumer_matrix"]["adjusted_" + tf]}
@@ -407,6 +425,8 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
                 "raw_sha256": [page["source_sha256"] for page in receipt["pages"]]}
                 for role, receipt in receipts.items()}
             node["component_projection_sha256"] = expected_hashes["components"]
+            if price_projection is not None:
+                node["completed_price_projection_sha256"] = price_projection.projection_sha256
     numeric_graph = [{"fact_id": r["fact_id"], "field_path": r["field_path"],
         "registry_entry_sha256": digest(r), "source_node_sha256": digest(graph[r["fact_id"]])}
         for r in stock["numeric_registry"]]
@@ -425,6 +445,7 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
         "observed_business_union": business, "observed_business_cardinality": len(usable),
         "numeric_registry_unregistered": registry_errors, "input_hashes": deepcopy(expected_hashes),
         "complete_source_adapter_qualified": False,
+        **({"completed_session_current_price": price_projection.model_dump(mode="json")} if price_projection else {}),
         **({"event_binding": event_binding, "event_source": event_source.model_dump(mode="json"),
             "business_cutoff": business_cutoff.isoformat(), "event_policy": sorted(policy.allowed_providers)}
            if event_source is not None else {})}
@@ -435,6 +456,17 @@ def validate_assembled(result, *, expected_result_sha256, versioned_business_inp
     if digest(result) != expected_result_sha256:
         raise ValueError("assembled_result_hash_mismatch")
     stock = result["packet"]["stocks"][0]
+    if "completed_session_current_price" in result:
+        from app.services.completed_session_current_price import CompletedSessionCurrentPriceProjection
+        price = CompletedSessionCurrentPriceProjection.model_validate(result["completed_session_current_price"])
+        context = stock["current_price_context"]
+        decision = stock["price_and_positioning"]["price"]
+        if (price.ticker != stock["ticker"] or price.market != result["market"]
+                or price.source_plan_sha256 != result["input_hashes"]["plan"]
+                or (context["current_price"], context["as_of_date"], context["currency"], context["price_basis"]) !=
+                    (price.current_price, price.price_as_of, price.currency, price.adjustment_basis)
+                or (decision["current_price"], decision["price_as_of"]) != (price.current_price, price.price_as_of)):
+            raise ValueError("completed_price_packet_binding_mismatch")
     versioned = None
     if 'versioned_business' in result['input_hashes']:
         from app.services.versioned_business_stock_owner import replay_version

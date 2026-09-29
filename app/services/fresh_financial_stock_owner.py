@@ -186,6 +186,7 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
         'diagnostic_packet_sha256': digest(packet), 'evidence_packet': evidence.model_dump(mode='json'),
         'ownership': owned.model_dump(mode='json'), 'source_graph': graph,
         'component_binding': baseline['component_binding'],
+        'completed_session_current_price': baseline['completed_session_current_price'],
         'financial_state': dict(status='FORMAL_FINANCIAL_SOURCE_COMPLETE_NO_QUALIFIED_FIELD' if source_absent else 'FRESH_SELECTED_SOURCE',
             quality=quality['receipt']['state'],
             denials=result['acquisition_denials'], receipt_sha256=quality['receipt']['receipt_sha256']),
