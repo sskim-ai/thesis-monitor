@@ -137,9 +137,11 @@ def test_naver_provider_success(monkeypatch: pytest.MonkeyPatch) -> None:
         async def __aexit__(self, exc_type, exc, traceback) -> None:
             return None
 
-        async def get(self, url: str, params: dict, headers: dict) -> FakeResponse:
-            assert headers["X-Naver-Client-Id"] == "client-id"
-            assert params["sort"] == "date"
+        async def send(self, request, *, follow_redirects: bool) -> FakeResponse:
+            assert request.headers["X-Naver-Client-Id"] == "client-id"
+            assert request.headers["X-Naver-Client-Secret"] == "client-secret"
+            assert request.url.params["sort"] == "date"
+            assert follow_redirects is False
             return FakeResponse()
 
     monkeypatch.setattr("app.providers.news.httpx.AsyncClient", FakeClient)
