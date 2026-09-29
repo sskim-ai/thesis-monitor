@@ -18,6 +18,7 @@ from app.services.market_intelligence_service import _SERIES, _observation_fact,
 from app.services.night_futures import summarize_night_futures, night_futures_context_row, night_futures_timeframe_facts
 from app.services.numeric_semantic_registry import build_numeric_registry
 from app.services.unified_snapshot_contract import digest
+from app.services.market_display_view import display_origin, market_views
 from scripts import m12ds_r4_r4_market as consumer
 
 CONTRACT = 'sealed-market-consumer-projection-v1'
@@ -343,7 +344,10 @@ def project_sealed_market_context(packet, seed, graph, *, expected_authority_sha
     require(context['parity_status'] == boundary['status'] == 'PASS', 'market_consumer_parity_failed')
     require(aliases['status'] == 'PASS', 'market_numeric_alias_failed')
     require(digest(packet) == original, 'market_source_mutated')
-    return dict(packet=projected, context=context, schema=consumer.market_schema(context),
+    schema = consumer.market_schema(context)
+    origin = display_origin(packet, seed, source, context, aliases, expected_authority_sha256, refs)
+    views = market_views(source, context, schema, market=market, assessment_date=assessed.isoformat(), origin=origin)
+    return dict(packet=projected, context=context, schema=schema, views=views,
         receipt=dict(contract=CONTRACT, source_packet_sha256=original, context_sha256=digest(context),
             fact_catalog_sha256=digest(facts), numeric_registry_sha256=digest(registry),
             coverage_sha256=digest(coverage), source_refs=refs, session=parity,

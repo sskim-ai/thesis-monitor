@@ -9,10 +9,11 @@ from pydantic import BaseModel, ConfigDict
 from app.macro.providers.market import MARKET_SYMBOLS
 from app.services.market_numeric_claim_service import digest, number, numeric_catalog
 from app.services.macro_source_time import CONTRACT as TIME_CONTRACT
+from app.services.market_display_view import MarketUserDisplayView, verify_display_view
 
 CONTRACT = 'market-selected-display-v1'
 US_SECTORS = tuple(k for k, v in MARKET_SYMBOLS.items() if v == 'sector')
-US_MACRO = ('DGS3', 'DGS5', 'DGS10', 'DGS30', 'DFII10', 'T10YIE', 'DCOILWTICO', 'VIXCLS')
+US_MACRO = ('DGS3', 'DGS5', 'DGS10', 'DGS30', 'DFII10', 'T10YIE', 'DCOILWTICO', 'VIXCLS', 'DTWEXBGS')
 
 
 class DisplayBinding(BaseModel):
@@ -50,9 +51,10 @@ class MarketDisplayPlan(BaseModel):
     internal_source_sha256: str
     eligible_refs: tuple[str, ...]
     items: tuple[DisplayItem, ...]
+    display_view: MarketUserDisplayView | None = None
 
 
-def build_display_plan(source, *, market, assessment_date, eligible_refs):
+def build_display_plan(source, *, market, assessment_date, eligible_refs, display_view=None):
     session = source.get('session') or {}
     completed = session.get('latest_completed_regular_session_date')
     if (market not in {'us', 'kr'} or date.fromisoformat(completed) > date.fromisoformat(assessment_date)
@@ -70,13 +72,25 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs):
             raise ValueError('display_duplicate_registry_key')
         registry[key] = row
     eligible = set(eligible_refs)
+    display_fields = None
+    bound_alias_fields = set()
+    if display_view is not None:
+        display_view = verify_display_view(display_view, source)
+        if (display_view.market != market or display_view.assessment_date != assessment_date
+                or set(display_view.origin.directional_refs) != eligible):
+            raise ValueError('display_view_directional_identity_mismatch')
+        display_fields = {d.fact_ref:set(d.allowed_fields) for d in display_view.decisions if d.status == 'ELIGIBLE'}
+        bound_alias_fields = {(b.canonical_ref, b.semantic_field) for b in display_view.identity_bindings}
+        eligible = set(display_view.eligible_refs)
     items = []
 
     def bind(fact, field, units):
         fields = fact['fields']
         row = registry.get((fact['fact_id'], 'fields.' + field), {})
         if (fact['fact_id'] not in eligible or not number(fields.get(field))
-                or row.get('registered') is not True or row.get('prose_allowed') is not True
+                or (display_fields is not None and 'fields.' + field not in display_fields.get(fact['fact_id'], set()))
+                or row.get('registered') is not True or (row.get('prose_allowed') is not True
+                    and (fact['fact_id'], 'fields.' + field) not in bound_alias_fields)
                 or row.get('scope') not in {'market', 'both'} or row.get('unit') not in units
                 or row.get('value') != fields[field]):
             return None
@@ -121,6 +135,17 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs):
             add('indices', series, [fact] if valid else [], bindings if valid else [],
                 text=(f"{series}: {fields['close']:,.2f} USD · {fields['change_value']:+.2f} USD "
                       f"({fields['return_pct']:+.2f}%)") if valid else None)
+    elif display_view is not None:
+        for symbol in ('KOSPI', 'KOSDAQ'):
+            matches = [f for f in facts if f['fact_type'] == 'market_cross_section_index'
+                       and f['fields'].get('symbol') == symbol]
+            if len(matches) > 1:
+                raise ValueError('ambiguous_display_index:' + symbol)
+            fact = matches[0] if matches else None
+            bindings = [bind(fact, 'close', {'index'}), bind(fact, 'return_pct', {'pct'})] if fact else []
+            valid = bool(fact and current(fact) and len(bindings) == 2 and all(bindings))
+            add('indices', symbol, [fact] if valid else [], bindings if valid else [],
+                text=(f"{symbol}: {fact['fields']['close']:,.2f} · {fact['fields']['return_pct']:+.2f}%") if valid else None)
 
     def macro(series):
         fact = unique_series(series)
@@ -128,7 +153,7 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs):
         publication = fields.get('publication_context') or {}
         key, units, suffix = ('value', {'KRW'}, '원') if series == 'USDKRW' else (
             ('price_usd_per_barrel', {'USD_per_barrel'}, 'USD/배럴') if series == 'DCOILWTICO' else
-            ('level', {'index', 'points', 'point'}, '') if series == 'VIXCLS' else
+            ('level', {'index', 'points', 'point'}, '') if series in {'VIXCLS', 'DTWEXBGS'} else
             ('level_pct', {'pct', 'percent'}, '%'))
         binding = bind(fact, key, units) if fact else None
         valid = bool(fact and binding and publication.get('contract') == TIME_CONTRACT
@@ -195,7 +220,7 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs):
     if market == 'kr':
         macro('USDKRW')
     else:
-        catalog = numeric_catalog(source, market=market, assessment_date=assessment_date, eligible_refs=eligible)
+        catalog = numeric_catalog(source, market=market, assessment_date=assessment_date, eligible_refs=eligible_refs)
         night = [c for c in catalog['claims'] if c['claim_type'] == 'OFFICIAL_NIGHT']
         if len(night) > 1:
             raise ValueError('configured_night_display_ambiguous')
@@ -205,12 +230,13 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs):
             proof={'typed_numeric_claims': night}, formatter='official-night-dwm',
             unavailable_text='한국 야간선물 · KOSPI200\n일: 자료 부족\n주: 자료 부족\n월: 자료 부족')
     return MarketDisplayPlan(market=market, assessment_date=assessment_date, completed_session=completed,
-        internal_source_sha256=digest(source), eligible_refs=tuple(sorted(eligible)), items=tuple(items))
+        internal_source_sha256=digest(source), eligible_refs=tuple(sorted(eligible_refs)), items=tuple(items),
+        display_view=display_view)
 
 
 def render_display_plan(plan, source, narrative):
     expected = build_display_plan(source, market=plan.market, assessment_date=plan.assessment_date,
-                                  eligible_refs=plan.eligible_refs)
+                                  eligible_refs=plan.eligible_refs, display_view=plan.display_view)
     if plan != expected:
         raise ValueError('selected_market_display_binding_mismatch')
     if any(char.isnumeric() for char in narrative):

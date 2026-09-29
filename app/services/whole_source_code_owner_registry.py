@@ -28,6 +28,8 @@ _OWNER_SPECS = (
     ("app/services/fresh_publication_replay.py", "publication_macro", False),
     ("app/services/fresh_valuation_capability.py", "valuation_capability", False),
     ("app/services/latest_published_fx.py", "latest_published_fx", False),
+    ("app/services/market_display_view.py", "market_display_permission", False),
+    ("app/services/market_display_plan.py", "market_display_materialization", False),
     ("app/services/persisted_business_event_owner.py", "persisted_event", True),
     ("app/services/selected_financial_owner.py", "selected_financial_owner", False),
     ("app/services/sec_logical_cell_reference.py", "sec_logical_reference_structure", False),
@@ -35,6 +37,9 @@ _OWNER_SPECS = (
     ("app/services/unified_sealed_context.py", "sealed_context", True),
     ("app/services/unified_stock_event_input.py", "stock_event_input", False),
     ("scripts/m12dr_financial_source_authority.py", "financial_source_authority", True),
+    ("scripts/r2b_r5_market_adapter.py", "market_source_projection", False),
+    ("scripts/r9_rev11_market_qualification.py", "market_display_qualification", False),
+    ("scripts/r9_offline_stage_replay.py", "market_capture_binding", False),
 )
 
 

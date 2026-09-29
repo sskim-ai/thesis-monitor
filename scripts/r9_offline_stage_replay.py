@@ -122,7 +122,7 @@ def replay_market(whole, market, output):
     source = packet['market_context']
     c._require(owner.numeric_boundary(context, source)['status'] == 'PASS', 'offline_market_numeric')
     display = build_display_plan(source, market=market, assessment_date=packet['assessment_date'],
-                                 eligible_refs=context['request_eligible_refs'])
+                                 eligible_refs=context['request_eligible_refs'], display_view=projected['views']['display'])
     receipt = dict(status='PASS', errors=[], market=market, assessment_date=packet['assessment_date'],
         source_context_sha256=digest(source), decision_sha256=digest(output),
         numeric_catalog_sha256=digest(context['numeric_catalog']), display_plan_sha256=digest(display.model_dump(mode='json')))
