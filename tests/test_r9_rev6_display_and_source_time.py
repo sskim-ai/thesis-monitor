@@ -101,7 +101,7 @@ def test_selected_tamper_or_invention_fails():
         render_display_plan(p, s, '혼재')
 
 
-@pytest.mark.parametrize('token', [None, '', '2026', '20261301', '20260230'])
+@pytest.mark.parametrize('token', [None, '', '2026Q5', '20261301', '20260230'])
 def test_missing_invalid_period_not_query_date(token):
     with pytest.raises(ValueError):
         source_period(token)
@@ -123,13 +123,14 @@ def test_ecos_owns_observation_date_and_denies_missing(monkeypatch):
     from types import SimpleNamespace
     import app.macro.providers.ecos as owner
     monkeypatch.setattr(owner, 'get_settings', lambda: SimpleNamespace(ecos_api_key='synthetic', macro_provider_timeout_seconds=1))
-    rows = [dict(KEYSTAT_NAME='원/달러 환율', DATA_VALUE='1,300', TIME='20260925', UNIT_NAME='원')]
+    rows = [dict(KEYSTAT_NAME='원/달러 환율', DATA_VALUE='1,300', CYCLE='20260925', UNIT_NAME='원')]
     def collect():
         return asyncio.run(EcosProvider(httpx.MockTransport(lambda r: httpx.Response(200,
             json={'KeyStatisticList': {'row': rows}}))).collect(NOW))
     result = collect()
     assert result.observations[0].observed_at.date().isoformat() == '2026-09-25'
-    del rows[0]['TIME']
+    del rows[0]['CYCLE']
+    rows[0]['TIME'] = '20260925'
     assert not collect().observations
 
 
