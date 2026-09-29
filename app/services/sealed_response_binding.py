@@ -77,6 +77,7 @@ def binding_owner_hash():
              'app/services/bounded_financial_acquisition.py',
              'app/services/sec_current_financial_candidates.py',
              'app/services/fpi_filing_document_graph.py',
+             'app/services/sec_logical_cell_reference.py',
              'app/services/sec_financial_snapshot_service.py',
              'app/services/opendart_financial_recovery_service.py')
     return digest({p: sha256_bytes((root / p).read_bytes()) for p in names})

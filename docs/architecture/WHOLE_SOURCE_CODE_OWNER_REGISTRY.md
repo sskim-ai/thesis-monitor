@@ -1,8 +1,9 @@
 # Whole-Source Code Owner Registry
 
 The canonical owner is `app/services/whole_source_code_owner_registry.py`.
-Its fresh profile always requires exactly 16 files, including the selected
-financial, latest-published FX and current-effective technical owners. Roles are
+Its fresh profile requires exactly 18 files. REV22 adds the SEC logical-reference
+structural owner and the filing-purpose/slot router to the prior 16-file set,
+including selected financial, latest-published FX and current-effective technical owners. Roles are
 audit metadata only and do not allocate source-use authority.
 
 The registry is frozen from current repository bytes. Each immutable entry owns
@@ -32,3 +33,8 @@ are supplied by fictional fixtures; metadata, seed, stock owners and consumer
 validation remain production functions. A separate historical fixture records
 REV19's exact 16-vs-13 failure. No investment, source, delivery or policy
 threshold is changed.
+
+REV22 also binds the new structural owner in `sealed_response_binding`'s
+transitive response-selector fingerprint. Old frozen responses cannot pass new
+live dispatch admission. Verified historical raw bodies can be explicit offline
+regression fixtures, with newly derived decisions stored separately.

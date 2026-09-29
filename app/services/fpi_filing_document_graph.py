@@ -10,6 +10,7 @@ from urllib.parse import urljoin, urlsplit
 
 from app.services.unified_run_artifacts import sha256_bytes
 from app.services.unified_snapshot_contract import digest
+from app.services.sec_logical_cell_reference import logical_reference_inventory
 
 CONTRACT = "fpi-filing-document-graph-v1"
 FORWARDING = "FORWARDING_COVER_TO_QUALIFIED_FINANCIAL_ATTACHMENT"
@@ -83,9 +84,14 @@ def declared_nonfinancial_exhibit(references, filing):
         return False
     label = labels[0]
     if re.search(
-        r"financial statements|financial results|financial information|results of operations|earnings|annual report", label, re.I
+        r"financial statements?|financial results|financial information|results of operations|earnings|annual report|"
+        r"lease liabilities|right.of.use|lease accounting|accounting (?:schedules?|polic)", label, re.I
     ):
         return False
+    if re.match(r"Articles of (?:Incorporation|Association)\b", label, re.I):
+        return "CORPORATE_GOVERNANCE_INSTRUMENT_NON_FINANCIAL"
+    if re.match(r"Land Lease with\s+\S", label, re.I):
+        return "PROPERTY_LEASE_AGREEMENT_NON_FINANCIAL"
     if re.fullmatch(
         r"Certification by Principal (?:Executive|Financial) Officer Pursuant to Section "
         r"(?:302|906) of the Sarbanes-Oxley Act of 2002[.]?", label, re.I
@@ -97,14 +103,26 @@ def declared_nonfinancial_exhibit(references, filing):
         return "LEGAL_AGREEMENT_NON_FINANCIAL"
     return bool(
         re.match(
-            r"(?:Articles of (?:Incorporation|Association)\b|"
-            r"Certification of Chief (?:Executive|Financial) Officer required by Rule 13a-14\b|"
+            r"(?:Certification of Chief (?:Executive|Financial) Officer required by Rule 13a-14\b|"
             r"Consent of\b|Description of Securities Registered Under Section 12\b|"
-            r"Land Lease with\b|Subsidiaries of\b)",
+            r"Subsidiaries of\b)",
             label,
             re.I,
         )
     )
+
+
+def logical_document_purpose(groups, filing, *, ambiguous=False):
+    """Every independent group must authorize the same non-financial route."""
+    if ambiguous or not groups:
+        return False, "DOCUMENT_REFERENCE_STRUCTURE_AMBIGUOUS" if ambiguous else None
+    routes = [declared_nonfinancial_exhibit([{"label": g["normalized_label"]}], filing)
+              for g in groups]
+    if all(routes) and len(set(routes)) == 1:
+        return routes[0], None
+    if len(set(routes)) > 1:
+        return False, "DOCUMENT_REFERENCE_PURPOSE_CONFLICT"
+    return False, None
 
 
 def document_slot_plan(index, primary_text, plan, filing):
@@ -132,6 +150,17 @@ def document_slot_plan(index, primary_text, plan, filing):
             raise AcquisitionDenied("SEC_DOCUMENT_SOURCE_SCOPE_DENIED")
         identity = sec_document_identity(absolute, plan, filing)
         links.setdefault(identity, []).append(link)
+
+    def resolve(ref):
+        absolute = urljoin(primary, ref)
+        if not absolute.startswith(base):
+            return None
+        if any(p in {".", ".."} for p in urlsplit(ref).path.split("/")) or "%" in urlsplit(ref).path:
+            raise AcquisitionDenied("SEC_DOCUMENT_SOURCE_SCOPE_DENIED")
+        return absolute, sec_document_identity(absolute, plan, filing)
+
+    inventory = logical_reference_inventory(primary_text, accession=filing["accessionNumber"],
+        filing_form=filing["form"], source_document=primary, resolve=resolve)
     items = index.get("directory", {}).get("item", [])
     names = [r["name"] for r in items]
     if len(names) != len(set(names)):
@@ -144,7 +173,10 @@ def document_slot_plan(index, primary_text, plan, filing):
         discovered = bool(references) or bool(
             re.search(r"(?:ex-?99|earn|result|release|financial)", item["name"], re.I)
         )
-        nonfinancial = declared_nonfinancial_exhibit(references, filing)
+        groups = [g for g in inventory["groups"] if g["document_identity"] == identity]
+        ambiguous = any(a["ambiguous"] for a in inventory["anchors"]
+                        if a["target"] and a["target"][1] == identity)
+        nonfinancial, purpose_denial = logical_document_purpose(groups, filing, ambiguous=ambiguous)
         candidate = identity != primary and discovered and cls not in AUXILIARY and not nonfinancial
         rows.append(
             dict(
@@ -152,6 +184,8 @@ def document_slot_plan(index, primary_text, plan, filing):
                 index_metadata=item,
                 official_exhibit_route=nonfinancial if isinstance(nonfinancial, str) else None,
                 exact_references=references,
+                logical_reference_groups=groups,
+                reference_purpose_denial=purpose_denial,
                 asset_class=cls,
                 candidate=candidate,
                 selected_for_fetch=False,
@@ -188,6 +222,7 @@ def document_slot_plan(index, primary_text, plan, filing):
         all_linked_identities=rows,
         total_linked_identities=len(rows),
         external_references=external,
+        logical_cell_reference_inventory=inventory,
         candidate_count=len(candidates),
         content_slot_limit=cap,
         status="DENIED" if denied else "PASS",

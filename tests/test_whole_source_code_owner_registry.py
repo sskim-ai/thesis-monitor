@@ -29,8 +29,8 @@ def verify(registry, value):
                                      authority_sha256=registry.sha256)
 
 
-def test_exact_sixteen_role_hash_and_deterministic_order(registry):
-    assert len(registry.entries) == 16
+def test_exact_eighteen_role_hash_and_deterministic_order(registry):
+    assert len(registry.entries) == 18
     assert all(e.mandatory and e.role for e in registry.entries)
     assert verify(registry, metadata(registry)) == registry
     raw = registry.model_dump(mode="json")
@@ -42,7 +42,7 @@ def test_exact_sixteen_role_hash_and_deterministic_order(registry):
                                          source_authority_contract_sha256=registry.sha256)
 
 
-@pytest.mark.parametrize("index", range(16))
+@pytest.mark.parametrize("index", range(18))
 def test_each_owner_is_mandatory(registry, index):
     raw = metadata(registry)
     raw["code_owner_registry"]["entries"].pop(index)
@@ -116,7 +116,10 @@ def test_symlink_parent_denied(tmp_path):
 
 
 def test_historical_consumer13_rejects_legitimate_producer16(registry):
-    historical13 = set(registry.fingerprints) - {
+    historical16 = set(registry.fingerprints) - {
+        "app/services/fpi_filing_document_graph.py", "app/services/sec_logical_cell_reference.py"}
+    assert len(historical16) == 16
+    historical13 = historical16 - {
         "app/services/selected_financial_owner.py", "app/services/latest_published_fx.py",
         "app/services/current_effective_technical.py"}
     assert len(historical13) == 13
