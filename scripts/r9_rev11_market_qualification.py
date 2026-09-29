@@ -5,7 +5,7 @@ from app.services.unified_snapshot_contract import digest
 from scripts.r2b_r5_market_adapter import project_sealed_market_context
 
 
-def check_projection(projected, market):
+def check_projection(projected, market, publications=None):
     packet, context = projected['packet'], projected['context']
     source = packet['market_context']
     display = build_display_plan(source, market=market, assessment_date=packet['assessment_date'],
@@ -36,7 +36,12 @@ def check_projection(projected, market):
             missing.append('DTWEXBGS')
     else:
         if 'USDKRW' not in selected:
-            missing.append('USDKRW')
+            from app.services.latest_published_fx import display_receipt
+            owned_unavailable = bool(publications
+                and publications.get('contract') == 'fresh-publication-replay-v1'
+                and display_receipt(publications, display.completed_session)['status'] == 'TYPED_UNAVAILABLE')
+            if not owned_unavailable:
+                missing.append('USDKRW')
         indices = {f['fields'].get('symbol') for f in facts if f['fact_type']=='market_cross_section_index'
             and f['fact_id'] in context['request_eligible_refs'] and f['as_of_date']==display.completed_session}
         missing.extend(sorted({'KOSPI','KOSDAQ'}-indices))
@@ -47,4 +52,5 @@ def check_projection(projected, market):
 
 def qualify_markets(whole):
     return {m:check_projection(project_sealed_market_context(whole['packets'][m],whole['seed'],whole['authority_graph'],
-        expected_authority_sha256=whole['authority_graph_sha256']),m) for m in ('us','kr')}
+        expected_authority_sha256=whole['authority_graph_sha256']),m,
+        publications=whole['authority_graph'].get('publication_context')) for m in ('us','kr')}
