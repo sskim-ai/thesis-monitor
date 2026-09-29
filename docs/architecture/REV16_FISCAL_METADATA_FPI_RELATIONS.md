@@ -50,3 +50,12 @@ then passed to REV16 semantic owners as offline fixtures. This does not migrate
 old receipts into current-source qualification. Live qualification must use a
 new generation, newly frozen descriptors, fresh responses and two exact replays.
 No code/config edits are allowed after that new generation starts.
+# Annual Exhibit Routing
+
+Annual-form links explicitly described by the official primary document as
+articles of incorporation/association, officer certifications, consents, security
+descriptions, land leases, or subsidiaries are recorded as non-financial request
+exclusions. This routing classification does not grant content or field authority.
+Financial statement/results labels override the exclusion; unknown descriptions
+remain content candidates. The rule does not suppress unknown 6-K attachments.
+The attachment cap remains two, and annual primary/index reserves are independent.

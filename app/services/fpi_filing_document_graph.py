@@ -74,6 +74,27 @@ def asset_class(item, references=()):
     return "OTHER_TEXT_DOCUMENT"
 
 
+def declared_nonfinancial_exhibit(references, filing):
+    """Annual exhibit descriptions route requests; they never authorize facts."""
+    if filing["form"].split("/")[0] not in {"20-F", "40-F"}:
+        return False
+    label = " ".join(" ".join(r["label"] for r in references).split())
+    if re.search(
+        r"financial statements|financial results|earnings release|annual report", label, re.I
+    ):
+        return False
+    return bool(
+        re.match(
+            r"(?:Articles of (?:Incorporation|Association)\b|"
+            r"Certification of Chief (?:Executive|Financial) Officer required by Rule 13a-14\b|"
+            r"Consent of\b|Description of Securities Registered Under Section 12\b|"
+            r"Land Lease with\b|Subsidiaries of\b)",
+            label,
+            re.I,
+        )
+    )
+
+
 def document_slot_plan(index, primary_text, plan, filing):
     from app.services.bounded_financial_acquisition import (
         sec_base,
@@ -111,7 +132,8 @@ def document_slot_plan(index, primary_text, plan, filing):
         discovered = bool(references) or bool(
             re.search(r"(?:ex-?99|earn|result|release|financial)", item["name"], re.I)
         )
-        candidate = identity != primary and discovered and cls not in AUXILIARY
+        nonfinancial = declared_nonfinancial_exhibit(references, filing)
+        candidate = identity != primary and discovered and cls not in AUXILIARY and not nonfinancial
         rows.append(
             dict(
                 document_identity=identity,
@@ -125,6 +147,8 @@ def document_slot_plan(index, primary_text, plan, filing):
                 if identity == primary
                 else "AUXILIARY_NOT_REQUIRED_BY_EXACT_PARSER"
                 if cls in AUXILIARY
+                else "OFFICIAL_ANNUAL_EXHIBIT_DESCRIPTION_NON_FINANCIAL_NO_FETCH"
+                if nonfinancial
                 else "OUTSIDE_FROZEN_LINK_DISCOVERY_RULE"
                 if not candidate
                 else None,

@@ -79,6 +79,44 @@ def fiscal_fact():
     return comparative_facts(quality, ticker="FICTIONAL", issuer_id="CIK:0000000123")[0]
 
 
+def test_annual_nonfinancial_routing_uses_official_labels_not_filename():
+    p, f = plan(), filing("20-F")
+    names = ["articles.htm", "cert.htm", "lease.htm", "unknown.htm", "financial.htm"]
+    labels = [
+        "Articles of Incorporation of Fictional Limited",
+        "Certification of Chief Financial Officer required by Rule 13a-14(a)",
+        "Land Lease with Local Government",
+        "Exhibit 99",
+        "Consent of auditor and Financial Statements",
+    ]
+    index = {
+        "directory": {
+            "item": [{"name": f["primaryDocument"], "type": "text.gif"}]
+            + [{"name": name, "type": "text.gif"} for name in names]
+        }
+    }
+    html = "".join(f'<a href="{name}">{label}</a>' for name, label in zip(names, labels))
+    slots = document_slot_plan(index, html, p, f)
+    assert slots["status"] == "PASS" and slots["candidate_count"] == 2
+    assert {u.rsplit("/", 1)[-1] for u in slots["selected_urls"]} == {
+        "unknown.htm",
+        "financial.htm",
+    }
+    excluded = [
+        r
+        for r in slots["all_linked_identities"]
+        if r["excluded_reason"] == "OFFICIAL_ANNUAL_EXHIBIT_DESCRIPTION_NON_FINANCIAL_NO_FETCH"
+    ]
+    assert len(excluded) == 3 and all(r["exact_references"] for r in excluded)
+    # Unknown labels do not inherit exclusion authority from suggestive filenames.
+    ambiguous = document_slot_plan(
+        index, html.replace("Land Lease with Local Government", "Unclassified attachment"), p, f
+    )
+    assert ambiguous["status"] == "DENIED"
+    current = document_slot_plan(index, html, p, {**f, "form": "6-K"})
+    assert current["status"] == "DENIED"
+
+
 def test_exact_metadata_registered_audit_only_and_no_direction_authority():
     f = fiscal_fact()
     registry = build_shadow_numeric_registry([f])
