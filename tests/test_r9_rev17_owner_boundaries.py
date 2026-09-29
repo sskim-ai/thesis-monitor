@@ -65,18 +65,15 @@ def test_fx_renderer_uses_observation_not_equity_date():
 
 
 def test_fx_owned_unavailable_does_not_block_equity_source():
-    from test_r9_rev6_display_and_source_time import source
+    from tests.test_market_display_view import fresh
     from scripts.r9_rev11_market_qualification import check_projection
-    s = source('kr')
-    s['fact_catalog'] = [f for f in s['fact_catalog'] if f['fields'].get('series_code')!='USDKRW']
-    projected = dict(packet=dict(market_context=s, assessment_date='2026-09-28'),
-        context=dict(request_eligible_refs=[f['fact_id'] for f in s['fact_catalog']]))
+    projected = fresh('kr',missing_publications=('USDKRW',))
     assert 'USDKRW' in check_projection(projected,'kr')['mandatory_missing']
     publications = dict(contract='fresh-publication-replay-v1',run_id='fixture',query_as_of='2026-09-28T00:00:00+00:00',
         providers=dict(ecos=dict(value={'observations':[]},source_hashes={})))
     result = check_projection(projected,'kr',publications=publications)
     assert 'USDKRW' not in result['mandatory_missing']
-    assert set(result['mandatory_missing']) == {'KOSPI','KOSDAQ'}
+    assert result['mandatory_missing'] == []
 
 
 LABELS = [

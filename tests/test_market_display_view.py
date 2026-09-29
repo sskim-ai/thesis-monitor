@@ -13,7 +13,7 @@ from scripts.r9_rev11_market_qualification import check_projection
 from tests.test_r2b_r5_market_adapter import fixture, project
 
 
-def fresh(market='us'):
+def fresh(market='us', *, missing_publications=(), missing_indices=()):
     packet, seed, graph = fixture(market)
     source = graph['markets'][market]
     value = source['component']['value']
@@ -22,6 +22,7 @@ def fresh(market='us'):
         value['observations'] = [dict(base, series_code=s) for s in ('SPY','QQQ','IWM')]
     else:
         value['indices'].append(dict(value['indices'][0], symbol='KOSDAQ', label='KOSDAQ', source_ref='source:second'))
+        value['indices'] = [r for r in value['indices'] if r['symbol'] not in missing_indices]
     source['component']['value_sha256'] = digest(value)
     seed['attempt_hashes'][market] = digest(source)
     now = datetime.fromisoformat(seed['started_at'])
@@ -29,6 +30,8 @@ def fresh(market='us'):
     for provider, series in (('fred',US_MACRO), ('ecos',('USDKRW',))):
         observations = []
         for name in series:
+            if name in missing_publications:
+                continue
             temporal = publication_context(provider=provider, series=name, period='2026-09-25',
                 query_as_of=now, retrieved_at=now, response_bytes=b'fictional', cadence='daily',
                 latest_verified=True, daily_required=True)

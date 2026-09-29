@@ -5,6 +5,8 @@ from scripts.r2b_r5_market_adapter import project_sealed_market_context
 
 
 def check_projection(projected, market, publications=None):
+    if 'display' not in projected.get('views', {}):
+        raise ValueError('market_display_view_required')
     packet, context = projected['packet'], projected['context']
     source = packet['market_context']
     display = build_display_plan(source, market=market, assessment_date=packet['assessment_date'],
