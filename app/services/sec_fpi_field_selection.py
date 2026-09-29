@@ -44,10 +44,20 @@ def select_fields(documents, rows, *, ticker, cutoff, uncaptured=(), allow_inlin
         relevant_unknowns = []
         financial_accessions = {d['accession'] for d in documents if d['financial_authority']}
         for doc in documents:
+            if (allow_inline_annual and doc['filing_date'] >= selected_date
+                    and any(p['end'] > end.isoformat() for p in doc['economic_periods'])
+                    and any(r.get('field') == metric and r['reason'] != 'INLINE_DIMENSIONED_CONTEXT'
+                            for r in doc.get('inline_owner', {}).get('denials', []))):
+                reasons.append('LATEST_FIELD_EXACT_OWNER_UNRESOLVED')
+            if allow_inline_annual and doc.get('document_graph_conflict'):
+                reasons.append('CONFLICTING_FINANCIAL_ATTACHMENTS')
             if any(c['field'] == metric for c in doc.get('source_precedence_conflicts', [])) and doc['filing_date'] >= selected_date:
                 reasons.append('INLINE_TABLE_CONFLICT')
-            if (doc['accession'] in financial_accessions
-                    and not (allow_inline_annual and doc.get('unresolved_financial_content'))):
+            if (doc['accession'] in financial_accessions and (
+                    not allow_inline_annual or doc['financial_authority']
+                    or (doc.get('filing_form', '').split('/')[0] in {'20-F','40-F'}
+                        and not doc.get('unresolved_financial_content'))
+                    or doc['purpose'] in {'FORWARDING_COVER', 'OFFICIAL_AUXILIARY_ASSET'})):
                 continue
             if (doc['purpose'] == 'UNKNOWN_PURPOSE' or doc['purpose'] in FINANCIAL) and doc['filing_date'] >= selected_date:
                 relevant_unknowns.append(doc['document_identity'])

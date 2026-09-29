@@ -38,10 +38,23 @@ def comparison_numeric_semantic(fact_type, path, fields):
 
 
 def build_shadow_numeric_registry(facts):
+    from app.services.fiscal_comparability_metadata import NUMERIC_FIELDS, validate_metadata
+    fiscal = {f['fact_id']: validate_metadata(f) for f in facts
+              if 'fiscal_comparability' in f.get('fields', {})}
     registry = build_numeric_registry(facts)
     by_id = {f['fact_id']: f for f in facts}
     for row in registry:
         if row['fact_type'] != 'earnings_comparison' or row['registered']:
+            continue
+        if (row['fact_id'] in fiscal and row['field_path'] in {
+                'fields.fiscal_comparability.' + field for field in NUMERIC_FIELDS}):
+            row.update(registered=True, unit='fiscal_provenance',
+                semantic_type='fiscal_comparability_' + row['field_path'].split('.')[-1],
+                formatter='audit_only', scope='stock', approved_labels=[], prose_allowed=False,
+                audit_only=True, user_display_section=None, investment_number_authority=False,
+                valuation_use=False, timing_use=False, directional_use=False,
+                classification='NUMERIC_PROVENANCE_METADATA_NOT_USER_VALUE_CLAIM',
+                **fiscal[row['fact_id']])
             continue
         spec, unit = comparison_numeric_semantic(
             row['fact_type'], row['field_path'], by_id[row['fact_id']]['fields'])
@@ -131,6 +144,9 @@ def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, fo
     if set(consumed) != comparative_ids:
         raise ValueError('financial_comparison_typed_ref_loss')
     missing = list(baseline['mandatory_missing'])
+    field_state = projection.get('financial_field_completeness')
+    if field_state and facts and not field_state['partial_field_consumption_allowed']:
+        missing.append('financial_field_completeness:partial_owner_unresolved')
     if consumed:
         missing = [m for m in missing if m != 'observed_business_union:eligible_reported_financial_or_event']
     bad_numeric = [r for r in stock['numeric_registry'] if not r['registered']]

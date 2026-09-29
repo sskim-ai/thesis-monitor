@@ -167,5 +167,7 @@ def reported_comparison_quality(*, formal, comparison, ticker, cutoff, fiscal_po
     if any(c.get('fiscal_comparability', {}).get('quality_reason_codes') for c in comparisons):
         result['quality_reason_codes'] = ['FISCAL_WEEK_COUNT_DIFFERENCE']
         result['limitations'].append('Reported 53/52-week annual comparison; no week adjustment or annualization.')
+    if any(c.get('fiscal_comparability') for c in comparisons):
+        result['fiscal_metadata_policy'] = fiscal_policy
     result["receipt_sha256"] = sha(result)
     return result

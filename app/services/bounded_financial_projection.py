@@ -355,6 +355,28 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
             from app.services.sec_fpi_financial_purpose import bind_nonfinancial_embedded_assets
             bind_nonfinancial_embedded_assets(purpose_documents,
                 [d for d in source_documents if d['filing']['form'].split('/')[0] in {'6-K', '20-F'}], plan)
+        if exact_owner and '6-K' in plan['forms']:
+            from app.services.fpi_filing_document_graph import build_graph, bind_graph, document_slot_plan, terminal_slots, frozen_slot_accounting
+            indexes, slot_plans = {}, []
+            for filing in filings:
+                matches = [r for r in receipts if r['stage']=='index' and r.get('filing')==filing and not r['failure_class']]
+                if len(matches) != 1:
+                    continue
+                raw_index = _raw(directory, matches[0]['artifact'], receipts)
+                indexes[filing['accessionNumber']] = dict(payload=json.loads(raw_index), raw_sha256=sha256_bytes(raw_index))
+                primary = next((d for d in source_documents if d['url']==sec_base(plan,filing)+filing['primaryDocument']), None)
+                if primary:
+                    slot_plans.append(document_slot_plan(json.loads(raw_index), primary['raw'].decode('utf-8',errors='replace'), plan, filing))
+            if acquisition.get('document_slot_plans') is not None and acquisition['document_slot_plans'] != slot_plans:
+                raise ValueError('fpi_document_slot_plan_replay_mismatch')
+            document_graph = build_graph(documents=purpose_documents, source_documents=source_documents, indexes=indexes, plan=plan)
+            bind_graph(purpose_documents, document_graph)
+            slot_accounting = [terminal_slots(s, acquisition['documents'], receipts) for s in slot_plans]
+            if acquisition.get('document_slot_accounting') is not None and acquisition['document_slot_accounting'] != slot_accounting:
+                raise ValueError('fpi_document_slot_accounting_replay_mismatch')
+            frozen_slots = frozen_slot_accounting(plan, filings, slot_plans, receipts)
+            if acquisition.get('frozen_slot_accounting') is not None and acquisition['frozen_slot_accounting'] != frozen_slots:
+                raise ValueError('fpi_frozen_slot_accounting_replay_mismatch')
     else:
         foreign, foreign_rows = [], []
         for filing_data in filings:
@@ -580,10 +602,16 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
                 if window['phase2']['unattempted']:
                     result['acquisition_denial_reconciliation']['effective_denials'].append('FPI_PHASE2_PLANNED_REQUESTS_UNATTEMPTED')
         if exact_owner:
-            from app.services.sec_financial_source_completeness import completeness
+            from app.services.sec_financial_source_completeness import completeness, field_completeness
+            result['fpi_document_graph'] = document_graph
+            result['fpi_document_slot_plans'] = slot_plans
+            result['fpi_document_slot_accounting'] = slot_accounting
+            result['fpi_frozen_slot_accounting'] = frozen_slots
             result['source_completeness'] = completeness(plan=plan, acquisition=acquisition,
                 inventory=inventory, documents=purpose_documents, uncaptured=uncaptured,
                 acquisition_denials=result['acquisition_denial_reconciliation']['effective_denials'])
+            result['financial_field_completeness'] = field_completeness(purpose_selection, purpose_documents,
+                result['source_completeness'])
     if exact_owner:
         result['issuer_fiscal_policies'] = fiscal_policies
     if field_semantics:

@@ -12,7 +12,15 @@ def completeness(*, plan, acquisition, inventory, documents, uncaptured, acquisi
         unresolved.append('FROZEN_SOURCE_PLAN_INCOMPLETE')
     if any(c['accessionNumber'] not in captured for c in candidates):
         unresolved.append('FROZEN_CANDIDATE_NOT_CAPTURED')
+    accounting = acquisition.get('document_slot_accounting')
+    if accounting is not None and (len(accounting)!=len(candidates)
+            or any(s['state'] not in {'EXECUTED','VALID_NOT_SELECTED'} for r in accounting for s in r['slots'])):
+        unresolved.append('FROZEN_DOCUMENT_SLOTS_INCOMPLETE')
     for doc in documents:
+        if doc.get('document_graph_conflict'):
+            unresolved.append('CONFLICTING_FINANCIAL_ATTACHMENTS')
+        if doc['purpose']=='OFFICIAL_AUXILIARY_ASSET' and doc.get('auxiliary_verified'):
+            continue
         if doc['purpose'] == 'UNKNOWN_PURPOSE':
             unresolved.append('PURPOSE_UNRESOLVED')
         inline = doc.get('inline_owner', {})
@@ -39,4 +47,39 @@ def completeness(*, plan, acquisition, inventory, documents, uncaptured, acquisi
         source_history_exhausted=False, bounded_plan_complete=not unresolved,
         financial_fact_count=sum(len(d['valid_occurrence_ids']) for d in documents), direction_eligible=False)
     value['receipt_sha256'] = digest(value)
+    return value
+
+
+def field_completeness(selection, documents, complete):
+    """Absence is per metric and never inferred from a sibling's success."""
+    rows = {}
+    for metric in ('revenue', 'operating_income'):
+        owned = selection['fields'][metric]
+        observed = [o for d in documents for o in d['occurrences'] if o['field']==metric]
+        valid = [o for d in documents for o in d['occurrences']
+                 if o['field']==metric and o['occurrence_id'] in d['valid_occurrence_ids']]
+        invalid = [o for o in observed if o not in valid]
+        parser = [r for d in documents for r in d.get('inline_owner',{}).get('denials',[])
+                  if r.get('field')==metric and r['reason']!='INLINE_DIMENSIONED_CONTEXT']
+        if owned['status']=='PASS':
+            state='QUALIFIED_CURRENT_PRIOR_PAIR'
+        elif not complete['bounded_plan_complete']:
+            state='ACQUISITION_INCOMPLETE' if any(r in complete['reasons'] for r in (
+                'FROZEN_SOURCE_PLAN_INCOMPLETE','FROZEN_CANDIDATE_NOT_CAPTURED')) else 'PURPOSE_OR_FIELD_UNRESOLVED'
+        elif invalid or parser:
+            state='PURPOSE_OR_FIELD_UNRESOLVED'
+        elif not observed:
+            state='SOURCE_COMPLETE_NO_QUALIFIED_FIELD'
+        else:
+            state='PURPOSE_OR_FIELD_UNRESOLVED'
+        rows[metric]=dict(state=state, selection=owned, valid_occurrence_refs=[o['occurrence_id'] for o in valid],
+            unresolved_occurrence_refs=[o['occurrence_id'] for o in invalid], parser_denials=parser,
+            source_completeness_sha256=complete['receipt_sha256'])
+    states={r['state'] for r in rows.values()}
+    value=dict(contract='fpi-metric-independent-completeness-v1', fields=rows,
+        partial_field_consumption_allowed=(bool(states & {'QUALIFIED_CURRENT_PRIOR_PAIR'})
+            and states <= {'QUALIFIED_CURRENT_PRIOR_PAIR','SOURCE_COMPLETE_NO_QUALIFIED_FIELD'}
+            and (len(states)==1 or complete['bounded_plan_complete'])),
+        document_source_sha256=digest(documents))
+    value['receipt_sha256']=digest(value)
     return value

@@ -158,6 +158,8 @@ def comparative_facts(quality, *, ticker, issuer_id, projection=None):
             "issuer_projection": deepcopy(projection), "prose_eligible": True,
             "interpretation_eligible": True, "user_visible": False,
         }
+        if comparison.get('fiscal_comparability'):
+            fact['fiscal_metadata_policy'] = deepcopy(quality['fiscal_metadata_policy'])
         result.append(fact)
     return result
 

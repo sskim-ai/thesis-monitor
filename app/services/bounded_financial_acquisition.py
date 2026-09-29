@@ -192,6 +192,12 @@ def exhibit_identities(index, primary_text, plan, filing):
 
 
 def exhibit_selection(index, primary_text, plan, filing):
+    if plan.get('financial_owner_policy'):
+        from app.services.fpi_filing_document_graph import document_slot_plan
+        slots = document_slot_plan(index, primary_text, plan, filing)
+        if slots['status'] != 'PASS':
+            raise AcquisitionDenied(slots['denial_reason'])
+        return slots['selected_urls']
     aliases = exhibit_identities(index, primary_text, plan, filing)
     urls = {r['document_identity'] for r in aliases if not r['already_captured_primary']}
     if len(urls) > plan["limits"]["linked_exhibits"]:
@@ -405,6 +411,11 @@ async def collect(reader):
             raw, receipt = await reader.read("document", base + filing["primaryDocument"], filing=filing)
             output["documents"].append({"filing": filing, "artifact": receipt["artifact"], "url": base + filing["primaryDocument"]})
             if plan["limits"]["linked_exhibits"]:
+                if plan.get('financial_owner_policy'):
+                    from app.services.fpi_filing_document_graph import document_slot_plan
+                    slots = document_slot_plan(index, raw.decode('utf-8', errors='replace'), plan, filing)
+                    output.setdefault('document_slot_plans', []).append(slots)
+                    durable_json(reader.output / ('fpi-document-slots-' + filing['accessionNumber'] + '.json'), slots, exclusive=True)
                 try:
                     exhibits = exhibit_selection(index, raw.decode('utf-8', errors='replace'), plan, filing)
                 except AcquisitionDenied as exc:
@@ -413,6 +424,14 @@ async def collect(reader):
                 for url in exhibits:
                     raw, receipt = await reader.read("document", url, filing=filing)
                     output["documents"].append({"filing": filing, "artifact": receipt["artifact"], "url": url})
+        if plan.get('financial_owner_policy') and plan['limits']['linked_exhibits']:
+            from app.services.fpi_filing_document_graph import terminal_slots, frozen_slot_accounting
+            output['document_slot_accounting'] = [terminal_slots(s, output['documents'], reader.receipts)
+                for s in output.get('document_slot_plans', [])]
+            durable_json(reader.output / 'fpi-document-slot-accounting.json', output['document_slot_accounting'], exclusive=True)
+            output['frozen_slot_accounting'] = frozen_slot_accounting(plan, filings,
+                output.get('document_slot_plans', []), reader.receipts)
+            durable_json(reader.output / 'fpi-frozen-slot-accounting.json', output['frozen_slot_accounting'], exclusive=True)
     else:
         rows = []
         for page in range(1, plan["limits"]["discovery"] + 1):

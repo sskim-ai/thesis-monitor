@@ -69,6 +69,7 @@ def classify_document(raw, *, url, filing, plan):
     valid = [o for o in occurrences if not occurrence_errors(o, cutoff)]
     periods = sorted({(o['period_start'], o['period_end'], o['period_scope']) for o in valid})
     result = {'contract': CONTRACT, 'accession': filing['accessionNumber'],
+        **({'filing_form': filing['form']} if plan.get('financial_owner_policy') else {}),
         'filing_date': filing['filingDate'], 'sec_report_date': filing.get('reportDate'),
         'source_url': url, 'document_identity': identity, 'source_payload_sha256': sha256_bytes(raw),
         'purpose': purpose, 'purpose_evidence': evidence,

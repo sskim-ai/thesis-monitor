@@ -4,6 +4,7 @@ import json
 import httpx
 
 from app.services.bounded_financial_acquisition import AcquisitionDenied, BoundedReader, SystemicStop
+from app.services.bounded_financial_acquisition import sec_selection
 from app.services.sealed_fresh_dispatch import consume_bound_result, wire_identity
 from app.services.sealed_opendart_contract import opendart_headers
 from app.services.sealed_response_binding import SlotNotSelected
@@ -65,6 +66,17 @@ class SealedFinancialReader(BoundedReader):
                 continue
             if descriptor.response_binding and any(k not in self.dispatcher.results for k in descriptor.response_binding.parents):
                 continue
+            if (filing and descriptor.response_binding
+                    and descriptor.response_binding.kind.startswith('SEC_')):
+                # Do not resolve a sibling accession's attachment selector while
+                # looking up a reserved primary slot. Its denial is still audited.
+                parent = next(d for d in self.dispatcher.plan.descriptors
+                              if d.logical_request_id == descriptor.response_binding.parents[0])
+                payload = json.loads((self.dispatcher.root / parent.raw_path).read_bytes())
+                selected_filings = sec_selection(payload, self.plan)
+                ordinal = descriptor.response_binding.selection_ordinal
+                if ordinal > len(selected_filings) or selected_filings[ordinal-1] != filing:
+                    continue
             try:
                 resolved, _, _ = self.dispatcher.resolve(descriptor.logical_request_id)
             except SlotNotSelected:
