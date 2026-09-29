@@ -3,7 +3,7 @@ from copy import deepcopy
 import pytest
 
 from app.services.sec_logical_cell_reference import (
-    LogicalCellReferenceGroup, logical_reference_inventory,
+    LogicalCellReferenceGroup, ReferenceTarget, logical_reference_inventory,
 )
 from app.services.fpi_filing_document_graph import logical_document_purpose, document_slot_plan
 from test_r9_rev15_financial_owners import plan, filing
@@ -12,7 +12,8 @@ from test_r9_rev15_financial_owners import plan, filing
 def inventory(source, accession="acc"):
     return logical_reference_inventory(source, accession=accession, filing_form="20-F",
         source_document="https://example.test/primary.htm",
-        resolve=lambda ref: None if ref.startswith("https:") else (ref, ref.split("#")[0]))
+        resolve=lambda ref: None if ref.startswith("https:") else ReferenceTarget(
+            canonical_href=ref, document_identity=ref.split("#")[0]))
 
 
 def anchor(label, ref="ex.htm"):

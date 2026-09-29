@@ -10,7 +10,9 @@ from urllib.parse import urljoin, urlsplit
 
 from app.services.unified_run_artifacts import sha256_bytes
 from app.services.unified_snapshot_contract import digest
-from app.services.sec_logical_cell_reference import logical_reference_inventory
+from app.services.sec_logical_cell_reference import (
+    ReferenceTarget, logical_reference_inventory, require_json_native,
+)
 
 CONTRACT = "fpi-filing-document-graph-v1"
 FORWARDING = "FORWARDING_COVER_TO_QUALIFIED_FINANCIAL_ATTACHMENT"
@@ -157,7 +159,8 @@ def document_slot_plan(index, primary_text, plan, filing):
             return None
         if any(p in {".", ".."} for p in urlsplit(ref).path.split("/")) or "%" in urlsplit(ref).path:
             raise AcquisitionDenied("SEC_DOCUMENT_SOURCE_SCOPE_DENIED")
-        return absolute, sec_document_identity(absolute, plan, filing)
+        return ReferenceTarget(canonical_href=absolute,
+                               document_identity=sec_document_identity(absolute, plan, filing))
 
     inventory = logical_reference_inventory(primary_text, accession=filing["accessionNumber"],
         filing_form=filing["form"], source_document=primary, resolve=resolve)
@@ -175,7 +178,7 @@ def document_slot_plan(index, primary_text, plan, filing):
         )
         groups = [g for g in inventory["groups"] if g["document_identity"] == identity]
         ambiguous = any(a["ambiguous"] for a in inventory["anchors"]
-                        if a["target"] and a["target"][1] == identity)
+                        if a["target"] and a["target"]["document_identity"] == identity)
         nonfinancial, purpose_denial = logical_document_purpose(groups, filing, ambiguous=ambiguous)
         candidate = identity != primary and discovered and cls not in AUXILIARY and not nonfinancial
         rows.append(
@@ -235,6 +238,7 @@ def document_slot_plan(index, primary_text, plan, filing):
         primary_reserved=True,
         index_reserved=True,
     )
+    require_json_native(value)
     value["plan_sha256"] = digest(value)
     return value
 

@@ -1,6 +1,7 @@
 """Source-owned SEC reference groups. Structure grants no financial authority."""
 
 from html.parser import HTMLParser
+import math
 from typing import Literal
 import unicodedata
 
@@ -12,6 +13,29 @@ from app.services.unified_run_artifacts import sha256_bytes
 CONTRACT = "sec-logical-cell-reference-v1"
 NORMALIZATION = "nfkc-ordered-raw-concatenation-whitespace-v1"
 LAYOUT = {"div", "span", "p", "br", "font", "b", "i", "em", "strong", "u", "sup", "sub"}
+TARGET_CONTRACT = "sec-reference-target-v1"
+
+
+def require_json_native(value, path="$"):
+    """Reject runtime-only values before persistence; never coerce them."""
+    if value is None or type(value) in {bool, int, str}:
+        return
+    if type(value) is float and math.isfinite(value):
+        return
+    if type(value) is list:
+        for i, child in enumerate(value):
+            require_json_native(child, f"{path}[{i}]")
+        return
+    if type(value) is dict and all(type(key) is str for key in value):
+        for key, child in value.items():
+            require_json_native(child, f"{path}.{key}")
+        return
+    raise ValueError(f"non_json_native:{path}:{type(value).__name__}")
+
+
+class ReferenceTarget(ContractModel):
+    canonical_href: str = Field(strict=True, min_length=1)
+    document_identity: str = Field(strict=True, min_length=1)
 
 
 def normalized_label(text):
@@ -143,6 +167,8 @@ class _InventoryParser(HTMLParser):
                 self.ambiguous()
             row, cell = self.owners()
             target = self.resolve(attrs.get("href", "")) if attrs.get("href") else None
+            if target is not None:
+                target = ReferenceTarget.model_validate(target, strict=True).model_dump(mode="json")
             anchor = dict(anchor_id="a:" + str(self.source_offset()), row_id=row, cell_id=cell,
                           dom_order=len(self.anchors), char_start=self.source_offset(), char_end=None,
                           raw_href=attrs.get("href"), target=target, raw_text="", ambiguous=False)
@@ -193,7 +219,7 @@ class _InventoryParser(HTMLParser):
 
 
 def logical_reference_inventory(source, *, accession, filing_form, source_document, resolve):
-    """Resolve returns (canonical href, document identity), or None for barriers.
+    """Resolve returns ReferenceTarget (or its named object), or None for barriers.
 
     Exact same-cell groups are constructed from the complete event sequence, not
     a target-filtered list that could hide intervening references or plain text.
@@ -222,7 +248,8 @@ def logical_reference_inventory(source, *, accession, filing_form, source_docume
         if row["target"] and not row["ambiguous"]:
             exact[row["anchor_id"]] = ExactReferenceAnchor(
                 accession=accession, source_document=source_document,
-                canonical_href=row["target"][0], document_identity=row["target"][1],
+                canonical_href=row["target"]["canonical_href"],
+                document_identity=row["target"]["document_identity"],
                 **{k: row[k] for k in ("anchor_id", "row_id", "cell_id", "dom_order", "byte_start",
                                       "byte_end", "exact_html", "html_sha256", "raw_text")})
     groups, block = [], []
@@ -251,8 +278,9 @@ def logical_reference_inventory(source, *, accession, filing_form, source_docume
             flush()
         block.append(anchor)
     flush()
-    value = dict(contract=CONTRACT, accession=accession, filing_form=filing_form,
+    value = dict(contract=CONTRACT, target_contract=TARGET_CONTRACT, accession=accession, filing_form=filing_form,
         source_document=source_document, source_sha256=source_hash, anchors=inventory,
         events=[dict(**e, byte_start=offsets[e["char_start"]]) for e in parser.events],
         ambiguous_cells=sorted(parser.ambiguous_cells), malformed_rows=sorted(parser.malformed_rows), groups=groups)
+    require_json_native(value)
     return dict(**value, inventory_sha256=digest(value))
