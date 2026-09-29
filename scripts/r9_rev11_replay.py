@@ -245,14 +245,8 @@ def whole_inputs(root, frozen, outcome, policy):
     versions = {f'class-c/local-{m}.json': sha256_bytes((root/f'class-c/local-{m}.json').read_bytes()) for m in UNIVERSE}
     repo = Path(__file__).resolve().parents[1]
     inventory = read(repo/'docs/operations/UNIFIED_ACQUISITION_CLASSES.json')
-    files = ['app/services/'+n+'.py' for n in ('unified_full_source_cohort','unified_sealed_context',
-        'persisted_business_event_owner','fresh_financial_stock_owner','fresh_publication_replay',
-        'current_fresh_valuation','fresh_valuation_capability','bounded_financial_projection','canonical_business_quality_owner',
-        'bounded_financial_stock_owner', 'selected_financial_owner', 'latest_published_fx',
-        'current_effective_technical')]+['scripts/m12dr_financial_source_authority.py']
-    if any(i.get('event_inputs') for i in inputs.values()):
-        files += ['app/services/fresh_event_carrier.py','app/services/unified_stock_event_input.py']
-    code = {n: sha256_bytes((repo/n).read_bytes()) for n in files}
+    from app.services.whole_source_code_owner_registry import WholeSourceCodeOwnerRegistry
+    registry = WholeSourceCodeOwnerRegistry.freeze(repo)
     denials = dict(kr_market_investor_flows=dict(status='OPTIONAL_UNAVAILABLE', value=None,
         denial='NOT_SELECTED_FOR_MARKET_COMPOSITION', run_id=frozen['generation_id']))
     bridge = rows['SKHY']['issuer_business_bridge']
@@ -260,17 +254,18 @@ def whole_inputs(root, frozen, outcome, policy):
     bindings = {t: digest(dict(technical_plan=plan.model_dump(mode='json'),financial_plan=i['financial_inputs']['plan'])) for t,i in inputs.items()}
     seed = FreshFullSourceRunSeed(proof_mode='AD_HOC_LIVE_SOURCE_PROOF', packet_scope='LIVE_SOURCE_ADAPTER_PROOF_NOT_PRODUCTION_DECISION',
         parent_run_id=plan.run_id, started_at=plan.frozen_at, source_policy_sha256=digest(sorted(policy.allowed_providers)),
-        inventory_sha256=digest(inventory), code_config_sha256=digest(code), universe_sha256=digest(UNIVERSE),
+        inventory_sha256=digest(inventory), **registry.seed_bindings, universe_sha256=digest(UNIVERSE),
         attempts={m:n['attempt_id'] for m,n in native.items()}, attempt_hashes={m:digest(n) for m,n in native.items()},
         run_acquisitions=dict(stock=digest(plan.model_dump(mode='json')),publications=digest(pub),night=night['value_sha256']),
         class_c_version_set_sha256=digest(versions), stock_cohort_hashes={m:digest({t:rows[t] for t in ts}) for m,ts in UNIVERSE.items()},
         night_publication_receipt_sha256=digest(dict(probe=night['original_receipts'],history=night.get('history_receipts',[]))),
-        optional_denial_set_sha256=digest(denials), skhy_issuer_bridge_sha256=digest(bridge), source_authority_contract_sha256=digest(code),
+        optional_denial_set_sha256=digest(denials), skhy_issuer_bridge_sha256=digest(bridge),
         fresh_stock_owner_set_sha256=digest(bindings))
     args = dict(seed=seed, market_inputs=markets, stock_inputs={t:dict(fresh_financial_binding=i) for t,i in inputs.items()},
         authority_inputs={t:fresh_authority_inputs(rows[t],i) for t,i in inputs.items()}, version_set=versions,
         optional_denials=denials, issuer_bridge=bridge, composition_metadata=dict(inventory=inventory,
-            allowed_providers=sorted(policy.allowed_providers),code_fingerprints=code,
+            allowed_providers=sorted(policy.allowed_providers),code_fingerprints=registry.fingerprints,
+            code_owner_registry=registry.model_dump(mode="json"),
             fx_display_receipt=fx), fresh_context_inputs=context)
     return args
 
@@ -280,4 +275,8 @@ def replay_twice(root, frozen, outcome, policy):
     first, second = compose_full_source(**args), compose_full_source(**args)
     if first != second:
         raise ValueError('whole_source_replay_drift')
-    return args, first, dict(first_sha256=digest(first), second_sha256=digest(second), replay_equal=True)
+    from app.services.whole_source_code_owner_registry import replay_identity_receipt
+    identity = replay_identity_receipt(Path(__file__).resolve().parents[1], seed=args['seed'],
+        metadata=args['composition_metadata'], first=first, second=second)
+    return args, first, dict(first_sha256=digest(first), second_sha256=digest(second), replay_equal=True,
+                            code_owner_registry_identity=identity)

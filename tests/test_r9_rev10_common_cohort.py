@@ -14,6 +14,7 @@ from scripts.r9_phase_a_gate import root_gate, code_fingerprints
 from tests.rev10_cohort_fixtures import stocks, markets, night, START, QUERY, RUN, POLICY_ALL
 from tests.rev10_stage_fixtures import synthetic_outputs
 from tests.test_r9_rev8_fresh_publications import publication_sources
+from app.services.whole_source_code_owner_registry import WholeSourceCodeOwnerRegistry
 
 
 def common_cohort(root):
@@ -32,12 +33,7 @@ def common_cohort(root):
                 for m, ts in UNIVERSE.items()}
     repo = Path(__file__).resolve().parents[1]
     inventory = json.loads((repo / 'docs/operations/UNIFIED_ACQUISITION_CLASSES.json').read_bytes())
-    files = ['app/services/' + n + '.py' for n in ('unified_full_source_cohort', 'unified_sealed_context',
-        'persisted_business_event_owner', 'fresh_financial_stock_owner', 'fresh_publication_replay',
-        'current_fresh_valuation', 'fresh_valuation_capability', 'bounded_financial_projection', 'canonical_business_quality_owner',
-        'bounded_financial_stock_owner', 'fresh_event_carrier', 'unified_stock_event_input')]
-    files.append('scripts/m12dr_financial_source_authority.py')
-    code = {n: sha256_bytes((repo / n).read_bytes()) for n in files}
+    registry = WholeSourceCodeOwnerRegistry.freeze(repo)
     denials = dict(kr_market_investor_flows=dict(status='OPTIONAL_UNAVAILABLE', value=None,
         denial='SYNTHETIC_NOT_SELECTED', run_id=RUN))
     bridge = rows['SKHY']['issuer_business_bridge']
@@ -49,18 +45,19 @@ def common_cohort(root):
     seed = FreshFullSourceRunSeed(proof_mode='AD_HOC_LIVE_SOURCE_PROOF',
         packet_scope='LIVE_SOURCE_ADAPTER_PROOF_NOT_PRODUCTION_DECISION', parent_run_id=RUN, started_at=START,
         source_policy_sha256=digest(sorted(POLICY_ALL.allowed_providers)), inventory_sha256=digest(inventory),
-        code_config_sha256=digest(code), universe_sha256=digest(UNIVERSE),
+        **registry.seed_bindings, universe_sha256=digest(UNIVERSE),
         attempts={m: n['attempt_id'] for m, n in native.items()}, attempt_hashes={m: digest(n) for m, n in native.items()},
         run_acquisitions=dict(stock=digest(plan.model_dump(mode='json')), publications=digest(pub), night=night_value['value_sha256']),
         class_c_version_set_sha256=digest(versions), stock_cohort_hashes={m: digest({t: rows[t] for t in ts}) for m, ts in UNIVERSE.items()},
         night_publication_receipt_sha256=digest(dict(probe=night_value['original_receipts'], history=[])),
         optional_denial_set_sha256=digest(denials), skhy_issuer_bridge_sha256=digest(bridge),
-        source_authority_contract_sha256=digest(code), persisted_event_evidence_sha256=digest(persisted),
+        persisted_event_evidence_sha256=digest(persisted),
         fresh_stock_owner_set_sha256=digest(binding))
     args = dict(seed=seed, market_inputs=market, stock_inputs={t: dict(fresh_financial_binding=i) for t, i in inputs.items()},
         authority_inputs={t: fresh_authority_inputs(rows[t], i) for t, i in inputs.items()}, version_set=versions,
         optional_denials=denials, issuer_bridge=bridge, composition_metadata=dict(inventory=inventory,
-            allowed_providers=sorted(POLICY_ALL.allowed_providers), code_fingerprints=code),
+            allowed_providers=sorted(POLICY_ALL.allowed_providers), code_fingerprints=registry.fingerprints,
+            code_owner_registry=registry.model_dump(mode="json")),
         fresh_context_inputs=dict(publications=publications, night=night_inputs))
     return args, inputs
 

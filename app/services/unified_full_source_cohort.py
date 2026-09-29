@@ -15,6 +15,9 @@ from app.services.unified_source_composition import compose_attempt, _resolve
 from app.services.unified_stock_acquisition import UNIVERSE
 from app.services.unified_stock_owner import assemble_stock
 from scripts.m12dr_financial_source_authority import build_source_authority
+from app.services.whole_source_code_owner_registry import (
+    WholeSourceCodeOwnerRegistry, verify_fresh_code_identity,
+)
 
 
 class FullSourceRunSeed(ContractModel):
@@ -94,17 +97,14 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
                 or digest(composition_metadata.get('allowed_providers')) != seed.source_policy_sha256):
             raise ValueError('whole_source_inventory_policy_identity_mismatch')
         code = composition_metadata.get('code_fingerprints', {})
-        required = {'app/services/unified_full_source_cohort.py', 'app/services/unified_sealed_context.py',
-            'app/services/persisted_business_event_owner.py', 'scripts/m12dr_financial_source_authority.py'}
         if isinstance(seed, FreshFullSourceRunSeed):
-            required |= {'app/services/fresh_financial_stock_owner.py', 'app/services/fresh_publication_replay.py',
-                'app/services/current_fresh_valuation.py', 'app/services/fresh_valuation_capability.py', 'app/services/bounded_financial_projection.py',
-                'app/services/canonical_business_quality_owner.py', 'app/services/bounded_financial_stock_owner.py'}
-            if any(i.get('fresh_financial_binding', {}).get('event_inputs') for i in stock_inputs.values()):
-                required |= {'app/services/fresh_event_carrier.py', 'app/services/unified_stock_event_input.py'}
-        if (set(code) != required or any(sha256_bytes((root / n).read_bytes()) != h for n, h in code.items())
-                or digest(code) != seed.code_config_sha256 or digest(code) != seed.source_authority_contract_sha256):
-            raise ValueError('whole_source_code_contract_identity_mismatch')
+            verify_fresh_code_identity(root, metadata=composition_metadata,
+                code_sha256=seed.code_config_sha256, authority_sha256=seed.source_authority_contract_sha256)
+        else:
+            legacy = WholeSourceCodeOwnerRegistry.freeze(root, profile="legacy")
+            if (code != legacy.fingerprints or digest(code) != seed.code_config_sha256
+                    or digest(code) != seed.source_authority_contract_sha256):
+                raise ValueError('whole_source_code_contract_identity_mismatch')
     expected = {t for tickers in UNIVERSE.values() for t in tickers}
     if set(stock_inputs) != expected or set(authority_inputs) != expected or set(market_inputs) != {"us", "kr"}:
         raise ValueError("whole_universe_required")
