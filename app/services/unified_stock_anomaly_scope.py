@@ -261,11 +261,17 @@ def materialize_source_components(*, ticker: str, market: str, cutoff: date,
         matrix[f"adjusted_{tf}"].extend(feature_consumers)
     if digest(raw_roles) != before:
         raise ValueError("source_rows_mutated")
+    from app.services.current_effective_technical import project
+    historical = dict(contract='historical-technical-inventory-v1', current_authority=False,
+        context_id=context.technical_context_id, features_sha256=digest(context.features.model_dump(mode="json")),
+        facts={tf: [f.model_dump(mode="json") for f in getattr(context.features, tf).facts] for tf in periods})
+    effective = project(context, features)
     components = {"contract": CONTRACT, "ticker": ticker, "market": market,
         "cutoff": cutoff.isoformat(), "source_rows_sha256": before,
         "current_price": roles["adjusted_daily"][-1]["close"] if current["eligible"] else None,
         "current_price_eligible": current["eligible"], "role_consumer_matrix": matrix,
-        "technical_context_id": context.technical_context_id,
+        "technical_context_id": effective.technical_context_id,
+        "historical_technical_inventory": historical,
         "technical_status": context.status.value, "features": features,
         "analysis_view_finality": finality,
         "complete_stock_packet": False, "stock_packet_sha256": None,

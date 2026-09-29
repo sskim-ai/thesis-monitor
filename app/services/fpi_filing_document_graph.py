@@ -78,11 +78,23 @@ def declared_nonfinancial_exhibit(references, filing):
     """Annual exhibit descriptions route requests; they never authorize facts."""
     if filing["form"].split("/")[0] not in {"20-F", "40-F"}:
         return False
-    label = " ".join(" ".join(r["label"] for r in references).split())
+    labels = list(dict.fromkeys(" ".join(r["label"].split()) for r in references if r["label"].strip()))
+    if len(labels) != 1:
+        return False
+    label = labels[0]
     if re.search(
-        r"financial statements|financial results|earnings release|annual report", label, re.I
+        r"financial statements|financial results|financial information|results of operations|earnings|annual report", label, re.I
     ):
         return False
+    if re.fullmatch(
+        r"Certification by Principal (?:Executive|Financial) Officer Pursuant to Section "
+        r"(?:302|906) of the Sarbanes-Oxley Act of 2002[.]?", label, re.I
+    ):
+        return "OFFICER_CERTIFICATION_NON_FINANCIAL"
+    if label.lower().rstrip(".") == "description of securities":
+        return "SECURITIES_DESCRIPTION_NON_FINANCIAL"
+    if re.fullmatch(r"(?:Equity |Debt )?Commitment Letter between .+, dated .+", label, re.I):
+        return "LEGAL_AGREEMENT_NON_FINANCIAL"
     return bool(
         re.match(
             r"(?:Articles of (?:Incorporation|Association)\b|"
@@ -138,6 +150,7 @@ def document_slot_plan(index, primary_text, plan, filing):
             dict(
                 document_identity=identity,
                 index_metadata=item,
+                official_exhibit_route=nonfinancial if isinstance(nonfinancial, str) else None,
                 exact_references=references,
                 asset_class=cls,
                 candidate=candidate,

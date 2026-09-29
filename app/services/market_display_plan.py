@@ -140,6 +140,10 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs):
             and fact['as_of_date'] <= assessment_date
             and publication.get('response_sha256')
             and (series != 'USDKRW' or publication.get('observation_precision') == 'daily'))
+        if valid and series == 'USDKRW':
+            from app.services.latest_published_fx import validate_context
+            valid = validate_context(publication, observation_date=fact['as_of_date'],
+                response_hashes={publication['response_sha256']}, query_as_of=publication['query_as_of'])
         label = fields.get('label', series)
         text = f"{label}: {binding.value:,.2f}{suffix} ({fact['as_of_date']} 관측)" if valid else None
         bindings = [binding] if valid else []

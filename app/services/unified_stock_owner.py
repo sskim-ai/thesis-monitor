@@ -180,6 +180,13 @@ def _technical(components, roles, *, ticker, market, cutoff, observed_at):
         source="sealed_r2b0_kiwoom", source_version="one-shot-stock-source-acquisition-v1")
     if "completed_session_bar_set" in components and digest(periods) != components["technical_input_sha256"]:
         raise ValueError("completed_technical_input_mismatch")
+    from app.services.current_effective_technical import project
+    historical = components["historical_technical_inventory"]
+    if (historical["current_authority"] is not False or historical["context_id"] != context.technical_context_id
+            or historical["features_sha256"] != digest(context.features.model_dump(mode="json"))
+            or historical["facts"] != {tf: [f.model_dump(mode="json") for f in getattr(context.features, tf).facts] for tf in periods}):
+        raise ValueError("historical_technical_inventory_mismatch")
+    context = project(context, components["features"])
     if context.technical_context_id != components["technical_context_id"]:
         raise ValueError("technical_component_identity_mismatch")
     for tf in periods:

@@ -105,7 +105,7 @@ def context_value(node):
         period_resolution_method='EXACT_INLINE_XBRL_CONTEXT')
 
 
-def extract(raw, *, issuer_cik, filing, source_url):
+def extract(raw, *, issuer_cik, filing, source_url, context_documents=()):
     parser = InlineDocument()
     parser.feed(raw.decode('utf-8', errors='replace'))
     text = re.sub(r'\s+', ' ', ' '.join(parser.text))
@@ -117,6 +117,29 @@ def extract(raw, *, issuer_cik, filing, source_url):
         target = contexts if node['name'] == (INSTANCE, 'context') else units if node['name'] == (INSTANCE, 'unit') else None
         if target is not None:
             target.setdefault(node['attrs'].get('id'), []).append(node)
+    origins = {}
+    for document in context_documents:
+        from app.services.fpi_filing_document_graph import References
+        from urllib.parse import urljoin
+        base = f"https://www.sec.gov/Archives/edgar/data/{int(issuer_cik)}/{filing['accessionNumber'].replace('-', '')}/"
+        primary_url = base + filing['primaryDocument']
+        if (document['filing'] != filing or document['url'] != primary_url
+                or source_url == primary_url or not source_url.startswith(base)
+                or urlsplit(source_url).query or urlsplit(source_url).fragment):
+            raise ValueError('INLINE_CONTEXT_DOCUMENT_IDENTITY_MISMATCH')
+        links = References()
+        links.feed(document['raw'].decode('utf-8', errors='replace'))
+        if source_url not in {urljoin(primary_url, link['reference']) for link in links.links if link['tag'] == 'a'}:
+            raise ValueError('INLINE_CONTEXT_DOCUMENT_LINK_MISSING')
+        owner = InlineDocument()
+        owner.feed(document['raw'].decode('utf-8', errors='replace'))
+        for node in owner.captures:
+            target = contexts if node['name'] == (INSTANCE, 'context') else units if node['name'] == (INSTANCE, 'unit') else None
+            if target is not None:
+                target.setdefault(node['attrs'].get('id'), []).append(node)
+                origins[id(node)] = dict(source_url=primary_url, accession=filing['accessionNumber'],
+                    source_payload_sha256=sha256_bytes(document['raw']), node_sha256=digest(node),
+                    node_id=node['attrs'].get('id'), relationship='SAME_ACCESSION_PRIMARY_LINKED_ATTACHMENT')
     rows, denials = [], []
     for node in parser.captures:
         if node['name'][0] not in INLINE:
@@ -149,6 +172,11 @@ def extract(raw, *, issuer_cik, filing, source_url):
             scale = int(attrs.get('scale', '0'))
             if str(scale) != attrs.get('scale', '0') or not -12 <= scale <= 12 or attrs.get('sign', '') not in {'', '-'}:
                 raise ValueError('INLINE_SCALE_OR_SIGN_INVALID')
+            if ('decimals' in attrs and 'precision' in attrs or
+                    any(v != 'INF' and not re.fullmatch(r'-?\d+', v)
+                        for k, v in attrs.items() if k in {'decimals', 'precision'}) or
+                    'precision' in attrs and attrs['precision'] != 'INF' and int(attrs['precision']) <= 0):
+                raise ValueError('INLINE_ACCURACY_SEMANTICS_INVALID')
             literal = content(node)
             if not re.fullmatch(r'(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?', literal):
                 raise ValueError('INLINE_NUMERIC_LITERAL_UNSUPPORTED')
@@ -160,6 +188,9 @@ def extract(raw, *, issuer_cik, filing, source_url):
                 concept_namespace=namespace, context_id=attrs['contextref'], unit_id=attrs['unitref'],
                 literal=literal, scale=scale, sign=attrs.get('sign', ''), format=attrs.get('format'),
                 context=period, currency=currency)
+            if context_documents:
+                source_cell.update(decimals=attrs.get('decimals'), precision=attrs.get('precision'),
+                    context_source=origins.get(id(ctx[0])), unit_source=origins.get(id(unit[0])))
             payload = sha256_bytes(raw)
             row = dict(contract=CONTRACT, provider='sec_foreign_filing',
                 accession=filing['accessionNumber'], document_type=filing['form'], filing_date=filing['filingDate'],
@@ -206,6 +237,18 @@ def errors(row, cutoff):
         start, end, filed = (date.fromisoformat(row[k]) for k in ('period_start', 'period_end', 'filing_date'))
         url = urlsplit(row['source_url'])
         base = f"/Archives/edgar/data/{int(row['issuer_cik'])}/{row['accession'].replace('-', '')}/"
+        for kind in ('context', 'unit'):
+            source = cell.get(kind + '_source')
+            if source is not None:
+                origin = urlsplit(source['source_url'])
+                if (source['accession'] != row['accession']
+                        or source['relationship'] != 'SAME_ACCESSION_PRIMARY_LINKED_ATTACHMENT'
+                        or source['node_id'] != cell[kind + '_id']
+                        or origin.scheme != 'https' or origin.netloc != 'www.sec.gov'
+                        or not origin.path.startswith(base) or origin.query or origin.fragment
+                        or any(not re.fullmatch('[0-9a-f]{64}', source[k])
+                               for k in ('source_payload_sha256', 'node_sha256'))):
+                    failures.append('inline_external_context_binding')
         if (not start < end <= filed <= cutoff or url.scheme != 'https' or url.netloc != 'www.sec.gov'
                 or not url.path.startswith(base) or url.query or url.fragment):
             failures.append('inline_document_period_binding')

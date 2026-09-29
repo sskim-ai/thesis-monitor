@@ -321,7 +321,12 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
             if filing["form"].split('/')[0] not in {"6-K", "20-F"}:
                 continue
             raw = document['raw']
-            purpose = classify_document(raw, url=document['url'], filing=filing, plan=plan)
+            context_documents = []
+            if exact_owner and document['url'] != sec_base(plan, filing) + filing['primaryDocument']:
+                context_documents = [d for d in source_documents if d['filing'] == filing
+                    and d['url'] == sec_base(plan, filing) + filing['primaryDocument']]
+            purpose = classify_document(raw, url=document['url'], filing=filing, plan=plan,
+                                        context_documents=context_documents)
             purpose_documents.append(purpose)
             occurrences = purpose['occurrences']
             for occurrence in occurrences:

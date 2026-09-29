@@ -16,7 +16,7 @@ NOW = datetime(2026, 9, 28, 0, tzinfo=timezone.utc)
 
 
 def temporal(series, period='2026-09-25', latest=True):
-    return publication_context(provider='fixture', series=series, period=period,
+    return publication_context(provider='ecos' if series == 'USDKRW' else 'fixture', series=series, period=period,
         query_as_of=NOW, retrieved_at=NOW, response_bytes=b'synthetic source',
         cadence='daily', latest_verified=latest)
 

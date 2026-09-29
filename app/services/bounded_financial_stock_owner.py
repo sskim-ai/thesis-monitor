@@ -121,11 +121,14 @@ def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, fo
             denied.append({'metric': metric, 'reason': 'MULTIPLE_CURRENT_COMPARISON_OWNERS'})
         else:
             facts.extend(unique.values())
-    bridge = None
+    bridge, origin = None, None
     if issuer_business is not None:
         if facts:
             raise ValueError('issuer_business_native_comparison_already_owned')
-        bridge, facts = _issuer_business_facts(plan, issuer_business)
+        bridge, facts, origin = _issuer_business_facts(plan, issuer_business)
+    from app.services.selected_financial_owner import select
+    selected_owner = select(plan=plan, acquisition=acquisition, projection=projection,
+                            facts=facts, bridge=bridge, origin=origin)
     # Preserve the complete baseline artifact; enrich only a detached packet.
     packet = deepcopy(baseline['packet'])
     packet.update(packet_id=plan['run_id'] + ':' + plan['market'], generated_at=plan['cutoff'], assessment_date=plan['cutoff'][:10])
@@ -144,7 +147,7 @@ def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, fo
     if set(consumed) != comparative_ids:
         raise ValueError('financial_comparison_typed_ref_loss')
     missing = list(baseline['mandatory_missing'])
-    field_state = projection.get('financial_field_completeness')
+    field_state = selected_owner['field_completeness']
     if field_state and facts and not field_state['partial_field_consumption_allowed']:
         missing.append('financial_field_completeness:partial_owner_unresolved')
     if consumed:
@@ -154,11 +157,14 @@ def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, fo
         missing.append('numeric_registry:unregistered_fields')
     acquisition_denials = projection.get('acquisition_denial_reconciliation', {}).get(
         'effective_denials', acquisition.get('denials', []))
+    if origin is not None:
+        acquisition_denials = origin['acquisition_denials']
     complete = not missing and not acquisition_denials
     result = {'contract': 'bounded-financial-stock-owner-v1', 'ticker': plan['ticker'], 'market': plan['market'],
         'status': 'PASS' if complete else 'BLOCKED', 'mandatory_missing': sorted(set(missing)),
         'acquisition_denials': acquisition_denials, 'comparison_denials': denied,
         'baseline_sha256': digest(baseline), 'projection': projection,
+        'selected_financial_owner': selected_owner,
         'input_hashes': {'plan': digest(plan), 'acquisition': digest(acquisition), 'receipts': digest(receipts)},
         'packet': packet, 'packet_sha256': digest(packet) if complete else None,
         'diagnostic_packet_sha256': digest(packet), 'evidence_packet': evidence.model_dump(mode='json'),
@@ -218,7 +224,7 @@ def _issuer_business_facts(plan, inputs):
     unique = {digest(f): f for f in facts}
     if not unique:
         raise ValueError('issuer_business_no_eligible_original_comparison')
-    return bridge, list(unique.values())
+    return bridge, list(unique.values()), source
 
 
 def validate(result, **inputs):

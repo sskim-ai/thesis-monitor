@@ -29,7 +29,7 @@ class PlainText(HTMLParser):
         self.parts.append(data)
 
 
-def classify_document(raw, *, url, filing, plan):
+def classify_document(raw, *, url, filing, plan, context_documents=()):
     identity = sec_document_identity(url, plan, filing)
     html = raw.decode('utf-8', errors='replace')
     occurrences = parse_document(html, issuer_cik=plan['issuer'],
@@ -39,7 +39,8 @@ def classify_document(raw, *, url, filing, plan):
     conflicts = []
     if plan.get('financial_owner_policy'):
         from app.services.sec_primary_inline_financial import extract, merge_occurrences
-        inline = extract(raw, issuer_cik=plan['issuer'], filing=filing, source_url=identity)
+        inline = extract(raw, issuer_cik=plan['issuer'], filing=filing, source_url=identity,
+                         context_documents=context_documents)
         occurrences, conflicts = merge_occurrences(inline['occurrences'], occurrences, date.fromisoformat(plan['cutoff'][:10]))
     parser = PlainText()
     parser.feed(html)

@@ -89,6 +89,9 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
         source_ticker = source_inputs['plan']['ticker']
     else:
         projection, source_ticker = result['projection'], fp['ticker']
+    from app.services.selected_financial_owner import validate as validate_selected_owner
+    selected_owner = validate_selected_owner(result['selected_financial_owner'],
+        projection=projection, facts=facts, bridge=bridge)
     quality = derive_fresh(projection=projection, facts=facts, ticker=fp['ticker'],
         security_id=fp['security']['canonical_security_id'], run_id=plan.run_id,
         source_ticker=source_ticker, bridge=bridge)
@@ -173,6 +176,7 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
             source='source_owned_event_context', event_receipt_sha256=event['receipt']['receipt_sha256'],
             acquisition_class=event['receipt']['acquisition_class'])
     input_hashes = {**result['input_hashes'], 'technical_owner': digest(baseline),
+                   'selected_financial_owner': selected_owner['envelope_sha256'],
                    'quality': digest(quality), 'valuation': digest(stock['current_valuation_view'])}
     if event:
         input_hashes['events'] = digest(event)

@@ -232,10 +232,8 @@ def whole_inputs(root, frozen, outcome, policy):
     markets = market_inputs(root, frozen, outcome, policy)
     context = publication_inputs(root, frozen, outcome, policy)
     pub, night = replay_fresh_publications(**context['publications']), replay_night(**context['night'])
-    fx = [r for r in pub["providers"]["ecos"]["value"]["observations"] if r["series_code"] == "USDKRW"]
-    if (len(fx) != 1 or fx[0]["raw_payload"]["publication_context"]["observation_date"] != frozen["sessions"]["kr"]
-            or not fx[0]["raw_payload"]["publication_context"]["display_eligible"]):
-        raise ValueError("R2B_R9_REV14_USDKRW_OBSERVATION_PERIOD_GAP")
+    from app.services.latest_published_fx import display_receipt
+    fx = display_receipt(pub, frozen["sessions"]["kr"])
     rows = {t: assemble_fresh_stock(**i) for t, i in inputs.items()}
     event_errors = [t for t, row in rows.items()
                     if str(row.get("event_view", {}).get("binding", {}).get("denial") or "").startswith("event_owner_error:")]
@@ -250,7 +248,8 @@ def whole_inputs(root, frozen, outcome, policy):
     files = ['app/services/'+n+'.py' for n in ('unified_full_source_cohort','unified_sealed_context',
         'persisted_business_event_owner','fresh_financial_stock_owner','fresh_publication_replay',
         'current_fresh_valuation','fresh_valuation_capability','bounded_financial_projection','canonical_business_quality_owner',
-        'bounded_financial_stock_owner')]+['scripts/m12dr_financial_source_authority.py']
+        'bounded_financial_stock_owner', 'selected_financial_owner', 'latest_published_fx',
+        'current_effective_technical')]+['scripts/m12dr_financial_source_authority.py']
     if any(i.get('event_inputs') for i in inputs.values()):
         files += ['app/services/fresh_event_carrier.py','app/services/unified_stock_event_input.py']
     code = {n: sha256_bytes((repo/n).read_bytes()) for n in files}
@@ -271,7 +270,8 @@ def whole_inputs(root, frozen, outcome, policy):
     args = dict(seed=seed, market_inputs=markets, stock_inputs={t:dict(fresh_financial_binding=i) for t,i in inputs.items()},
         authority_inputs={t:fresh_authority_inputs(rows[t],i) for t,i in inputs.items()}, version_set=versions,
         optional_denials=denials, issuer_bridge=bridge, composition_metadata=dict(inventory=inventory,
-            allowed_providers=sorted(policy.allowed_providers),code_fingerprints=code), fresh_context_inputs=context)
+            allowed_providers=sorted(policy.allowed_providers),code_fingerprints=code,
+            fx_display_receipt=fx), fresh_context_inputs=context)
     return args
 
 
