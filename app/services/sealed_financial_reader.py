@@ -5,6 +5,7 @@ import httpx
 
 from app.services.bounded_financial_acquisition import AcquisitionDenied, BoundedReader, SystemicStop
 from app.services.sealed_fresh_dispatch import consume_bound_result, wire_identity
+from app.services.sealed_opendart_contract import opendart_headers
 from app.services.sealed_response_binding import SlotNotSelected
 from app.services.unified_live_source_transport import SourceSafetyStop
 from app.services.unified_run_artifacts import durable_bytes, durable_json
@@ -53,6 +54,8 @@ class SealedFinancialReader(BoundedReader):
             self.guard()
         wire_params = dict(params, crtfc_key=self.api_key) if self.plan['provider'] == 'opendart' else params
         headers = {'User-Agent': self.user_agent, 'Accept': 'application/json'} if self.user_agent else {}
+        if self.plan['provider'] == 'opendart':
+            headers = opendart_headers()
         request = httpx.Request('GET', url, params=wire_params, headers=headers)
         public = wire_identity(request, self.dispatcher.secrets)
         matches = []
@@ -111,6 +114,9 @@ class SealedFinancialReader(BoundedReader):
             durable_json(self.output / f'{name}-attempt-{row["attempt"]}.receipt.json', receipt, exclusive=True)
             self.receipts.append(receipt)
         if final['status'] != 'PASS':
+            if self.plan['provider'] == 'opendart' and any(
+                    r['status'] is not None and 300 <= r['status'] < 400 for r in final['attempts']):
+                raise SystemicStop('R2B_R9_REV13_OPENDART_HEADER_ROUTE_UNRESOLVED')
             raise AcquisitionDenied(final.get('failure', 'SEALED_FINANCIAL_SOURCE_FAILED'))
         consume_bound_result(root=self.dispatcher.root, plan=self.dispatcher.plan, logical_id=d.logical_request_id,
                              receipt_sha256=final['receipt_sha256'])

@@ -2,6 +2,7 @@
 import httpx
 
 from app.services.sealed_fresh_dispatch import FreshRequestDescriptor, wire_identity
+from app.services.sealed_opendart_contract import opendart_headers
 from app.services.sealed_response_binding import ResponseBinding
 from app.services.unified_snapshot_contract import digest, encoded
 
@@ -12,7 +13,8 @@ def financial_slots(policy, *, owner, owner_sha256, config_sha256):
     result = []
     def add(suffix, operation, url, *, params=None, rule=None):
         key = prefix + ':' + suffix
-        headers = {'User-Agent': 'PLAN_CREDENTIAL', 'Accept': 'application/json'} if p['market'] == 'us' else {}
+        headers = ({'User-Agent': 'PLAN_CREDENTIAL', 'Accept': 'application/json'}
+                   if p['market'] == 'us' else opendart_headers())
         if p['market'] == 'kr':
             params = dict(params or {}, crtfc_key='PLAN_CREDENTIAL')
         req = httpx.Request('GET', url, params=params, headers=headers)
