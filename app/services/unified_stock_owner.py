@@ -164,6 +164,12 @@ def _financial(document, *, ticker, market, cutoff, policy):
 
 
 def _technical(components, roles, *, ticker, market, cutoff, observed_at):
+    if "completed_session_bar_set" in components:
+        from app.services.eligible_completed_session_bars import eligible_completed_roles
+        roles, receipt = eligible_completed_roles(roles, ticker=ticker, market=market,
+            cutoff=cutoff, observed_at=observed_at)
+        if receipt != components["completed_session_bar_set"]:
+            raise ValueError("completed_bar_set_receipt_mismatch")
     periods = {}
     for tf in ("daily", "weekly", "monthly"):
         states = {r["date"]: r["bar_state"] for r in components["analysis_view_finality"][tf]["rows"]}
@@ -172,6 +178,8 @@ def _technical(components, roles, *, ticker, market, cutoff, observed_at):
     context = build_packet_owned_technical_context(ticker=ticker, market=market, session="closed",
         as_of=observed_at, periods=periods, cutoff=cutoff, expected_daily_completed=str(cutoff),
         source="sealed_r2b0_kiwoom", source_version="one-shot-stock-source-acquisition-v1")
+    if "completed_session_bar_set" in components and digest(periods) != components["technical_input_sha256"]:
+        raise ValueError("completed_technical_input_mismatch")
     if context.technical_context_id != components["technical_context_id"]:
         raise ValueError("technical_component_identity_mismatch")
     for tf in periods:
@@ -244,7 +252,8 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     roles = {r.role: decode_owned_role(plan, r, receipts[r.role], artifact) for r in reads}
     cutoff = date.fromisoformat(session_key)
     params = dict(ticker=ticker, market=market, cutoff=cutoff, observed_at=plan.frozen_at.isoformat(), roles=roles)
-    if digest(materialize_source_components(**params)) != digest(components):
+    if digest(materialize_source_components(**params,
+            completed_session="completed_session_bar_set" in components)) != digest(components):
         raise ValueError("sealed_component_replay_mismatch")
     binding = component_binding(components)
     missing = [r["packet_path"] for r in binding if r["requirement"] == "MANDATORY" and not r["eligible"]]

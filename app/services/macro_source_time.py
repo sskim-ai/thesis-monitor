@@ -15,6 +15,11 @@ def source_period(value, *, daily_required=False):
     monthly = re.fullmatch(r"(\d{4})[-.]?(\d{2})", token)
     if monthly and not daily_required:
         return date(int(monthly[1]), int(monthly[2]), 1), "monthly"
+    quarterly = re.fullmatch(r"(\d{4})Q([1-4])", token)
+    if quarterly and not daily_required:
+        return date(int(quarterly[1]), 3 * (int(quarterly[2]) - 1) + 1, 1), "quarterly"
+    if re.fullmatch(r"\d{4}", token) and not daily_required:
+        return date(int(token), 1, 1), "annual"
     raise ValueError("source_observation_period_unavailable")
 
 

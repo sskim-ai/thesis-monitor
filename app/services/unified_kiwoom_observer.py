@@ -50,7 +50,8 @@ class KiwoomRead(ContractModel):
 
 class KiwoomReceiptObserver:
     def __init__(self, *, root: Path, run_id: str, attempt_id: str, session_date: date,
-                 reads: tuple[KiwoomRead, ...], policy: UnifiedSourcePolicy):
+                 reads: tuple[KiwoomRead, ...], policy: UnifiedSourcePolicy,
+                 completed_session_only: bool = False):
         policy.require("kiwoom_rest")
         if not run_id or not attempt_id or not reads or root.exists():
             raise ValueError("new_source_attempt_root_and_identity_required")
@@ -62,6 +63,7 @@ class KiwoomReceiptObserver:
             raise ValueError("duplicate_source_read_identity")
         self.root, self.run_id, self.attempt_id = root, run_id, attempt_id
         self.session_date, self.policy = session_date, policy
+        self.completed_session_only = completed_session_only
         self._plan = json.dumps([r.model_dump(mode="json") for r in reads], sort_keys=True)
         self._ordinal = 0
         self._counts: dict[tuple[str, int], int] = {}
@@ -72,7 +74,8 @@ class KiwoomReceiptObserver:
         self._finished = False
         durable_json(root / "plan.json", {"run_id": run_id, "attempt_id": attempt_id,
             "acquisition_class": "ATTEMPT_FRESH", "session": session_date.isoformat(),
-            "provider": "kiwoom_rest", "reads": json.loads(self._plan)}, exclusive=True)
+            "provider": "kiwoom_rest", "reads": json.loads(self._plan),
+            **({"completed_session_only": True} if completed_session_only else {})}, exclusive=True)
 
     @property
     def reads(self) -> tuple[KiwoomRead, ...]:
@@ -154,7 +157,18 @@ class KiwoomReceiptObserver:
             raise ValueError("kiwoom_collection_already_finished")
         self._finished = True
         incomplete = [r.key for r in self.reads if self._cursors.get(r.key, "") is not None]
-        mandatory_incomplete = [r.key for r in self.reads if r.mandatory and r.key in incomplete]
+        consumed_completion = {}
+        if self.completed_session_only and collection is not None and denial is None:
+            from app.services.kiwoom_consumed_page_contract import read_dependencies
+            for read in self.reads:
+                if read.api_id not in {"ka20001", "ka20009"}:
+                    continue
+                pages = self._pages.get(read.key, [])
+                bodies = [json.loads((self.root / (p["identity"] + ".body")).read_bytes()) for p in pages]
+                consumed_completion[read.key] = read_dependencies(read.api_id, bodies,
+                    session=self.session_date, continuation=[p["continuation"] for p in pages])
+        mandatory_incomplete = [r.key for r in self.reads if r.mandatory and r.key in incomplete
+                                and r.key not in consumed_completion]
         values = None if collection is None else collection.cross_section.model_dump(mode="json")
         if values is not None:
             self.policy.check_lineage(values)
@@ -172,6 +186,7 @@ class KiwoomReceiptObserver:
             "provider": "kiwoom_rest", "session": self.session_date.isoformat(),
             "page_sets": self._pages, "page_sets_sha256": digest(self._pages),
             "missing_reads": incomplete, "mandatory_complete": local_ok,
+            **({"consumer_completion": consumed_completion} if self.completed_session_only else {}),
             "denial": denial, "roles": {role: {"value": value,
                 "value_sha256": digest(value) if value is not None else None,
                 "status": "AVAILABLE" if value is not None else "FAILED_CLOSED" if

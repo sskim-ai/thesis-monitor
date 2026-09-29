@@ -86,7 +86,12 @@ def qualify(graph, *, observed_at):
                 expected['mrkt_tp'] = spec['ka20001_market']
             if read['body'] != expected:
                 raise ValueError('consumed_page_market_identity_mismatch')
-        KiwoomKrMarketContextService._validate_session_identity(
+        if json.loads(graph.plan).get("completed_session_only", False):
+            KiwoomKrMarketContextService._completed_history_row(
+                session_date=session, observed_at=observed_at,
+                history=grouped[market + ':ka20009'][0][0])
+        else:
+            KiwoomKrMarketContextService._validate_session_identity(
             session_date=session, observed_at=observed_at, market=market, code=spec['code'],
             current=grouped[market + ':ka20001'][0][0],
             sectors=grouped[market + ':ka20003'][0][0],
@@ -100,6 +105,9 @@ def dependency_ledger(graph, value, *, observed_at):
     """Per-leaf direct inputs, plus target-session validator inputs."""
     from app.services.kiwoom_kr_market_context_service import MARKETS
     proof = qualify(graph, observed_at=observed_at)
+    from zoneinfo import ZoneInfo
+    completed_only = (json.loads(graph.plan).get("completed_session_only", False)
+        and observed_at.astimezone(ZoneInfo("Asia/Seoul")).date().isoformat() != graph.receipt.session)
     sources = {}
     for child, raw, page in zip(graph.child_receipts, graph.child_bodies, graph.accepted_pages, strict=True):
         sources.setdefault(child['read_key'], []).append((json.loads(raw), page))
@@ -109,6 +117,8 @@ def dependency_ledger(graph, value, *, observed_at):
                 'page_identity': page['identity'], 'raw_sha256': page['raw_sha256'],
                 'source_json_pointer': path, 'completion_mode': proof['reads'][key]['mode']}
     def validation(market):
+        if completed_only:
+            return [dep(market + ':ka20009', p) for p in proof['reads'][market + ':ka20009']['paths']]
         key = market + ':ka20003'
         rows = sources[key][0][0]['all_inds_idex']
         idx = next(i for i, row in enumerate(rows) if row.get('stk_cd') == MARKETS[market]['code'])
@@ -140,9 +150,17 @@ def dependency_ledger(graph, value, *, observed_at):
             rows = sources[key][0][0]['all_inds_idex']
             idx = next(i for i, r in enumerate(rows) if r.get('stk_cd') == MARKETS[market]['code'])
             if field in {'close', 'return_pct'}:
-                direct = [dep(market + ':ka20001', '/' + {'close': 'cur_prc', 'return_pct': 'flu_rt'}[field])]
+                if completed_only:
+                    name = {'close': 'cur_prc_n', 'return_pct': 'flu_rt_n'}[field]
+                    direct = [dep(market + ':ka20009', p) for p in proof['reads'][market + ':ka20009']['paths']
+                        if p.endswith('/' + name)]
+                else:
+                    direct = [dep(market + ':ka20001', '/' + {'close': 'cur_prc', 'return_pct': 'flu_rt'}[field])]
             elif field == 'label':
-                direct = [dep(key, f'/all_inds_idex/{idx}/stk_nm')]
+                if completed_only:
+                    constants = "native_completed_index_identity"
+                else:
+                    direct = [dep(key, f'/all_inds_idex/{idx}/stk_nm')]
             else:
                 constants = 'native_index_identity_or_optional_field'
         elif section == 'sectors':
@@ -174,7 +192,8 @@ def dependency_ledger(graph, value, *, observed_at):
         else:
             raise ValueError('unmapped_cross_section:' + section)
         if not direct and scalar is not None and field not in {
-                'symbol', 'source_ref', 'taxonomy', 'metric_role', 'market_scope', 'scope'}:
+                'symbol', 'source_ref', 'taxonomy', 'metric_role', 'market_scope', 'scope',
+                *({'label'} if completed_only else set())}:
             raise ValueError('unmapped_nonnull_consumer_field:' + '/'.join(path))
         ledger.append({'output_field': '/' + '/'.join(path), 'output_value_sha256': digest(scalar),
             'direct_sources': direct, 'session_validation_sources': [d for m in markets for d in validation(m)],

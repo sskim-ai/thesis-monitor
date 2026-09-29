@@ -20,6 +20,7 @@ from app.services.unified_snapshot_contract import digest
 from app.services.unified_source_observer import _secret_field, capture_source_response
 from app.services.unified_source_policy import UnifiedSourcePolicy
 from app.services.unified_source_replay import read_bound_artifact
+from app.services.unified_live_source_transport import SourceSafetyStop
 
 
 HOSTS = {
@@ -93,6 +94,7 @@ class EventReceiptTransport(httpx.AsyncBaseTransport):
         self.ordinal, self.used = 0, False
         self.cutoff: datetime | None = None
         self.children: list[dict] = []
+        self.pre_dispatch_terminal: dict | None = None
         durable_json(root / "plan.json", {**self.identity, "max_requests": max_requests,
             "hosts": sorted(HOSTS[provider]), "mode": "CACHE" if cache else "WIRE",
             "cache_receipt_sha256": [c.receipt_sha256 for c in cache]}, exclusive=True)
@@ -106,9 +108,30 @@ class EventReceiptTransport(httpx.AsyncBaseTransport):
     async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
         try:
             return await self._handle_async_request(request)
+        except SourceSafetyStop as exc:
+            if str(exc) in {"native_request_not_unique_sealed_slot", "credential_reuse_identity_mismatch",
+                            "systemic_stop_latched"}:
+                self.record_pre_dispatch_denial(str(exc), "sealed_wire", request=request)
+            raise
         except (httpx.HTTPError, ValueError, KeyError, LookupError, OSError) as exc:
             self.record_cache_denial(type(exc).__name__)
+            if not self.cache and not self.children and not isinstance(exc, httpx.HTTPError):
+                self.record_pre_dispatch_denial(type(exc).__name__, "request", request=request)
             raise
+
+    def record_pre_dispatch_denial(self, code, field, *, request=None):
+        if self.pre_dispatch_terminal is not None:
+            return
+        read = getattr(self, "read", None)
+        value = {**self.identity, "status": "PRE_DISPATCH_DENIED",
+            "descriptor_request_sha256": getattr(read, "request_sha256", None),
+            "request_sha256": digest(str(request.url)) if request is not None else None,
+            "denial_code": code, "failing_field": field, "http_attempts": 0,
+            "response_receipt": "NOT_CREATED", "timestamp": datetime.now(timezone.utc).isoformat()}
+        path = self.root / "pre-dispatch-terminal.json"
+        durable_json(path, value, exclusive=True)
+        self.pre_dispatch_terminal = value
+        self.children.append({"receipt": path.name, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
 
     async def _handle_async_request(self, request: httpx.Request) -> httpx.Response:
         self.policy.require(self.provider)
@@ -184,7 +207,8 @@ class EventReceiptTransport(httpx.AsyncBaseTransport):
                                                          receipt=receipt, send=send)
             finally:
                 path = self.root / f"{identity}.response.json"
-                self.children.append({"receipt": path.name, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
+                if path.exists():
+                    self.children.append({"receipt": path.name, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
             return response
         path = self.root / f"{identity}.response.json"
         self.children.append({"receipt": path.name, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
@@ -247,6 +271,8 @@ class EventAcquisition:
                 except (httpx.HTTPError, ValueError, KeyError, LookupError, OSError) as exc:
                     self.transport.record_cache_denial(type(exc).__name__)
                     attempts.append({"attempt": attempt, "error_type": type(exc).__name__})
+                    if self.transport.pre_dispatch_terminal is not None:
+                        break
                     continue
                 attempts.append({"attempt": attempt, "raw_event_count": len(rows)})
                 normalized, rejected, candidates = qualify_event_rows(session, rows, target,
@@ -263,7 +289,9 @@ class EventAcquisition:
             "children": self.transport.children, "attempts": attempts, "rejected": rejected,
             "candidates": candidates,
             "normalized": values, "normalized_sha256": digest(values),
-            "denial": None if values else "optional_event_unavailable",
+            "denial": (self.transport.pre_dispatch_terminal["denial_code"]
+                if self.transport.pre_dispatch_terminal else None if values else "optional_event_unavailable"),
+            "pre_dispatch_terminal": self.transport.pre_dispatch_terminal,
             "owner_contracts": ["event_identity", "event_relevance", "event_financial_validation"],
             "owner_fingerprints": {name: hashlib.sha256((Path(__file__).parents[2] / name).read_bytes()).hexdigest()
                 for name in ("app/services/unified_event_acquisition.py", "app/providers/news.py",

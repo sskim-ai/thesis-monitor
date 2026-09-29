@@ -15,7 +15,7 @@ from pydantic import Field, model_validator
 from sqlmodel import Session, SQLModel, create_engine
 
 from app.models.security import SecurityMaster
-from app.providers.news import GoogleNewsRSSProvider, NaverNewsProvider, clean_text
+from app.providers.news import GoogleNewsRSSProvider, NaverNewsProvider, clean_text, serialize_news_request
 from app.services.collection_service import _raw_event_to_model
 from app.services.event_identity import event_fingerprint, event_is_eligible_for_current_analysis
 from app.services.news_query_service import NewsQueryService
@@ -105,13 +105,23 @@ def make_read(*, security, market, run_id, lookback_days, security_records):
 
 
 class PlannedNewsTransport(EventReceiptTransport):
-    def __init__(self, *, read: NewsRead, root, policy, inner):
+    def __init__(self, *, read: NewsRead, root, policy, inner, settings_identity=None):
         self.read = NewsRead.model_validate(read.model_dump(mode="json"))
+        self.settings_identity = settings_identity
         super().__init__(root=root, run_id=read.run_id, acquisition_id=read.acquisition_id,
             provider=read.provider, policy=policy, max_requests=1, inner=inner)
 
     async def _handle_async_request(self, request):
-        if request_identity(request) != self.read.request:
+        if self.read.market == "kr" and self.settings_identity is not None:
+            credentials = [request.headers.get("X-Naver-Client-Id"),
+                           request.headers.get("X-Naver-Client-Secret")]
+            if not all(credentials) or digest(credentials) != self.settings_identity:
+                self.record_pre_dispatch_denial("naver_settings_identity_mismatch", "settings")
+                raise ValueError("naver_settings_identity_mismatch")
+        expected = serialize_news_request(self.read.request["method"],
+            self.read.request["route"], self.read.request["params"])
+        if request_identity(request) != self.read.request or request.url != expected.url:
+            self.record_pre_dispatch_denial("news_request_outside_frozen_plan", "wire")
             raise ValueError("news_request_outside_frozen_plan")
         return await super()._handle_async_request(request)
 

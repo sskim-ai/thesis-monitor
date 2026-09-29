@@ -2,7 +2,6 @@ from datetime import date
 from email.utils import parsedate_to_datetime
 import html
 import re
-from urllib.parse import quote_plus
 from xml.etree import ElementTree
 
 import httpx
@@ -13,6 +12,11 @@ from app.providers.base import NewsProvider, RawEvent
 
 TAG_RE = re.compile(r"<[^>]+>")
 WHITESPACE_RE = re.compile(r"\s+")
+
+
+def serialize_news_request(method, route, params, *, headers=None):
+    """One ordered query encoder for the plan and the actual provider wire."""
+    return httpx.Request(method, route, params=params, headers=headers)
 
 
 def clean_text(value: str | None) -> str:
@@ -64,11 +68,9 @@ class GoogleNewsRSSProvider(NewsProvider):
     def request_url(ticker, lookback_days, *, search_aliases=None):
         terms = search_aliases or [ticker]
         query_text = " OR ".join(f'"{term}"' for term in terms[:4])
-        query = quote_plus(f"({query_text}) company stock")
-        return (
-            "https://news.google.com/rss/search"
-            f"?q={query}+when:{lookback_days}d&hl=en-US&gl=US&ceid=US:en"
-        )
+        return str(serialize_news_request("GET", "https://news.google.com/rss/search",
+            [("q", f"({query_text}) company stock when:{lookback_days}d"),
+             ("hl", "en-US"), ("gl", "US"), ("ceid", "US:en")]).url)
 
     def parse_response(self, response, *, ticker, source_url=None):
         url = source_url or str(response.url)
@@ -145,10 +147,11 @@ class NaverNewsProvider(NewsProvider):
     name = "naver_news"
     endpoint = "https://openapi.naver.com/v1/search/news.json"
 
-    def __init__(self, timeout_seconds: float = 5.0, display: int = 10, *, transport=None, as_of=None) -> None:
+    def __init__(self, timeout_seconds: float = 5.0, display: int = 10, *, transport=None, as_of=None, settings=None) -> None:
         self.timeout_seconds = timeout_seconds
         self.display = min(max(display, 1), 100)
         self.transport, self.as_of = transport, as_of
+        self.settings = settings if settings is not None else get_settings()
 
     async def fetch_events(
         self,
@@ -157,8 +160,11 @@ class NaverNewsProvider(NewsProvider):
         *,
         search_aliases: list[str] | None = None,
     ) -> list[RawEvent]:
-        settings = get_settings()
+        settings = self.settings
         if not settings.naver_client_id or not settings.naver_client_secret:
+            if self.transport is not None and hasattr(self.transport, "record_pre_dispatch_denial"):
+                self.transport.record_pre_dispatch_denial("naver_credentials_missing", "settings")
+                raise ValueError("naver_credentials_missing")
             return []
 
         params = self.request_params(ticker, search_aliases=search_aliases)
@@ -167,7 +173,9 @@ class NaverNewsProvider(NewsProvider):
             "X-Naver-Client-Secret": settings.naver_client_secret,
         }
         async with httpx.AsyncClient(timeout=self.timeout_seconds, transport=self.transport) as client:
-            response = await client.get(self.endpoint, params=params, headers=headers)
+            request = serialize_news_request("GET", self.endpoint, params, headers=headers)
+            request.extensions["timeout"] = httpx.Timeout(self.timeout_seconds).as_dict()
+            response = await client.send(request, follow_redirects=False)
             response.raise_for_status()
         return self.parse_response(response, ticker=ticker)
 

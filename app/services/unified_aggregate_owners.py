@@ -165,7 +165,8 @@ def kiwoom_aggregate_owner(*, role: SourceRole, observed_at: datetime, max_pages
         else:
             raise ValueError("offline_sync_replay_required")
         client = ReplayClient()
-        result = asyncio.run(KiwoomKrMarketContextService(client, max_pages=max_pages).collect(
+        result = asyncio.run(KiwoomKrMarketContextService(client, max_pages=max_pages,
+            completed_session_only=plan.get("completed_session_only", False)).collect(
             session_date=session, observed_at=observed_at))
         if client.index != len(graph.child_receipts):
             raise ValueError("kiwoom_owner_unconsumed_children")

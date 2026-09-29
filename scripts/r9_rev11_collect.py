@@ -97,14 +97,16 @@ async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guar
     async def kr_market():
         reads = tuple(KiwoomRead.model_validate(r) for r in frozen['candidate']['kr_market_reads'])
         observer = KiwoomReceiptObserver(root=root/'markets/kr', run_id=frozen['generation_id'],
-            attempt_id=frozen['generation_id']+':kr:A1', session_date=datetime.fromisoformat(frozen['sessions']['kr']).date(), reads=reads, policy=policy)
+            attempt_id=frozen['generation_id']+':kr:A1', session_date=datetime.fromisoformat(frozen['sessions']['kr']).date(),
+            reads=reads, policy=policy, completed_session_only=True)
         client = KiwoomRestClient(app_key=settings.kiwoom_app_key, secret_key=settings.kiwoom_secret_key,
             base_url=settings.kiwoom_rest_base_url, timeout_seconds=600, max_retries=0,
             request_interval_seconds=settings.kiwoom_rest_request_interval_seconds, transport=sealed, source_observer=observer)
         at = now()
         durable_json(root/'markets/kr-query.json', {'observed_at': at.isoformat()}, exclusive=True)
         try:
-            value = await KiwoomKrMarketContextService(client, max_pages=frozen['kr_local_cap']).collect(session_date=observer.session_date, observed_at=at)
+            value = await KiwoomKrMarketContextService(client, max_pages=frozen['kr_local_cap'],
+                completed_session_only=True).collect(session_date=observer.session_date, observed_at=at)
         except (SourceSafetyStop, SystemicStop):
             raise
         except Exception:
@@ -179,7 +181,8 @@ async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guar
     async def news(read):
         read = NewsRead.model_validate(read)
         path = root/'events'/read.subject
-        transport = PlannedNewsTransport(read=read, root=path, policy=policy, inner=sealed)
+        transport = PlannedNewsTransport(read=read, root=path, policy=policy, inner=sealed,
+            settings_identity=frozen["config_identities"][read.provider])
         provider = NEWS_PROVIDERS[read.market]()
         provider.settings = settings
         at = datetime.fromisoformat(frozen['frozen_at'])
@@ -198,6 +201,8 @@ async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guar
         normalization = json.loads((path/'normalization.json').read_bytes())
         responses = list(path.glob('*.response.json'))
         if len(responses) != 1:
+            if transport.pre_dispatch_terminal is not None:
+                return dict(status="PRE_DISPATCH_DENIED", terminal=transport.pre_dispatch_terminal)
             raise ValueError('event_exact_response_receipt_required')
         receipt = json.loads(responses[0].read_bytes())
         def b64(p):

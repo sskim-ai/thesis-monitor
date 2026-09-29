@@ -319,9 +319,11 @@ class KiwoomKrMarketContextService:
         client: KiwoomRestClient,
         *,
         max_pages: int | None = None,
+        completed_session_only: bool = False,
     ) -> None:
         self.client = client
         self.max_pages = max_pages or get_settings().kiwoom_rest_max_pages
+        self.completed_session_only = completed_session_only
         self._archive_rows: list[dict[str, object]] = []
 
     async def _request(
@@ -401,6 +403,19 @@ class KiwoomKrMarketContextService:
         )
 
     @staticmethod
+    def _completed_history_row(*, history, session_date, observed_at):
+        state = korea_market_session(observed_at.astimezone(KST))
+        if state.latest_completed_regular_session_date != session_date:
+            raise ValueError("completed_market_target_calendar_mismatch")
+        rows = [r for r in history.get("inds_cur_prc_daly_rept", [])
+            if isinstance(r, dict) and r.get("dt_n") == session_date.strftime("%Y%m%d")]
+        if len(rows) != 1:
+            raise ValueError("completed_market_target_missing_or_ambiguous")
+        _absolute_float(rows[0].get("cur_prc_n"))
+        _signed_float(rows[0].get("flu_rt_n"))
+        return rows[0]
+
+    @staticmethod
     def _validate_session_identity(
         *,
         session_date: date,
@@ -448,6 +463,8 @@ class KiwoomKrMarketContextService:
     ) -> KiwoomMarketContextCollection:
         observer = getattr(self.client, "source_observer", None)
         if observer is not None:
+            if observer.completed_session_only != self.completed_session_only:
+                raise ValueError("kr_market_session_role_contract_mismatch")
             expected = kiwoom_market_reads(session_date=session_date, max_pages=self.max_pages,
                 max_requests_per_page=self.client.max_retries + 1)
             if observer.reads != expected:
@@ -476,6 +493,8 @@ class KiwoomKrMarketContextService:
         sector_payloads: dict[str, dict[str, object]] = {}
         aggregate_payloads: dict[str, dict[str, object]] = {}
         aggregate_rows: dict[str, dict[str, object]] = {}
+        historical_rows = {}
+        separate_current = self.completed_session_only and observed_at.astimezone(KST).date() != session_date
 
         for market, spec in MARKETS.items():
             current = await self._request(
@@ -511,7 +530,11 @@ class KiwoomKrMarketContextService:
             except (KiwoomRestError, TypeError, ValueError):
                 if getattr(self.client, "source_observer", None) is None:
                     raise
-            self._validate_session_identity(
+            if separate_current:
+                historical_rows[market] = self._completed_history_row(history=history.payload,
+                    session_date=session_date, observed_at=observed_at)
+            else:
+                self._validate_session_identity(
                 session_date=session_date,
                 observed_at=observed_at,
                 current=current.payload,
@@ -534,6 +557,8 @@ class KiwoomKrMarketContextService:
                 page_errors[market] = type(exc).__name__
 
         scoped_breadth: list[MarketScopedBreadth] = []
+        if separate_current:
+            return self._completed_collection(historical_rows, session_date=session_date, observed_at=observed_at)
         indices: list[MarketIndexFact] = []
         sectors: list[MarketSectorFact] = []
         market_flows: list[MarketFlowFact] = []
@@ -766,6 +791,29 @@ class KiwoomKrMarketContextService:
             audit=audit,
             sanitized_archive=archive,
         )
+
+    def _completed_collection(self, rows, *, session_date, observed_at):
+        indices = [MarketIndexFact(symbol=market, label=market,
+            close=_absolute_float(rows[market]["cur_prc_n"]),
+            return_pct=_signed_float(rows[market]["flu_rt_n"]),
+            source_ref=f"kiwoom:ka20009:{market}:{session_date.isoformat()}")
+            for market in MARKETS]
+        warnings = ["KR_CURRENT_SESSION_INTRADAY_NOT_COMPLETED_SESSION_AUTHORITY",
+                    "COMPLETED_SESSION_SECTORS_BREADTH_FLOWS_UNAVAILABLE"]
+        audit = KiwoomCollectionAudit(session_date=session_date, observed_at=observed_at,
+            session_identity={m: "KR_COMPLETED_SESSION:ka20009_exact_target_row" for m in MARKETS},
+            pagination={}, unit_contract={}, reconciliation=[], provider_calls=asdict(self.client.stats),
+            blocked_concentration_markets={m: ["CURRENT_SESSION_ROLE_NOT_ELIGIBLE"] for m in MARKETS},
+            warnings=warnings)
+        sha = payload_sha256([r["payload_sha256"] for r in self._archive_rows])
+        cross = MarketCrossSection(market="KR", session_date=session_date, as_of=observed_at,
+            indices=indices, breadth=None, quality=MarketCrossSectionQuality(
+                provider="KIWOOM_REST", provider_role="official_primary_supplemental",
+                coverage="partial", freshness="fresh", universe_version="kiwoom-integrated-market-v1",
+                warnings=warnings), source_payload_sha256=sha)
+        return KiwoomMarketContextCollection(cross, audit,
+            {"responses": self._archive_rows, "audit": audit.model_dump(mode="json"),
+             "current_role": "KR_CURRENT_SESSION_INTRADAY", "completed_role": "KR_COMPLETED_SESSION"})
 
 
 def persist_kiwoom_market_archive(

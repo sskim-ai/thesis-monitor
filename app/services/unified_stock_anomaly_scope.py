@@ -180,7 +180,8 @@ def role_consumers(rows: list[dict], *, role: str, timeframe: str, cutoff: date,
 
 
 def materialize_source_components(*, ticker: str, market: str, cutoff: date,
-                                 observed_at: str, roles: dict[str, list[dict]]) -> dict:
+                                 observed_at: str, roles: dict[str, list[dict]],
+                                 completed_session: bool = False) -> dict:
     """Actual typed feature projection, without inventing a financial/Core owner.
 
     The complete stock adapter has not been implemented by R2A-R5/R2B0. This
@@ -190,6 +191,12 @@ def materialize_source_components(*, ticker: str, market: str, cutoff: date,
     if set(roles) != expected:
         raise ValueError("exact_four_owned_roles_required")
     before = digest(roles)
+    raw_roles = roles
+    eligible_receipt = None
+    if completed_session:
+        from app.services.eligible_completed_session_bars import eligible_completed_roles
+        roles, eligible_receipt = eligible_completed_roles(roles, ticker=ticker, market=market,
+            cutoff=cutoff, observed_at=observed_at)
     matrix = {}
     for role, rows in roles.items():
         timeframe = "weekly" if role == "unadjusted_weekly_valuation" else role.removeprefix("adjusted_")
@@ -252,7 +259,7 @@ def materialize_source_components(*, ticker: str, market: str, cutoff: date,
             "suppression_reason": None if role_current_ok and quality.usable_for_current_reasoning
                 else "CURRENT_ROLE_OR_FRESHNESS_BLOCKED"}
         matrix[f"adjusted_{tf}"].extend(feature_consumers)
-    if digest(roles) != before:
+    if digest(raw_roles) != before:
         raise ValueError("source_rows_mutated")
     components = {"contract": CONTRACT, "ticker": ticker, "market": market,
         "cutoff": cutoff.isoformat(), "source_rows_sha256": before,
@@ -266,5 +273,9 @@ def materialize_source_components(*, ticker: str, market: str, cutoff: date,
         "observed_business_union_status": "NOT_REACHED_NO_BOUND_CLASS_C_INPUT",
         "mandatory_current_price_failure": not current["eligible"],
         "component_projection_sha256": None}
+    if eligible_receipt is not None:
+        components["completed_session_bar_set"] = eligible_receipt
+        components["technical_input_sha256"] = digest(periods)
+        components["technical_fact_set_sha256"] = digest({tf: f["facts"] for tf, f in features.items()})
     components["component_projection_sha256"] = digest(components)
     return components

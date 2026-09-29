@@ -106,8 +106,9 @@ def compile_plan(*, stock, identities, news_reads, config_identities, rev10_rece
         req = r.request
         headers = ({'X-Naver-Client-Id': 'PLAN_CREDENTIAL', 'X-Naver-Client-Secret': 'PLAN_CREDENTIAL'}
                    if r.market == 'kr' else {})
+        from app.providers.news import serialize_news_request
         add('events:' + r.subject, r.provider, 'events:' + r.subject, r.market, r.subject, 'news',
-            httpx.Request(req['method'], req['route'], params=req['params'], headers=headers), mandatory=False, retries=0)
+            serialize_news_request(req['method'], req['route'], req['params'], headers=headers), mandatory=False, retries=0)
         roles['events:' + r.subject]['classification'] = 'EVENT_OPTIONAL_PLANNED'
     plan = ProviderPlan(generation_id=stock.run_id, code_sha=stock.implementation_sha,
         policy_schema_sha256=digest({'descriptor': FreshRequestDescriptor.model_json_schema(),

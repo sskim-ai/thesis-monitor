@@ -77,7 +77,7 @@ def stock_inputs(root, frozen, policy, outcome):
                 local = read(root/f'class-c/local-{market}.json')
                 session = next(r.latest_completed_session for r in plan.reads if r.subject == ticker)
                 components = materialize_source_components(ticker=ticker, market=market, cutoff=date.fromisoformat(session),
-                    observed_at=plan.frozen_at.isoformat(), roles=roles)
+                    observed_at=plan.frozen_at.isoformat(), roles=roles, completed_session=market == "kr")
                 technical = dict(plan=plan, ticker=ticker, local_seed=local, financial=None,
                     receipts=receipts, artifacts=artifacts, components=components, policy=policy,
                     expected_hashes=dict(plan=digest(plan.model_dump(mode='json')), local=digest(local),
@@ -101,6 +101,8 @@ def stock_inputs(root, frozen, policy, outcome):
                             require_sealed_body(root, frozen, outcome, role='events:'+ticker,
                                 raw_sha256=sha256_bytes((p.parent/r['artifact']).read_bytes()))
                     item['event_inputs'] = dict(acquisition_class='FRESH_CURRENT_RUN', window=window, source=read(event))
+                else:
+                    raise ValueError("SOURCE_PARTIAL:event_owned_current_state_missing")
                 inputs[ticker] = item
             except (ValueError, KeyError, TypeError, OSError) as exc:
                 errors[ticker] = dict(error_class=type(exc).__name__, reason=str(exc))
@@ -126,12 +128,14 @@ def aggregate(root, role, value):
             accepted_page=bound(root, stem+'.page.json') if (root/(stem+'.page.json')).exists() else None))
     if not children:
         raise ValueError('market_children_missing')
+    from app.services.kiwoom_consumed_page_contract import CONTRACT as KR_CONSUMED_CONTRACT
     values = dict(owner=role.owner, role=role.key, market=role.market, provider=role.provider, symbol=role.symbol,
         basis=role.basis, session=role.session, run_id=plan['run_id'], attempt_id=plan['attempt_id'], acquisition_id=None,
         acquisition_class=A.value, requested_at=min(t[0] for t in times), received_at=max(t[1] for t in times),
         artifact='aggregate-value.json', artifact_sha256=sha256_bytes(encoded(value)+b'\n'), plan=bound(root,'plan.json'),
         children=children, expected_child_ids=[c['child_id'] for c in children], normalized_sha256=digest(value),
-        validator_contract='sealed-fresh-native-owner-aggregate-v1', coverage=dict(children=len(children)),
+        validator_contract=(KR_CONSUMED_CONTRACT if role.key == 'kr_local_indices_sectors_breadth'
+                            else 'sealed-fresh-native-owner-aggregate-v1'), coverage=dict(children=len(children)),
         contract='unified-transitive-source-receipt-v1')
     receipt = AggregateReceipt.model_validate({**values, 'aggregate_sha256': digest(values)})
     for name, obj in [('aggregate-value.json', value), ('aggregate.json', receipt.model_dump(mode='json'))]:
@@ -228,7 +232,15 @@ def whole_inputs(root, frozen, outcome, policy):
     markets = market_inputs(root, frozen, outcome, policy)
     context = publication_inputs(root, frozen, outcome, policy)
     pub, night = replay_fresh_publications(**context['publications']), replay_night(**context['night'])
+    fx = [r for r in pub["providers"]["ecos"]["value"]["observations"] if r["series_code"] == "USDKRW"]
+    if (len(fx) != 1 or fx[0]["raw_payload"]["publication_context"]["observation_date"] != frozen["sessions"]["kr"]
+            or not fx[0]["raw_payload"]["publication_context"]["display_eligible"]):
+        raise ValueError("R2B_R9_REV14_USDKRW_OBSERVATION_PERIOD_GAP")
     rows = {t: assemble_fresh_stock(**i) for t, i in inputs.items()}
+    event_errors = [t for t, row in rows.items()
+                    if str(row.get("event_view", {}).get("binding", {}).get("denial") or "").startswith("event_owner_error:")]
+    if event_errors:
+        raise ValueError("SOURCE_PARTIAL:event_owner_error:" + ",".join(sorted(event_errors)))
     native = {m: dict(run_id=frozen['generation_id'], attempt_id=n['attempt_id'],
         attempt_started_at=n['start'].isoformat(), cutoff=n['cutoff'].isoformat(), component=_resolve(**n))
         for m, item in markets.items() for n in [item['native_aggregate']]}

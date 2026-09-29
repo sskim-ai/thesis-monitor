@@ -248,12 +248,18 @@ def project_sealed_market_context(packet, seed, graph, *, expected_authority_sha
     cross = None
     if market == 'kr':
         value = component['value']
-        require(value.get('indices') and value.get('sectors') and value.get('breadth'), 'kr_mandatory_market_source_missing')
+        completed_history_only = (
+            {r.get('symbol') for r in value.get('indices', [])} == {'KOSPI', 'KOSDAQ'}
+            and len(value['indices']) == 2 and not value.get('sectors') and value.get('breadth') is None
+            and all(r.get('source_ref') == f"kiwoom:ka20009:{r['symbol']}:{component['session']}"
+                    for r in value['indices']))
+        require(completed_history_only or (value.get('indices') and value.get('sectors') and value.get('breadth')),
+                'kr_mandatory_market_source_missing')
         cross = MarketCrossSection.model_validate(dict(**value, market='KR', session_date=component['session'],
             as_of=component['original_source_time'], source_payload_sha256=component['source']['artifact_sha256'],
             quality=dict(provider=component['provider'], provider_role=component['source']['role'],
                 coverage='partial', freshness='fresh', universe_version=component['eligibility']['contract'],
-                eligible_count=value['breadth']['eligible_count'])))
+                eligible_count=value['breadth']['eligible_count'] if value.get('breadth') else 0)))
         native = build_market_intelligence(None, date.fromisoformat(component['session']), [], [], market=market, cross_section=cross)
         facts += native['fact_catalog']
         coverage = native['coverage']

@@ -45,7 +45,7 @@ def publication_sources(start, run_id, *, as_of=None):
             {'response': {'data': [{'period': '2026-09-18', 'value': '12', 'units': 'fixture_unit'}]}})
     add('ecos', 'https://ecos.bok.or.kr/api/KeyStatisticList/fixture-secret/json/kr/1/100', {},
         {'KeyStatisticList': {'row': [
-            {'KEYSTAT_NAME': name, 'TIME': period, 'DATA_VALUE': value, 'UNIT_NAME': unit}
+            {'KEYSTAT_NAME': name, 'CYCLE': period, 'DATA_VALUE': value, 'UNIT_NAME': unit}
             for name, period, value, unit in [('한국은행 기준금리', latest.strftime('%Y%m%d'), '2.5', 'percent'),
                 ('원/달러 환율', latest.strftime('%Y%m%d'), '1300', 'KRW'), ('소비자물가지수', '202608', '120', 'index'),
                 ('M2', '202607', '200', 'KRW')]]}})
