@@ -69,7 +69,8 @@ def test_market_routing_uses_registry_or_exact_listing_not_ticker_guess():
     assert routing_markets({"005930": sec}, listing_rows=[]) == {"005930": "10"}
 
 
-def test_native_sealed_dispatch_to_owner_replay(tmp_path):
+@pytest.mark.parametrize("provider_error", [False, True])
+def test_native_sealed_dispatch_to_owner_replay(tmp_path, provider_error):
     stock, args, out = native_plan()
     plan = out["plan"]
     requests = []
@@ -101,6 +102,10 @@ def test_native_sealed_dispatch_to_owner_replay(tmp_path):
                 ),
             )
         if api == "ka10001":
+            if provider_error:
+                return httpx.Response(
+                    200, json=dict(return_code=99, return_msg="Fictional unavailable")
+                )
             ticker = json.loads(request.content)["stk_cd"]
             return httpx.Response(
                 200,
@@ -123,7 +128,12 @@ def test_native_sealed_dispatch_to_owner_replay(tmp_path):
                     exchange=identities[ticker]["exchange"],
                 ),
             )
-        return httpx.Response(200, json=dict(symbol=ticker, metric=dict(peTTM=18, pbQuarterly=2)))
+        return httpx.Response(
+            200,
+            json=dict(
+                symbol=ticker, metric=None if provider_error else dict(peTTM=18, pbQuarterly=2)
+            ),
+        )
 
     run = SealedDispatcher(
         plan=plan,
@@ -160,11 +170,15 @@ def test_native_sealed_dispatch_to_owner_replay(tmp_path):
         inputs = replay_native(
             root=tmp_path, frozen=frozen, outcome=outcome, security=sec, policy=policy
         )
-        rows = derive_provider_snapshots(inputs, security=sec, run_id=stock.run_id)
-        if sec["country"] == "KR":
-            assert [r.value for r in rows] == [18, 2]
+        if provider_error:
+            assert inputs["contract"] == "provider-native-valuation-unavailable-v1"
+            assert inputs["reason"] == "UNAVAILABLE_PROVIDER_RESPONSE"
         else:
-            assert all(r.value is None for r in rows)  # no authoritative SEC fixture granted
+            rows = derive_provider_snapshots(inputs, security=sec, run_id=stock.run_id)
+            if sec["country"] == "KR":
+                assert [r.value for r in rows] == [18, 2]
+            else:
+                assert all(r.value is None for r in rows)  # no authoritative SEC fixture granted
         assert inputs == replay_native(
             root=tmp_path, frozen=frozen, outcome=outcome, security=sec, policy=policy
         )

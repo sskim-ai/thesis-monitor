@@ -11,6 +11,7 @@ import httpx
 
 from app.providers.kiwoom_rest_client import KiwoomRestClient
 from app.services.provider_native_valuation_snapshot import (
+    derive_provider_snapshots,
     INPUT_CONTRACT,
     KIWOOM_ROUTE,
     FINNHUB_BASE,
@@ -195,14 +196,52 @@ def replay_native(*, root, frozen, outcome, security, policy):
         final = outcome["logical_results"].get(key)
         if final is None:
             raise LookupError("UNAVAILABLE_PROVIDER_REQUEST_NOT_COMPLETED")
+        descriptor = next(d for d in plan.descriptors if d.logical_request_id == key)
+        if final.get("status") == "SYSTEMIC_STOP":
+            raise SourceSafetyStop("valuation_systemic_source_stop")
         if final.get("status") != "PASS":
             # A typed failure is admissible only with its exact persisted final
             # receipt, not a caller-provided unavailable flag.
-            persisted = json.loads((root / "dispatch/receipts" / key / "final.json").read_bytes())
+            receipt_path = root / "dispatch/receipts" / key / "final.json"
+            if any(p.is_symlink() for p in (receipt_path, *receipt_path.parents)):
+                raise ValueError("valuation_failed_receipt_symlink")
+            persisted = json.loads(receipt_path.read_bytes())
             if persisted != final or final["receipt_sha256"] != digest(
                 {k: v for k, v in final.items() if k != "receipt_sha256"}
             ):
                 raise ValueError("valuation_failed_receipt_drift")
+            expected = dict(
+                generation_id=plan.generation_id,
+                logical_request_id=key,
+                descriptor_sha256=descriptor.descriptor_sha256,
+                plan_sha256=plan.plan_sha256,
+                request_sha256=descriptor.request_semantic_sha256,
+                role=descriptor.consumer_role,
+            )
+            if any(final.get(k) != v for k, v in expected.items()):
+                raise ValueError("valuation_failed_receipt_identity_mismatch")
+            paths = (
+                [(root / "dispatch" / descriptor.raw_path, final["raw_sha256"])]
+                if final.get("raw_sha256")
+                else []
+            )
+            for attempt in final["attempts"]:
+                if attempt.get("raw_sha256"):
+                    paths.append(
+                        (
+                            root
+                            / "dispatch/receipts"
+                            / key
+                            / ("attempt-" + str(attempt["attempt"]) + ".body"),
+                            attempt["raw_sha256"],
+                        )
+                    )
+            for path, expected_sha in paths:
+                if (
+                    any(p.is_symlink() for p in (path, *path.parents))
+                    or sha256_bytes(path.read_bytes()) != expected_sha
+                ):
+                    raise ValueError("valuation_failed_source_hash_mismatch")
             raise LookupError("UNAVAILABLE_PROVIDER_RESPONSE")
         bound = consume_bound_result(
             root=root / "dispatch",
@@ -210,7 +249,6 @@ def replay_native(*, root, frozen, outcome, security, policy):
             logical_id=key,
             receipt_sha256=final["receipt_sha256"],
         )
-        descriptor = next(d for d in plan.descriptors if d.logical_request_id == key)
         raw = (root / "dispatch" / descriptor.raw_path).read_bytes()
         bindings.append(final["receipt_sha256"])
         last = final["attempts"][-1]
@@ -285,13 +323,24 @@ def replay_native(*, root, frozen, outcome, security, policy):
                 official_identity=official,
                 official_identity_sha256=digest(official) if official else None,
             )
-        return dict(
+        native = dict(
             contract=INPUT_CONTRACT,
             provider=inventory["provider"],
             identity_inputs=identity,
             **metric,
             **common,
         )
+        try:
+            derive_provider_snapshots(native, security=security, run_id=plan.generation_id)
+        except ValueError as exc:
+            if isinstance(exc, json.JSONDecodeError) or str(exc) in {
+                "native_snapshot_provider_response_invalid",
+                "native_snapshot_metric_schema",
+                "native_snapshot_list_schema",
+            }:
+                raise LookupError("UNAVAILABLE_PROVIDER_RESPONSE") from exc
+            raise
+        return native
     except LookupError as exc:
         return dict(
             contract=UNAVAILABLE_CONTRACT,
