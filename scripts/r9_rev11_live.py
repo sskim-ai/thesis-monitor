@@ -34,7 +34,7 @@ from scripts.r9_phase_a_gate import code_fingerprints
 ROOT = Path(__file__).resolve().parents[1]
 PROVIDERS = frozenset({'local','local+openfigi','canonical_local','kiwoom','kiwoom_rest','ohlcv_analyst','sec_edgar',
     'sec_companyfacts','sec_foreign_filing','sec_official_identity','opendart','fred','eia','ecos',
-    'krx_night_futures','google_news_rss','naver_news'})
+    'krx_night_futures','google_news_rss','naver_news','finnhub'})
 POLICY = UnifiedSourcePolicy(PROVIDERS)
 REV10_ROOT_FILE_SHA256 = '8f2508cdb874a089cddc21c0ad50cc485f9d2063388249d5df68fb7d37d59e4c'
 REV10_ROOT_RECEIPT_SHA256 = '1fd9656d434312def42bf4d61874f96916223d2c934ac51ce009f1c2447fb44c'
@@ -48,10 +48,13 @@ def git(*args):
     return subprocess.check_output(['git', *args], cwd=ROOT, text=True).strip()
 
 
-def credentials(s):
-    return dict(kiwoom=[s.kiwoom_app_key,s.kiwoom_secret_key],sec_edgar=[s.sec_user_agent],opendart=[s.opendart_api_key],
+def credentials(s, *, native_valuation=False):
+    result = dict(kiwoom=[s.kiwoom_app_key,s.kiwoom_secret_key],sec_edgar=[s.sec_user_agent],opendart=[s.opendart_api_key],
         fred=[s.fred_api_key],eia=[s.eia_api_key],ecos=[s.ecos_api_key],krx_night_futures=[s.krx_open_api_key],
         google_news_rss=['NO_CREDENTIAL_REQUIRED'],naver_news=[s.naver_client_id,s.naver_client_secret])
+    if native_valuation:
+        result['finnhub'] = [s.finnhub_api_key]
+    return result
 
 
 def exact_rev10_receipt(path):
@@ -72,11 +75,11 @@ def static_official_identity():
     return json.loads(raw)
 
 
-def require_disk_capacity(path):
+def require_disk_capacity(path, minimum_gib=10):
     disk = shutil.disk_usage(path)
-    if disk.free < 10 * 1024**3:
+    if disk.free < minimum_gib * 1024**3:
         raise SourceSafetyStop('R2B_R9_REV12_REV2_DISK_GUARD')
-    return dict(total=disk.total, used=disk.used, free=disk.free, threshold=10 * 1024**3)
+    return dict(total=disk.total, used=disk.used, free=disk.free, threshold=minimum_gib * 1024**3)
 
 
 def freeze(args):
@@ -84,7 +87,7 @@ def freeze(args):
     network_guard()
     if args.output.exists() or git('status','--porcelain'):
         raise ValueError('new_output_clean_exact_commit_required')
-    disk_guard = require_disk_capacity(args.output.parent)
+    disk_guard = require_disk_capacity(args.output.parent, 12 if args.provider_native_valuation else 10)
     head = git('rev-parse','HEAD')
     validation = read(args.validation)
     if validation.get('status') != 'PASS' or validation.get('head') != head:
@@ -98,7 +101,7 @@ def freeze(args):
     if not native['owner_clean'] or not native['credentials_present'] or not native['live_provider']:
         raise ValueError('native_owner_not_ready')
     s = Settings(_env_file=args.operating/'.env')
-    config = credentials(s)
+    config = credentials(s, native_valuation=args.provider_native_valuation)
     if not all(all(values) for values in config.values()):
         raise ValueError('configured_credential_missing')
     at = datetime.now(timezone.utc)
@@ -131,6 +134,22 @@ def freeze(args):
             validate_local_seed(local)
             durable_json(args.output/f'class-c/local-{market}.json',local,exclusive=True)
     engine.dispose()
+    valuation_markets, valuation_official, routing_reference = None, {}, None
+    if args.provider_native_valuation:
+        from app.services.provider_native_valuation_acquisition import routing_markets
+        if args.valuation_listing_reference is None:
+            raise ValueError('valuation_listing_routing_reference_required')
+        reference_raw = args.valuation_listing_reference.read_bytes()
+        valuation_markets = routing_markets(identities, listing_rows=json.loads(reference_raw)['list'])
+        routing_reference = dict(sha256=sha256_bytes(reference_raw), market_types=valuation_markets,
+            role='ROUTING_REFERENCE_ONLY_CURRENT_IDENTITY_REQUIRES_FRESH_LIST', mutable_current_values_reused=False)
+        with connect() as connection:
+            for ticker in identities:
+                cached = connection.execute('SELECT payload FROM providerresponsecache WHERE ticker=? '
+                    'AND provider=? AND data_type=? AND status=?',
+                    (ticker, 'official_security_identity', 'identity_evidence', 'success')).fetchall()
+                if len(cached) == 1:
+                    valuation_official[ticker] = json.loads(cached[0][0]).get('evidence_payload')
     official=static_official_identity()
     durable_json(args.output/'static/official-security-identity.json',official,exclusive=True)
     news=[make_read(security=identities[t],market=m,run_id=run,lookback_days=s.monitor_lookback_days,security_records=records)
@@ -138,7 +157,7 @@ def freeze(args):
     hashes={k:digest(v) for k,v in config.items()}
     result=compile_plan(stock=stock,identities=identities,news_reads=news,config_identities=hashes,
         rev10_receipt=root_receipt,configured_kr_pages=s.kiwoom_rest_max_pages,kr_post_acquisition_completeness_approved=True,
-        exact_financial_owner=args.exact_financial_owner)
+        exact_financial_owner=args.exact_financial_owner, valuation_market_types=valuation_markets)
     plan=result.pop('plan')
     admission=plan.admission(rev10_receipt=root_receipt,owners=result['owners'],config_identities=hashes,
         credential_presence={k:all(v) for k,v in config.items()})
@@ -157,7 +176,8 @@ def freeze(args):
         validation_sha256=sha256_bytes(args.validation.read_bytes()),rev10_receipt=root_receipt,
         protected_input_hashes={str(p.relative_to(args.output)):sha256_bytes(p.read_bytes()) for p in args.output.rglob('*.json')},
         execution_mode='AD_HOC_LIVE_REQUALIFICATION',model_policy='EXISTING_OFFICIAL_SOL_XHIGH_CONTRACT_NO_FALLBACK',
-        production_side_effects=0)
+        valuation_official_identities=valuation_official, valuation_routing_reference=routing_reference,
+        provider_native_valuation=args.provider_native_valuation, production_side_effects=0)
     frozen['disk_guard_at_freeze'] = disk_guard
     durable_json(args.output/'r9-rev11-final-provider-plan.json',frozen,exclusive=True)
     durable_json(args.output/'r9-rev11-provider-role-coverage.json',result['role_coverage'],exclusive=True)
@@ -171,6 +191,8 @@ def main():
     p.add_argument('--generation-prefix', default='rev11-live')
     p.add_argument('--instruction-ref', default='fe909d26')
     p.add_argument('--exact-financial-owner', action='store_true')
+    p.add_argument('--provider-native-valuation', action='store_true')
+    p.add_argument('--valuation-listing-reference', type=Path)
     for name in ('output','operating','native-owner','validation','rev10-receipt'):
         p.add_argument('--'+name,type=Path,required=True)
     args=p.parse_args()
@@ -190,9 +212,9 @@ def main():
                 raise SourceSafetyStop('frozen_static_input_drift')
     guard()
     if args.mode=='acquire':
-        require_disk_capacity(args.output)
+        require_disk_capacity(args.output, 12 if frozen.get('provider_native_valuation') else 10)
         s=Settings(_env_file=args.operating/'.env')
-        config=credentials(s)
+        config=credentials(s, native_valuation=frozen.get('provider_native_valuation', False))
         run=SealedDispatcher(plan=ProviderPlan.model_validate(frozen['plan']),root=args.output/'dispatch',
             rev10_receipt=frozen['rev10_receipt'],owners=frozen['owners'],config_identities={k:digest(v) for k,v in config.items()},
             credential_presence={k:all(v) for k,v in config.items()},secrets=tuple(v for values in config.values() for v in values))

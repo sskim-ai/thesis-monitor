@@ -13,7 +13,7 @@ from scripts import r2b_r2_preflight as pre
 from scripts import m12dr_fresh_blind_reproof as p
 from scripts import m12ds_launch_context as launch
 from scripts import m12ds_r4_r4_market as market_owner
-from scripts.r2b_r5_execution import Execution, add_limits, STAGES
+from scripts.r2b_r5_execution import Execution, add_limits, STAGES, CaptureOwner
 from scripts.r2b_r5_market_adapter import project_sealed_market_context
 from scripts.r2b_r9_full_fresh_requalification import prepare_fresh_subject
 from scripts.r9_offline_stage_replay import replay_market
@@ -29,6 +29,28 @@ class FreshExecution(Execution):
     DETAILED_PRESENTATION = True
     # Match REV10 detailed capture; the older typed path expects legacy packets.
     TYPED_PRESENTATION = False
+
+    def valuation_context(self, ticker):
+        if not self.source_frozen.get('provider_native_valuation'):
+            return None
+        from app.services.provider_valuation_calibration_context import calibration_context
+        return calibration_context(self.fresh_stocks[ticker]['valuation_view'])
+
+    def capture(self, stage_name, spec, context, schema, prompt):
+        from app.services.provider_valuation_calibration_context import require_direction_isolation
+        if stage_name in ('core', 'pass-a'):
+            require_direction_isolation(context)
+            require_direction_isolation(schema)
+        if stage_name == 'pass-b' and self.source_frozen.get('provider_native_valuation'):
+            for ticker in spec['subjects']:
+                expected = self.valuation_context(ticker)
+                if self.prepared[ticker]['mode'] == 'UNKNOWN_LIMIT':
+                    context[ticker]['valuation_context'] = expected
+                p.require(context[ticker].get('valuation_context') == expected, 'pass_b_valuation_visibility_drift')
+            p.write(self.sealed/'valuation-visibility'/f"{spec['market']}-{spec['batch']}.json",
+                dict(status='PASS', contexts={t:context[t]['valuation_context'] for t in spec['subjects']},
+                    generation_id=self.gen, overall_direction_use=False))
+        return CaptureOwner.capture(self, stage_name, spec, context, schema, prompt)
 
     def __init__(self, root, sources):
         self.root, self.sources = root, sources

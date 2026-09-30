@@ -212,7 +212,15 @@ def derive_current_valuation(*, ticker, run_id, security, price, projection, iss
         source_method='existing_derived_trailing_owner_scope_checked' if metric != 'fPER' else 'no_fresh_estimate_owner',
         input_hashes=bindings, denial_reason=reason if metric != 'fPER' else 'NO_FRESH_ESTIMATE_HORIZON_PUBLICATION_CURRENTNESS')
         for metric in ('PER', 'PBR', 'fPER'))
-    if native_input is not None and native_input.get('contract') == INPUT_CONTRACT:
+    if native_input is not None and native_input.get('contract') == 'provider-native-valuation-unavailable-v1':
+        if (native_input['run_id'] != run_id or native_input['security_sha256'] != digest(security)
+                or native_input['reason'] not in {'UNAVAILABLE_PROVIDER_REQUEST_NOT_COMPLETED', 'UNAVAILABLE_PROVIDER_RESPONSE'}
+                or len(native_input['acquisition_binding']) != 64):
+            raise ValueError('native_valuation_denial_binding_mismatch')
+        metrics = tuple(CurrentMultiple(metric=m.metric, status='UNAVAILABLE', numerator=current_price,
+            source_method='sealed_native_valuation_acquisition_denial', input_hashes=(native_input['acquisition_binding'],),
+            denial_reason=native_input['reason']) if m.metric != 'fPER' else m for m in metrics)
+    elif native_input is not None and native_input.get('contract') == INPUT_CONTRACT:
         snapshots = derive_provider_snapshots(native_input, security=security, run_id=run_id)
         metrics = tuple(CurrentMultiple(metric=s.metric, status='QUALIFIED' if s.display_eligible else 'UNAVAILABLE',
             numerator=current_price, numerator_role='CURRENT_PRICE_CONTEXT_ONLY', value=s.value,

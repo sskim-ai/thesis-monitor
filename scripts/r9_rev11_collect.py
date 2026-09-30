@@ -225,6 +225,9 @@ async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guar
         await phase('night', night)
         for read in frozen['news_reads']:
             await phase('event-'+read['subject'], lambda r=read: news(r))
+        if frozen.get('valuation_slots'):
+            from app.services.provider_native_valuation_acquisition import collect_native
+            await phase('valuation', lambda: collect_native(frozen=frozen, settings=settings, sealed=sealed))
         for key, final in dispatcher.results.items():
             if final['status'] == 'PASS':
                 consume_bound_result(root=dispatcher.root, plan=dispatcher.plan, logical_id=key, receipt_sha256=final['receipt_sha256'])

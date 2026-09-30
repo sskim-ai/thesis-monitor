@@ -18,7 +18,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def compile_plan(*, stock, identities, news_reads, config_identities, rev10_receipt,
-                 configured_kr_pages, kr_post_acquisition_completeness_approved, exact_financial_owner=False):
+                 configured_kr_pages, kr_post_acquisition_completeness_approved, exact_financial_owner=False,
+                 valuation_market_types=None):
     if kr_post_acquisition_completeness_approved is not True:
         raise ValueError('explicit_kr_post_acquisition_completeness_approval_required')
     if configured_kr_pages < 1:
@@ -42,11 +43,11 @@ def compile_plan(*, stock, identities, news_reads, config_identities, rev10_rece
         owners[owner] = owner_hash
         roles[role] = dict(mandatory=mandatory, descriptor_ids=[s.logical_request_id for s in slots])
         return d.logical_request_id
-    def kiwoom(key, role, market, subject, api, route, body, *, pages=1, mandatory=True, binding=None):
+    def kiwoom(key, role, market, subject, api, route, body, *, pages=1, mandatory=True, binding=None, retries=2):
         return add(key, 'kiwoom', role, market, subject, api, httpx.Request('POST', 'https://api.kiwoom.com' + route,
             json=body, headers={'Content-Type': 'application/json;charset=UTF-8', 'api-id': api,
                 'authorization': 'Bearer PLAN_CREDENTIAL', 'cont-yn': 'N', 'next-key': ''}),
-            mandatory=mandatory, pages=pages, binding=binding)
+            mandatory=mandatory, pages=pages, binding=binding, retries=retries)
     add('kiwoom:auth', 'kiwoom', 'kiwoom:credential_exchange', 'global', 'run', 'credential_exchange',
         httpx.Request('POST', 'https://api.kiwoom.com/oauth2/token',
             headers={'Content-Type': 'application/json;charset=UTF-8'},
@@ -110,6 +111,10 @@ def compile_plan(*, stock, identities, news_reads, config_identities, rev10_rece
         add('events:' + r.subject, r.provider, 'events:' + r.subject, r.market, r.subject, 'news',
             serialize_news_request(req['method'], req['route'], req['params'], headers=headers), mandatory=False, retries=0)
         roles['events:' + r.subject]['classification'] = 'EVENT_OPTIONAL_PLANNED'
+    valuation_slots = {}
+    if valuation_market_types is not None:
+        from app.services.provider_native_valuation_acquisition import add_slots
+        valuation_slots = add_slots(identities=identities, market_types=valuation_market_types, add=add, kiwoom=kiwoom)
     plan = ProviderPlan(generation_id=stock.run_id, code_sha=stock.implementation_sha,
         policy_schema_sha256=digest({'descriptor': FreshRequestDescriptor.model_json_schema(),
             'acquisition': candidate['plan_sha256'], 'kr_completeness_approval': True}),
@@ -119,7 +124,7 @@ def compile_plan(*, stock, identities, news_reads, config_identities, rev10_rece
     for role, row in roles.items():
         row['descriptor_ids'] = [d.logical_request_id for d in descriptors if d.consumer_role == role]
     return dict(plan=plan, candidate=candidate, owners=owners, role_coverage=roles, kr_page_proof=page_proof,
-        optional_valuation={t: {'native_metric': 'OPTIONAL_UNAVAILABLE_NO_PLANNED_NATIVE_READ',
+        optional_valuation={t: {'native_metric': ('PLANNED_NATIVE_SNAPSHOT_OPTIONAL_VALUE' if valuation_slots else 'OPTIONAL_UNAVAILABLE_NO_PLANNED_NATIVE_READ'),
             'financial_price_inputs': 'CURRENT_GENERATION_ONLY', 'no_new_provider': True} for t in identities},
-        news_reads=[r.model_dump(mode='json') for r in news_reads],
+        valuation_slots=valuation_slots, news_reads=[r.model_dump(mode='json') for r in news_reads],
         acquisition_fragment_not_source_qualification=True)

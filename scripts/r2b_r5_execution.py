@@ -75,6 +75,9 @@ class Execution(OfficialLaunch):
         return dict(ticker=t, decision_mode='UNKNOWN_LIMIT', recovery=self.prepared[t]['recovery'],
                     source_view_receipt=self.prepared[t]['view_receipt'])
 
+    def valuation_context(self, ticker):
+        return None
+
     def freeze_stage(self, stage, requests):
         path = self.sealed/(stage+'-request-freeze.json')
         p.require(not path.exists(), 'stage_already_frozen')
@@ -225,8 +228,15 @@ class Execution(OfficialLaunch):
                 self.caps[t],self.ranges[t],self.entries[t]=cap,valuation,entries
                 self.bctx[t]=contexts[t]=ctx
                 schemas[t]=c.decision_schema('EVIDENCE_BASED',cap,valuation,entries,{})
+                snapshot_context = self.valuation_context(t)
+                if snapshot_context is not None:
+                    from app.services.provider_valuation_calibration_context import with_axis_refs
+                    ctx['valuation_context'] = snapshot_context
+                    schemas[t] = with_axis_refs(schemas[t], snapshot_context)
             schema=add_limits(c.schemas.obj({'decisions':c.schemas.obj(schemas)}),self.prepared,spec['subjects'])
-            requests.append(self.capture('pass-b',spec,contexts,schema,c.schemas.B_PROMPT+'\n'+c.LIMIT_PROMPT))
+            from app.services.provider_valuation_calibration_context import PROMPT as VALUATION_PROMPT
+            extra = '\n' + VALUATION_PROMPT if any('valuation_context' in ctx for ctx in contexts.values()) else ''
+            requests.append(self.capture('pass-b',spec,contexts,schema,c.schemas.B_PROMPT+'\n'+c.LIMIT_PROMPT+extra))
         self.freeze_stage('pass-b',requests)
         return requests
 
@@ -235,6 +245,11 @@ class Execution(OfficialLaunch):
         self.validate_limits(raw,'pass-b',spec,dest)
         accepted={}
         for t in self.partition(spec):
+            snapshot_context = self.valuation_context(t)
+            if snapshot_context is not None:
+                from app.services.provider_valuation_calibration_context import validate_calibration_output
+                audit = validate_calibration_output(raw['decisions'][t], snapshot_context)
+                self.receipt(dest/(t+'-valuation-use.json'), audit)
             cap=c.policy.axis_capability(self.cores[t],self.chains[t],self.catalogs[t],self.subjects[t]['decision_evidence'])
             p.require(cap==self.caps[t],'capability_drift')
             row,receipt=c.validate_decision(raw['decisions'][t],mode='EVIDENCE_BASED',cap=cap,valuation=self.ranges[t],recovery={})

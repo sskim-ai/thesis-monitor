@@ -93,6 +93,10 @@ def stock_inputs(root, frozen, policy, outcome):
                         consume_bound_result(root=root/'dispatch', plan=sealed, logical_id=key, receipt_sha256=final['receipt_sha256'])
                 item = dict(technical_inputs=technical, financial_inputs=dict(plan=frozen['candidate']['financial_plans'][ticker],
                     acquisition=read(path/'owner-acquisition.json'), receipts=financial_receipts, directory=path, field_semantics=True), source_window=window)
+                if frozen.get('valuation_slots'):
+                    from app.services.provider_native_valuation_acquisition import replay_native
+                    item['valuation_inputs'] = replay_native(root=root, frozen=frozen, outcome=outcome,
+                        security=frozen['candidate']['financial_plans'][ticker]['security'], policy=policy)
                 event = root/'events'/ticker/'bound-source.json'
                 if event.exists():
                     for p in event.parent.glob('*.response.json'):
@@ -278,5 +282,13 @@ def replay_twice(root, frozen, outcome, policy):
     from app.services.whole_source_code_owner_registry import replay_identity_receipt
     identity = replay_identity_receipt(Path(__file__).resolve().parents[1], seed=args['seed'],
         metadata=args['composition_metadata'], first=first, second=second)
+    from app.services.provider_valuation_calibration_context import calibration_context
+    def contexts(whole):
+        return {t: calibration_context(s['valuation_view']) for packet in whole['packets'].values()
+            for t, s in packet['stocks'].items()}
+    first_contexts, second_contexts = contexts(first), contexts(second)
+    if first_contexts != second_contexts:
+        raise ValueError('valuation_b_context_replay_drift')
     return args, first, dict(first_sha256=digest(first), second_sha256=digest(second), replay_equal=True,
-                            code_owner_registry_identity=identity)
+                            code_owner_registry_identity=identity,
+                            valuation_b_context_sha256=digest(first_contexts))

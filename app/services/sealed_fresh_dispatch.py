@@ -36,13 +36,13 @@ ID = r'^[A-Za-z0-9_.:-]+$'
 
 def read_route(provider, method, path):
     routes = {
-        'kiwoom': r'(?:/api/(?:us/(?:chart|stkinfo)|dostk/(?:chart|sect|mrkcond))|/oauth2/token)',
+        'kiwoom': r'(?:/api/(?:us/(?:chart|stkinfo)|dostk/(?:chart|sect|mrkcond|stkinfo))|/oauth2/token)',
         'sec_edgar': r'/(?:submissions/CIK\d{10}\.json|api/xbrl/companyfacts/CIK\d{10}\.json|Archives/edgar/data/\d+/\d{18}/[A-Za-z0-9_.-]+)',
         'opendart': r'/api/(?:list|fnlttSinglAcntAll)\.json',
         'fred': r'/fred/series/observations', 'eia': r'/v2/seriesid/[A-Z0-9.]+',
         'ecos': r'/api/KeyStatisticList/(?:\[REDACTED\]|%5BREDACTED%5D)/json/kr/1/100',
         'krx_night_futures': r'/svc/apis/drv/fut_bydd_trd',
-        'finnhub': r'/api/v1/stock/metric', 'google_news_rss': r'/rss/search',
+        'finnhub': r'/api/v1/stock/(?:metric|profile2)', 'google_news_rss': r'/rss/search',
         'naver_news': r'/v1/search/news\.json',
     }
     return method == ('POST' if provider == 'kiwoom' else 'GET') and bool(re.fullmatch(routes[provider], path))
