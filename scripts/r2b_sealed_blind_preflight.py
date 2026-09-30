@@ -66,6 +66,9 @@ def read_verified_archive(path, expected_sha):
 
 
 def source_only_stock(stock, authority):
+    if stock.get("contract") == "fresh-financial-stock-owner-v1":
+        from scripts.fresh_source_only_export import source_only_fresh_stock
+        return source_only_fresh_stock(stock, authority)
     packet = stock["packet"]
     reject_downstream(packet)
     result = {"source_packet": packet, "financial_bindings": stock["financial_bindings"],
