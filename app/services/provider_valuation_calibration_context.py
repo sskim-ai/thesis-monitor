@@ -151,7 +151,25 @@ def validate_calibration_output(raw, context):
             raise ValueError("valuation_axis_ref_not_owned")
         rest = {k: v for k, v in row.items() if k != field}
         require_direction_isolation(rest)
-        if VALUATION_TERMS.search(row[axis + "_reason"]) and context.facts and not refs:
+        terms = {
+            "per": "PER",
+            "p/e": "PER",
+            "주가수익비율": "PER",
+            "pbr": "PBR",
+            "p/b": "PBR",
+            "주가순자산비율": "PBR",
+            "fper": "fPER",
+        }
+        mentioned = {
+            terms[term.casefold()] for term in VALUATION_TERMS.findall(row[axis + "_reason"])
+        }
+        qualified = {
+            r["metric"]: r["fact_ref"] for r in context.metric_states if r["fact_ref"] is not None
+        }
+        # Unavailable metrics cannot supply refs. A different qualified multiple
+        # must not turn a truthful missing-metric caution into a binding error.
+        required = {ref for metric, ref in qualified.items() if metric in mentioned}
+        if not required <= set(refs):
             raise ValueError("valuation_reason_requires_axis_ref")
         audit[axis] = refs
     return dict(

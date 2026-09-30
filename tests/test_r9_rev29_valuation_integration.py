@@ -269,7 +269,9 @@ def test_b_output_requires_axis_owned_refs_and_disallows_overall(valuation):
         ),
         new_buyer_axis=dict(
             new_buyer_reason="PBR snapshot context",
-            new_buyer_valuation_refs=[ref],
+            new_buyer_valuation_refs=[
+                next(r["fact_ref"] for r in ctx["metric_states"] if r["metric"] == "PBR")
+            ],
             new_buyer_risk_refs=[],
         ),
     )
@@ -343,3 +345,22 @@ def test_real_controller_capture_checks_exact_b_context_and_direction_isolation(
         with pytest.raises(ValueError, match="directional_input_leak"):
             proof.capture(stage, spec, ctx, {}, "fixture")
     assert len(captured) == 1
+
+
+def test_unavailable_fper_caution_needs_no_other_metric_ref(valuation):
+    context = calibration_context(valuation[0])
+    row = dict(
+        overall=dict(overall_reason="Business evidence only"),
+        holder_axis=dict(holder_reason="fPER unavailable", holder_valuation_refs=[]),
+        new_buyer_axis=dict(new_buyer_reason="fPER unavailable", new_buyer_valuation_refs=[]),
+    )
+    assert validate_calibration_output(row, context)["status"] == "PASS"
+    per_ref = next(r["fact_ref"] for r in context["metric_states"] if r["metric"] == "PER")
+    pbr_ref = next(r["fact_ref"] for r in context["metric_states"] if r["metric"] == "PBR")
+    row["new_buyer_axis"].update(
+        new_buyer_reason="PER snapshot", new_buyer_valuation_refs=[pbr_ref]
+    )
+    with pytest.raises(ValueError, match="reason_requires_axis_ref"):
+        validate_calibration_output(row, context)
+    row["new_buyer_axis"]["new_buyer_valuation_refs"] = [per_ref]
+    assert validate_calibration_output(row, context)["status"] == "PASS"
