@@ -28,7 +28,9 @@ def replay_matrix(stocks, inputs):
         rows.append(dict(case='current:' + t, output_sha256=digest(view.model_dump(mode='json')),
                          states={r.metric: r.status for r in view.metrics}, scope=scope))
     states = {(m['metric'], m['status']) for s in stocks.values() for m in s['valuation_view']['metrics']}
-    required = {('PER', 'QUALIFIED'), ('PBR', 'QUALIFIED'), ('PER', 'NOT_MEANINGFUL'),
+    # Atomic provider ratios never infer N/M from unqualified EPS. Source-derived
+    # N/M still requires its separate denominator owner; no synthetic EPS grant.
+    required = {('PER', 'QUALIFIED'), ('PBR', 'QUALIFIED'),
                 ('PER', 'UNAVAILABLE'), ('PBR', 'UNAVAILABLE'), ('fPER', 'UNAVAILABLE')}
     if not required <= states:
         raise ValueError('matrix_typed_state_coverage_incomplete')
@@ -39,7 +41,6 @@ def replay_matrix(stocks, inputs):
         metric, expected = 'PER', 'UNAVAILABLE'
         if case == 'negative_eps':
             body['metric'].update(epsTTM=-2, peTTM=None)
-            expected = 'NOT_MEANINGFUL'
         elif case == 'nonpositive_book':
             body['metric'].update(pbQuarterly=0, pbAnnual=2)
             metric = 'PBR'
@@ -53,6 +54,7 @@ def replay_matrix(stocks, inputs):
         elif case == 'missing_asof':
             body.pop('metricAsOf', None)
             body.pop('asOfDate', None)
+            expected = 'QUALIFIED'
         else:
             body['metricAsOf'] = '2000-01-01'
         native['raw'] = encoded(body)
@@ -61,6 +63,10 @@ def replay_matrix(stocks, inputs):
         row = next(r for r in view['metrics'] if r['metric'] == metric)
         if row['status'] != expected or row['overall_direction_use'] or row['entry_use_eligible']:
             raise ValueError('matrix_negative_control_failed:' + case)
+        if expected == 'QUALIFIED' and (row['ownership_state'] != 'QUALIFIED_PROVIDER_LATEST_SNAPSHOT'
+                or row['native_snapshot']['metric_asof'] is not None
+                or row['denominator'] is not None or row['publication_date'] is not None):
+            raise ValueError('matrix_snapshot_policy_scope')
         rows.append(dict(case=case, synthetic_variant=True, native_raw=body, native_receipt=native['receipt'],
                          expected=expected, actual=row['status'], output=view))
     variant = deepcopy(base)
@@ -68,7 +74,7 @@ def replay_matrix(stocks, inputs):
     try:
         assemble_fresh_stock(**variant)
     except ValueError as exc:
-        if str(exc) != 'fresh_native_valuation_receipt_mismatch':
+        if str(exc) != 'native_snapshot_source_receipt_mismatch':
             raise
         rows.append(dict(case='wrong_current_security', rejection=str(exc)))
     else:

@@ -38,6 +38,9 @@ def plan_and_securities():
                 identity_quality='verified', updated_at=START)
             if t == 'SKHY':
                 s = s.model_copy(update={'issuer_type': 'adr', 'security_type': 'ads'})
+            if t in {'IBM', 'MU'}:
+                # Fictional SEC evidence below is consumed by the real identity owner.
+                s = s.model_copy(update={'identity_provider': 'sec_official_identity'})
             securities[market].append(s.model_dump(mode='json'))
             identities[t] = s.model_dump(mode='json')
     universe = {m: {'eligible_subjects': list(ts)} for m, ts in UNIVERSE.items()}
@@ -78,15 +81,10 @@ def stocks(root):
     inputs['SKHY']['financial_inputs']['issuer_business'] = dict(source_inputs=source_owner,
         official_identity=official, official_identity_sha256=digest(official), source_result_sha256=digest(assemble(**source_owner)))
     for t, negative in [('IBM', False), ('MU', True)]:
+        from tests.rev28_native_fixtures import native_input
         i = inputs[t]
-        session = next(r.latest_completed_session for r in plan.reads if r.subject == t)
-        raw = encoded(dict(symbol=t, currency='USD', metricAsOf=session,
-            metric=dict(peTTM=None if negative else 10, epsTTM=-2 if negative else 2, pbQuarterly=1.5, forwardPE=8)))
-        receipt = dict(provider='finnhub', run_id=RUN, acquisition_class='FRESH_CURRENT_RUN',
-            security_sha256=digest(i['financial_inputs']['plan']['security']), source_sha256=sha256_bytes(raw),
-            http_status=200, requested_at=START.isoformat(), received_at=(START + timedelta(seconds=3)).isoformat(),
-            request=dict(method='GET', route='https://finnhub.io/api/v1/stock/metric', params={'symbol': t, 'metric': 'all'}))
-        i['valuation_inputs'] = dict(raw=raw, receipt=receipt, policy=POLICY_ALL, run_started_at=START, cutoff=CUTOFF)
+        i['valuation_inputs'] = native_input(i['financial_inputs']['plan']['security'], start=START,
+            run=RUN, policy=POLICY_ALL, negative=negative)
     return inputs
 
 

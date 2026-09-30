@@ -22,6 +22,7 @@ _OWNER_SPECS = (
     ("app/services/canonical_business_quality_owner.py", "financial_quality", False),
     ("app/services/current_effective_technical.py", "current_effective_technical", False),
     ("app/services/current_fresh_valuation.py", "fresh_valuation", False),
+    ("app/services/provider_native_valuation_snapshot.py", "provider_native_valuation_snapshot", False),
     ("app/services/fresh_event_carrier.py", "fresh_event", False),
     ("app/services/fresh_financial_stock_owner.py", "fresh_stock_financial_owner", False),
     ("app/services/fpi_filing_document_graph.py", "filing_purpose_and_slot_owner", False),

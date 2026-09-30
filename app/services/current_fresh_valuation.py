@@ -15,6 +15,9 @@ from app.models.financial import FinancialSnapshot
 from app.models.security import SecurityMaster
 from app.schemas.thesis import ValuationSnapshot
 from app.services.unified_snapshot_contract import ContractModel, digest
+from app.services.provider_native_valuation_snapshot import (
+    INPUT_CONTRACT, ProviderNativeValuationSnapshot, derive_provider_snapshots,
+)
 from app.services.security_valuation_basis import (
     SecurityValuationBasisReceipt, UnavailableState, candidate_inventory,
     unavailable_state, unresolved_basis,
@@ -27,7 +30,7 @@ from app.services.valuation_snapshot_service import (
 class CurrentMultiple(ContractModel):
     metric: Literal['PER', 'PBR', 'fPER']
     status: Literal['UNAVAILABLE', 'NOT_MEANINGFUL', 'QUALIFIED']
-    ownership_state: Literal['QUALIFIED', 'NOT_MEANINGFUL'] | UnavailableState | None = None
+    ownership_state: Literal['QUALIFIED', 'NOT_MEANINGFUL', 'QUALIFIED_PROVIDER_LATEST_SNAPSHOT'] | UnavailableState | None = None
     value: float | None = Field(default=None, allow_inf_nan=False)
     numerator: float = Field(gt=0, allow_inf_nan=False)
     numerator_role: Literal['CURRENT_PRICE', 'CURRENT_PRICE_CONTEXT_ONLY'] = 'CURRENT_PRICE'
@@ -42,9 +45,29 @@ class CurrentMultiple(ContractModel):
     display_eligible: bool = False
     entry_use_eligible: bool = False
     overall_direction_use: Literal[False] = False
+    native_snapshot: ProviderNativeValuationSnapshot | None = None
 
     @model_validator(mode='after')
     def owned_metric_state(self):
+        if self.native_snapshot is not None:
+            snapshot = ProviderNativeValuationSnapshot.model_validate(self.native_snapshot.model_dump(mode='json'))
+            qualified = snapshot.display_eligible
+            expected = 'QUALIFIED_PROVIDER_LATEST_SNAPSHOT' if qualified else unavailable_state(metric=self.metric, reason=snapshot.state)
+            if self.ownership_state is not None and self.ownership_state != expected:
+                raise ValueError('valuation_ownership_state_mismatch')
+            object.__setattr__(self, 'ownership_state', expected)
+            if (self.metric != snapshot.metric or self.value != snapshot.value
+                    or self.status != ('QUALIFIED' if qualified else 'UNAVAILABLE')
+                    or self.source_method != 'provider_native_latest_snapshot'
+                    or self.display_eligible != qualified or self.entry_use_eligible
+                    or self.numerator_role != 'CURRENT_PRICE_CONTEXT_ONLY'
+                    or self.denominator is not None or self.denominator_period is not None
+                    or self.estimate_horizon is not None or self.latest_published
+                    or self.publication_date is not None
+                    or self.denial_reason != (None if qualified else snapshot.state)
+                    or self.input_hashes != (snapshot.snapshot_sha256, snapshot.raw_sha256, snapshot.source_receipt_sha256)):
+                raise ValueError('valuation_atomic_snapshot_scope_mismatch')
+            return self
         expected = (unavailable_state(metric=self.metric, reason=self.denial_reason or '')
                     if self.status == 'UNAVAILABLE' else self.status)
         if self.ownership_state is not None and self.ownership_state != expected:
@@ -109,8 +132,15 @@ class CurrentValuationView(ContractModel):
                     or receipt.price_adjustment_basis != self.price_basis
                     or receipt.candidate_inventory_sha256 != digest(self.denominator_candidate_inventory)):
                 raise ValueError('valuation_view_basis_binding_mismatch')
-            if any(metric.status != 'UNAVAILABLE' for metric in self.metrics):
+            if any(metric.status != 'UNAVAILABLE' and metric.native_snapshot is None for metric in self.metrics):
                 raise ValueError('valuation_unresolved_basis_cannot_display_number')
+        for metric in self.metrics:
+            if metric.native_snapshot is not None:
+                native = metric.native_snapshot
+                if (native.run_id != self.run_id or native.security_sha256 != self.security_sha256
+                        or native.canonical_security_id != self.security_id
+                        or native.requested_security_id != self.ticker):
+                    raise ValueError('valuation_native_view_binding_mismatch')
         return self
 
 
@@ -182,7 +212,14 @@ def derive_current_valuation(*, ticker, run_id, security, price, projection, iss
         source_method='existing_derived_trailing_owner_scope_checked' if metric != 'fPER' else 'no_fresh_estimate_owner',
         input_hashes=bindings, denial_reason=reason if metric != 'fPER' else 'NO_FRESH_ESTIMATE_HORIZON_PUBLICATION_CURRENTNESS')
         for metric in ('PER', 'PBR', 'fPER'))
-    if (not issuer_bridge and not basis.is_depositary_security and not basis.identity_warning
+    if native_input is not None and native_input.get('contract') == INPUT_CONTRACT:
+        snapshots = derive_provider_snapshots(native_input, security=security, run_id=run_id)
+        metrics = tuple(CurrentMultiple(metric=s.metric, status='QUALIFIED' if s.display_eligible else 'UNAVAILABLE',
+            numerator=current_price, numerator_role='CURRENT_PRICE_CONTEXT_ONLY', value=s.value,
+            source_method='provider_native_latest_snapshot', input_hashes=(s.snapshot_sha256, s.raw_sha256, s.source_receipt_sha256),
+            denial_reason=None if s.display_eligible else s.state, display_eligible=s.display_eligible, native_snapshot=s)
+            for s in snapshots) + (metrics[2],)
+    elif (not issuer_bridge and not basis.is_depositary_security and not basis.identity_warning
             and price_owned):
         if native_input is not None:
             metrics = _native_metrics(metrics, native_input, ticker=ticker, run_id=run_id,
@@ -266,6 +303,10 @@ def valuation_numeric_bindings(view):
             fields={fields[metric.metric]: metric.value},
             source_method=metric.source_method, input_hashes=list(metric.input_hashes),
             current_view_sha256=digest(view.model_dump(mode='json')), overall_direction_use=False)
+        if metric.native_snapshot is not None:
+            fact.update(provider_snapshot=metric.native_snapshot.model_dump(mode='json'),
+                        retrieval_timestamp=metric.native_snapshot.retrieval_timestamp.isoformat(),
+                        metric_asof=metric.native_snapshot.metric_asof.isoformat() if metric.native_snapshot.metric_asof else None)
         rows = build_numeric_registry([fact])
         if len(rows) != 1 or not rows[0]['registered'] or rows[0]['unit'] != 'x':
             raise ValueError('current_valuation_numeric_registration_failed')

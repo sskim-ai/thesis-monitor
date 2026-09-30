@@ -149,6 +149,11 @@ def _valuation_rows(valuation):
         _require(metric.numerator == valuation.price, 'detailed_valuation_numerator_mismatch')
         text = ('판단 자료 부족' if metric.status == 'UNAVAILABLE' else 'N/M'
                 if metric.status == 'NOT_MEANINGFUL' else f'{metric.value:,.2f}배')
+        if metric.native_snapshot is not None and metric.display_eligible:
+            snapshot = metric.native_snapshot
+            label = ('Kiwoom' if snapshot.provider == 'kiwoom' else
+                     'Finnhub TTM' if snapshot.metric == 'PER' else 'Finnhub quarterly')
+            text += f' · {label} snapshot'
         bound = bindings.get(metric.metric)
         rows.append(_row('valuation', metric.metric, metric.metric + ': ' + text,
             facts=(bound['fact']['fact_id'],) if bound else (),
