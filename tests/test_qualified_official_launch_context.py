@@ -141,3 +141,73 @@ def test_read_probe_never_opens_state_writable(tmp_path, monkeypatch):
     assert result["state_read_ready"] and len(flags) == 1
     assert result["state_probe_write_calls"] == 0
     assert state.read_bytes() == b"synthetic-non-sqlite"
+
+
+def test_explicit_native_maintenance_authority_keeps_manual_writes_zero(inputs):
+    inputs['state_evidence'] = replace(inputs['state_evidence'],
+        scope='CONTROLLER_ONLY_OFFICIAL_MAINTENANCE_AUTHORIZED',
+        official_maintenance_authorization_sha256='frozen-user-clarification')
+    inputs['expected_maintenance_authorization_sha256'] = 'frozen-user-clarification'
+    frozen = q.QualifiedOfficialModelLaunchContext.qualify(**inputs)
+    assert frozen.receipt()['state_evidence']['scope'] == 'CONTROLLER_ONLY_OFFICIAL_MAINTENANCE_AUTHORIZED'
+
+
+@pytest.mark.parametrize('expected', [None, 'different-authorization'])
+def test_native_maintenance_scope_cannot_be_inferred(inputs, expected):
+    inputs['state_evidence'] = replace(inputs['state_evidence'],
+        scope='CONTROLLER_ONLY_OFFICIAL_MAINTENANCE_AUTHORIZED',
+        official_maintenance_authorization_sha256='frozen-user-clarification')
+    inputs['expected_maintenance_authorization_sha256'] = expected
+    with pytest.raises(q.LaunchQualificationError):
+        q.QualifiedOfficialModelLaunchContext.qualify(**inputs)
+
+
+def test_authorized_native_maintenance_never_authorizes_direct_write(inputs):
+    inputs['state_evidence'] = replace(inputs['state_evidence'],
+        scope='CONTROLLER_ONLY_OFFICIAL_MAINTENANCE_AUTHORIZED',write_calls=1,
+        official_maintenance_authorization_sha256='frozen-user-clarification')
+    inputs['expected_maintenance_authorization_sha256'] = 'frozen-user-clarification'
+    with pytest.raises(q.LaunchQualificationError):
+        q.QualifiedOfficialModelLaunchContext.qualify(**inputs)
+
+
+@pytest.mark.parametrize('event,args', [
+    ('open',('protected/state', 'w', q.os.O_WRONLY)),
+    ('open',('protected/state', None, q.os.O_RDWR)),
+    ('os.remove',('protected/state', -1)),('os.chmod',('protected/state', 0o777, -1)),
+    ('os.rename',('outside','protected/state',-1,-1)),('sqlite3.connect',('protected/state',))])
+def test_manual_mutation_guard_denies_parent_writes(tmp_path, monkeypatch, event, args):
+    monkeypatch.chdir(tmp_path)
+    guard=q.ManualMutationGuard([tmp_path/'protected'])
+    with pytest.raises(q.LaunchQualificationError,match='MANUAL_STATE_MUTATION_BLOCKED'):
+        guard(event,args)
+    assert guard.blocked_attempts==1
+
+
+def test_manual_guard_allows_reads_and_owned_report_files(tmp_path):
+    guard=q.ManualMutationGuard([tmp_path/'protected'])
+    guard('open',(tmp_path/'protected/state','r',q.os.O_RDONLY))
+    guard('open',(tmp_path/'reports/result','w',q.os.O_WRONLY))
+    assert guard.blocked_attempts==0
+
+
+def test_legacy_guard_still_requires_preparation_parity(tmp_path):
+    import json
+    from scripts import m12ds_same_blind_reproof as legacy
+    runner=object.__new__(legacy.Reproof)
+    runner.report=tmp_path
+    host=dict(uid=501,gid=20,safe_environment={'marker':'restricted'})
+    (tmp_path/'host-context.json').write_text(json.dumps(host))
+    context=dict(host,state_access={'effective_open_readwrite_without_write':True})
+    runner.authorize_launch_context(context)
+    context['safe_environment']={'marker':'other'}
+    with pytest.raises(legacy.previous.SystemicFailure,match='HOST_LAUNCH_CONTEXT_DRIFT'):
+        runner.authorize_launch_context(context)
+
+
+def test_c1_capture_uses_readonly_probe_not_legacy_probe(monkeypatch):
+    from scripts.r9_rev31_c1_models import QualifiedFreshExecution
+    runner=object.__new__(QualifiedFreshExecution)
+    runner.names=['CODEX_SANDBOX']
+    monkeypatch.setattr(q,'capture_context',lambda names: {'names':names,'read_only':True})
+    assert runner.current_launch_context()=={'names':['CODEX_SANDBOX'],'read_only':True}

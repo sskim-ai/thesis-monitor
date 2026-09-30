@@ -95,14 +95,20 @@ class Reproof(previous.Reproof):
             raise previous.SystemicFailure(kind) from exc
         super().transport_failure(exc, destination, elapsed)
 
-    def invoke(self, stage, spec, request):
-        context = launch.context_receipt()
+    def authorize_launch_context(self, context):
         host = read(self.report / "host-context.json")
         allowed = context["state_access"]["effective_open_readwrite_without_write"]
         allowed &= context["uid"] == host["uid"] and context["gid"] == host["gid"]
         allowed &= context["safe_environment"] == host["safe_environment"]
         if not allowed:
             raise previous.SystemicFailure("HOST_LAUNCH_CONTEXT_DRIFT")
+
+    def current_launch_context(self):
+        return launch.context_receipt()
+
+    def invoke(self, stage, spec, request):
+        context = self.current_launch_context()
+        self.authorize_launch_context(context)
         write(self.report / "launch-contexts" / f"{stage}-{spec['market']}-{spec['batch']}.json", context)
         result = super().invoke(stage, spec, request)
         runtime = Path("/private/tmp") / self.gen / stage / spec["market"] / f"batch-{spec['batch']:02d}"

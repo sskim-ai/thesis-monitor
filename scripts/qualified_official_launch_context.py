@@ -52,6 +52,35 @@ def inventory_names():
         "GRPC_DEFAULT_SSL_ROOTS_FILE_PATH", "NIX_SSL_CERT_FILE"]))
 
 
+class ManualMutationGuard:
+    """Parent-only audit guard. It does not observe native CLI housekeeping."""
+
+    def __init__(self, roots):
+        self.roots = tuple(Path(path).resolve() for path in roots)
+        self.blocked_attempts = 0
+
+    def __call__(self, event, args):
+        paths = []
+        if event == 'open':
+            path, mode, flags = args
+            if (flags & (os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_TRUNC | os.O_APPEND)
+                    or isinstance(mode, str) and any(c in mode for c in 'wax+')):
+                paths = [path]
+        elif event in {'os.remove', 'os.rmdir', 'os.mkdir', 'os.chmod', 'os.chown', 'os.truncate'}:
+            paths = args[:1]
+        elif event in {'os.rename', 'os.link', 'os.symlink'}:
+            paths = args[:2]
+        elif event == 'sqlite3.connect':
+            paths = args[:1]
+        for path in paths:
+            if not isinstance(path, (str, bytes, os.PathLike)):
+                continue
+            path = Path(os.fsdecode(path)).resolve()
+            if any(path == root or root in path.parents for root in self.roots):
+                self.blocked_attempts += 1
+                raise LaunchQualificationError(PREFIX + 'MANUAL_STATE_MUTATION_BLOCKED')
+
+
 @dataclass(frozen=True)
 class LaunchIdentity:
     implementation_sha: str
@@ -79,6 +108,7 @@ class StateWriteEvidence:
     proof_sha256: str | None
     executable_sha256: str
     launcher_sha256: str
+    official_maintenance_authorization_sha256: str | None = None
 
 
 def capture_context(names):
@@ -157,7 +187,8 @@ class QualifiedOfficialModelLaunchContext:
     @classmethod
     def qualify(cls, *, identity, expected_identity, preparation, preparation_sha256,
                 actual_preparation_sha256, context, entry_environment, state_evidence,
-                binding_verified, provider_calls, secret_scan_passed):
+                binding_verified, provider_calls, secret_scan_passed,
+                expected_maintenance_authorization_sha256=None):
         require(identity == expected_identity, "REQUEST_FREEZE_IDENTITY_GAP")
         require(identity.model == "gpt-5.6-sol" and identity.effort == "xhigh"
                 and identity.timeout_seconds == 1200 and identity.max_calls == 26
@@ -169,8 +200,13 @@ class QualifiedOfficialModelLaunchContext:
         require(context["state_read_ready"], "STATE_ACCESS_GAP")
         require(context["state_probe_write_calls"] == 0 and not context["state_permissions_modified"],
                 "OFFICIAL_HOST_QUALIFICATION_GAP")
-        # The parent probe's literal zero must never certify native child writes.
-        require(state_evidence.scope == "PARENT_AND_OFFICIAL_CHILD"
+        # Native housekeeping is only out of scope under explicit frozen authority.
+        complete_scope = state_evidence.scope == "PARENT_AND_OFFICIAL_CHILD"
+        authorized_scope = (state_evidence.scope == "CONTROLLER_ONLY_OFFICIAL_MAINTENANCE_AUTHORIZED"
+            and bool(expected_maintenance_authorization_sha256)
+            and state_evidence.official_maintenance_authorization_sha256
+                == expected_maintenance_authorization_sha256)
+        require((complete_scope or authorized_scope)
                 and state_evidence.write_calls == 0 and state_evidence.permission_mutations == 0
                 and bool(state_evidence.proof_sha256)
                 and state_evidence.executable_sha256 == identity.executable_sha256
