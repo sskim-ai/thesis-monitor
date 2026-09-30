@@ -1004,4 +1004,3 @@ This recovers useful PER/PBR without pretending Thesis Monitor knows the provide
 reconstructing arithmetic it cannot own.
 
 ADRs and fPER remain honestly unavailable until their separate source authority exists.
-
