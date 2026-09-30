@@ -83,7 +83,9 @@ def _financial(stock, facts):
                 comparison_denials=deepcopy(stock['comparison_denials']),
                 acquisition_denials=deepcopy(stock['acquisition_denials']),
                 context_fact_refs=deepcopy(stock['context_fact_refs']),
-                selected_source_fields=_select(stock['projection'], (
+                selected_field_location='facts selected by selected_financial_owner.selected_fact_ids',
+                direct_projection_role='UNSELECTED_DIRECT_OWNER' if owner['bridge_receipt'] else 'SELECTED_DIRECT_OWNER',
+                selected_source_fields=None if owner['bridge_receipt'] else _select(stock['projection'], (
                     'fields', 'comparisons', 'comparison_applicability', 'denials', 'freshness',
                     'financial_field_completeness', 'source_completeness', 'context_eligible',
                     'direction_eligible', 'latest_selected_period_unavailable')))

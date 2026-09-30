@@ -50,6 +50,14 @@ def test_all22_fresh_shapes_without_legacy_fields(cohort, ticker):
     assert output['flow_positioning'] == stock['packet']['stocks'][0]['price_and_positioning']
     assert output['financial']['comparison_denials'] == stock['comparison_denials']
     assert output['financial']['financial_state'] == stock['financial_state']
+    if stock['selected_financial_owner']['bridge_receipt']:
+        assert output['financial']['selected_source_fields'] is None
+        assert output['financial']['direct_projection_role'] == 'UNSELECTED_DIRECT_OWNER'
+        assert output['financial']['selected_financial_owner']['selected_fact_ids']
+        assert output['quality']['quality_view']['receipt']['state'] == stock['quality_view']['receipt']['state']
+    else:
+        assert output['financial']['selected_source_fields']['fields'] == stock['projection']['fields']
+        assert output['financial']['direct_projection_role'] == 'SELECTED_DIRECT_OWNER'
     if 'event_view' in stock:
         assert output['events']['event_view'] == stock['event_view']
     assert not {'ownership', 'evidence_packet', 'packet', 'knowledge_routing', 'thesis'} & output.keys()
