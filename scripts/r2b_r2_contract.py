@@ -165,7 +165,8 @@ def bound_chain(view, authority, *, atomic, generation, source_generation, view_
     original = authority["authority"]
     _require(original["status"] == "PASS" and not original["authority_errors"], "authority_not_pass")
     original_content = {k: v for k, v in original.items() if k != "authority_manifest_sha256"}
-    _require(digest(original_content) == original["authority_manifest_sha256"], "authority_hash")
+    # Persisted and derivative authority manifests share the producer's JSON contract.
+    _require(canonical_sha256(original_content) == original["authority_manifest_sha256"], "authority_hash")
     derivative = deepcopy(original)
     indexed = {r["ref_id"]: r for r in metadata}
     derivative["authority_records"] = [deepcopy(r) for r in original["authority_records"]
@@ -186,7 +187,7 @@ def bound_chain(view, authority, *, atomic, generation, source_generation, view_
     derivative.update(catalog_sha256=canonical_sha256(cat), source_metadata_sha256=canonical_source_metadata_sha256(metadata),
         parent_authority_sha256=digest(original), source_view_receipt_sha256=view_receipt["receipt_sha256"])
     derivative.pop("authority_manifest_sha256")
-    derivative["authority_manifest_sha256"] = digest(derivative)
+    derivative["authority_manifest_sha256"] = canonical_sha256(derivative)
     expectation = freeze_source_use_input_expectation(ticker=view["ticker"], source_generation_id=source_generation,
         execution_generation_id=generation, catalog=cat, source_metadata=metadata, authority_manifest=derivative)
     projection = build_source_use_projection(ticker=view["ticker"], input_generation_id=source_generation,
