@@ -45,6 +45,16 @@ def test_atomic_positive_without_denominator_reconstruction(ticker):
         assert "PROVIDER_UPDATE_CADENCE_WEEKLY_OR_EARNINGS_SEASON" in rows[0].caveats
 
 
+def test_kr_exchange_native_market_name_and_same_code():
+    sec = security('012450')
+    inputs = native_input(sec)
+    page = inputs['identity_inputs']['list_pages'][0]
+    alter(page, lambda b: b['list'][0].update(marketName='거래소'))
+    assert all(r.display_eligible for r in derive(sec, inputs))
+    alter(page, lambda b: b['list'][0].update(marketCode='10'))
+    assert all(not r.display_eligible for r in derive(sec, inputs))
+
+
 @pytest.mark.parametrize("ticker", ["IBM", "005930"])
 @pytest.mark.parametrize("value", [None, "", "  ", 0, "0", -1, True, "oops", "NaN", "Infinity"])
 def test_sentinel_is_not_cheap_or_nm_and_other_metric_independent(ticker, value):

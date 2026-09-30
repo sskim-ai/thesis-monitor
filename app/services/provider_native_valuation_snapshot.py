@@ -29,7 +29,7 @@ FIELDS = {
         "PBR": ("pbQuarterly", "PROVIDER_REPORTED_QUARTERLY_PBR"),
     },
 }
-MARKETS = {"0": ("KOSPI", "\ucf54\uc2a4\ud53c"), "10": ("KOSDAQ", "\ucf54\uc2a4\ub2e5")}
+MARKETS = {"0": ("KOSPI", "\ucf54\uc2a4\ud53c", "\uac70\ub798\uc18c"), "10": ("KOSDAQ", "\ucf54\uc2a4\ub2e5")}
 
 
 class ProviderNativeValuationSnapshot(ContractModel):
