@@ -58,6 +58,12 @@ captures are not a redistribution licence or a supported API availability promis
 Any integration design must retain access/terms review, layout-change denial,
 explicit accounting basis, snapshot dating and per-security missingness.
 
+REV41 found a concrete access-authority gap: Yahoo's official terms require
+prior permission for automated collection. Such permission was not established.
+The saved public responses support offline semantic review only; the source is
+SECONDARY_ONLY, not an approved recurring free feed. Acquisition is closed.
+See `docs/reports/20261001-r2b-r9-rev41-us-forward-eps-qualification.md`.
+
 Composite sources cannot overwrite a `(security, horizon)` owner silently.
 Source ranking, cross-source filling and production consumption are not implemented.
 Future integration must separately bind an accepted current close and the EPS
