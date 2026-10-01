@@ -17,6 +17,7 @@ POLICY = 'BOUNDED_EXACT_SECURITY_SHARE_UNIT_GUARD_V1'
 ENVELOPE = 'SHARE_UNIT_GUARD_ENVELOPE_V1'
 CLEAR = 'NO_RELEVANT_SHARE_UNIT_ACTION_FOUND_V1'
 EVENT = 'POST_ESTIMATE_SHARE_UNIT_ACTION_PRESENT'
+UNRESOLVED = 'CORPORATE_ACTION_DATE_UNRESOLVED'
 INCOMPLETE = 'CORPORATE_ACTION_SOURCE_INCOMPLETE'
 CONFLICT = 'CORPORATE_ACTION_IDENTITY_CONFLICT'
 VARIANTS = {
@@ -100,8 +101,9 @@ def _dates(value):
     if not isinstance(value, str) or not value.strip():
         raise SemanticGap('EVENT_DATE_MISSING')
     value = value.strip()
-    forms = (r'[0-9]{8}', r'[0-9]{4}-[0-9]{2}-[0-9]{2}', r'[0-9]{4}\.[0-9]{2}\.[0-9]{2}')
-    formats = ('%Y%m%d', '%Y-%m-%d', '%Y.%m.%d')
+    forms = (r'[0-9]{8}', r'[0-9]{4}-[0-9]{2}-[0-9]{2}',
+             r'[0-9]{4}\.[0-9]{2}\.[0-9]{2}', r'[0-9]{4}/[0-9]{2}/[0-9]{2}')
+    formats = ('%Y%m%d', '%Y-%m-%d', '%Y.%m.%d', '%Y/%m/%d')
     for pattern, fmt in zip(forms, formats):
         if re.fullmatch(pattern, value):
             try:
@@ -237,7 +239,12 @@ def compatibility_receipt(eps, price, families):
             errors.append('INCOMPLETE_VARIANT:' + variant)
         identity_conflict |= receipt['state'] == CONFLICT
         events.extend({'variant': variant, **deepcopy(a)} for a in receipt['row_audits'])
-    state = CONFLICT if identity_conflict else INCOMPLETE if errors else EVENT if any(a['blocks'] for a in events) else CLEAR
+    # A blocked row is not necessarily evidence of an in-window action.
+    proven = any(a.get('classification') in {'CRITICAL_WINDOW_DATE', 'STRADDLING_ACTION_PROCESS'}
+                 for a in events)
+    unresolved = any(a['blocks'] for a in events)
+    state = (CONFLICT if identity_conflict else INCOMPLETE if errors else EVENT if proven
+             else UNRESOLVED if unresolved else CLEAR)
     return sealed({'contract': ACTION, 'state': state, 'security_code': code,
         'canonical_security_id': price['canonical_security_id'], 'estimate_date': estimate,
         'price_date': session, 'guard_envelope': window, 'policy': POLICY,

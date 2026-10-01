@@ -310,11 +310,13 @@ def current_fper(eps, price, actions):
                          - date.fromisoformat(eps["estdate"])).days)
     if not actions:
         return sealed({**value, "state": "UNAVAILABLE_CORPORATE_ACTION_SOURCE_INCOMPLETE"})
+    action_unresolved = False
     if actions.get("contract") == "CorporateActionCompatibilityReceiptV2":
         from scripts.kis_exact_action_guard import validate_compatibility
         validate_compatibility(actions, eps, price)
         action_clear = actions["state"] == "NO_RELEVANT_SHARE_UNIT_ACTION_FOUND_V1"
         action_event = actions["state"] == "POST_ESTIMATE_SHARE_UNIT_ACTION_PRESENT"
+        action_unresolved = actions["state"] == "CORPORATE_ACTION_DATE_UNRESOLVED"
         value["corporate_action_policy"] = actions["policy"]
     else:
         verified(actions, ACTION)
@@ -329,6 +331,8 @@ def current_fper(eps, price, actions):
     value["corporate_action_receipt_sha256"] = actions["receipt_sha256"]
     if action_event:
         return sealed({**value, "state": "UNAVAILABLE_POST_ESTIMATE_SHARE_UNIT_CHANGE"})
+    if action_unresolved:
+        return sealed({**value, "state": "UNAVAILABLE_CORPORATE_ACTION_DATE_UNRESOLVED"})
     if not action_clear:
         return sealed({**value, "state": "UNAVAILABLE_CORPORATE_ACTION_SOURCE_INCOMPLETE"})
     numerator = _decimal(price["close"])
