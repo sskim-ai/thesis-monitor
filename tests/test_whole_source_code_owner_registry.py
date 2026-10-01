@@ -178,6 +178,12 @@ def test_actual_production_whole_inputs_composer_and_replay_parity(tmp_path, mon
     monkeypatch.setattr(production, "publication_inputs", lambda *args: context)
     frozen = dict(generation_id=RUN, sessions=dict(us="2026-09-22", kr="2026-09-23"))
     args, first, receipt = production.replay_twice(tmp_path, frozen, {}, POLICY_ALL)
+    from scripts.fresh_source_only_export import source_only_generation_preflight
+    wire = json.loads(encoded(first))
+    export = source_only_generation_preflight(wire, source_view_generation_id=RUN,
+        provider_generation_id=frozen['generation_id'], kis_generation_id=RUN)
+    assert export['generation_id'] == args['seed'].parent_run_id
+    assert 'run_id' not in wire['seed']
     assert args["composition_metadata"]["code_fingerprints"] == registry.fingerprints
     assert args["composition_metadata"]["code_owner_registry"] == registry.model_dump(mode="json")
     assert args["seed"].code_config_sha256 == registry.sha256

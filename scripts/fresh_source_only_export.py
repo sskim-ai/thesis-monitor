@@ -31,6 +31,35 @@ SOURCE_CATEGORIES = ('identity', 'financial', 'events', 'price', 'technical',
                      'quality', 'valuation', 'flow_positioning', 'provenance')
 
 
+def _generation(value):
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError('source_only_generation_nonempty_string_required')
+    return value
+
+
+def resolve_full_source_generation_identity(whole_source):
+    """Current serialized owner; a legacy alias may corroborate, never replace it."""
+    seed = whole_source.get('seed')
+    if not isinstance(seed, dict) or 'parent_run_id' not in seed:
+        raise ValueError('source_only_parent_generation_required')
+    parent = _generation(seed['parent_run_id'])
+    if 'run_id' in seed and _generation(seed['run_id']) != parent:
+        raise ValueError('source_only_seed_generation_conflict')
+    return parent
+
+
+def source_only_generation_preflight(whole_source, *, source_view_generation_id,
+                                     provider_generation_id, kis_generation_id):
+    generation = resolve_full_source_generation_identity(whole_source)
+    identities = dict(source_view=source_view_generation_id, provider=provider_generation_id,
+                      kis=kis_generation_id)
+    for role, value in identities.items():
+        if _generation(value) != generation:
+            raise ValueError('source_only_' + role + '_generation_mismatch')
+    return dict(status='PASS', generation_id=generation, identity_path='seed.parent_run_id',
+                identities={'full_source': generation, **identities}, identity_rewritten=False)
+
+
 def reject_review_contamination(value):
     reject_downstream(value)
     if isinstance(value, dict):
