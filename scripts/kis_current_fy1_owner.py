@@ -1,7 +1,7 @@
 """Offline current-close/FY1 owner. Not registered in production or AI inputs.
 
-KIS schedule query completeness is distinct from effective-date coverage. The
-current public routes do not establish the latter, so absence stays fail closed.
+KIS schedule query completeness is distinct from effective-date coverage.
+V1 stays fail closed; V2 admits an explicitly bounded exact-security policy.
 """
 from copy import deepcopy
 from datetime import date, datetime, timedelta
@@ -310,16 +310,26 @@ def current_fper(eps, price, actions):
                          - date.fromisoformat(eps["estdate"])).days)
     if not actions:
         return sealed({**value, "state": "UNAVAILABLE_CORPORATE_ACTION_SOURCE_INCOMPLETE"})
-    verified(actions, ACTION)
+    if actions.get("contract") == "CorporateActionCompatibilityReceiptV2":
+        from scripts.kis_exact_action_guard import validate_compatibility
+        validate_compatibility(actions, eps, price)
+        action_clear = actions["state"] == "NO_RELEVANT_SHARE_UNIT_ACTION_FOUND_V1"
+        action_event = actions["state"] == "POST_ESTIMATE_SHARE_UNIT_ACTION_PRESENT"
+        value["corporate_action_policy"] = actions["policy"]
+    else:
+        verified(actions, ACTION)
+        action_event = actions["state"] == "SHARE_UNIT_CHANGE_REQUIRES_ADJUSTMENT"
+        action_clear = (actions["state"] == "NO_SHARE_UNIT_CHANGE_IN_WINDOW"
+            and actions.get("share_unit_changing") is False and not actions.get("denial_reasons")
+            and set(actions.get("queried_families", [])) == set(ROUTES))
     if (actions.get("security_code") != eps["security_code"]
             or actions.get("canonical_security_id") != price["canonical_security_id"]
             or actions.get("estimate_date") != eps["estdate"] or actions.get("price_date") != price["session_date"]):
         raise SemanticGap("FPER_ACTION_BINDING_GAP")
     value["corporate_action_receipt_sha256"] = actions["receipt_sha256"]
-    if actions["state"] == "SHARE_UNIT_CHANGE_REQUIRES_ADJUSTMENT":
+    if action_event:
         return sealed({**value, "state": "UNAVAILABLE_POST_ESTIMATE_SHARE_UNIT_CHANGE"})
-    if (actions["state"] != "NO_SHARE_UNIT_CHANGE_IN_WINDOW" or actions.get("share_unit_changing") is not False
-            or actions.get("denial_reasons") or set(actions.get("queried_families", [])) != set(ROUTES)):
+    if not action_clear:
         return sealed({**value, "state": "UNAVAILABLE_CORPORATE_ACTION_SOURCE_INCOMPLETE"})
     numerator = _decimal(price["close"])
     if numerator <= 0:
