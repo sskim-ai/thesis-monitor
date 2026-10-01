@@ -86,7 +86,8 @@ def eps_receipt(eps):
             or s.get("provider_product_number") != "00000A" + code
             or s.get("estimate_sht_cd") != "A" + code or s.get("product_type") != "300"
             or not re.fullmatch(r"KR[0-9A-Z]{10}", s.get("standard_code", ""))
-            or eps.get("allowed_roles") != ALLOWED_ROLES or eps.get("prohibited_roles") != PROHIBITED_ROLES):
+            or tuple(eps.get("allowed_roles", ())) != ALLOWED_ROLES
+            or tuple(eps.get("prohibited_roles", ())) != PROHIBITED_ROLES):
         raise SemanticGap("EPS_IDENTITY_UNIT_OR_AUTHORITY_GAP")
     date.fromisoformat(eps["estdate"])
     return _decimal(eps["value"])
@@ -278,7 +279,7 @@ def compatibility_receipt(eps, price, families):
 def current_fper(eps, price, actions):
     value = {"contract": FPER, "metric": "CURRENT_PRICE_FY1_FPER",
         "source_kind": "THESIS_MONITOR_DERIVED_FROM_KIS_CLOSE_AND_KIS_RESEARCH_EPS",
-        "label": "현재가 기준 fPER(FY1)", "allowed_roles": ALLOWED_ROLES, "prohibited_roles": PROHIBITED_ROLES,
+        "label": "현재가 기준 fPER(FY1)", "allowed_roles": list(ALLOWED_ROLES), "prohibited_roles": list(PROHIBITED_ROLES),
         "overall_direction_use": False, "value": None, "display_value": None, "exact_quotient": None,
         "rounding_policy": ROUNDING, "proof_scope": "SEALED_EPS_OWNER_PROOF_NOT_FRESH_ESTIMATE"}
     if not eps or eps.get("state") != "KIS_FY1_EPS_ESTIMATE_SNAPSHOT":

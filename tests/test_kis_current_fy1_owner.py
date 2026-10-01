@@ -206,7 +206,7 @@ def test_exact_quotient_rounding_and_provenance():
     assert result['display_value'] == '3.33' and result['decimal_value_is_rounded_expansion']
     assert result['price_receipt_sha256'] == price['receipt_sha256']
     assert result['corporate_action_receipt_sha256'] == actions['receipt_sha256']
-    assert result['allowed_roles'] == p.ALLOWED_ROLES and not result['overall_direction_use']
+    assert result['allowed_roles'] == list(p.ALLOWED_ROLES) and not result['overall_direction_use']
     p.validate_current_fper(result, eps(), price, actions)
     with pytest.raises(SemanticGap):
         p.validate_current_fper(reseal(result, display_value='9.99'), eps(), price, actions)
@@ -310,3 +310,13 @@ def test_data_budget_hard_stop_before_network(tmp_path):
     with pytest.raises(ProbeStop, match='SCOPE_GAP'):
         probe.fetch(request)
     assert probe.data_count == 20 and not probe.calls
+
+
+def test_json_round_trip_retains_exact_receipt_identity():
+    inputs = price_inputs()
+    inputs['eps'] = json.loads(json.dumps(inputs['eps']))
+    p.eps_receipt(inputs['eps'])
+    price = p.price_receipt(**inputs)
+    actions = owned_actions(price)
+    candidate = p.current_fper(inputs['eps'], price, actions)
+    p.validate_current_fper(json.loads(json.dumps(candidate)), inputs['eps'], price, actions)
