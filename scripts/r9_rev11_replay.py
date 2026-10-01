@@ -15,7 +15,7 @@ from app.services.unified_run_artifacts import durable_json, sha256_bytes
 from app.services.unified_sealed_context import replay_night
 from app.services.unified_snapshot_contract import digest, encoded
 from app.services.unified_source_composition import A, SourceInput, SourceRole, _resolve
-from app.services.unified_stock_acquisition import StockPlan, UNIVERSE, decode_owned_role
+from app.services.unified_stock_acquisition import StockPlan, decode_owned_role
 from app.services.unified_stock_anomaly_scope import materialize_source_components
 from scripts.r2b_r9_full_fresh_requalification import fresh_authority_inputs
 
@@ -51,7 +51,7 @@ def stock_inputs(root, frozen, policy, outcome):
         raise ValueError('SOURCE_PARTIAL:native_raw_owner_replay')
     window = dict(run_id=plan.run_id, collection_started_at=frozen['frozen_at'],
         source_query_cutoff=frozen['frozen_at'], business_availability_cutoff=outcome['completed_at'])
-    for market, tickers in UNIVERSE.items():
+    for market, tickers in plan.universe.items():
         for ticker in tickers:
             try:
                 receipts, artifacts, roles = {}, {}, {}
@@ -154,7 +154,7 @@ def aggregate(root, role, value):
 
 def market_inputs(root, frozen, outcome, policy):
     result = {}
-    for market in ('us', 'kr'):
+    for market in frozen['sessions']:
         path = root/'markets'/market
         at = datetime.fromisoformat(read(root/'markets'/f'{market}-query.json')['observed_at'])
         role = SourceRole(key='us_market_prices' if market == 'us' else 'kr_local_indices_sectors_breadth',
@@ -217,7 +217,10 @@ def publication_inputs(root, frozen, outcome, policy):
         return dict(receipts=rows, bodies=bodies, body_hashes={k: sha256_bytes(v) for k, v in bodies.items()})
     start, cutoff = datetime.fromisoformat(frozen['frozen_at']), datetime.fromisoformat(outcome['completed_at'])
     publications = dict(run_id=frozen['generation_id'], run_started_at=start, acquisition_cutoff=cutoff, as_of=start,
-        providers={p: captured(root/'publications'/p, p) for p in ('fred', 'eia', 'ecos')}, policy=policy)
+        providers={p: captured(root/'publications'/p, p) for p in
+            (('ecos',) if frozen.get('scope') == 'KR8_ONLY' else ('fred', 'eia', 'ecos'))}, policy=policy)
+    if frozen.get('scope') == 'KR8_ONLY':
+        publications['market_scope'] = 'KR8_ONLY'
     night_id = frozen['generation_id']+':night'
     probe = captured(root/'night/probe', 'krx_night_futures', night_id)
     history = captured(root/'night/history', 'krx_night_futures', night_id)
@@ -230,8 +233,13 @@ def publication_inputs(root, frozen, outcome, policy):
 
 
 def whole_inputs(root, frozen, outcome, policy):
+    plan = StockPlan.model_validate(frozen['stock_plan'])
+    universe = plan.universe
+    if frozen.get('scope') == 'KR8_ONLY':
+        from scripts.kr8_source_scope import require_kr8_plan
+        require_kr8_plan(frozen)
     inputs, errors = stock_inputs(root, frozen, policy, outcome)
-    if errors or len(inputs) != 22:
+    if errors or set(inputs) != {t for ts in universe.values() for t in ts}:
         raise ValueError('SOURCE_PARTIAL:stock_bindings:' + ','.join(sorted(errors)))
     markets = market_inputs(root, frozen, outcome, policy)
     context = publication_inputs(root, frozen, outcome, policy)
@@ -246,22 +254,23 @@ def whole_inputs(root, frozen, outcome, policy):
     native = {m: dict(run_id=frozen['generation_id'], attempt_id=n['attempt_id'],
         attempt_started_at=n['start'].isoformat(), cutoff=n['cutoff'].isoformat(), component=_resolve(**n))
         for m, item in markets.items() for n in [item['native_aggregate']]}
-    versions = {f'class-c/local-{m}.json': sha256_bytes((root/f'class-c/local-{m}.json').read_bytes()) for m in UNIVERSE}
+    versions = {f'class-c/local-{m}.json': sha256_bytes((root/f'class-c/local-{m}.json').read_bytes()) for m in universe}
     repo = Path(__file__).resolve().parents[1]
     inventory = read(repo/'docs/operations/UNIFIED_ACQUISITION_CLASSES.json')
     from app.services.whole_source_code_owner_registry import WholeSourceCodeOwnerRegistry
     registry = WholeSourceCodeOwnerRegistry.freeze(repo)
     denials = dict(kr_market_investor_flows=dict(status='OPTIONAL_UNAVAILABLE', value=None,
         denial='NOT_SELECTED_FOR_MARKET_COMPOSITION', run_id=frozen['generation_id']))
-    bridge = rows['SKHY']['issuer_business_bridge']
-    plan = inputs['CORZ']['technical_inputs']['plan']
+    bridge = rows['SKHY']['issuer_business_bridge'] if 'us' in universe else {'status': 'NOT_APPLICABLE_KR8_ONLY'}
     bindings = {t: digest(dict(technical_plan=plan.model_dump(mode='json'),financial_plan=i['financial_inputs']['plan'])) for t,i in inputs.items()}
-    seed = FreshFullSourceRunSeed(proof_mode='AD_HOC_LIVE_SOURCE_PROOF', packet_scope='LIVE_SOURCE_ADAPTER_PROOF_NOT_PRODUCTION_DECISION',
+    from app.services.unified_full_source_cohort import FreshKRSourceRunSeed
+    seed_type = FreshFullSourceRunSeed if 'us' in universe else FreshKRSourceRunSeed
+    seed = seed_type(proof_mode='AD_HOC_LIVE_SOURCE_PROOF', packet_scope='LIVE_SOURCE_ADAPTER_PROOF_NOT_PRODUCTION_DECISION',
         parent_run_id=plan.run_id, started_at=plan.frozen_at, source_policy_sha256=digest(sorted(policy.allowed_providers)),
-        inventory_sha256=digest(inventory), **registry.seed_bindings, universe_sha256=digest(UNIVERSE),
+        inventory_sha256=digest(inventory), **registry.seed_bindings, universe_sha256=digest(universe),
         attempts={m:n['attempt_id'] for m,n in native.items()}, attempt_hashes={m:digest(n) for m,n in native.items()},
         run_acquisitions=dict(stock=digest(plan.model_dump(mode='json')),publications=digest(pub),night=night['value_sha256']),
-        class_c_version_set_sha256=digest(versions), stock_cohort_hashes={m:digest({t:rows[t] for t in ts}) for m,ts in UNIVERSE.items()},
+        class_c_version_set_sha256=digest(versions), stock_cohort_hashes={m:digest({t:rows[t] for t in ts}) for m,ts in universe.items()},
         night_publication_receipt_sha256=digest(dict(probe=night['original_receipts'],history=night.get('history_receipts',[]))),
         optional_denial_set_sha256=digest(denials), skhy_issuer_bridge_sha256=digest(bridge),
         fresh_stock_owner_set_sha256=digest(bindings))

@@ -64,10 +64,10 @@ def compile_plan(*, stock, identities, news_reads, config_identities, rev10_rece
                 request_local_cap=r.max_pages, consumer_rows=r.count, policy='EXISTING_OWNER_CAP_POST_ACQUISITION_COMPLETENESS',
                 cap_exhaustion='SOURCE_PARTIAL', global_setting_changed=False))
     discovery = []
-    for exchange in ('ND', 'NY', 'NA'):
+    for exchange in (('ND', 'NY', 'NA') if 'us' in stock.universe else ()):
         discovery.append(kiwoom('us_market:discovery:' + exchange, 'us_market:exchange_discovery', 'us', '*',
             'usa10099', '/api/us/stkinfo', {'stex_tp': exchange}))
-    for symbol in MARKET_SYMBOLS:
+    for symbol in (MARKET_SYMBOLS if 'us' in stock.universe else ()):
         policy = dict(rule='native_exact_symbol_in_exchange_list', symbol=symbol,
                       exchange_order=['ND', 'NY', 'NA'], row_keys=['list', 'result_list', 'output', 'data'])
         binding = ResponseBinding(kind='KIWOOM_US_EXCHANGE', parents=tuple(discovery),
@@ -86,12 +86,12 @@ def compile_plan(*, stock, identities, news_reads, config_identities, rev10_rece
         rows = financial_slots(p, owner=owner, owner_sha256=owners[owner], config_sha256=config_identities[p['provider']])
         descriptors.extend(rows)
         roles['financial:' + t] = dict(mandatory=True, descriptor_ids=[d.logical_request_id for d in rows])
-    for series in candidate['macro_queries']['fred']['series']:
+    for series in candidate['macro_queries'].get('fred', {}).get('series', []):
         add('fred:' + series, 'fred', 'fred:' + series, 'global', series, 'observations',
             httpx.Request('GET', 'https://api.stlouisfed.org/fred/series/observations', params=dict(series_id=series,
                 api_key='PLAN_CREDENTIAL', file_type='json', sort_order='desc', limit=5,
                 observation_end=candidate['macro_queries']['fred']['observation_end'])))
-    for series in candidate['macro_queries']['eia']['series']:
+    for series in candidate['macro_queries'].get('eia', {}).get('series', []):
         add('eia:' + series, 'eia', 'eia:' + series, 'global', series, 'seriesid',
             httpx.Request('GET', 'https://api.eia.gov/v2/seriesid/' + series, params={'api_key': 'PLAN_CREDENTIAL', 'length': 1}))
     add('ecos:USDKRW', 'ecos', 'ecos:USDKRW', 'kr', 'USDKRW', 'KeyStatisticList',

@@ -37,7 +37,10 @@ def check_projection(projected, market, publications=None):
 
 def qualify_markets(whole):
     result = {}
-    for market in ('us', 'kr'):
+    expected = {'kr'} if whole['seed'].get('scope') == 'KR8_ONLY' else {'us','kr'}
+    if set(whole['packets']) != expected:
+        raise ValueError('market_qualification_scope_mismatch')
+    for market in sorted(expected):
         projections = [project_sealed_market_context(whole['packets'][market], whole['seed'], whole['authority_graph'],
             expected_authority_sha256=whole['authority_graph_sha256']) for _ in range(2)]
         if digest(projections[0]) != digest(projections[1]):

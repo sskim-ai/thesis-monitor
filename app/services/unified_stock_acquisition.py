@@ -70,7 +70,7 @@ class StockRead(ContractModel):
 
 
 class StockPlan(ContractModel):
-    contract: Literal["one-shot-stock-source-acquisition-v1"] = "one-shot-stock-source-acquisition-v1"
+    contract: Literal["one-shot-stock-source-acquisition-v1", "one-shot-kr8-source-acquisition-v1"] = "one-shot-stock-source-acquisition-v1"
     run_id: str = Field(min_length=1)
     acquisition_id: str = Field(min_length=1)
     frozen_at: datetime
@@ -85,23 +85,31 @@ class StockPlan(ContractModel):
     automatic_retries: Literal[0] = 0
     maximum_auth_requests: Literal[1] = 1
 
+    @property
+    def universe(self):
+        return {"kr": UNIVERSE["kr"]} if self.contract == "one-shot-kr8-source-acquisition-v1" else UNIVERSE
+
     @model_validator(mode="after")
     def complete(self):
-        expected = {f"{market}:{ticker}:{role}" for market, tickers in UNIVERSE.items()
+        expected = {f"{market}:{ticker}:{role}" for market, tickers in self.universe.items()
                     for ticker in tickers for role in ROLES}
-        if len(self.reads) != 88 or {r.entry_id for r in self.reads} != expected:
+        if len(self.reads) != len(expected) or {r.entry_id for r in self.reads} != expected:
             raise ValueError("exact_88_stock_plan_required")
         if self.frozen_at.tzinfo is None or not self.owner_files:
             raise ValueError("stock_plan_owner_time_required")
         return self
 
 
-def make_reads(universe: dict, identities: dict, *, at: datetime, counts: dict) -> tuple[StockRead, ...]:
-    for market, expected in UNIVERSE.items():
+def make_reads(universe: dict, identities: dict, *, at: datetime, counts: dict,
+               kr_only: bool = False) -> tuple[StockRead, ...]:
+    selected = {"kr": UNIVERSE["kr"]} if kr_only else UNIVERSE
+    if kr_only and set(universe) != {"kr"}:
+        raise ValueError("kr8_exact_market_scope_required")
+    for market, expected in selected.items():
         if tuple(sorted(universe[market]["eligible_subjects"])) != expected:
             raise ValueError(f"canonical_universe_mismatch:{market}")
     reads = []
-    for market, tickers in UNIVERSE.items():
+    for market, tickers in selected.items():
         for subject in tickers:
             identity = identities[subject]
             exchange = identity["exchange"]

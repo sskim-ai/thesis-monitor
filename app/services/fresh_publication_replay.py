@@ -70,11 +70,14 @@ def public_request(request):
 
 
 def replay_fresh_publications(*, run_id, run_started_at, acquisition_cutoff, as_of,
-                              providers, policy):
+                              providers, policy, market_scope='ALL22'):
     times = (run_started_at, acquisition_cutoff, as_of)
     if any(t.utcoffset() is None for t in times) or not run_started_at <= as_of <= acquisition_cutoff:
         raise ValueError('fresh_publication_generation_time_invalid')
-    if set(providers) != set(PROVIDERS):
+    if market_scope not in {'ALL22', 'KR8_ONLY'}:
+        raise ValueError('fresh_publication_market_scope_unknown')
+    expected = {'ecos'} if market_scope == 'KR8_ONLY' else set(PROVIDERS)
+    if set(providers) != expected:
         raise ValueError('fresh_publication_exact_provider_set_required')
 
     async def replay(name, inputs):
@@ -129,7 +132,7 @@ def replay_fresh_publications(*, run_id, run_started_at, acquisition_cutoff, as_
 
     async def run():
         output = {}
-        for name in sorted(PROVIDERS):
+        for name in sorted(expected):
             output[name] = await replay(name, providers[name])
         return output
 

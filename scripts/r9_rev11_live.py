@@ -48,12 +48,15 @@ def git(*args):
     return subprocess.check_output(['git', *args], cwd=ROOT, text=True).strip()
 
 
-def credentials(s, *, native_valuation=False):
+def credentials(s, *, native_valuation=False, kr_only=False):
     result = dict(kiwoom=[s.kiwoom_app_key,s.kiwoom_secret_key],sec_edgar=[s.sec_user_agent],opendart=[s.opendart_api_key],
         fred=[s.fred_api_key],eia=[s.eia_api_key],ecos=[s.ecos_api_key],krx_night_futures=[s.krx_open_api_key],
         google_news_rss=['NO_CREDENTIAL_REQUIRED'],naver_news=[s.naver_client_id,s.naver_client_secret])
     if native_valuation:
         result['finnhub'] = [s.finnhub_api_key]
+    if kr_only:
+        result = {k:v for k,v in result.items() if k in
+            {'kiwoom','opendart','ecos','krx_night_futures','naver_news'}}
     return result
 
 
@@ -101,19 +104,23 @@ def freeze(args):
     if not native['owner_clean'] or not native['credentials_present'] or not native['live_provider']:
         raise ValueError('native_owner_not_ready')
     s = Settings(_env_file=args.operating/'.env')
-    config = credentials(s, native_valuation=args.provider_native_valuation)
+    kr_only = getattr(args, 'kr_only', False)
+    selected = {'kr': UNIVERSE['kr']} if kr_only else UNIVERSE
+    config = credentials(s, native_valuation=args.provider_native_valuation, kr_only=kr_only)
     if not all(all(values) for values in config.values()):
         raise ValueError('configured_credential_missing')
     at = datetime.now(timezone.utc)
     db = args.operating/'data/thesis_monitor.sqlite3'
     universe = current_universe(db,at)
+    if kr_only:
+        universe = {'kr': universe['kr']}
     def connect():
         conn=sqlite3.connect(f'{db.as_uri()}?mode=ro',uri=True)
         conn.execute('PRAGMA query_only=ON')
         return conn
     engine=create_engine('sqlite://',creator=connect)
     counts={}
-    for m in UNIVERSE:
+    for m in selected:
         enabled=s.us_price_structure_v3_enabled if m=='us' else s.kr_price_structure_v3_enabled
         configured=PRICE_STRUCTURE_PERIOD_COUNTS if enabled else PERIOD_COUNTS
         counts[m]={role:PERIOD_COUNTS['weekly'] if not adjusted else
@@ -122,14 +129,15 @@ def freeze(args):
     from sqlmodel import select
     with Session(engine) as session:
         records=[r.model_dump(mode='json') for r in session.exec(select(SecurityMaster)).all()
-                 if r.ticker in {t for ts in UNIVERSE.values() for t in ts}]
+                 if r.ticker in {t for ts in selected.values() for t in ts}]
         identities={r['ticker']:r for r in records}
         run=args.generation_prefix+'-'+at.strftime('%Y%m%dT%H%M%SZ')
         stock=StockPlan(run_id=run,acquisition_id=run+':stock',frozen_at=at,
+            contract='one-shot-kr8-source-acquisition-v1' if kr_only else 'one-shot-stock-source-acquisition-v1',
             instruction_sha=git('rev-parse',args.instruction_ref),implementation_sha=head,universe_sha256=digest(universe),
-            reads=make_reads(universe,identities,at=at,counts=counts),
+            reads=make_reads(universe,identities,at=at,counts=counts,kr_only=kr_only),
             **{k:native[k] for k in ('owner_head','owner_files','settings_sha256','request_environment_sha256')})
-        for market in UNIVERSE:
+        for market in selected:
             local=project_local_seed(session,market=market,session_key=next(r.latest_completed_session for r in stock.reads if r.market==market),cutoff=at,policy=POLICY)
             validate_local_seed(local)
             durable_json(args.output/f'class-c/local-{market}.json',local,exclusive=True)
@@ -153,7 +161,7 @@ def freeze(args):
     official=static_official_identity()
     durable_json(args.output/'static/official-security-identity.json',official,exclusive=True)
     news=[make_read(security=identities[t],market=m,run_id=run,lookback_days=s.monitor_lookback_days,security_records=records)
-          for m,ts in UNIVERSE.items() for t in ts]
+          for m,ts in selected.items() for t in ts]
     hashes={k:digest(v) for k,v in config.items()}
     result=compile_plan(stock=stock,identities=identities,news_reads=news,config_identities=hashes,
         rev10_receipt=root_receipt,configured_kr_pages=s.kiwoom_rest_max_pages,kr_post_acquisition_completeness_approved=True,
@@ -164,13 +172,13 @@ def freeze(args):
     if not admission['live_dispatch_allowed']:
         raise ValueError('final_provider_plan_gap')
     from app.macro.providers.market import MARKET_SYMBOLS
-    sessions={m:next(r.latest_completed_session for r in stock.reads if r.market==m) for m in UNIVERSE}
+    sessions={m:next(r.latest_completed_session for r in stock.reads if r.market==m) for m in selected}
     us=[dict(role='us_market:'+symbol,symbol=symbol,market='us',provider='ohlcv_analyst',response_provider='kiwoom',
         period='daily',adjusted=True,session_date=sessions['us'],max_requests=1,
-        params=dict(symbol=symbol,market='US',periods='daily',count=2,include_indicators='false',indicator_limit=0,adjusted='true')) for symbol in MARKET_SYMBOLS]
+        params=dict(symbol=symbol,market='US',periods='daily',count=2,include_indicators='false',indicator_limit=0,adjusted='true')) for symbol in (MARKET_SYMBOLS if not kr_only else ())]
     frozen=dict(**result,generation_id=run,frozen_at=at.isoformat(),query_kst_date=at.astimezone(ZoneInfo('Asia/Seoul')).date().isoformat(),
         plan=plan.model_dump(mode='json'),stock_plan=stock.model_dump(mode='json'),security_records=records,native_owner=native,
-        native_owner_root=str(args.native_owner),us_market_symbols=list(MARKET_SYMBOLS),us_market_reads=us,sessions=sessions,
+        native_owner_root=str(args.native_owner),us_market_symbols=list(MARKET_SYMBOLS) if not kr_only else [],us_market_reads=us,sessions=sessions,
         kr_local_cap=min(s.kiwoom_rest_max_pages,MAX_KR_REQUEST_PAGES),ohlcv_source_url=s.ohlcv_base_url.rstrip('/')+'/ohlcv',
         config_identities=hashes,settings_sha256=digest(s.model_dump(mode='json')),code=code_fingerprints(),
         validation_sha256=sha256_bytes(args.validation.read_bytes()),rev10_receipt=root_receipt,
@@ -179,6 +187,10 @@ def freeze(args):
         valuation_official_identities=valuation_official, valuation_routing_reference=routing_reference,
         provider_native_valuation=args.provider_native_valuation, production_side_effects=0)
     frozen['disk_guard_at_freeze'] = disk_guard
+    if kr_only:
+        from scripts.kr8_source_scope import require_kr8_plan
+        frozen['scope'] = 'KR8_ONLY'
+        require_kr8_plan(frozen)
     durable_json(args.output/'r9-rev11-final-provider-plan.json',frozen,exclusive=True)
     durable_json(args.output/'r9-rev11-provider-role-coverage.json',result['role_coverage'],exclusive=True)
     durable_json(args.output/'preflight.json',dict(admission,implementation=head,final_plan_sha256=digest(frozen)),exclusive=True)
@@ -192,6 +204,7 @@ def main():
     p.add_argument('--instruction-ref', default='fe909d26')
     p.add_argument('--exact-financial-owner', action='store_true')
     p.add_argument('--provider-native-valuation', action='store_true')
+    p.add_argument('--kr-only', action='store_true')
     p.add_argument('--valuation-listing-reference', type=Path)
     for name in ('output','operating','native-owner','validation','rev10-receipt'):
         p.add_argument('--'+name,type=Path,required=True)
@@ -214,7 +227,8 @@ def main():
     if args.mode=='acquire':
         require_disk_capacity(args.output, 12 if frozen.get('provider_native_valuation') else 10)
         s=Settings(_env_file=args.operating/'.env')
-        config=credentials(s, native_valuation=frozen.get('provider_native_valuation', False))
+        config=credentials(s, native_valuation=frozen.get('provider_native_valuation', False),
+            kr_only=frozen.get('scope') == 'KR8_ONLY')
         run=SealedDispatcher(plan=ProviderPlan.model_validate(frozen['plan']),root=args.output/'dispatch',
             rev10_receipt=frozen['rev10_receipt'],owners=frozen['owners'],config_identities={k:digest(v) for k,v in config.items()},
             credential_presence={k:all(v) for k,v in config.items()},secrets=tuple(v for values in config.values() for v in values))

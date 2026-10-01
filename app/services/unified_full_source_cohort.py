@@ -41,14 +41,18 @@ class FullSourceRunSeed(ContractModel):
     source_authority_contract_sha256: str
     persisted_event_evidence_sha256: str | None = None
 
+    @property
+    def universe(self):
+        return UNIVERSE
+
     @model_validator(mode="after")
     def explicit_bindings(self):
         if self.started_at.utcoffset() is None:
             raise ValueError("aware_proof_time_required")
         for mapping in (self.attempts, self.attempt_hashes, self.stock_cohort_hashes):
-            if set(mapping) != {"us", "kr"} or not all(mapping.values()):
+            if set(mapping) != set(self.universe) or not all(mapping.values()):
                 raise ValueError("exact_two_market_bindings_required")
-        if len(set(self.attempts.values())) != 2 or not self.run_acquisitions:
+        if len(set(self.attempts.values())) != len(self.universe) or not self.run_acquisitions:
             raise ValueError("distinct_attempts_and_run_acquisition_required")
         values = self.model_dump()
         hashes = [v for k, v in values.items() if k.endswith("sha256") and v is not None]
@@ -68,11 +72,23 @@ class FreshFullSourceRunSeed(FullSourceRunSeed):
     fresh_stock_owner_set_sha256: str
 
 
+class FreshKRSourceRunSeed(FreshFullSourceRunSeed):
+    scope: Literal["KR8_ONLY"] = "KR8_ONLY"
+
+    @property
+    def universe(self):
+        return {"kr": UNIVERSE["kr"]}
+
+
 def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
                         authority_inputs, version_set, optional_denials, issuer_bridge,
                         publication_inputs=None, night_inputs=None, composition_metadata=None,
                         fresh_context_inputs=None):
     """All external artifact resolvers are already owned by compose_attempt."""
+    universe = seed.universe
+    if isinstance(seed, FreshKRSourceRunSeed):
+        if fresh_context_inputs is None or fresh_context_inputs['publications'].get('market_scope') != 'KR8_ONLY':
+            raise ValueError('kr8_publication_scope_required')
     if (digest(version_set) != seed.class_c_version_set_sha256 or
             digest(optional_denials) != seed.optional_denial_set_sha256 or
             digest(issuer_bridge) != seed.skhy_issuer_bridge_sha256):
@@ -93,7 +109,7 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
         inventory = json.loads((root / 'docs/operations/UNIFIED_ACQUISITION_CLASSES.json').read_bytes())
         if (composition_metadata is None or composition_metadata.get('inventory') != inventory
                 or len(inventory['roles']) != 24 or digest(inventory) != seed.inventory_sha256
-                or digest(UNIVERSE) != seed.universe_sha256
+                or digest(universe) != seed.universe_sha256
                 or digest(composition_metadata.get('allowed_providers')) != seed.source_policy_sha256):
             raise ValueError('whole_source_inventory_policy_identity_mismatch')
         code = composition_metadata.get('code_fingerprints', {})
@@ -105,8 +121,8 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
             if (code != legacy.fingerprints or digest(code) != seed.code_config_sha256
                     or digest(code) != seed.source_authority_contract_sha256):
                 raise ValueError('whole_source_code_contract_identity_mismatch')
-    expected = {t for tickers in UNIVERSE.values() for t in tickers}
-    if set(stock_inputs) != expected or set(authority_inputs) != expected or set(market_inputs) != {"us", "kr"}:
+    expected = {t for tickers in universe.values() for t in tickers}
+    if set(stock_inputs) != expected or set(authority_inputs) != expected or set(market_inputs) != set(universe):
         raise ValueError("whole_universe_required")
     fresh_mode = isinstance(seed, FreshFullSourceRunSeed)
     if fresh_mode:
@@ -121,7 +137,7 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
             raise ValueError('fresh_stock_plan_set_mismatch')
     markets, stocks, authorities = {}, {}, {}
     persisted_events = {}
-    for market in ("us", "kr"):
+    for market in universe:
         params = market_inputs[market]
         native = params.get("native_aggregate")
         attempt = native["attempt_id"] if native is not None else params["attempt_id"]
@@ -142,7 +158,7 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
             raise ValueError("market_replayed_packet_mismatch")
         markets[market] = packet
         current = {}
-        for ticker in UNIVERSE[market]:
+        for ticker in universe[market]:
             inputs = stock_inputs[ticker]
             versioned = inputs.get("versioned_binding")
             persisted = inputs.get("persisted_binding")
@@ -253,8 +269,8 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
     for market, packet in output.items():
         packet.update(class_c_versions=version_set, publication_context=publications,
             optional_denials=optional_denials,
-            authority_subset={t: authorities[t] for t in UNIVERSE[market]},
-            persisted_business_events={t: persisted_events[t] for t in UNIVERSE[market] if t in persisted_events})
+            authority_subset={t: authorities[t] for t in universe[market]},
+            persisted_business_events={t: persisted_events[t] for t in universe[market] if t in persisted_events})
         if market == "us":
             packet["night_and_publication_context"] = night
     combined = {"contract": "full-source-cohort-v1", "seed": seed.model_dump(mode="json"),

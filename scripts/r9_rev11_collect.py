@@ -61,12 +61,16 @@ class PublicationCapture(httpx.AsyncBaseTransport):
 async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guard):
     """Freeze, then enter once; every HTTP attempt belongs to the one dispatcher."""
     guard()
+    kr_only = frozen.get('scope') == 'KR8_ONLY'
+    if kr_only:
+        from scripts.kr8_source_scope import require_kr8_plan
+        require_kr8_plan(frozen)
     durable_json(root / 'live-dispatch-once.json', {'started_at': now().isoformat(),
         'plan_sha256': dispatcher.plan.plan_sha256}, exclusive=True)
     sealed = SealedSourceTransport(dispatcher, inner, providers={d.provider for d in dispatcher.plan.descriptors})
     native_input = root / 'native-input.json'
     durable_json(native_input, {**{k: frozen[k] for k in ('native_owner', 'stock_plan', 'us_market_symbols')},
-        'latest_completed_us_session': frozen['sessions']['us']}, exclusive=True)
+        'latest_completed_us_session': frozen['sessions'].get('us')}, exclusive=True)
     bridge = SealedNativeBridge(owner_root=Path(frozen['native_owner_root']), input_path=native_input,
         input_sha256=sha256_bytes(native_input.read_bytes()), output=root/'native', transport=sealed,
         market_reads=frozen['us_market_reads'])
@@ -215,12 +219,13 @@ async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guar
 
     try:
         await phase('stocks', lambda: bridge.command({'stocks': True}))
-        await phase('us-market', us_market)
+        if not kr_only:
+            await phase('us-market', us_market)
         await phase('stock-native-replay', lambda: bridge.command({'replay-stocks': True}))
         await phase('kr-market', kr_market)
         for ticker, plan in frozen['candidate']['financial_plans'].items():
             await phase('financial-'+ticker, lambda t=ticker, p=plan: financial(t, p))
-        for name in PROVIDERS:
+        for name in (('ecos',) if kr_only else PROVIDERS):
             await phase(name, lambda n=name: publication(n))
         await phase('night', night)
         for read in frozen['news_reads']:

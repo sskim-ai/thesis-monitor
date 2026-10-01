@@ -12,7 +12,7 @@ from app.services.kiwoom_kr_market_context_service import kiwoom_market_reads
 from app.services.market_session import korea_market_session
 from app.services.night_futures_product_scope import scope_receipt
 from app.services.unified_snapshot_contract import digest
-from app.services.unified_stock_acquisition import StockPlan, UNIVERSE
+from app.services.unified_stock_acquisition import StockPlan
 from app.services.unified_stock_owner import reject_downstream
 
 CONTRACT = 'r9-fresh-source-run-v1'
@@ -68,12 +68,14 @@ def acquisition_plan(stock_plan, identities, *, kr_max_pages, exact_financial_ow
     stock = StockPlan.model_validate(stock_plan)
     if type(kr_max_pages) is not int or not 1 <= kr_max_pages <= MAX_KR_REQUEST_PAGES:
         raise ValueError('finite_kr_page_cap_required')
-    expected = {t for subjects in UNIVERSE.values() for t in subjects}
+    universe = stock.universe
+    kr_only = set(universe) == {'kr'}
+    expected = {t for subjects in universe.values() for t in subjects}
     if set(identities) != expected:
         raise ValueError('exact_22_current_security_identities_required')
     financial = {t: make_plan(identities[t], market=m, cutoff=stock.frozen_at,
         run_id=stock.run_id, all_subjects_fresh=True, exact_financial_owner=exact_financial_owner)
-        for m, subjects in UNIVERSE.items() for t in subjects}
+        for m, subjects in universe.items() for t in subjects}
     kr = kiwoom_market_reads(session_date=korea_market_session(stock.frozen_at).latest_completed_regular_session_date,
         max_pages=kr_max_pages, max_requests_per_page=1)
     at = stock.frozen_at.astimezone(ZoneInfo('Asia/Seoul')).date()
@@ -85,6 +87,9 @@ def acquisition_plan(stock_plan, identities, *, kr_max_pages, exact_financial_ow
         us_market_wire=len(MARKET_SYMBOLS)*2+4,
         kr_market_wire=sum(r.max_pages for r in kr)+1,
         fred=len(FRED_SERIES), eia=len(EIA_SERIES), ecos=1, night_wire=len(days))
+    if kr_only:
+        for name in ('us_market_wire', 'fred', 'eia'):
+            del maxima[name]
     budgets = {name: _budget(count) for name, count in maxima.items()}
     for ticker, plan in financial.items():
         budgets['financial:'+ticker] = _budget(plan['maximum_logical_requests'])
@@ -103,6 +108,10 @@ def acquisition_plan(stock_plan, identities, *, kr_max_pages, exact_financial_ow
             ('news_and_filing_events', 'earnings_calendar', 'us_exchange_breadth', 'forward_estimates')},
         budgets=budgets, prohibited={k: 0 for k in ('alpha_vantage', 'massive', 'mock', 'fallback',
             'telegram', 'production_db_write', 'scheduler', 'remote_push', 'deploy')})
+    if kr_only:
+        result.update(scope='KR8_ONLY', us_market_symbols=[],
+            macro_queries={'ecos': result['macro_queries']['ecos']})
+        result['optional_unavailable'].pop('us_exchange_breadth')
     return {**result, 'plan_sha256': digest(result)}
 
 

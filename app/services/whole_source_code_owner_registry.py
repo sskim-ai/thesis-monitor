@@ -44,6 +44,12 @@ _OWNER_SPECS = (
     ("scripts/r2b_r5_market_adapter.py", "market_source_projection", False),
     ("scripts/r9_rev11_market_qualification.py", "market_display_qualification", False),
     ("scripts/r9_offline_stage_replay.py", "market_capture_binding", False),
+    ("scripts/kr8_source_scope.py", "kr8_acquisition_scope", False),
+    ("scripts/kr8_kis_integration.py", "kr8_fresh_kis_integration", False),
+    ("scripts/kis_output3_protocol_owner.py", "kis_fy1_protocol_owner", False),
+    ("scripts/kis_fy1_semantic_owner.py", "kis_fiscal_security_owner", False),
+    ("scripts/kis_current_fy1_owner.py", "kis_current_fy1_fper_owner", False),
+    ("scripts/kis_exact_action_guard.py", "kis_exact_security_action_owner", False),
 )
 
 
