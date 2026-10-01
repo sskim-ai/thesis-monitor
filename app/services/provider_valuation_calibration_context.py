@@ -103,7 +103,7 @@ def calibration_context(view):
 
 def with_axis_refs(schema, context):
     """Separate optional calibration refs; existing business capabilities unchanged."""
-    context = ValuationCalibrationContext.model_validate(context)
+    context = parse_context(context)
     result = deepcopy(schema)
     refs = sorted(context.facts)
     for axis in ("holder", "new_buyer"):
@@ -129,11 +129,14 @@ def require_direction_isolation(value):
     elif isinstance(value, (list, tuple)):
         for child in value:
             require_direction_isolation(child)
-    elif isinstance(value, str) and "current-valuation:" in value:
+    elif isinstance(value, str) and any(prefix in value for prefix in ("current-valuation:", "kr-forward-valuation:")):
         raise ValueError("valuation_directional_ref_leak")
 
 
 def validate_calibration_output(raw, context):
+    if context.get('contract') == 'kr-fy1-valuation-calibration-context-v1':
+        from app.services.kr_forward_valuation_context import validate_output
+        return validate_output(raw, context)
     context = ValuationCalibrationContext.model_validate(context)
     require_direction_isolation(raw["overall"])
     if VALUATION_TERMS.search(raw["overall"]["overall_reason"]):
@@ -179,3 +182,18 @@ def validate_calibration_output(raw, context):
         overall_direction_use=False,
         business_capabilities_modified=False,
     )
+
+
+def parse_context(context):
+    if context.get('contract') == 'kr-fy1-valuation-calibration-context-v1':
+        from app.services.kr_forward_valuation_context import KrValuationCalibrationContext
+        return KrValuationCalibrationContext.model_validate(context)
+    return ValuationCalibrationContext.model_validate(context)
+
+
+def context_prompt(contexts):
+    if any(c.get('valuation_context',{}).get('contract') == 'kr-fy1-valuation-calibration-context-v1'
+           for c in contexts.values()):
+        from app.services.kr_forward_valuation_context import PROMPT as KR_PROMPT
+        return KR_PROMPT
+    return PROMPT

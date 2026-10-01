@@ -115,7 +115,8 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
         code = composition_metadata.get('code_fingerprints', {})
         if isinstance(seed, FreshFullSourceRunSeed):
             verify_fresh_code_identity(root, metadata=composition_metadata,
-                code_sha256=seed.code_config_sha256, authority_sha256=seed.source_authority_contract_sha256)
+                code_sha256=seed.code_config_sha256, authority_sha256=seed.source_authority_contract_sha256,
+                profile="fresh_kr8" if isinstance(seed, FreshKRSourceRunSeed) else "fresh")
         else:
             legacy = WholeSourceCodeOwnerRegistry.freeze(root, profile="legacy")
             if (code != legacy.fingerprints or digest(code) != seed.code_config_sha256

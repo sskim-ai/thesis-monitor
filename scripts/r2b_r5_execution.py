@@ -45,6 +45,13 @@ class Execution(OfficialLaunch):
     receipt = p.Reproof.receipt
     args = p.Reproof.args
     TYPED_PRESENTATION = True
+    MARKET_SCOPES = ('us', 'kr')
+    SUBJECT_COUNT = 22
+    CALL_LIMITS = MAX_CALLS
+    SUCCESS_TERMINAL = 'R2B_R5_MONITORING_AI_24_MESSAGE_PASS_READY_FOR_BLIND_COMPARISON'
+
+    def batch_topology(self):
+        return owner._batch_topology()
 
     def __init__(self, root):
         self.root = root
@@ -121,7 +128,7 @@ class Execution(OfficialLaunch):
             p.require(projected['receipt']['numeric_alias_binding']['status']=='PASS', 'alias_gap')
             requests['market'].append(self.capture('market',dict(market=m,batch=1,subjects=[]),
                 projected['context'], projected['schema'], market_owner.PROMPT))
-        for spec in owner._batch_topology():
+        for spec in self.batch_topology():
             contexts = {}
             for t in spec['subjects']:
                 self.chain(t)
@@ -175,7 +182,7 @@ class Execution(OfficialLaunch):
 
     def before_a(self):
         requests = []
-        for spec in owner._batch_topology():
+        for spec in self.batch_topology():
             evidence = self.partition(spec)
             contexts = {}
             for t in spec['subjects']:
@@ -216,7 +223,7 @@ class Execution(OfficialLaunch):
 
     def before_b(self):
         requests=[]
-        for spec in owner._batch_topology():
+        for spec in self.batch_topology():
             contexts,schemas={},{}
             for t in spec['subjects']:
                 if self.prepared[t]['mode']=='UNKNOWN_LIMIT':
@@ -234,8 +241,8 @@ class Execution(OfficialLaunch):
                     ctx['valuation_context'] = snapshot_context
                     schemas[t] = with_axis_refs(schemas[t], snapshot_context)
             schema=add_limits(c.schemas.obj({'decisions':c.schemas.obj(schemas)}),self.prepared,spec['subjects'])
-            from app.services.provider_valuation_calibration_context import PROMPT as VALUATION_PROMPT
-            extra = '\n' + VALUATION_PROMPT if any('valuation_context' in ctx for ctx in contexts.values()) else ''
+            from app.services.provider_valuation_calibration_context import context_prompt
+            extra = '\n' + context_prompt(contexts) if any('valuation_context' in ctx for ctx in contexts.values()) else ''
             requests.append(self.capture('pass-b',spec,contexts,schema,c.schemas.B_PROMPT+'\n'+c.LIMIT_PROMPT+extra))
         self.freeze_stage('pass-b',requests)
         return requests
@@ -266,7 +273,7 @@ class Execution(OfficialLaunch):
         self.markets[spec['market']]=raw
 
     def bounded(self,stage,spec,request):
-        p.require(sum(r['attempts'] for r in self.ledger if r['stage']==stage)<MAX_CALLS[stage], 'stage_call_budget')
+        p.require(sum(r['attempts'] for r in self.ledger if r['stage']==stage)<self.CALL_LIMITS[stage], 'stage_call_budget')
         self.ledger.append(dict(stage=stage,**spec,attempts=0,status='NOT_STARTED'))
         try:
             getattr(self,stage.replace('-','_'))(spec,request)
@@ -291,12 +298,12 @@ class Execution(OfficialLaunch):
                 for request in requests:
                     self.bounded(stage,{k:request[k] for k in ('market','batch','subjects')},request)
                 accepted=self.markets if stage=='market' else self.cores if stage=='core' else self.arows if stage=='pass-a' else self.brows
-                p.require(len(accepted)+len(self.limits[stage])==(2 if stage=='market' else 22),'stage_incomplete')
+                p.require(len(accepted)+len(self.limits[stage])==(len(self.MARKET_SCOPES) if stage=='market' else self.SUBJECT_COUNT),'stage_incomplete')
                 p.write(self.sealed/(stage+'-output-freeze.json'),dict(generation_id=self.gen,accepted=accepted,limits=self.limits[stage],
                     call_files=p.manifest(self.sealed/'calls'/stage)))
             stage='render'
             self.render()
-            terminal='R2B_R5_MONITORING_AI_24_MESSAGE_PASS_READY_FOR_BLIND_COMPARISON'
+            terminal=self.SUCCESS_TERMINAL
         except Exception as exc:
             terminal=dict(market='MARKET_MODEL_FAILURE',core='CORE_MODEL_FAILURE',**{'pass-a':'A_MODEL_FAILURE','pass-b':'B_MODEL_FAILURE',
                 'render':'RENDER_VALIDATION_FAILURE'})[stage]

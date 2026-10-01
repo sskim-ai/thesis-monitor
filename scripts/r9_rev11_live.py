@@ -85,12 +85,18 @@ def require_disk_capacity(path, minimum_gib=10):
     return dict(total=disk.total, used=disk.used, free=disk.free, threshold=minimum_gib * 1024**3)
 
 
+def source_disk_minimum(*, kr_only, native_valuation):
+    # User's REV40-R1-only amendment; the default all22 guard is unchanged.
+    return 10 if kr_only else 12 if native_valuation else 10
+
+
 def freeze(args):
     from scripts.sealed_cohort_offline_proof import network_guard
     network_guard()
     if args.output.exists() or git('status','--porcelain'):
         raise ValueError('new_output_clean_exact_commit_required')
-    disk_guard = require_disk_capacity(args.output.parent, 12 if args.provider_native_valuation else 10)
+    disk_guard = require_disk_capacity(args.output.parent, source_disk_minimum(
+        kr_only=getattr(args, 'kr_only', False), native_valuation=args.provider_native_valuation))
     head = git('rev-parse','HEAD')
     validation = read(args.validation)
     if validation.get('status') != 'PASS' or validation.get('head') != head:
@@ -225,7 +231,8 @@ def main():
                 raise SourceSafetyStop('frozen_static_input_drift')
     guard()
     if args.mode=='acquire':
-        require_disk_capacity(args.output, 12 if frozen.get('provider_native_valuation') else 10)
+        require_disk_capacity(args.output, source_disk_minimum(
+            kr_only=frozen.get('scope') == 'KR8_ONLY', native_valuation=frozen.get('provider_native_valuation')))
         s=Settings(_env_file=args.operating/'.env')
         config=credentials(s, native_valuation=frozen.get('provider_native_valuation', False),
             kr_only=frozen.get('scope') == 'KR8_ONLY')

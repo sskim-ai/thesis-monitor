@@ -13,7 +13,7 @@ from app.services.unified_run_artifacts import sha256_bytes
 
 VERSION = "whole-source-code-owner-registry-v1"
 SEMANTIC_ID = "whole-source-code-identity"
-Profile = Literal["fresh", "legacy"]
+Profile = Literal["fresh", "fresh_kr8", "legacy"]
 
 # The only inventory. The final flag selects the pre-fresh legacy contract.
 _OWNER_SPECS = (
@@ -44,6 +44,11 @@ _OWNER_SPECS = (
     ("scripts/r2b_r5_market_adapter.py", "market_source_projection", False),
     ("scripts/r9_rev11_market_qualification.py", "market_display_qualification", False),
     ("scripts/r9_offline_stage_replay.py", "market_capture_binding", False),
+)
+_KR8_OWNER_SPECS = (
+    ("scripts/kr8_fy1_models.py", "kr8_model_scope_and_visibility", False),
+    ("app/services/kr_forward_valuation_context.py", "kr8_forward_valuation_context", False),
+    ("app/services/kr_forward_valuation_message.py", "kr8_forward_valuation_renderer", False),
     ("scripts/kr8_source_scope.py", "kr8_acquisition_scope", False),
     ("scripts/kr8_kis_integration.py", "kr8_fresh_kis_integration", False),
     ("scripts/kis_output3_protocol_owner.py", "kis_fy1_protocol_owner", False),
@@ -54,9 +59,10 @@ _OWNER_SPECS = (
 
 
 def _specs(profile):
-    if profile not in ("fresh", "legacy"):
+    if profile not in ("fresh", "fresh_kr8", "legacy"):
         raise ValueError("whole_source_registry_profile_unknown")
-    return {path: role for path, role, legacy in _OWNER_SPECS if profile == "fresh" or legacy}
+    specs = _OWNER_SPECS + (_KR8_OWNER_SPECS if profile == "fresh_kr8" else ())
+    return {path: role for path, role, legacy in specs if profile != "legacy" or legacy}
 
 
 def _file_hash(root, name):
@@ -128,25 +134,26 @@ class WholeSourceCodeOwnerRegistry(ContractModel):
         return current
 
 
-def verify_fresh_code_identity(root, *, metadata, code_sha256, authority_sha256):
+def verify_fresh_code_identity(root, *, metadata, code_sha256, authority_sha256, profile="fresh"):
     registry = WholeSourceCodeOwnerRegistry.model_validate(metadata.get("code_owner_registry"))
     verified = registry.verify(root, fingerprints=metadata.get("code_fingerprints"),
-                               expected_sha256=code_sha256)
+                               expected_sha256=code_sha256, profile=profile)
     if authority_sha256 != verified.sha256:
         raise ValueError("whole_source_code_contract_identity_mismatch")
     return verified
 
 
 def replay_identity_receipt(root, *, seed, metadata, first, second):
+    profile = "fresh_kr8" if getattr(seed, "scope", None) == "KR8_ONLY" else "fresh"
     registry = verify_fresh_code_identity(root, metadata=metadata,
-        code_sha256=seed.code_config_sha256, authority_sha256=seed.source_authority_contract_sha256)
+        code_sha256=seed.code_config_sha256, authority_sha256=seed.source_authority_contract_sha256, profile=profile)
     identities = dict(seed_registry_sha256=seed.code_config_sha256,
         producer_registry_sha256=registry.sha256, consumer_registry_sha256=registry.sha256)
     for label, replay in (("replay1", first), ("replay2", second)):
         contract = replay["authority_graph"]["source_contract"]
         replay_registry = verify_fresh_code_identity(root, metadata=contract,
             code_sha256=replay["seed"]["code_config_sha256"],
-            authority_sha256=replay["seed"]["source_authority_contract_sha256"])
+            authority_sha256=replay["seed"]["source_authority_contract_sha256"], profile=profile)
         identities[label + "_registry_sha256"] = replay_registry.sha256
     if set(identities.values()) != {registry.sha256}:
         raise ValueError("whole_source_registry_replay_identity_mismatch")

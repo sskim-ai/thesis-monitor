@@ -79,7 +79,7 @@ class FreshProbe(base.Probe):
         self.plan, self.calls, self.last_finished = plan, [], None
 
     def disk_guard(self):
-        if shutil.disk_usage(self.output).free < 12 * 1024**3:
+        if shutil.disk_usage(self.output).free < 10 * 1024**3:
             raise base.ProbeStop('DISK_GAP')
 
     def authenticate(self):
@@ -247,7 +247,7 @@ def replay(root, plan, *, inventories, docs, controls, scale, price_docs, action
 
 class FreshActions(ExactActionProbe):
     def disk_guard(self):
-        if shutil.disk_usage(self.output).free < 12 * 1024**3:
+        if shutil.disk_usage(self.output).free < 10 * 1024**3:
             raise base.ProbeStop('DISK_GAP')
 
 

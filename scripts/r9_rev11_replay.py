@@ -233,12 +233,18 @@ def publication_inputs(root, frozen, outcome, policy):
 
 
 def whole_inputs(root, frozen, outcome, policy):
-    plan = StockPlan.model_validate(frozen['stock_plan'])
-    universe = plan.universe
     if frozen.get('scope') == 'KR8_ONLY':
         from scripts.kr8_source_scope import require_kr8_plan
         require_kr8_plan(frozen)
     inputs, errors = stock_inputs(root, frozen, policy, outcome)
+    if not inputs:
+        raise ValueError('SOURCE_PARTIAL:empty_stock_bindings')
+    plan = next(iter(inputs.values()))['technical_inputs']['plan']
+    if 'stock_plan' in frozen and StockPlan.model_validate(frozen['stock_plan']) != plan:
+        raise ValueError('SOURCE_PARTIAL:stock_plan_mismatch')
+    if any(i['technical_inputs']['plan'] != plan for i in inputs.values()):
+        raise ValueError('SOURCE_PARTIAL:mixed_stock_plans')
+    universe = plan.universe
     if errors or set(inputs) != {t for ts in universe.values() for t in ts}:
         raise ValueError('SOURCE_PARTIAL:stock_bindings:' + ','.join(sorted(errors)))
     markets = market_inputs(root, frozen, outcome, policy)
@@ -258,7 +264,7 @@ def whole_inputs(root, frozen, outcome, policy):
     repo = Path(__file__).resolve().parents[1]
     inventory = read(repo/'docs/operations/UNIFIED_ACQUISITION_CLASSES.json')
     from app.services.whole_source_code_owner_registry import WholeSourceCodeOwnerRegistry
-    registry = WholeSourceCodeOwnerRegistry.freeze(repo)
+    registry = WholeSourceCodeOwnerRegistry.freeze(repo, profile='fresh' if 'us' in universe else 'fresh_kr8')
     denials = dict(kr_market_investor_flows=dict(status='OPTIONAL_UNAVAILABLE', value=None,
         denial='NOT_SELECTED_FOR_MARKET_COMPOSITION', run_id=frozen['generation_id']))
     bridge = rows['SKHY']['issuer_business_bridge'] if 'us' in universe else {'status': 'NOT_APPLICABLE_KR8_ONLY'}

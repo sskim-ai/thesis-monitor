@@ -30,6 +30,9 @@ class FreshExecution(Execution):
     # Match REV10 detailed capture; the older typed path expects legacy packets.
     TYPED_PRESENTATION = False
 
+    def freeze_extra(self):
+        return {}
+
     def valuation_context(self, ticker):
         if not self.source_frozen.get('provider_native_valuation'):
             return None
@@ -107,17 +110,17 @@ class FreshExecution(Execution):
             p.require(result['readiness']['status']=='PASS', 'fresh_stock_model_preflight:'+t)
             self.prepared[t],self.fresh_stocks[t]=result['prepared'],result['stock']
             self.locals[t]=inputs['technical_inputs']['local_seed']
-        for market in ('us','kr'):
+        for market in self.MARKET_SCOPES:
             self.projected[market]=project_sealed_market_context(whole['packets'][market],whole['seed'],whole['authority_graph'],
                 expected_authority_sha256=whole['authority_graph_sha256'])
         for name,value in [('prepared',self.prepared),('stocks',self.fresh_stocks),('markets',self.projected),('locals',self.locals),('whole',whole)]:
             p.write(self.root/'inputs'/(name+'.json'),value)
         requests={'market':[],'core':[]}
-        for market in ('us','kr'):
+        for market in self.MARKET_SCOPES:
             ctx=self.projected[market]['context']
             requests['market'].append(self.capture('market',dict(market=market,batch=1,subjects=[]),ctx,
                 market_owner.market_schema(ctx),market_owner.PROMPT))
-        for spec in owner._batch_topology():
+        for spec in self.batch_topology():
             contexts={}
             for t in spec['subjects']:
                 self.chain(t)
@@ -136,8 +139,9 @@ class FreshExecution(Execution):
             host_context_sha256=p.sha(self.report/'host-context.json'),
             launch_contract_sha256=p.sha(launch.INSTRUCTION/'m12ds-launch-context-parity-contract.json'),
             model='gpt-5.6-sol',effort='xhigh',timeout_seconds=1200,retries=0,fallback=0,judge=0,provider_refresh=0,
-            transport_policy='EXISTING_OFFICIAL_SHADOW_CONTRACT_UNCHANGED',max_calls=26,
-            fresh_source_replay=receipt,independent_assessment_content_read=False,production_side_effects=0)
+            transport_policy='EXISTING_OFFICIAL_SHADOW_CONTRACT_UNCHANGED',max_calls=sum(self.CALL_LIMITS.values()),
+            fresh_source_replay=receipt,independent_assessment_content_read=False,production_side_effects=0,
+            **self.freeze_extra())
         p.require(not self.frozen['controller']['status'],'clean_model_code_required')
         p.write(self.report/'execution-freeze.json',self.frozen)
         self.verify()
