@@ -273,7 +273,8 @@ class Execution(OfficialLaunch):
         self.markets[spec['market']]=raw
 
     def bounded(self,stage,spec,request):
-        p.require(sum(r['attempts'] for r in self.ledger if r['stage']==stage)<self.CALL_LIMITS[stage], 'stage_call_budget')
+        limits=getattr(self,'CALL_LIMITS',MAX_CALLS)
+        p.require(sum(r['attempts'] for r in self.ledger if r['stage']==stage)<limits[stage], 'stage_call_budget')
         self.ledger.append(dict(stage=stage,**spec,attempts=0,status='NOT_STARTED'))
         try:
             getattr(self,stage.replace('-','_'))(spec,request)
