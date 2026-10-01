@@ -71,7 +71,7 @@ class CalibrationProbe(base.Probe):
             payload = {}
         if not isinstance(payload, dict):
             payload = {}
-        receipt = {"security_code": code, "http_status": response.status_code, "ended_at": base.now(),
+        receipt = {"security_code": code, "SHT_CD": code, "http_status": response.status_code, "ended_at": base.now(),
                    "raw_sha256": sha256(raw).hexdigest(), "response_headers": headers,
                    "request": request, "rt_cd": payload.get("rt_cd"), "msg_cd": payload.get("msg_cd"),
                    "secret_scan": "PASS", "bytes": len(raw)}
