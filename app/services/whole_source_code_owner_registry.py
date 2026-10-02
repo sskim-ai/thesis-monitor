@@ -57,6 +57,10 @@ _KR8_OWNER_SPECS = (
     ("scripts/kis_exact_action_guard.py", "kis_exact_security_action_owner", False),
 )
 _US14_OWNER_SPECS = (
+    ('app/services/kiwoom_completed_close_owner.py', 'us_completed_daily_close_owner', False),
+    ('app/services/completed_session_current_price.py', 'completed_daily_close_contract', False),
+    ('app/services/unified_stock_owner.py', 'us_stock_price_consumer_binding', False),
+    ('app/services/unified_stock_anomaly_scope.py', 'us_technical_consumer_scope', False),
     ('app/services/auxiliary_issuer_financial_owner.py', 'auxiliary_issuer_only', False),
     ('scripts/us14_source_scope.py', 'us14_acquisition_scope', False),
     ('scripts/us14_models.py', 'us14_model_and_capture_scope', False),

@@ -120,7 +120,9 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
     stock['numeric_registry'] = financial.build_shadow_numeric_registry(stock['fact_catalog'])
     # Issuer business bridges deliberately cannot supply a security denominator.
     valuation_projection = result['projection']
-    price_binding = _unadjusted_price_binding(tech, stock['current_price_context'])
+    # usa20590 is itself a raw completed close, not adjusted/weekly equivalence.
+    price_binding = (None if tech.get('completed_close_source') is not None else
+        _unadjusted_price_binding(tech, stock['current_price_context']))
     if valuation_inputs is not None and (valuation_inputs['run_started_at'] != plan.frozen_at
             or valuation_inputs['policy'] != tech['policy']):
         raise ValueError('fresh_valuation_generation_policy_mismatch')
@@ -157,6 +159,13 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
     if event:
         packet['source_time_domains'].update(event_window=event['receipt']['window'],
             event_acquisition_class=event['receipt']['acquisition_class'])
+    if tech.get('completed_close_source') is not None:
+        price_owner = baseline['completed_session_current_price']
+        packet['source_time_domains'].update(scope='INHERITED_SOURCE_WITH_DECLARED_COMPLETED_CLOSE_SUPPLEMENT',
+            completed_close_supplement=dict(generation_id=price_owner['supplement_generation_id'],
+                requested_at=price_owner['supplement_requested_at'],
+                target_session=price_owner['target_session'],
+                source_sha256=price_owner['supplement_source_sha256']))
     # Packet metadata participates in the evidence identity, so build it only
     # after all deterministic source owners have completed.
     evidence = build_decision_evidence_packet(packet=packet, stock=stock,

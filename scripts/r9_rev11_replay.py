@@ -256,7 +256,10 @@ def publication_inputs(root, frozen, outcome, policy):
     return dict(publications=publications, night=night)
 
 
-def whole_inputs(root, frozen, outcome, policy):
+def whole_inputs(root, frozen, outcome, policy, completed_close_sources=None):
+    if completed_close_sources is None:
+        from app.services.kiwoom_completed_close_owner import load_supplement_lineage
+        completed_close_sources = load_supplement_lineage(root, parent_generation_id=frozen['generation_id'])
     if frozen.get('scope') == 'US14_ONLY':
         from scripts.us14_source_scope import require_us14_plan
         require_us14_plan(frozen)
@@ -274,6 +277,16 @@ def whole_inputs(root, frozen, outcome, policy):
     universe = plan.universe
     if errors or set(inputs) != {t for ts in universe.values() for t in ts}:
         raise ValueError('SOURCE_PARTIAL:stock_bindings:' + ','.join(sorted(errors)))
+    close_binding = {}
+    if completed_close_sources is not None:
+        from app.services.kiwoom_completed_close_owner import bind_technical_input
+        if set(universe) != {'us'} or set(completed_close_sources) != set(universe['us']):
+            raise ValueError('completed_close_whole_us14_scope_required')
+        for ticker, item in inputs.items():
+            supplement = completed_close_sources[ticker]
+            item['technical_inputs'] = bind_technical_input(item['technical_inputs'],
+                **supplement, security=item['financial_inputs']['plan']['security'])
+        close_binding = dict(completed_close_supplement=digest({t: s['source'] for t,s in completed_close_sources.items()}))
     markets = market_inputs(root, frozen, outcome, policy)
     context = publication_inputs(root, frozen, outcome, policy)
     pub, night = replay_fresh_publications(**context['publications']), replay_night(**context['night'])
@@ -305,7 +318,7 @@ def whole_inputs(root, frozen, outcome, policy):
         parent_run_id=plan.run_id, started_at=plan.frozen_at, source_policy_sha256=digest(sorted(policy.allowed_providers)),
         inventory_sha256=digest(inventory), **registry.seed_bindings, universe_sha256=digest(universe),
         attempts={m:n['attempt_id'] for m,n in native.items()}, attempt_hashes={m:digest(n) for m,n in native.items()},
-        run_acquisitions=dict(stock=digest(plan.model_dump(mode='json')),publications=digest(pub),night=night['value_sha256']),
+        run_acquisitions=dict(stock=digest(plan.model_dump(mode='json')),publications=digest(pub),night=night['value_sha256'], **close_binding),
         class_c_version_set_sha256=digest(versions), stock_cohort_hashes={m:digest({t:rows[t] for t in ts}) for m,ts in universe.items()},
         night_publication_receipt_sha256=digest(dict(probe=night['original_receipts'],history=night.get('history_receipts',[]))),
         optional_denial_set_sha256=digest(denials), skhy_issuer_bridge_sha256=digest(bridge),

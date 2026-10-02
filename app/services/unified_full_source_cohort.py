@@ -174,6 +174,12 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
             'financial_plan': inputs['fresh_financial_binding']['financial_inputs']['plan']}) for t, inputs in stock_inputs.items()}
         if digest(bindings) != seed.fresh_stock_owner_set_sha256:
             raise ValueError('fresh_stock_plan_set_mismatch')
+        supplements = {t: i['fresh_financial_binding']['technical_inputs']['completed_close_source']
+            for t,i in stock_inputs.items() if 'completed_close_source' in i['fresh_financial_binding']['technical_inputs']}
+        if supplements or 'completed_close_supplement' in seed.run_acquisitions:
+            if (set(universe) != {'us'} or set(supplements) != expected
+                    or digest(supplements) != seed.run_acquisitions.get('completed_close_supplement')):
+                raise ValueError('completed_close_whole_source_seal_mismatch')
     markets, stocks, authorities = {}, {}, {}
     persisted_events = {}
     for market in universe:

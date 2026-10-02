@@ -164,6 +164,9 @@ def _financial(document, *, ticker, market, cutoff, policy):
 
 
 def _technical(components, roles, *, ticker, market, cutoff, observed_at):
+    if "completed_close_projection_sha256" in components:
+        from app.services.kiwoom_completed_close_owner import historical_only_roles
+        roles = historical_only_roles(roles, cutoff=cutoff)
     if "completed_session_bar_set" in components:
         from app.services.eligible_completed_session_bars import eligible_completed_roles
         roles, receipt = eligible_completed_roles(roles, ticker=ticker, market=market,
@@ -236,7 +239,8 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
                    event_source: BoundNewsInput | None = None,
                    business_cutoff: datetime | None = None,
                    financial_tuple_denial: bool = False,
-                   fresh_financial_pending: bool = False) -> dict:
+                   fresh_financial_pending: bool = False,
+                   completed_close_source: dict | None = None) -> dict:
     """No path lookup, providers, prior assessments or downstream model output."""
     for key, value in (("local", local_seed), ("financial", financial), ("components", components),
                        ("receipts", receipts), ("plan", plan.model_dump(mode="json"))):
@@ -268,16 +272,28 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     roles = {r.role: decode_owned_role(plan, r, receipts[r.role], artifact) for r in reads}
     cutoff = date.fromisoformat(session_key)
     params = dict(ticker=ticker, market=market, cutoff=cutoff, observed_at=plan.frozen_at.isoformat(), roles=roles)
-    if digest(materialize_source_components(**params,
-            completed_session="completed_session_bar_set" in components)) != digest(components):
-        raise ValueError("sealed_component_replay_mismatch")
     tables = _local(local_seed, market=market, session_key=session_key, cutoff=plan.frozen_at,
         ticker=ticker, policy=policy)
     security, watch, thesis = (tables[k] for k in ("securitymaster", "watchlistitem", "investmentthesis"))
     if security["canonical_security_id"] != reads[0].canonical_security_id:
         raise ValueError("stock_local_security_receipt_mismatch")
     price_projection = None
-    if fresh_financial_pending:
+    if completed_close_source is not None:
+        from app.services.kiwoom_completed_close_owner import project, materialize
+        if not fresh_financial_pending or market != "us":
+            raise ValueError("completed_close_requires_fresh_us_owner")
+        _exact(completed_close_source, expected_hashes["completed_close_source"])
+        price_projection = project(source=completed_close_source, plan=plan,
+            read=next(r for r in reads if r.role == "adjusted_daily"), security=security, artifact_reader=artifact)
+        replayed_components = materialize(projection=price_projection, **params)
+    else:
+        if "completed_close_projection_sha256" in components:
+            raise ValueError("completed_close_source_required")
+        replayed_components = materialize_source_components(**params,
+            completed_session="completed_session_bar_set" in components)
+    if digest(replayed_components) != digest(components):
+        raise ValueError("sealed_component_replay_mismatch")
+    if fresh_financial_pending and price_projection is None:
         from app.services.completed_session_current_price import project_completed_price
         daily = next(r for r in reads if r.role == "adjusted_daily")
         price_projection = project_completed_price(plan=plan, read=daily, receipt=receipts[daily.role],
@@ -327,7 +343,8 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     structure_ready = all(c["eligible"] for rows in components["role_consumer_matrix"].values() for c in rows
         if c["consumer"] in {"legacy_local_pivots", "legacy_major_swings_atr", "legacy_boxes"})
     structure = analyze_chart_structure(periods, timeframe_contexts=timeframes) if structure_ready else {}
-    chart = {"available": bool(timeframes), "quality": "fresh", "source": "kiwoom",
+    chart = {"available": False if completed_close_source is not None else bool(timeframes),
+        "quality": "unavailable" if completed_close_source is not None else "fresh", "source": "kiwoom",
         "timeframes": timeframes, "structure": _compact_chart_structure(structure) if structure else {},
         "stored_price_rules": json.loads(thesis["price_rules"])}
     event_evidence = event_binding["evidence"] if event_binding else []
@@ -350,6 +367,9 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
         "data_cautions": sorted({r["behavior"] + ":" + r["role"] + ":" + r["consumer"]
             for r in binding if not r["eligible"]} | {"OPTIONAL_ESTIMATE_UNAVAILABLE", "OPTIONAL_CF_WC_UNAVAILABLE",
                 "QUERY_TIME_SOURCE_NOT_OFFICIAL_REGULAR_CLOSE_AUTHORITY"})}
+    if completed_close_source is not None:
+        stock["data_cautions"].remove("QUERY_TIME_SOURCE_NOT_OFFICIAL_REGULAR_CLOSE_AUTHORITY")
+        stock["data_cautions"].append("COMPLETED_REGULAR_SESSION_CLOSE_NOT_REALTIME")
     stock["knowledge_routing"] = investment_framework_routing(stock["industry"], stock["business_model"],
         thesis["core_thesis"], sector=stock["sector"], revenue_sources=stock["revenue_sources"],
         has_earnings=bool(financial_refs), has_price_context=bool(decision["current_price"]),
@@ -458,7 +478,13 @@ def validate_assembled(result, *, expected_result_sha256, versioned_business_inp
     stock = result["packet"]["stocks"][0]
     if "completed_session_current_price" in result:
         from app.services.completed_session_current_price import CompletedSessionCurrentPriceProjection
-        price = CompletedSessionCurrentPriceProjection.model_validate(result["completed_session_current_price"])
+        from app.services.kiwoom_completed_close_owner import KiwoomCompletedClose, CONTRACT as CLOSE_V2
+        projection_type = (KiwoomCompletedClose if result["completed_session_current_price"]["contract"] == CLOSE_V2
+            else CompletedSessionCurrentPriceProjection)
+        price = projection_type.model_validate(result["completed_session_current_price"])
+        if projection_type is KiwoomCompletedClose and (
+                price.supplement_source_sha256 != result["input_hashes"].get("completed_close_source")):
+            raise ValueError("completed_close_supplement_binding_mismatch")
         context = stock["current_price_context"]
         decision = stock["price_and_positioning"]["price"]
         if (price.ticker != stock["ticker"] or price.market != result["market"]
