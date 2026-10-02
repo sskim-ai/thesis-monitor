@@ -7,6 +7,10 @@ from typing import Literal
 from pydantic import model_validator
 
 from app.services.current_fresh_valuation import CurrentValuationView, valuation_numeric_bindings
+from app.services.provider_native_valuation_snapshot import (
+    FORWARD_FY1_QUALIFIED, FORWARD_QUALIFIED, ProviderNativeForwardValuationSnapshot,
+    forward_horizon_metadata,
+)
 from app.services.unified_snapshot_contract import ContractModel, digest
 
 CONTRACT = "provider-valuation-calibration-context-v1"
@@ -22,8 +26,14 @@ Core and A do not receive this block. Overall rationale, directional refs and
 directional score must use business evidence only, never these valuation refs.
 Do not repeat exact snapshot numbers in rationale: the bound Valuation renderer
 owns numeric display. Never present retrieval time as metric-as-of."""
+PROMPT += """
+FORWARD_PE is Finnhub's atomic forwardPE snapshot, not a FY1 EPS owner.
+Its forward_horizon_state is authoritative: UNSPECIFIED must never be called
+FY1, NTM, next-year P/E or fPER(FY1). Do not reconstruct implied EPS or reprice
+the ratio. No universal cheap/expensive threshold creates a business verdict.
+Use the provided display_label and provider snapshot caveats."""
 VALUATION_TERMS = re.compile(
-    r"(?<![A-Za-z])(?:PER|PBR|fPER|P/E|P/B)(?![A-Za-z])|주가수익비율|주가순자산비율", re.I
+    r"(?<![A-Za-z])(?:Forward P/E|PER|PBR|fPER|P/E|P/B)(?![A-Za-z])|주가수익비율|주가순자산비율", re.I
 )
 
 
@@ -43,16 +53,35 @@ class ValuationCalibrationContext(ContractModel):
     def bound(self):
         if self.context_sha256 != digest(self.model_dump(mode="json", exclude={"context_sha256"})):
             raise ValueError("valuation_context_hash_mismatch")
-        if [r["metric"] for r in self.metric_states] != ["PER", "PBR", "fPER"]:
+        if [r["metric"] for r in self.metric_states] not in (
+                ["PER", "PBR", "fPER"], ["PER", "PBR", "FORWARD_PE"]):
             raise ValueError("valuation_metric_triplet_required")
         expected = {r["fact_ref"] for r in self.metric_states if r["fact_ref"] is not None}
         if expected != set(self.facts):
             raise ValueError("valuation_context_fact_set_mismatch")
         for row in self.metric_states:
-            if row["state"] != "QUALIFIED_PROVIDER_LATEST_SNAPSHOT" and (
+            qualified_states = ({FORWARD_QUALIFIED, FORWARD_FY1_QUALIFIED}
+                                if row['metric'] == 'FORWARD_PE'
+                                else {"QUALIFIED_PROVIDER_LATEST_SNAPSHOT"})
+            if row["state"] not in qualified_states and (
                 row["value"] is not None or row["fact_ref"] is not None
             ):
                 raise ValueError("valuation_unavailable_value_leak")
+            if row['metric'] == 'FORWARD_PE':
+                if any(row.get(k) != v for k, v in forward_horizon_metadata().items()):
+                    raise ValueError('valuation_forward_horizon_label_unowned')
+                if row['fact_ref'] is not None:
+                    fact = self.facts[row['fact_ref']]['fact']
+                    snapshot = ProviderNativeForwardValuationSnapshot.model_validate(fact['provider_snapshot'])
+                    if (not snapshot.display_eligible or snapshot.snapshot_sha256 != row['snapshot_sha256']
+                            or snapshot.value != row['value']
+                            or snapshot.run_id != self.run_id or snapshot.canonical_security_id != self.security_id
+                            or fact['fields'] != {'forward_pe': snapshot.value}):
+                        raise ValueError('valuation_forward_owner_binding')
+                    if any(row.get(field) != getattr(snapshot, field) for field in (
+                            'forward_horizon_state', 'provider_horizon', 'estimate_basis',
+                            'provider_definition', 'display_label')):
+                        raise ValueError('valuation_forward_horizon_label_unowned')
         if any(f["fact"]["overall_direction_use"] is not False for f in self.facts.values()):
             raise ValueError("valuation_direction_permission_leak")
         return self
@@ -85,6 +114,10 @@ def calibration_context(view):
                 overall_direction_use=False,
             )
         )
+        if isinstance(native, ProviderNativeForwardValuationSnapshot):
+            rows[-1].update(forward_horizon_state=native.forward_horizon_state,
+                            display_label=native.display_label, provider_definition=native.provider_definition,
+                            provider_horizon=native.provider_horizon, estimate_basis=native.estimate_basis)
     values = dict(
         ticker=view.ticker,
         run_id=view.run_id,
@@ -155,6 +188,7 @@ def validate_calibration_output(raw, context):
         rest = {k: v for k, v in row.items() if k != field}
         require_direction_isolation(rest)
         terms = {
+            "forward p/e": "FORWARD_PE",
             "per": "PER",
             "p/e": "PER",
             "주가수익비율": "PER",
@@ -169,6 +203,10 @@ def validate_calibration_output(raw, context):
         qualified = {
             r["metric"]: r["fact_ref"] for r in context.metric_states if r["fact_ref"] is not None
         }
+        forward = next((r for r in context.metric_states if r['metric'] == 'FORWARD_PE'), None)
+        if forward and forward.get('provider_horizon') == 'NEXT_FISCAL_YEAR':
+            if 'fPER' in mentioned:
+                mentioned.add('FORWARD_PE')
         # Unavailable metrics cannot supply refs. A different qualified multiple
         # must not turn a truthful missing-metric caution into a binding error.
         required = {ref for metric, ref in qualified.items() if metric in mentioned}
@@ -195,5 +233,8 @@ def context_prompt(contexts):
     if any(c.get('valuation_context',{}).get('contract') == 'kr-fy1-valuation-calibration-context-v1'
            for c in contexts.values()):
         from app.services.kr_forward_valuation_context import PROMPT as KR_PROMPT
-        return KR_PROMPT
+        has_forward = any(any(row.get('metric') == 'FORWARD_PE'
+                              for row in c.get('valuation_context', {}).get('metric_states', []))
+                          for c in contexts.values())
+        return KR_PROMPT + ('\n' + PROMPT if has_forward else '')
     return PROMPT

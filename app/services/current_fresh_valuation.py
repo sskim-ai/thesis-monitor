@@ -17,6 +17,7 @@ from app.schemas.thesis import ValuationSnapshot
 from app.services.unified_snapshot_contract import ContractModel, digest
 from app.services.provider_native_valuation_snapshot import (
     INPUT_CONTRACT, ProviderNativeValuationSnapshot, derive_provider_snapshots,
+    ProviderNativeForwardValuationSnapshot, derive_forward_snapshot,
 )
 from app.services.security_valuation_basis import (
     SecurityValuationBasisReceipt, UnavailableState, candidate_inventory,
@@ -28,9 +29,9 @@ from app.services.valuation_snapshot_service import (
 
 
 class CurrentMultiple(ContractModel):
-    metric: Literal['PER', 'PBR', 'fPER']
+    metric: Literal['PER', 'PBR', 'fPER', 'FORWARD_PE']
     status: Literal['UNAVAILABLE', 'NOT_MEANINGFUL', 'QUALIFIED']
-    ownership_state: Literal['QUALIFIED', 'NOT_MEANINGFUL', 'QUALIFIED_PROVIDER_LATEST_SNAPSHOT'] | UnavailableState | None = None
+    ownership_state: Literal['QUALIFIED', 'NOT_MEANINGFUL', 'QUALIFIED_PROVIDER_LATEST_SNAPSHOT', 'QUALIFIED_PROVIDER_FORWARD_PE_SNAPSHOT_UNSPECIFIED_HORIZON', 'QUALIFIED_PROVIDER_NATIVE_FY1_FORWARD_PE'] | UnavailableState | None = None
     value: float | None = Field(default=None, allow_inf_nan=False)
     numerator: float = Field(gt=0, allow_inf_nan=False)
     numerator_role: Literal['CURRENT_PRICE', 'CURRENT_PRICE_CONTEXT_ONLY'] = 'CURRENT_PRICE'
@@ -45,14 +46,14 @@ class CurrentMultiple(ContractModel):
     display_eligible: bool = False
     entry_use_eligible: bool = False
     overall_direction_use: Literal[False] = False
-    native_snapshot: ProviderNativeValuationSnapshot | None = None
+    native_snapshot: ProviderNativeForwardValuationSnapshot | ProviderNativeValuationSnapshot | None = None
 
     @model_validator(mode='after')
     def owned_metric_state(self):
         if self.native_snapshot is not None:
-            snapshot = ProviderNativeValuationSnapshot.model_validate(self.native_snapshot.model_dump(mode='json'))
+            snapshot = type(self.native_snapshot).model_validate(self.native_snapshot.model_dump(mode='json'))
             qualified = snapshot.display_eligible
-            expected = 'QUALIFIED_PROVIDER_LATEST_SNAPSHOT' if qualified else unavailable_state(metric=self.metric, reason=snapshot.state)
+            expected = snapshot.state if qualified else unavailable_state(metric=self.metric, reason=snapshot.state)
             if self.ownership_state is not None and self.ownership_state != expected:
                 raise ValueError('valuation_ownership_state_mismatch')
             object.__setattr__(self, 'ownership_state', expected)
@@ -68,6 +69,8 @@ class CurrentMultiple(ContractModel):
                     or self.input_hashes != (snapshot.snapshot_sha256, snapshot.raw_sha256, snapshot.source_receipt_sha256)):
                 raise ValueError('valuation_atomic_snapshot_scope_mismatch')
             return self
+        if self.metric == 'FORWARD_PE':
+            raise ValueError('forward_pe_requires_atomic_provider_owner')
         expected = (unavailable_state(metric=self.metric, reason=self.denial_reason or '')
                     if self.status == 'UNAVAILABLE' else self.status)
         if self.ownership_state is not None and self.ownership_state != expected:
@@ -222,11 +225,13 @@ def derive_current_valuation(*, ticker, run_id, security, price, projection, iss
             denial_reason=native_input['reason']) if m.metric != 'fPER' else m for m in metrics)
     elif native_input is not None and native_input.get('contract') == INPUT_CONTRACT:
         snapshots = derive_provider_snapshots(native_input, security=security, run_id=run_id)
+        if native_input['receipt']['provider'] == 'finnhub':
+            snapshots += (derive_forward_snapshot(native_input, security=security, run_id=run_id),)
         metrics = tuple(CurrentMultiple(metric=s.metric, status='QUALIFIED' if s.display_eligible else 'UNAVAILABLE',
             numerator=current_price, numerator_role='CURRENT_PRICE_CONTEXT_ONLY', value=s.value,
             source_method='provider_native_latest_snapshot', input_hashes=(s.snapshot_sha256, s.raw_sha256, s.source_receipt_sha256),
             denial_reason=None if s.display_eligible else s.state, display_eligible=s.display_eligible, native_snapshot=s)
-            for s in snapshots) + (metrics[2],)
+            for s in snapshots) + ((metrics[2],) if len(snapshots) == 2 else ())
     elif (not issuer_bridge and not basis.is_depositary_security and not basis.identity_warning
             and price_owned):
         if native_input is not None:
@@ -300,7 +305,7 @@ def verify_current_valuation(view, **inputs):
 def valuation_numeric_bindings(view):
     """Use the existing valuation registry, detached from directional evidence."""
     from app.services.numeric_semantic_registry import build_numeric_registry
-    fields = {'PER': 'trailing_pe', 'PBR': 'price_to_book', 'fPER': 'forward_pe'}
+    fields = {'PER': 'trailing_pe', 'PBR': 'price_to_book', 'fPER': 'forward_pe', 'FORWARD_PE': 'forward_pe'}
     result = {}
     for metric in view.metrics:
         CurrentMultiple.model_validate(metric.model_dump(mode='json'))

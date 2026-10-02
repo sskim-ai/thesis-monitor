@@ -223,16 +223,16 @@ def test_production_stock_owner_display_and_direction_separation(tmp_path):
     )
     with_snapshot = assemble_fresh_stock(**inputs)
     view = CurrentValuationView.model_validate(with_snapshot["valuation_view"])
-    assert [m.status for m in view.metrics] == ["QUALIFIED", "QUALIFIED", "UNAVAILABLE"]
+    assert [m.status for m in view.metrics] == ["QUALIFIED", "QUALIFIED", "QUALIFIED"]
     assert view.security_basis_receipt.status == "UNAVAILABLE_SECURITY_BASIS"
     assert all(not m.entry_use_eligible for m in view.metrics)
-    assert set(valuation_numeric_bindings(view)) == {"PER", "PBR"}
+    assert set(valuation_numeric_bindings(view)) == {"PER", "PBR", "FORWARD_PE"}
     assert [e for e in without["evidence_packet"]["evidence"]] == with_snapshot["evidence_packet"][
         "evidence"
     ]
     lines = [r.text for r in _valuation_rows(view)]
     assert "Finnhub TTM snapshot" in lines[0] and "Finnhub quarterly snapshot" in lines[1]
-    assert "fPER: 판단 자료 부족" in lines[2]
+    assert "Finnhub Forward P/E" in lines[2] and "FY1/NTM 기간 미확인" in lines[2]
     assert all(m.publication_date is None for m in view.metrics)
     forged = view.model_dump(mode="json")
     forged["security_id"] = "different"

@@ -138,7 +138,7 @@ def section_coverage(rows):
 
 
 def _valuation_rows(valuation):
-    _require({m.metric for m in valuation.metrics} == {'PER', 'PBR', 'fPER'}
+    _require({m.metric for m in valuation.metrics} in ({'PER', 'PBR', 'fPER'}, {'PER', 'PBR', 'FORWARD_PE'})
              and len(valuation.metrics) == 3, 'detailed_valuation_section_incomplete')
     rows = []
     bindings = valuation_numeric_bindings(valuation)
@@ -149,13 +149,20 @@ def _valuation_rows(valuation):
         _require(metric.numerator == valuation.price, 'detailed_valuation_numerator_mismatch')
         text = ('판단 자료 부족' if metric.status == 'UNAVAILABLE' else 'N/M'
                 if metric.status == 'NOT_MEANINGFUL' else f'{metric.value:,.2f}배')
+        display_name = metric.metric
+        if metric.metric == 'FORWARD_PE':
+            display_name = metric.native_snapshot.display_label
         if metric.native_snapshot is not None and metric.display_eligible:
             snapshot = metric.native_snapshot
-            label = ('Kiwoom' if snapshot.provider == 'kiwoom' else
-                     'Finnhub TTM' if snapshot.metric == 'PER' else 'Finnhub quarterly')
-            text += f' · {label} snapshot'
+            if snapshot.metric == 'FORWARD_PE':
+                text += (' · Finnhub FY1 provider snapshot' if snapshot.provider_horizon == 'NEXT_FISCAL_YEAR'
+                         else ' · provider forward 기준 snapshot (FY1/NTM 기간 미확인)')
+            else:
+                label = ('Kiwoom' if snapshot.provider == 'kiwoom' else
+                         'Finnhub TTM' if snapshot.metric == 'PER' else 'Finnhub quarterly')
+                text += f' · {label} snapshot'
         bound = bindings.get(metric.metric)
-        rows.append(_row('valuation', metric.metric, metric.metric + ': ' + text,
+        rows.append(_row('valuation', metric.metric, display_name + ': ' + text,
             facts=(bound['fact']['fact_id'],) if bound else (),
             hashes=(digest(valuation.model_dump(mode='json')), *metric.input_hashes)
                 + ((digest(bound['fact']), digest(bound['registry'])) if bound else ()),

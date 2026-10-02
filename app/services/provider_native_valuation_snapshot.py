@@ -2,7 +2,7 @@
 
 Pure replay only. Acquisition must bind raw responses to one declared run.
 The explicit REV28 policy permits latest-provider context, not same-session
-fundamentals, ADR transfer, forward estimates or business-direction evidence.
+fundamentals, ADR transfer, EPS reconstruction or business-direction evidence.
 """
 
 from datetime import date, datetime
@@ -19,6 +19,28 @@ from app.services.unified_run_artifacts import sha256_bytes
 from app.services.unified_snapshot_contract import ContractModel, digest
 
 PROVIDER_NATIVE_VALUATION_SNAPSHOT_ALLOWED_FOR_DISPLAY_CONTEXT = True
+PROVIDER_NATIVE_FORWARD_PE_SNAPSHOT_ALLOWED_FOR_VALUATION_CONTEXT = True
+FORWARD_QUALIFIED = "QUALIFIED_PROVIDER_FORWARD_PE_SNAPSHOT_UNSPECIFIED_HORIZON"
+FORWARD_FY1_QUALIFIED = "QUALIFIED_PROVIDER_NATIVE_FY1_FORWARD_PE"
+FORWARD_SEMANTIC = ("forwardPE", "PROVIDER_REPORTED_FORWARD_PE")
+# Pin reviewed, captured field-specific official provenance here before FY1 use.
+# The current official captures do not contain a forwardPE field definition.
+FINNHUB_FORWARD_FY1_PROVENANCE: dict | None = None
+
+
+def forward_horizon_metadata():
+    fy1 = FINNHUB_FORWARD_FY1_PROVENANCE is not None
+    return dict(
+        forward_horizon_state="PROVIDER_FORWARD_HORIZON_FY1"
+        if fy1
+        else "PROVIDER_FORWARD_HORIZON_UNSPECIFIED",
+        provider_horizon="NEXT_FISCAL_YEAR" if fy1 else None,
+        estimate_basis="ANALYST_ESTIMATES" if fy1 else None,
+        provider_definition=FINNHUB_FORWARD_FY1_PROVENANCE,
+        display_label="fPER(FY1)" if fy1 else "Finnhub Forward P/E",
+    )
+
+
 INPUT_CONTRACT = "provider-native-valuation-input-v1"
 KIWOOM_ROUTE = "https://api.kiwoom.com/api/dostk/stkinfo"
 FINNHUB_BASE = "https://finnhub.io/api/v1/stock/"
@@ -29,7 +51,10 @@ FIELDS = {
         "PBR": ("pbQuarterly", "PROVIDER_REPORTED_QUARTERLY_PBR"),
     },
 }
-MARKETS = {"0": ("KOSPI", "\ucf54\uc2a4\ud53c", "\uac70\ub798\uc18c"), "10": ("KOSDAQ", "\ucf54\uc2a4\ub2e5")}
+MARKETS = {
+    "0": ("KOSPI", "\ucf54\uc2a4\ud53c", "\uac70\ub798\uc18c"),
+    "10": ("KOSDAQ", "\ucf54\uc2a4\ub2e5"),
+}
 
 
 class ProviderNativeValuationSnapshot(ContractModel):
@@ -89,13 +114,20 @@ class ProviderNativeValuationSnapshot(ContractModel):
             or identity.get("canonical_security_id") != self.canonical_security_id
         ):
             raise ValueError("native_snapshot_identity_scope")
-        if (self.provider_field, self.metric_semantic) != FIELDS[self.provider][self.metric]:
+        expected_field = (
+            FORWARD_SEMANTIC if self.metric == "FORWARD_PE" else FIELDS[self.provider][self.metric]
+        )
+        if (self.provider_field, self.metric_semantic) != expected_field:
             raise ValueError("native_snapshot_field_semantic")
         if self.route != (KIWOOM_ROUTE if self.provider == "kiwoom" else FINNHUB_BASE + "metric"):
             raise ValueError("native_snapshot_route")
         if self.api_id != ("ka10001" if self.provider == "kiwoom" else None):
             raise ValueError("native_snapshot_api_id")
-        qualified = self.state == "QUALIFIED_PROVIDER_LATEST_SNAPSHOT"
+        qualified = self.state in (
+            {FORWARD_QUALIFIED, FORWARD_FY1_QUALIFIED}
+            if self.metric == "FORWARD_PE"
+            else {"QUALIFIED_PROVIDER_LATEST_SNAPSHOT"}
+        )
         if (
             self.display_eligible,
             self.new_buyer_valuation_context_eligible,
@@ -110,11 +142,72 @@ class ProviderNativeValuationSnapshot(ContractModel):
                 or self.returned_security_id != self.requested_security_id
             ):
                 raise ValueError("native_snapshot_positive_authority_required")
-        elif not self.state.startswith("UNAVAILABLE_") or self.value is not None:
+        elif self.value is not None or (
+            not self.state.startswith("UNAVAILABLE_")
+            and not (
+                self.metric == "FORWARD_PE"
+                and self.state
+                in {"INVALID_FORWARD_PE", "IDENTITY_MISMATCH", "SOURCE_RESPONSE_INVALID"}
+            )
+        ):
             raise ValueError("native_snapshot_unavailable_value")
         if self.retrieval_timestamp.utcoffset() is None or not self.caveats:
             raise ValueError("native_snapshot_time_caveat_required")
         return self
+
+
+class ProviderNativeForwardValuationSnapshot(ProviderNativeValuationSnapshot):
+    """Atomic multiple; FY1 needs pinned official provenance, never inferred EPS."""
+
+    provider: Literal["finnhub"]
+    metric: Literal["FORWARD_PE"] = "FORWARD_PE"
+    state: Literal[
+        "QUALIFIED_PROVIDER_FORWARD_PE_SNAPSHOT_UNSPECIFIED_HORIZON",
+        "QUALIFIED_PROVIDER_NATIVE_FY1_FORWARD_PE",
+        "UNAVAILABLE_FORWARD_PE",
+        "INVALID_FORWARD_PE",
+        "IDENTITY_MISMATCH",
+        "UNAVAILABLE_ADR_FORWARD_VALUATION_IDENTITY",
+        "UNAVAILABLE_ADR_FORWARD_VALUATION_CONVERSION",
+        "SOURCE_RESPONSE_INVALID",
+    ]
+    forward_horizon_state: Literal[
+        "PROVIDER_FORWARD_HORIZON_UNSPECIFIED", "PROVIDER_FORWARD_HORIZON_FY1"
+    ] = "PROVIDER_FORWARD_HORIZON_UNSPECIFIED"
+    provider_horizon: Literal["NEXT_FISCAL_YEAR"] | None = None
+    estimate_basis: Literal["ANALYST_ESTIMATES"] | None = None
+    provider_definition: dict | None = None
+    core_visibility: Literal[False] = False
+    pass_a_visibility: Literal[False] = False
+
+    @model_validator(mode="after")
+    def horizon_bound(self):
+        fy1 = self.forward_horizon_state == "PROVIDER_FORWARD_HORIZON_FY1"
+        if fy1:
+            if (
+                not FINNHUB_FORWARD_FY1_PROVENANCE
+                or self.provider_definition != FINNHUB_FORWARD_FY1_PROVENANCE
+                or self.provider_horizon != "NEXT_FISCAL_YEAR"
+                or self.estimate_basis != "ANALYST_ESTIMATES"
+                or self.state == FORWARD_QUALIFIED
+            ):
+                raise ValueError("forward_fy1_official_definition_required")
+        elif (
+            self.provider_definition is not None
+            or self.provider_horizon is not None
+            or self.estimate_basis is not None
+            or self.state == FORWARD_FY1_QUALIFIED
+        ):
+            raise ValueError("forward_unspecified_definition_overclaim")
+        return self
+
+    @property
+    def display_label(self):
+        return (
+            "fPER(FY1)"
+            if self.forward_horizon_state == "PROVIDER_FORWARD_HORIZON_FY1"
+            else "Finnhub Forward P/E"
+        )
 
 
 def _response(part, *, inputs, run_id, security, provider, request):
@@ -413,3 +506,66 @@ def derive_provider_snapshots(inputs, *, security, run_id):
         row["snapshot_sha256"] = digest(row)
         result.append(ProviderNativeValuationSnapshot.model_validate(row))
     return tuple(result)
+
+
+def derive_forward_snapshot(inputs, *, security, run_id):
+    """Consume the existing metric/profile pair; never acquire or reprice data."""
+    if not PROVIDER_NATIVE_FORWARD_PE_SNAPSHOT_ALLOWED_FOR_VALUATION_CONTEXT:
+        raise ValueError("forward_snapshot_explicit_policy_required")
+    if inputs["receipt"]["provider"] != "finnhub":
+        raise ValueError("forward_snapshot_finnhub_required")
+    # Reuse the exact production source, time, metadata and identity verification.
+    per = derive_provider_snapshots(inputs, security=security, run_id=run_id)[0]
+    body = json.loads(inputs["raw"])
+    raw_value = body.get("metric", {}).get("forwardPE")
+    value, numeric_reason = _number(raw_value)
+    reason = None
+    identity = per.security_identity_receipt
+    if "UNAVAILABLE_ADR_CONVERSION" in identity["reasons"]:
+        profile = json.loads(inputs["identity_inputs"]["profile"]["raw"])
+        remapped = any(
+            s is not None and s != security["ticker"]
+            for s in (profile.get("ticker"), body.get("symbol"))
+        )
+        reason = (
+            "UNAVAILABLE_ADR_FORWARD_VALUATION_CONVERSION"
+            if remapped
+            else "UNAVAILABLE_ADR_FORWARD_VALUATION_IDENTITY"
+        )
+    elif (
+        identity["status"] != "QUALIFIED_EXACT_SECURITY"
+        or per.state == "UNAVAILABLE_SECURITY_IDENTITY"
+    ):
+        reason = "IDENTITY_MISMATCH"
+    elif per.state == "UNAVAILABLE_CURRENTNESS":
+        reason = "SOURCE_RESPONSE_INVALID"
+    elif numeric_reason:
+        reason = (
+            "UNAVAILABLE_FORWARD_PE"
+            if raw_value is None or (isinstance(raw_value, str) and not raw_value.strip())
+            else "INVALID_FORWARD_PE"
+        )
+    row = per.model_dump(exclude={"snapshot_sha256"})
+    fy1 = FINNHUB_FORWARD_FY1_PROVENANCE is not None
+    horizon = "PROVIDER_FORWARD_HORIZON_FY1" if fy1 else "PROVIDER_FORWARD_HORIZON_UNSPECIFIED"
+    row.update(
+        metric="FORWARD_PE",
+        provider_field=FORWARD_SEMANTIC[0],
+        metric_semantic=FORWARD_SEMANTIC[1],
+        state=reason or (FORWARD_FY1_QUALIFIED if fy1 else FORWARD_QUALIFIED),
+        value=None if reason else value,
+        display_eligible=not reason,
+        new_buyer_valuation_context_eligible=not reason,
+        holder_valuation_context_eligible=not reason,
+        forward_horizon_state=horizon,
+        provider_horizon="NEXT_FISCAL_YEAR" if fy1 else None,
+        estimate_basis="ANALYST_ESTIMATES" if fy1 else None,
+        provider_definition=FINNHUB_FORWARD_FY1_PROVENANCE,
+        caveats=(*per.caveats, horizon, "PROVIDER_FORWARD_DENOMINATOR_NOT_AN_EPS_OWNER"),
+    )
+    row = ProviderNativeForwardValuationSnapshot.model_construct(
+        **row, snapshot_sha256=""
+    ).model_dump(mode="json", exclude={"snapshot_sha256"})
+    return ProviderNativeForwardValuationSnapshot.model_validate(
+        dict(row, snapshot_sha256=digest(row))
+    )

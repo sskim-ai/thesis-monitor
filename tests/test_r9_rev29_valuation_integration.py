@@ -223,13 +223,13 @@ def valuation(tmp_path):
 
 def test_b_context_qualified_and_unavailable_triplets(valuation):
     current, unavailable = map(calibration_context, valuation)
-    assert len(current["facts"]) == 2 and unavailable["facts"] == {}
+    assert len(current["facts"]) == 3 and unavailable["facts"] == {}
     assert len(current["metric_states"]) == 3
     assert current == calibration_context(valuation[0])
     assert all(r["metric_asof"] is None for r in current["metric_states"])
     assert not current["overall_direction_use"]
-    assert current["metric_states"][2]["value"] is None
-    changed = deepcopy(current)
+    assert current["metric_states"][2]["value"] == 7
+    changed = deepcopy(unavailable)
     changed["metric_states"][2]["value"] = 12
     changed["context_sha256"] = digest({k: v for k, v in changed.items() if k != "context_sha256"})
     with pytest.raises(ValueError, match="unavailable_value_leak"):
