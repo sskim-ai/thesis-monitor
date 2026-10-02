@@ -99,6 +99,20 @@ def test_direction_sign_is_not_negative_economic_price(monkeypatch):
     assert owner.project(**inputs).current_price == 105
 
 
+@pytest.mark.parametrize("binding", [None, "0" * 64])
+def test_capture_requires_exact_request_hash(monkeypatch, binding):
+    inputs, artifacts, _ = source_fixture(monkeypatch)
+    capture = json.loads(artifacts["capture"])
+    if binding is None:
+        capture.pop("request_sha256")
+    else:
+        capture["request_sha256"] = binding
+    artifacts["capture"] = encoded(capture)
+    inputs["source"]["capture"]["sha256"] = sha256_bytes(artifacts["capture"])
+    with pytest.raises(ValueError, match="capture_binding_mismatch"):
+        owner.project(**inputs)
+
+
 @pytest.mark.parametrize("key", ["request", "capture", "response", "documentation"])
 def test_post_seal_bytes_change_rejected(monkeypatch, key):
     inputs, artifacts, _ = source_fixture(monkeypatch)

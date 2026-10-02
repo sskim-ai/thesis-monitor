@@ -79,7 +79,7 @@ def project(*, source, plan, read, security, artifact_reader):
     if (capture.get("http_status") != 200 or capture.get("response_received") is not True
             or capture.get("raw_sha256") != sha256_bytes(raw)
             or capture.get("raw_bytes") != len(raw)
-            or capture.get("request_sha256", sha256_bytes(request_raw)) != sha256_bytes(request_raw)):
+            or capture.get("request_sha256") != sha256_bytes(request_raw)):
         raise ValueError("completed_close_capture_binding_mismatch")
     at = datetime.fromisoformat(request.get("started_at") or request.get("requested_at"))
     if at.utcoffset() is None or at < plan.frozen_at or not request.get("generation_id"):
