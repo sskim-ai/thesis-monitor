@@ -87,3 +87,11 @@ def test_all22_common_generation_whole_source_replay_and_stages(tmp_path):
     assert receipt['dispatch_allowed'] is True
     assert len(artifacts['stock_stages']) == 22
     assert len(artifacts['market_stages']) == 2
+    matrix = artifacts['valuation_matrix']
+    assert matrix['qualified_fper_owner_present'] is False
+    horizon = next(r for r in matrix['rows'] if r['case'] == 'missing_horizon')
+    assert horizon['actual'] == horizon['expected'] == 'QUALIFIED'
+    forward = next(r for r in horizon['output']['metrics'] if r['metric'] == 'FORWARD_PE')
+    assert forward['native_snapshot']['forward_horizon_state'] == 'PROVIDER_FORWARD_HORIZON_UNSPECIFIED'
+    assert forward['denominator'] is None
+    assert forward['overall_direction_use'] is False
