@@ -46,6 +46,26 @@ def test_qualified_transition_freeze_and_stability(inputs):
     assert result["status"] == "PASS"
 
 
+@pytest.mark.parametrize('max_calls', [16, 10])
+def test_scoped_ten_minute_policy_is_bound_to_qualified_identity(inputs, max_calls):
+    identity = replace(inputs['identity'], timeout_seconds=600, max_calls=max_calls, retries=2)
+    inputs.update(identity=identity, expected_identity=identity)
+    frozen = q.QualifiedOfficialModelLaunchContext.qualify(**inputs)
+    assert frozen.identity.execution_policy == q.OfficialShadowExecutionPolicy(600, max_calls, 2)
+    with pytest.raises(q.LaunchQualificationError, match='POST_FREEZE_CONTEXT_DRIFT'):
+        frozen.verify(context=inputs['context'], identity=replace(identity, timeout_seconds=1200),
+            preparation_sha256='frozen-prep', freeze_sha256=frozen.sha256)
+
+
+@pytest.mark.parametrize('changes', [dict(timeout_seconds=600), dict(retries=2),
+    dict(timeout_seconds=600, max_calls=16, retries=3), dict(timeout_seconds=3600)])
+def test_unqualified_policy_rejected_even_when_expected_identity_matches(inputs, changes):
+    identity = replace(inputs['identity'], **changes)
+    inputs.update(identity=identity, expected_identity=identity)
+    with pytest.raises(q.LaunchQualificationError, match='REQUEST_FREEZE_IDENTITY_GAP'):
+        q.QualifiedOfficialModelLaunchContext.qualify(**inputs)
+
+
 @pytest.mark.parametrize("key", ["HTTPS_PROXY", "SSL_CERT_FILE", "unexpected_inventory_key"])
 def test_unexpected_transition_never_adaptively_allowed(inputs, key):
     inputs["context"]["safe_environment"][key] = {"present": True, "sha256": "changed"}

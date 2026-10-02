@@ -111,3 +111,35 @@ def test_rev46_kr_attempt_policy_preserves_kis_owner_and_legacy():
     assert Rev46Kr8Execution.forward_view is Kr8Execution.forward_view
     assert (obj.TIMEOUT_SECONDS, obj.MAX_RETRIES, obj.ATTEMPT_BUDGET) == (600,2,30)
     assert (Kr8Execution.TIMEOUT_SECONDS, Kr8Execution.MAX_RETRIES) == (1200,0)
+
+
+@pytest.mark.parametrize('market,max_calls', [('us', 16), ('kr', 10)])
+def test_scope_policy_uses_actual_freeze_and_rejects_cross_scope(market, max_calls):
+    from scripts.rev46_kr_models import Rev46Kr8Execution
+    cls = m.Us14Execution if market == 'us' else Rev46Kr8Execution
+    obj = object.__new__(cls)
+    obj.frozen = dict(timeout_seconds=600, max_calls=max_calls, retries=2)
+    assert obj.execution_policy() == m.p.transport.OfficialShadowExecutionPolicy(600, max_calls, 2)
+    obj.frozen['max_calls'] = 10 if max_calls == 16 else 16
+    with pytest.raises(m.p.BatchFailure, match='scoped_execution_policy_drift'):
+        obj.execution_policy()
+
+
+@pytest.mark.parametrize('market,max_calls', [('us', 16), ('kr', 10)])
+def test_launch_identity_contains_frozen_scoped_policy(tmp_path, monkeypatch, market, max_calls):
+    from types import SimpleNamespace
+    from scripts.rev46_kr_models import Rev46Kr8Execution
+    cls = m.Us14Execution if market == 'us' else Rev46Kr8Execution
+    obj = object.__new__(cls)
+    obj.report, obj.sealed = tmp_path/'report', tmp_path/'sealed'
+    obj.source_gen = 'sealed-source-fixture'
+    obj.frozen = dict(timeout_seconds=600, max_calls=max_calls, retries=2,
+        controller={'head': 'synthetic-head'}, fresh_source_replay={'first_sha256': 'whole-source'},
+        source_only_zip_sha256='zip')
+    m.p.write(obj.report/'execution-freeze.json', obj.frozen)
+    m.p.write(obj.sealed/'initial-requests.json', {'fixture_only': True})
+    monkeypatch.setattr(m.p, 'binding', lambda: SimpleNamespace(
+        executable_sha256='executable', qualification_sha256='qualification'))
+    identity = obj.identity()
+    assert identity.execution_policy == obj.execution_policy()
+    assert (identity.timeout_seconds, identity.max_calls, identity.retries) == (600, max_calls, 2)

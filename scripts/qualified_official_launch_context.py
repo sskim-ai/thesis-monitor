@@ -14,6 +14,10 @@ import os
 from pathlib import Path
 import stat
 
+from app.services.official_codex_shadow_transport_service import (
+    OfficialShadowError,
+    OfficialShadowExecutionPolicy,
+)
 from scripts import m12ds_launch_context as legacy
 
 CONTRACT = "qualified-official-model-launch-context-v1"
@@ -98,6 +102,10 @@ class LaunchIdentity:
     timeout_seconds: int = 1200
     max_calls: int = 26
     retries: int = 0
+
+    @property
+    def execution_policy(self):
+        return OfficialShadowExecutionPolicy(self.timeout_seconds, self.max_calls, self.retries)
 
 
 @dataclass(frozen=True)
@@ -190,9 +198,12 @@ class QualifiedOfficialModelLaunchContext:
                 binding_verified, provider_calls, secret_scan_passed,
                 expected_maintenance_authorization_sha256=None):
         require(identity == expected_identity, "REQUEST_FREEZE_IDENTITY_GAP")
-        require(identity.model == "gpt-5.6-sol" and identity.effort == "xhigh"
-                and identity.timeout_seconds == 1200 and identity.max_calls == 26
-                and identity.retries == 0, "REQUEST_FREEZE_IDENTITY_GAP")
+        require(identity.model == "gpt-5.6-sol" and identity.effort == "xhigh",
+                "REQUEST_FREEZE_IDENTITY_GAP")
+        try:
+            identity.execution_policy.validate()
+        except OfficialShadowError as exc:
+            raise LaunchQualificationError(PREFIX + "REQUEST_FREEZE_IDENTITY_GAP") from exc
         require(context["cwd_sha256"] == identity.cwd_sha256, "OFFICIAL_HOST_QUALIFICATION_GAP")
         require(binding_verified and provider_calls == 0 and secret_scan_passed,
                 "OFFICIAL_HOST_QUALIFICATION_GAP")

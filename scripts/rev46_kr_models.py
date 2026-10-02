@@ -16,6 +16,8 @@ class Rev46Kr8Execution(Kr8Execution):
     run = Us14Execution.run
     run_qualified = Us14Execution.run_qualified
     authorize_launch_context = Us14Execution.authorize_launch_context
+    execution_policy = Us14Execution.execution_policy
+    identity = Us14Execution.identity
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

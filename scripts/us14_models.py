@@ -94,7 +94,17 @@ class Us14Execution(FreshExecution):
             prompt_schema_sha256=q.digest(p.read(self.sealed/'initial-requests.json')),
             executable_sha256=p.binding().executable_sha256,
             launcher_sha256=p.sha(p.REPO/'app/services/official_codex_shadow_transport_service.py'),
-            qualification_sha256=p.binding().qualification_sha256, cwd_sha256=q.legacy.digest(str(p.REPO)))
+            qualification_sha256=p.binding().qualification_sha256, cwd_sha256=q.legacy.digest(str(p.REPO)),
+            **asdict(self.execution_policy()))
+
+    def execution_policy(self):
+        policy = p.transport.OfficialShadowExecutionPolicy(
+            self.frozen['timeout_seconds'], self.frozen['max_calls'], self.frozen['retries'])
+        policy.validate()
+        p.require((policy.timeout_seconds, policy.max_calls, policy.retries) ==
+            (self.TIMEOUT_SECONDS, sum(self.CALL_LIMITS.values()), self.MAX_RETRIES),
+            'scoped_execution_policy_drift')
+        return policy
 
     def current_launch_context(self):
         return q.capture_context(self.names)
@@ -147,7 +157,8 @@ class Us14Execution(FreshExecution):
         for name in ('prompt.txt', 'provider-wire-schema.json'):
             shutil.copy2(src/name, inp/name)
         reqid = f"{self.gen}-{stage}-{spec['market']}-{spec['batch']:02d}-attempt-{attempt}"
-        req = p.transport.OfficialShadowRequest(p.binding(), reqid, p.sha(inp/'prompt.txt'), p.sha(inp/'provider-wire-schema.json'))
+        req = p.transport.OfficialShadowRequest(p.binding(), reqid, p.sha(inp/'prompt.txt'),
+            p.sha(inp/'provider-wire-schema.json'), execution_policy=self.execution_policy())
         hashes = dict(prompt_sha256=req.prompt_sha256, schema_sha256=req.schema_sha256)
         if row['attempts']:
             p.require(all(row[k] == value for k, value in hashes.items()), 'us14_retry_request_drift')
