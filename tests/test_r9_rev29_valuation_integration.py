@@ -175,10 +175,10 @@ def test_native_sealed_dispatch_to_owner_replay(tmp_path, provider_error):
             assert inputs["reason"] == "UNAVAILABLE_PROVIDER_RESPONSE"
         else:
             rows = derive_provider_snapshots(inputs, security=sec, run_id=stock.run_id)
-            if sec["country"] == "KR":
+            if sec["country"] == "KR" or sec['security_type'] == 'common_stock':
                 assert [r.value for r in rows] == [18, 2]
             else:
-                assert all(r.value is None for r in rows)  # no authoritative SEC fixture granted
+                assert all(r.value is None for r in rows)  # depositary identity is still not granted
         assert inputs == replay_native(
             root=tmp_path, frozen=frozen, outcome=outcome, security=sec, policy=policy
         )
@@ -202,6 +202,10 @@ def test_native_sealed_dispatch_to_owner_replay(tmp_path, provider_error):
 
 @pytest.fixture
 def valuation(tmp_path):
+    return build_valuation(tmp_path)
+
+
+def build_valuation(tmp_path, *, forward_value=7):
     from tests.rev10_cohort_fixtures import plan_and_securities, POLICY_ALL, START, RUN
     from tests.rev8_source_fixtures import fresh_inputs
     from tests.rev10_source_fixtures import wire_clock
@@ -216,6 +220,8 @@ def valuation(tmp_path):
     inputs["valuation_inputs"] = native_input(
         inputs["financial_inputs"]["plan"]["security"], start=START, run=RUN, policy=POLICY_ALL
     )
+    from tests.test_r9_rev28_native_snapshot import alter
+    alter(inputs['valuation_inputs'], lambda b: b['metric'].update(forwardPE=forward_value))
     native = assemble_fresh_stock(**inputs)
     assert native["evidence_packet"] == plain["evidence_packet"]
     return native["valuation_view"], plain["valuation_view"]
@@ -361,8 +367,8 @@ def test_real_controller_capture_checks_exact_b_context_and_direction_isolation(
     assert len(captured) == 1
 
 
-def test_unavailable_fper_caution_needs_no_other_metric_ref(valuation):
-    context = calibration_context(valuation[0])
+def test_unavailable_fper_caution_needs_no_other_metric_ref(tmp_path):
+    context = calibration_context(build_valuation(tmp_path, forward_value=None)[0])
     row = dict(
         overall=dict(overall_reason="Business evidence only"),
         holder_axis=dict(holder_reason="fPER unavailable", holder_valuation_refs=[]),

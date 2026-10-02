@@ -32,6 +32,12 @@ Its forward_horizon_state is authoritative: UNSPECIFIED must never be called
 FY1, NTM, next-year P/E or fPER(FY1). Do not reconstruct implied EPS or reprice
 the ratio. No universal cheap/expensive threshold creates a business verdict.
 Use the provided display_label and provider snapshot caveats."""
+PROMPT += """
+If horizon_authority is USER_AUTHORIZED_PRODUCT_POLICY, fPER(FY1) is the
+Thesis Monitor product interpretation, not a reproduced Finnhub field definition.
+Preserve canonical_horizon, horizon_policy and the unknown provider_horizon.
+Do not claim Finnhub documented FY1 or owns an EPS denominator. This product
+policy grants no additional Overall/Core/A or business-direction authority."""
 VALUATION_TERMS = re.compile(
     r"(?<![A-Za-z])(?:Forward P/E|PER|PBR|fPER|P/E|P/B)(?![A-Za-z])|주가수익비율|주가순자산비율", re.I
 )
@@ -81,7 +87,8 @@ class ValuationCalibrationContext(ContractModel):
                         raise ValueError('valuation_forward_owner_binding')
                     if any(row.get(field) != getattr(snapshot, field) for field in (
                             'forward_horizon_state', 'provider_horizon', 'estimate_basis',
-                            'provider_definition', 'display_label')):
+                            'provider_definition', 'display_label', 'canonical_horizon',
+                            'horizon_authority', 'horizon_policy')):
                         raise ValueError('valuation_forward_horizon_label_unowned')
         if any(f["fact"]["overall_direction_use"] is not False for f in self.facts.values()):
             raise ValueError("valuation_direction_permission_leak")
@@ -118,7 +125,9 @@ def calibration_context(view):
         if isinstance(native, ProviderNativeForwardValuationSnapshot):
             rows[-1].update(forward_horizon_state=native.forward_horizon_state,
                             display_label=native.display_label, provider_definition=native.provider_definition,
-                            provider_horizon=native.provider_horizon, estimate_basis=native.estimate_basis)
+                            provider_horizon=native.provider_horizon, estimate_basis=native.estimate_basis,
+                            canonical_horizon=native.canonical_horizon,
+                            horizon_authority=native.horizon_authority, horizon_policy=native.horizon_policy)
     values = dict(
         ticker=view.ticker,
         run_id=view.run_id,
@@ -205,7 +214,7 @@ def validate_calibration_output(raw, context):
             r["metric"]: r["fact_ref"] for r in context.metric_states if r["fact_ref"] is not None
         }
         forward = next((r for r in context.metric_states if r['metric'] == 'FORWARD_PE'), None)
-        if forward and forward.get('provider_horizon') == 'NEXT_FISCAL_YEAR':
+        if forward and forward.get('canonical_horizon') == 'FY1':
             if 'fPER' in mentioned:
                 mentioned.add('FORWARD_PE')
         # Unavailable metrics cannot supply refs. A different qualified multiple

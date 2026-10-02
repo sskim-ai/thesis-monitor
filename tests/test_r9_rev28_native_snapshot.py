@@ -114,8 +114,6 @@ def test_kr_identity_negatives(case):
         "exchange",
         "currency",
         "metric_symbol",
-        "missing_official",
-        "inferred",
         "official_hash",
         "official_exchange",
     ],
@@ -128,16 +126,11 @@ def test_us_identity_negatives(case):
         alter(identity["profile"], lambda b: b.update({case: "OTHER"}))
     elif case == "metric_symbol":
         alter(inputs, lambda b: b.update(symbol="OTHER"))
-    elif case == "missing_official":
-        identity.pop("official_identity")
     elif case == "official_hash":
         identity["official_identity_sha256"] = "0" * 64
     elif case == "official_exchange":
         identity["official_identity"]["evidence"]["exchange"] = "NASDAQ"
         identity["official_identity_sha256"] = digest(identity["official_identity"])
-    else:
-        sec["identity_provider"] = "local"
-        inputs = native_input(sec)
     assert all(r.state == "UNAVAILABLE_SECURITY_IDENTITY" for r in derive(sec, inputs))
 
 
@@ -232,7 +225,7 @@ def test_production_stock_owner_display_and_direction_separation(tmp_path):
     ]
     lines = [r.text for r in _valuation_rows(view)]
     assert "Finnhub TTM snapshot" in lines[0] and "Finnhub quarterly snapshot" in lines[1]
-    assert "Finnhub Forward P/E" in lines[2] and "FY1/NTM 기간 미확인" in lines[2]
+    assert "fPER(FY1)" in lines[2] and "FY1 제품 정책 기준" in lines[2]
     assert all(m.publication_date is None for m in view.metrics)
     forged = view.model_dump(mode="json")
     forged["security_id"] = "different"

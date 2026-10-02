@@ -4,7 +4,7 @@ import json
 
 from app.services.fresh_financial_stock_owner import assemble_fresh_stock
 from app.services.current_fresh_valuation import CurrentValuationView
-from app.services.provider_native_valuation_snapshot import FORWARD_QUALIFIED
+from app.services.provider_native_valuation_snapshot import FORWARD_FY1_QUALIFIED, forward_horizon_metadata
 from app.services.unified_snapshot_contract import digest, encoded
 from app.services.unified_run_artifacts import sha256_bytes
 
@@ -64,15 +64,17 @@ def replay_matrix(stocks, inputs):
         row = next(r for r in view['metrics'] if r['metric'] == metric)
         if row['status'] != expected or row['overall_direction_use'] or row['entry_use_eligible']:
             raise ValueError('matrix_negative_control_failed:' + case)
-        expected_owner = FORWARD_QUALIFIED if metric == 'FORWARD_PE' else 'QUALIFIED_PROVIDER_LATEST_SNAPSHOT'
+        expected_owner = FORWARD_FY1_QUALIFIED if metric == 'FORWARD_PE' else 'QUALIFIED_PROVIDER_LATEST_SNAPSHOT'
         if expected == 'QUALIFIED' and (row['ownership_state'] != expected_owner
                 or row['native_snapshot']['metric_asof'] is not None
                 or row['denominator'] is not None or row['publication_date'] is not None):
             raise ValueError('matrix_snapshot_policy_scope')
         if case == 'missing_horizon':
             snapshot = row['native_snapshot']
-            if (snapshot['forward_horizon_state'] != 'PROVIDER_FORWARD_HORIZON_UNSPECIFIED'
-                    or snapshot['provider_horizon'] is not None or snapshot['estimate_basis'] is not None
+            metadata = forward_horizon_metadata()
+            metadata.pop('display_label')
+            if (any(snapshot[k] != v for k, v in metadata.items())
+                    or snapshot['provider_horizon'] is not None or snapshot['provider_definition'] is not None
                     or snapshot['provider_field'] != 'forwardPE' or snapshot['core_visibility']
                     or snapshot['pass_a_visibility'] or any(r['metric'] == 'fPER' for r in view['metrics'])):
                 raise ValueError('matrix_forward_horizon_promotion')

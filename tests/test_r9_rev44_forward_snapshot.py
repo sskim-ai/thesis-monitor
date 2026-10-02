@@ -49,10 +49,12 @@ def test_atomic_forward_and_old_owners_unchanged():
     ]
     snapshot = derive(inputs)
     assert snapshot.value == 7
-    assert snapshot.state == native.FORWARD_QUALIFIED
-    assert snapshot.forward_horizon_state == "PROVIDER_FORWARD_HORIZON_UNSPECIFIED"
-    assert snapshot.provider_horizon is snapshot.estimate_basis is None
-    assert snapshot.display_label == "Finnhub Forward P/E"
+    assert snapshot.state == native.FORWARD_FY1_QUALIFIED
+    assert snapshot.forward_horizon_state == "CANONICAL_FORWARD_HORIZON_FY1"
+    assert snapshot.provider_horizon is snapshot.provider_definition is None
+    assert snapshot.estimate_basis == "ANALYST_ESTIMATES_FORWARD"
+    assert snapshot.horizon_authority == "USER_AUTHORIZED_PRODUCT_POLICY"
+    assert snapshot.display_label == "fPER(FY1)"
     assert not snapshot.overall_direction_use
     assert not snapshot.core_visibility and not snapshot.pass_a_visibility
     assert snapshot.underlying_denominator_period is None
@@ -187,7 +189,7 @@ def test_binding_renderer_and_axis_ownership(valuation):
     assert bound["fact"]["fields"] == {"forward_pe": 7}
     assert bound["fact"]["provider_snapshot"]["provider_field"] == "forwardPE"
     line = _valuation_rows(view)[2].text
-    assert "Finnhub Forward P/E" in line and "7" in line and "fPER(FY1)" not in line
+    assert "fPER(FY1)" in line and "7" in line and "FY1 제품 정책 기준" in line
     context = calibration_context(view)
     ref = context["metric_states"][2]["fact_ref"]
     output = dict(
@@ -209,7 +211,7 @@ def test_binding_renderer_and_axis_ownership(valuation):
 @pytest.mark.parametrize(
     "field,value",
     [
-        ("display_label", "fPER(FY1)"),
+        ("display_label", "fPER(NTM)"),
         ("provider_horizon", "NEXT_FISCAL_YEAR"),
         ("estimate_basis", "ANALYST_ESTIMATES"),
     ],
@@ -223,6 +225,6 @@ def test_context_metadata_forgery_rejected(valuation, field, value):
 
 def test_context_qualification_state_must_match_atomic_owner(valuation):
     context = calibration_context(valuation[0])
-    context['metric_states'][2]['state'] = native.FORWARD_FY1_QUALIFIED
+    context['metric_states'][2]['state'] = native.FORWARD_QUALIFIED
     with pytest.raises(ValueError, match='forward_owner_binding'):
         ValuationCalibrationContext.model_validate(rehash(context, 'context_sha256'))

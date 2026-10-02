@@ -92,6 +92,8 @@ def test_all22_common_generation_whole_source_replay_and_stages(tmp_path):
     horizon = next(r for r in matrix['rows'] if r['case'] == 'missing_horizon')
     assert horizon['actual'] == horizon['expected'] == 'QUALIFIED'
     forward = next(r for r in horizon['output']['metrics'] if r['metric'] == 'FORWARD_PE')
-    assert forward['native_snapshot']['forward_horizon_state'] == 'PROVIDER_FORWARD_HORIZON_UNSPECIFIED'
+    assert forward['native_snapshot']['forward_horizon_state'] == 'CANONICAL_FORWARD_HORIZON_FY1'
+    assert forward['native_snapshot']['horizon_authority'] == 'USER_AUTHORIZED_PRODUCT_POLICY'
+    assert forward['native_snapshot']['provider_definition'] is None
     assert forward['denominator'] is None
     assert forward['overall_direction_use'] is False

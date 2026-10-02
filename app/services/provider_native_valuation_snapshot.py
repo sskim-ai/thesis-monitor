@@ -14,7 +14,6 @@ from urllib.parse import urlsplit
 from pydantic import Field, model_validator
 
 from app.services.official_security_identity_service import OfficialSecurityIdentityEvidence
-from app.services.security_identity_service import identity_source_tier
 from app.services.unified_run_artifacts import sha256_bytes
 from app.services.unified_snapshot_contract import ContractModel, digest
 
@@ -23,21 +22,36 @@ PROVIDER_NATIVE_FORWARD_PE_SNAPSHOT_ALLOWED_FOR_VALUATION_CONTEXT = True
 FORWARD_QUALIFIED = "QUALIFIED_PROVIDER_FORWARD_PE_SNAPSHOT_UNSPECIFIED_HORIZON"
 FORWARD_FY1_QUALIFIED = "QUALIFIED_PROVIDER_NATIVE_FY1_FORWARD_PE"
 FORWARD_SEMANTIC = ("forwardPE", "PROVIDER_REPORTED_FORWARD_PE")
-# Pin reviewed, captured field-specific official provenance here before FY1 use.
+# Pin captured field-specific provenance before claiming an official definition.
 # The current official captures do not contain a forwardPE field definition.
 FINNHUB_FORWARD_FY1_PROVENANCE: dict | None = None
+FINNHUB_FORWARD_FY1_PRODUCT_POLICY = {
+    "contract": "finnhub-forwardpe-fy1-product-policy-v1",
+    "horizon_authority": "USER_AUTHORIZED_PRODUCT_POLICY",
+    "provider": "finnhub",
+    "provider_field": "forwardPE",
+    "canonical_horizon": "FY1",
+    "estimate_basis": "ANALYST_ESTIMATES_FORWARD",
+    "owner_kind": "PROVIDER_NATIVE_ATOMIC_RATIO",
+    "REV44_document_capture_FY1_definition": "NOT_REPRODUCED",
+    "authorization_reference": "20261002-r2b-r9-rev45-fy1-forwardpe-us-fresh-kr-fresh-main-integration",
+}
 
 
 def forward_horizon_metadata():
     fy1 = FINNHUB_FORWARD_FY1_PROVENANCE is not None
+    policy = FINNHUB_FORWARD_FY1_PRODUCT_POLICY if not fy1 else None
     return dict(
         forward_horizon_state="PROVIDER_FORWARD_HORIZON_FY1"
         if fy1
-        else "PROVIDER_FORWARD_HORIZON_UNSPECIFIED",
+        else "CANONICAL_FORWARD_HORIZON_FY1" if policy else "PROVIDER_FORWARD_HORIZON_UNSPECIFIED",
         provider_horizon="NEXT_FISCAL_YEAR" if fy1 else None,
-        estimate_basis="ANALYST_ESTIMATES" if fy1 else None,
+        estimate_basis="ANALYST_ESTIMATES" if fy1 else "ANALYST_ESTIMATES_FORWARD" if policy else None,
         provider_definition=FINNHUB_FORWARD_FY1_PROVENANCE,
-        display_label="fPER(FY1)" if fy1 else "Finnhub Forward P/E",
+        canonical_horizon="FY1" if fy1 or policy else None,
+        horizon_authority="OFFICIAL_FIELD_DEFINITION" if fy1 else "USER_AUTHORIZED_PRODUCT_POLICY" if policy else None,
+        horizon_policy=policy,
+        display_label="fPER(FY1)" if fy1 or policy else "Finnhub Forward P/E",
     )
 
 
@@ -157,7 +171,7 @@ class ProviderNativeValuationSnapshot(ContractModel):
 
 
 class ProviderNativeForwardValuationSnapshot(ProviderNativeValuationSnapshot):
-    """Atomic multiple; FY1 needs pinned official provenance, never inferred EPS."""
+    """Atomic multiple; product policy and provider definition stay distinct."""
 
     provider: Literal["finnhub"]
     metric: Literal["FORWARD_PE"] = "FORWARD_PE"
@@ -172,11 +186,15 @@ class ProviderNativeForwardValuationSnapshot(ProviderNativeValuationSnapshot):
         "SOURCE_RESPONSE_INVALID",
     ]
     forward_horizon_state: Literal[
-        "PROVIDER_FORWARD_HORIZON_UNSPECIFIED", "PROVIDER_FORWARD_HORIZON_FY1"
+        "PROVIDER_FORWARD_HORIZON_UNSPECIFIED", "PROVIDER_FORWARD_HORIZON_FY1",
+        "CANONICAL_FORWARD_HORIZON_FY1",
     ] = "PROVIDER_FORWARD_HORIZON_UNSPECIFIED"
     provider_horizon: Literal["NEXT_FISCAL_YEAR"] | None = None
-    estimate_basis: Literal["ANALYST_ESTIMATES"] | None = None
+    estimate_basis: Literal["ANALYST_ESTIMATES", "ANALYST_ESTIMATES_FORWARD"] | None = None
     provider_definition: dict | None = None
+    canonical_horizon: Literal["FY1"] | None = None
+    horizon_authority: Literal["OFFICIAL_FIELD_DEFINITION", "USER_AUTHORIZED_PRODUCT_POLICY"] | None = None
+    horizon_policy: dict | None = None
     core_visibility: Literal[False] = False
     pass_a_visibility: Literal[False] = False
 
@@ -189,13 +207,30 @@ class ProviderNativeForwardValuationSnapshot(ProviderNativeValuationSnapshot):
                 or self.provider_definition != FINNHUB_FORWARD_FY1_PROVENANCE
                 or self.provider_horizon != "NEXT_FISCAL_YEAR"
                 or self.estimate_basis != "ANALYST_ESTIMATES"
+                or self.canonical_horizon != "FY1"
+                or self.horizon_authority != "OFFICIAL_FIELD_DEFINITION"
+                or self.horizon_policy is not None
                 or self.state == FORWARD_QUALIFIED
             ):
                 raise ValueError("forward_fy1_official_definition_required")
+        elif self.forward_horizon_state == "CANONICAL_FORWARD_HORIZON_FY1":
+            if (
+                not FINNHUB_FORWARD_FY1_PRODUCT_POLICY
+                or self.horizon_policy != FINNHUB_FORWARD_FY1_PRODUCT_POLICY
+                or self.horizon_authority != "USER_AUTHORIZED_PRODUCT_POLICY"
+                or self.canonical_horizon != "FY1"
+                or self.estimate_basis != "ANALYST_ESTIMATES_FORWARD"
+                or self.provider_horizon is not None or self.provider_definition is not None
+                or self.state == FORWARD_QUALIFIED
+            ):
+                raise ValueError("forward_fy1_product_policy_binding_required")
         elif (
             self.provider_definition is not None
             or self.provider_horizon is not None
             or self.estimate_basis is not None
+            or self.canonical_horizon is not None
+            or self.horizon_authority is not None
+            or self.horizon_policy is not None
             or self.state == FORWARD_FY1_QUALIFIED
         ):
             raise ValueError("forward_unspecified_definition_overclaim")
@@ -205,7 +240,7 @@ class ProviderNativeForwardValuationSnapshot(ProviderNativeValuationSnapshot):
     def display_label(self):
         return (
             "fPER(FY1)"
-            if self.forward_horizon_state == "PROVIDER_FORWARD_HORIZON_FY1"
+            if self.canonical_horizon == "FY1"
             else "Finnhub Forward P/E"
         )
 
@@ -243,10 +278,14 @@ def _name(value):
 
 
 def _exchange(value):
+    value = " ".join(str(value or "").upper().split())
     names = {
         "NEW YORK STOCK EXCHANGE, INC.": "NYSE",
+        "NEW YORK STOCK EXCHANGE": "NYSE",
         "NASDAQ NMS - GLOBAL MARKET": "NASDAQ",
         "NASDAQ NMS - GLOBAL SELECT MARKET": "NASDAQ",
+        "NASDAQ GLOBAL SELECT MARKET": "NASDAQ",
+        "NASDAQ GLOBAL MARKET": "NASDAQ",
         "NASDAQ CAPITAL MARKET": "NASDAQ",
     }
     return names.get(value, value)
@@ -329,12 +368,7 @@ def _identity(*, inputs, security, body, run_id, provider, metric_receipt):
         bindings += [digest(receipt), sha256_bytes(data["profile"]["raw"])]
         exchange, currency = _exchange(profile.get("exchange")), profile.get("currency")
         official = data.get("official_identity")
-        tier = identity_source_tier(
-            security.get("identity_provider"), security.get("identity_quality")
-        )
-        if not official:
-            reasons.append("UNAVAILABLE_SECURITY_IDENTITY")
-        else:
+        if official:
             evidence = OfficialSecurityIdentityEvidence.from_payload(official)
             bindings.append(digest(official))
             if (
@@ -343,7 +377,7 @@ def _identity(*, inputs, security, body, run_id, provider, metric_receipt):
                 or urlsplit(evidence.source_url).hostname != "www.sec.gov"
                 or not urlsplit(evidence.source_url).path.startswith("/Archives/edgar/data/")
                 or evidence.ticker != ticker
-                or evidence.exchange != security.get("exchange")
+                or _exchange(evidence.exchange) != _exchange(security.get("exchange"))
                 or evidence.security_type != "common_stock"
                 or evidence.share_class != security.get("share_class")
                 or evidence.cik != security.get("cik")
@@ -352,19 +386,20 @@ def _identity(*, inputs, security, body, run_id, provider, metric_receipt):
             ):
                 reasons.append("UNAVAILABLE_SECURITY_IDENTITY")
         if (
-            tier != "tier_a_authoritative"
-            or security.get("identity_quality") != "verified"
-            or security.get("security_type") != "common_stock"
+            security.get("security_type") != "common_stock"
+            or not ticker or not security.get("canonical_security_id")
             or profile.get("ticker") != ticker
-            or exchange != security.get("exchange")
+            or exchange not in {"NASDAQ", "NYSE"}
+            or exchange != _exchange(security.get("exchange"))
             or currency != "USD"
+            or security.get("currency", "USD") != "USD"
             or security.get("country") != "US"
         ):
             reasons.append("UNAVAILABLE_SECURITY_IDENTITY")
-        # A profile's currency is a filing currency, not an ADR conversion basis.
-        if profile.get("country") not in (None, "US") or returned != profile.get("ticker"):
+        # Issuer domicile is not a listing venue or a depositary conversion basis.
+        if returned != profile.get("ticker"):
             reasons.append("UNAVAILABLE_SECURITY_IDENTITY")
-        contract = "sec-finnhub-direct-security-identity-v1"
+        contract = "finnhub-direct-us-provider-identity-v2"
     result = dict(
         contract=contract,
         run_id=run_id,
@@ -378,6 +413,10 @@ def _identity(*, inputs, security, body, run_id, provider, metric_receipt):
         status="QUALIFIED_EXACT_SECURITY" if not reasons else reasons[0],
         reasons=sorted(set(reasons)),
     )
+    if provider == "finnhub":
+        result.update(official_identity_role="OPTIONAL_SUPPORTING_EVIDENCE",
+                      official_identity_present=bool(data.get("official_identity")),
+                      allowed_fields=("peTTM", "pbQuarterly", "forwardPE"))
     return dict(**result, receipt_sha256=digest(result))
 
 
@@ -546,8 +585,10 @@ def derive_forward_snapshot(inputs, *, security, run_id):
             else "INVALID_FORWARD_PE"
         )
     row = per.model_dump(exclude={"snapshot_sha256"})
-    fy1 = FINNHUB_FORWARD_FY1_PROVENANCE is not None
-    horizon = "PROVIDER_FORWARD_HORIZON_FY1" if fy1 else "PROVIDER_FORWARD_HORIZON_UNSPECIFIED"
+    metadata = forward_horizon_metadata()
+    metadata.pop("display_label")
+    fy1 = metadata["canonical_horizon"] == "FY1"
+    horizon = metadata["forward_horizon_state"]
     row.update(
         metric="FORWARD_PE",
         provider_field=FORWARD_SEMANTIC[0],
@@ -557,11 +598,10 @@ def derive_forward_snapshot(inputs, *, security, run_id):
         display_eligible=not reason,
         new_buyer_valuation_context_eligible=not reason,
         holder_valuation_context_eligible=not reason,
-        forward_horizon_state=horizon,
-        provider_horizon="NEXT_FISCAL_YEAR" if fy1 else None,
-        estimate_basis="ANALYST_ESTIMATES" if fy1 else None,
-        provider_definition=FINNHUB_FORWARD_FY1_PROVENANCE,
-        caveats=(*per.caveats, horizon, "PROVIDER_FORWARD_DENOMINATOR_NOT_AN_EPS_OWNER"),
+        **metadata,
+        caveats=(*per.caveats, horizon, "PROVIDER_FORWARD_DENOMINATOR_NOT_AN_EPS_OWNER",
+                 *(() if metadata["horizon_authority"] != "USER_AUTHORIZED_PRODUCT_POLICY"
+                   else ("FY1_USER_AUTHORIZED_PRODUCT_POLICY_NOT_PROVIDER_FIELD_DEFINITION",))),
     )
     row = ProviderNativeForwardValuationSnapshot.model_construct(
         **row, snapshot_sha256=""

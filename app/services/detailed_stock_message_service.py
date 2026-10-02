@@ -155,8 +155,11 @@ def _valuation_rows(valuation):
         if metric.native_snapshot is not None and metric.display_eligible:
             snapshot = metric.native_snapshot
             if snapshot.metric == 'FORWARD_PE':
-                text += (' · Finnhub FY1 provider snapshot' if snapshot.provider_horizon == 'NEXT_FISCAL_YEAR'
-                         else ' · provider forward 기준 snapshot (FY1/NTM 기간 미확인)')
+                if snapshot.horizon_authority == 'USER_AUTHORIZED_PRODUCT_POLICY':
+                    text += ' · Finnhub snapshot (FY1 제품 정책 기준)'
+                else:
+                    text += (' · Finnhub FY1 provider snapshot' if snapshot.provider_horizon == 'NEXT_FISCAL_YEAR'
+                             else ' · provider forward 기준 snapshot (FY1/NTM 기간 미확인)')
             else:
                 label = ('Kiwoom' if snapshot.provider == 'kiwoom' else
                          'Finnhub TTM' if snapshot.metric == 'PER' else 'Finnhub quarterly')
