@@ -45,6 +45,7 @@ from app.services.dividend_history_service import DividendHistoryService
 from app.services.security_master_service import SecurityMasterService
 from app.services.news_query_service import NewsQueryService
 from app.services.provider_telemetry_service import ProviderTelemetryService
+from app.services.unified_source_policy import UnifiedSourcePolicy
 from app.services.thesis_scoring import score_event
 from app.utils.tickers import COMPANY_NAME_ALIASES, normalize_ticker
 
@@ -382,11 +383,16 @@ def _refresh_duplicate_event(duplicate: Event, event: Event) -> None:
 
 
 class CollectionService:
-    def __init__(self) -> None:
+    def __init__(self, *, source_policy: UnifiedSourcePolicy | None = None,
+                 event_acquisitions: dict | None = None) -> None:
         settings = get_settings()
+        self.source_policy = source_policy
+        self.event_acquisitions = event_acquisitions or {}
+        self.event_owner_denials: list[dict[str, str]] = []
         self.providers = provider_priority(
             include_live_news=settings.enable_live_providers,
             include_mock_provider=settings.include_mock_provider,
+            **({"source_policy": source_policy} if source_policy is not None else {}),
         )
         self.profile_fallback_provider = MockProvider()
         self.dividend_service = DividendHistoryService()
@@ -411,6 +417,19 @@ class CollectionService:
         search_aliases: list[str],
         issuer_type: str,
     ) -> list[RawEvent]:
+        if self.source_policy is not None:
+            self.source_policy.require(provider.name)
+            acquisition = self.event_acquisitions.get(provider.name)
+            if acquisition is None:
+                raise ValueError("unified_event_wire_owner_not_qualified")
+            from app.models.security import SecurityMaster
+            with session.no_autoflush:
+                target = session.exec(select(SecurityMaster).where(SecurityMaster.ticker == ticker)).first()
+            if target is None:
+                raise ValueError("unified_event_security_identity_missing")
+            self.source_policy.require(target.identity_provider)
+            return await acquisition.collect(session, provider, target,
+                lookback_days=lookback_days, aliases=search_aliases)
         settings = get_settings()
         status = self.provider_status.get(provider.name)
         if status is not None and not status.configured:
@@ -501,6 +520,8 @@ class CollectionService:
         auto_backfill: bool,
         backfill_years: int,
     ) -> BackfillStatus:
+        if self.source_policy is not None and auto_backfill:
+            raise ValueError("unified_backfill_requires_separate_acquisition")
         backfill_provider = provider or "opendart"
         before_count = self._snapshot_count(session, ticker, backfill_provider)
         status = BackfillStatus(
@@ -536,6 +557,31 @@ class CollectionService:
         return status
 
     async def collect_events(self, session: Session, ticker: str, lookback_days: int) -> list[Event]:
+        if self.source_policy is not None:
+            if not self.event_acquisitions:
+                raise ValueError("unified_event_wire_owner_not_qualified")
+            if session.new or session.dirty or session.deleted:
+                raise ValueError("unified_event_clean_read_session_required")
+            from app.models.security import SecurityMaster
+            with session.no_autoflush:
+                target = session.exec(select(SecurityMaster).where(
+                    SecurityMaster.ticker == normalize_ticker(ticker))).first()
+                if target is None:
+                    raise ValueError("unified_event_security_identity_missing")
+                aliases = self.news_query_service.aliases(target)
+                rows = []
+                names = {provider.name for provider in self.providers}
+                if set(self.event_acquisitions) - names:
+                    raise ValueError("unified_event_owner_not_in_registry")
+                for provider in self.providers:
+                    if provider.name not in self.event_acquisitions:
+                        self.event_owner_denials.append({"provider": provider.name,
+                            "reason": "optional_event_owner_not_declared"})
+                        continue
+                    raw = await self._fetch_provider_events(session, provider, target.ticker,
+                        lookback_days, aliases, target.issuer_type)
+                    rows.extend(_raw_event_to_model(item) for item in raw)
+                return list({event_fingerprint(item): item for item in rows}.values())
         ticker = normalize_ticker(ticker)
         company = session.exec(select(Company).where(Company.ticker == ticker)).first()
         watchlist_item = session.exec(
@@ -658,6 +704,10 @@ class CollectionService:
         auto_backfill: bool = False,
         backfill_years: int = 5,
     ) -> ThesisEventResponse:
+        if self.source_policy is not None:
+            # The historical Event table has no original wire receipts. Only
+            # collect_events returns the newly bound, detached unified result.
+            raise ValueError("unified_thesis_event_cache_not_source_qualified")
         ticker = normalize_ticker(ticker)
         backfill_status = await self._maybe_backfill_financial_snapshots(
             session=session,
@@ -714,6 +764,8 @@ class CollectionService:
         )
 
     async def get_company_profile(self, session: Session, ticker: str) -> CompanyProfile:
+        if self.source_policy is not None:
+            raise ValueError("unified_profile_requires_versioned_owner_projection")
         ticker = normalize_ticker(ticker)
         company = session.exec(select(Company).where(Company.ticker == ticker)).first()
         if company is not None:
@@ -734,6 +786,10 @@ class CollectionService:
     async def get_earnings_checkpoints(
         self, session: Session, ticker: str
     ) -> EarningsCheckpointResponse:
+        if self.source_policy is not None:
+            return EarningsCheckpointResponse(ticker=normalize_ticker(ticker), checkpoints=[],
+                provider_status="unavailable",
+                unavailable_reason="unified_earnings_requires_versioned_owner_projection")
         ticker = normalize_ticker(ticker)
         for provider in self.providers:
             try:

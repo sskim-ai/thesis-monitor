@@ -124,11 +124,10 @@ def test_attempt_preserves_distinct_business_dates_and_per_product_readiness() -
         date(2026, 8, 20),
         EXPECTED,
     ]
-    assert record.ready_product_count == 2
+    assert record.ready_product_count == 1
     assert record.terminal_classification == "EXPECTED_SESSION_PRESENT_READY"
     assert {item.product for item in record.per_product} == {
         "KOSPI200",
-        "KOSDAQ150",
     }
     assert record.raw_sha256 is not None
     assert record.expected_preceding_day_bas_dd == PRECEDING
@@ -207,7 +206,7 @@ def test_attempt_classifies_empty_stale_missing_day_conflict_and_partial() -> No
         conflict.terminal_classification
         == "EXPECTED_SESSION_PRESENT_PROVIDER_CONFLICT"
     )
-    assert partial.terminal_classification == "EXPECTED_SESSION_PRESENT_PARTIAL_READY"
+    assert partial.terminal_classification == "EXPECTED_SESSION_PRESENT_READY"
 
 
 def test_attempt_archive_is_idempotent_and_has_no_production_side_effect(

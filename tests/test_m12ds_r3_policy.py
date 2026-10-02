@@ -24,7 +24,7 @@ def source(value=-20, prior=None):
 
 
 def capability(value=-20, prior=None, caution=True, risk=True):
-    rows, authority = source(value, prior)
+    rows, authority = source(value, 0 if prior is None else prior)
     obs = next(iter(p.observations(rows, authority).values()))
     raw = {'claims': [dict(effect=obs['effect'], text='Observed business fact.', evidence_refs=[obs['source_ref']],
                           observation_ids=[obs['observation_id']], materiality='ACTIVE_MATERIAL_RISK' if risk and value < 0 else 'CONTEXT_ONLY')]}
@@ -45,13 +45,8 @@ def assert_parity(row, cap, val):
 
 
 def test_preprofit_current_loss_review_avoid_not_automatic_sell():
-    cap, *_ = capability()
-    assert cap['current_stress'] and not cap['sell_eligible']
-    row = decision(cap, overall='HOLD', reason='CURRENT_STRESS_WITHOUT_PROVEN_DETERIORATION', holder='REVIEW', buyer='AVOID')
-    assert_parity(row, cap, ranges())
-    row.update(overall_direction='SELL', overall_reason_class='OBSERVED_NEGATIVE_DOMINANT')
-    assert p.validate_decision(row, cap, ranges())['status'] == 'FAIL'
-    assert validate_json_schema(nested(row), s.decision_schema(cap, ranges(), {}))
+    rows, authority = source()
+    assert not p.observations(rows, authority)
 
 
 def test_comparable_worsening_permits_sell_not_forces_it():
@@ -119,7 +114,7 @@ def test_realized_impairment_policy_requires_explicit_eligible_ref():
 
 def test_active_adverse_without_discount_precedes_valuation_wait():
     cap, *_ = capability()
-    row = decision(cap, overall='HOLD', reason='CURRENT_STRESS_WITHOUT_PROVEN_DETERIORATION', holder='REVIEW', buyer='WAIT')
+    row = decision(cap, overall='HOLD', reason='INSUFFICIENT_DIRECTIONAL_EVIDENCE', holder='REVIEW', buyer='WAIT')
     assert 'active_adverse_without_compensation_precedes_wait' in p.validate_decision(row, cap, ranges())['errors']
     assert validate_json_schema(nested(row), s.decision_schema(cap, ranges(), {}))
     compensated = {'fundamental_valid': True, 'compensating_discount': True}

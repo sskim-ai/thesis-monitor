@@ -1,5 +1,102 @@
 # Thesis Monitor Master Workflow
 
+## 2026-09-28 R2B-R9-REV8 Offline Integration
+
+Newest tested local implementation: `af7f85eba085748265609b27cda42aefdc58faf6`.
+Terminal: `R2B_R9_REV8_PREFLIGHT_CONTRACT_GAP`. See
+`operations/R9_REV8_OFFLINE_INTEGRATION.md` and
+`reports/20260928-r2b-r9-rev8-offline-integration.md`.
+Direct synthetic SEC/FPI/DART stock integration and existing Core/A/B preflight
+pass 22/22, but required heterogeneous archetypes and whole-source/Market/detailed
+24-message qualification remain open. Current-only SEC raw input reproduces
+`EXPECTED_BUSINESS_QUALITY_OWNER_OUTPUT_MISSING` before UNKNOWN_LIMIT.
+Focused 1163 and full 6358 pass; 63 existing skips unchanged. Provider/model calls,
+live messages, production mutations and push/merge/deploy remain zero. Five P1
+integration gates are documented, not five failed live attempts. Older entries
+below are historical. No fresh live generation or human-review message ZIP exists.
+
+## 2026-09-28 R2B-R9-REV7 Partial Offline Closure
+
+Newest local checkpoint: `c75222d2b75252e6ab44bd34a71c4f83dc6e59bf`.
+Terminal: `R2B_R9_REV7_PREFLIGHT_CONTRACT_GAP`. See
+`operations/R9_REV7_FRESH_DETAILED_PREFLIGHT.md` and
+`reports/20260928-r2b-r9-rev7-partial-offline-closure.md`.
+Fresh financial/quality/valuation and normal detailed-plan foundations are
+implemented, but whole-source fresh composition and complete detailed ownership
+remain open P1s. Focused 1103; full 6298 passed / 63 identical skips. Providers,
+models, exact messages, production mutation, push/merge/deploy: zero. No current
+source generation or human-review ZIP exists. Earlier track entries are historical.
+
+## 2026-09-28 R2B-R4 Pre-Model Boundary
+
+V2 neutral receipt verified: blind fairness is PASS_V2. R3 stock Core/A/B
+readiness reproduces 22/22 with unchanged supplement and source hashes.
+The accepted Market consumer fails on both sealed market packets: the unified
+producer emits `market_sources.component`, not its required `market_context`.
+Terminal: `R2B_R4_PREMODEL_CONTRACT_DRIFT`. No input binding/model calls/messages.
+No source/quality/decision/renderer repair is authorized in R4. See
+`reports/20260928-r2b-r4-pre-model-contract-boundary.md`. Independent V1/V2 content
+remains unread, reveal closed, all production/provider effects zero.
+
+## 2026-09-28 R2B-R3 Quality Owner Closure
+
+See `operations/R2B_TYPED_QUALITY_OWNER.md`. Fourteen missing canonical quality
+outputs are reproducible from sealed inputs; seven existing records and SNDK's
+UNKNOWN_LIMIT remain unchanged. Actual offline Core/A/B readiness is 22/22.
+Terminal: `R2B_R3_BLIND_REVIEW_MATERIAL_SOURCE_VIEW_CHANGED`: concrete confidence
+limitations for CRCL/IBM/SKHY were absent from their blind source views. No new
+model calls or messages; independent content unread and reveal closed. Source
+refresh, production effects, main merge/push/deploy remain zero. Local only.
+
+## 2026-09-28 R2B-R2 Local Offline Closure
+
+Newest local source is R2B-R1 / sealed REV10, not the historical R2B0 gaps below.
+See `operations/R2B_WHOLE_DECISION_LIMIT.md` and
+`reports/20260928-r2b-r2-whole-decision-limit.md`.
+UNKNOWN_LIMIT now represents Overall/New Buyer/Holder OBSERVE without a ratio.
+All 20 stored price rules bind exact Class-C versions; no current-date invention.
+Source assembly and Core are 22/22; A/B readiness is 8/22. Fourteen subjects
+fail actual A normalization because expected typed financial quality is absent
+and the legacy validator requires a nonempty quality ref. No model dispatch.
+Terminal: `R2B_R2_WHOLE_COHORT_MODEL_INPUT_GAP`. Independent assessment unread,
+reveal closed, source refresh and production side effects zero. Local only.
+
+## 2026-09-26 R2B0-R2 Complete Stock Owner
+
+Read `docs/operations/UNIFIED_STOCK_OWNER_BINDING.md`. Source-only assembly now
+binds sealed stock roles, local/Class-C evidence, typed consumers and numeric
+registry without prior AI/assessment reads. The supplied all-subject diagnostic
+qualifies 005930 and 047810; US14 and six KR subjects retain explicit observed
+business/financial owner gaps. CPNG's 170 safe facts survive, source anomalies
+remain unchanged, and optional blocked technical fields do not fail its whole
+stock. Outcome C; full source prequalification/R2B remain unreached. This local
+track authorizes no providers, models, render/send, production writes, push or
+deployment. Final exact-SHA proof and validation live in the immutable R2 ZIP.
+
+## 2026-09-26 R2B0-R1 Consumer Scope
+
+Current local handoff: `docs/operations/UNIFIED_STOCK_ANOMALY_SCOPE.md`.
+Sealed 88-role bytes preserved; 22 current-price/typed technical component
+projections reproduce. CPNG historical defects are not repaired: close-only
+valuation input and bounded recent components survive, dependent recursive/V3
+components remain unavailable. Outcome C: complete stock owner/Class-C binding
+not implemented; zero full stock packets, hashes null, prequalification not
+reached. No R2B instruction, acquisition, models, rendering, production writes,
+push or deploy. R2B0 entry below is historical, not the new consumption policy.
+
+## 2026-09-26 R2B0 Source-Only Result
+
+Current unified-source handoff: `UNIFIED_ONE_SHOT_STOCK_ACQUISITION.md` in
+`docs/operations`. The exact US14/KR8 x four-role plan captured all 88 responses;
+290 Kiwoom data pages plus one auth exchange, no retries/fallback. Native raw
+replay is 88/88, usable role validation is 85/88. Three CPNG roles retain original
+`HIGH_LT_OPEN` defects on 2023-06-05. Terminal is
+`M12DS_R6_R5F_R2B0_ONE_SHOT_SOURCE_ACQUISITION_PARTIAL`.
+Materialization/full adapter prequalification were not reached. R2B/R3 remain
+blocked. KRX R5 historical closure is preserved. Local branch only; operating
+main, model calls, rendering, delivery, schedulers, push and deploy unchanged.
+Older workflow entries below remain historical records.
+
 Master Workflow: `v31`
 As of: `2026-09-01`
 Repository: `sskim-ai/thesis-monitor`

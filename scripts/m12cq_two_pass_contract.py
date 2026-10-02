@@ -22,6 +22,7 @@ from scripts.m12cn_policy_contract import (
     response_format_schema_completeness_scan,
 )
 from scripts.m12cp_valuation_policy_contract import Archetype, ValuationRegimeTier
+from scripts.pass_a_evidence_visibility import decide_pass_a_visibility
 from scripts.m12da_source_use_contract import (
     SourceUse,
     canonical_source_metadata_sha256,
@@ -400,6 +401,7 @@ def build_pass_a_subject_context(
     source_generation_id: str | None = None,
     execution_generation_id: str | None = None,
     require_source_use: bool = False,
+    visibility_audit: list[dict[str, object]] | None = None,
 ) -> dict[str, object]:
     try:
         evidence_view = resolve_subject_evidence_view(
@@ -433,25 +435,33 @@ def build_pass_a_subject_context(
         for row in source_metadata
         if isinstance(row, Mapping) and row.get("ref_id")
     }
-    evidence_rows = [
-        row
-        for row in source_metadata
-        if isinstance(row, Mapping)
-        and row.get("ref_id") in core_refs
-        and _eligible_pass_a_evidence(row)
-        and (
-            source_use_view is None
-            or any(
-                eligible_refs_for_use(
-                    source_use_view,
-                    refs=[str(row.get("ref_id") or "")],
-                    use=use,
-                    binding=source_use_binding,
-                )
-                for use in PASS_A_SOURCE_USES
-            )
+    evidence_rows = []
+    family_exclusions = set()
+    for ref_id, row in source_by_ref.items():
+        stage_eligible = ref_id in core_refs and _eligible_pass_a_evidence(row)
+        uses = ()
+        if source_use_view is not None and stage_eligible:
+            for use in PASS_A_SOURCE_USES:
+                if eligible_refs_for_use(source_use_view, refs=[ref_id], use=use,
+                                         binding=source_use_binding):
+                    uses = (use.value,)
+                    break
+        decision = decide_pass_a_visibility(
+            row,
+            authority=(source_use_view.get("source_records", {}).get(ref_id)
+                       if source_use_view is not None else None),
+            source_authority_contract=(source_use_view.get("authority_contract")
+                                       if source_use_view is not None else None),
+            eligible_uses=uses,
+            stage_contract_permits=stage_eligible,
+            legacy_without_source_use=source_use_view is None,
         )
-    ]
+        if visibility_audit is not None:
+            visibility_audit.append(decision.model_dump(mode="json"))
+        if decision.explicit_family_visibility == "EXPLICITLY_EXCLUDED":
+            family_exclusions.add(ref_id)
+        if decision.visible_to_pass_a:
+            evidence_rows.append(row)
     eligible_refs = {str(row["ref_id"]) for row in evidence_rows}
     claims: list[dict[str, object]] = []
     premium_refs: list[str] = []
@@ -460,6 +470,8 @@ def build_pass_a_subject_context(
             continue
         parent_refs = [str(ref) for ref in row.get("parent_source_refs") or []]
         if not parent_refs:
+            continue
+        if family_exclusions.intersection(parent_refs):
             continue
         payload = _atomic_claim_payload(row)
         if _forbidden_content_paths(payload):

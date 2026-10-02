@@ -5318,7 +5318,6 @@ def test_fresh_night_futures_are_preserved_but_outside_ai_consumer_surfaces(
         assert required == []
         expected_fact_ids = {
             "market:night_futures:1",
-            "market:night_futures:2",
         }
         night_facts = [
             item
@@ -5346,7 +5345,6 @@ def test_fresh_night_futures_are_preserved_but_outside_ai_consumer_surfaces(
         }
         assert {
             "market:night_futures:1:fields.reference_price",
-            "market:night_futures:2:fields.reference_price",
         }.issubset(excluded_paths)
         output = _valid_output(packet)
         output["market_review"]["facts_used"].append("market:night_futures:1")
@@ -5371,7 +5369,7 @@ def test_partial_or_missing_night_futures_do_not_block_market_packet(
         partial = build_ai_review_packet(session, RUN_DATE, "us")
         assert partial is not None
         assert partial["market_context"]["required_market_fact_ids"] == []
-        assert any(
+        assert not any(
             "KOSDAQ150" in item
             for item in partial["market_context"]["night_futures_cautions"]
         )

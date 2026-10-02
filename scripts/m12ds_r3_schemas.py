@@ -57,8 +57,10 @@ def decision_schema(cap, valuation, entry_catalog):
 
 
 CORE_PROMPT = r2.CORE_PROMPT + '''
-R3 severity: a current operating loss/negative margin is DIRECTIONAL_NEGATIVE_CURRENT_STATE,
-not deterioration or impairment. Only the provided comparable dated observation may be
+Absolute current financial amounts, positive or negative, are context only. Never create
+directional polarity from their sign. Only provided direction-eligible observations may be
+directional; financial direction requires a source-owned compatible comparison.
+Only the provided comparable dated observation may be
 DIRECTIONAL_NEGATIVE_DETERIORATION. Never turn single-period stress into persistent stress.
 Only source-owned realized impairment may support THESIS_IMPAIRMENT; if absent it is unavailable.
 Do not infer deterioration from archetype, uncertainty, or future conditions.
@@ -73,8 +75,8 @@ For DURABLE_FRANCHISE, STRUCTURAL_CYCLICAL_LEADER, PROFITABLE_PREMIUM_GROWTH and
 profitable-core businesses, observed positive business direction with intact thesis and no
 realized material negative can remain BUY at LOW or MEDIUM confidence. Persistence caution
 alone must not force HOLD. Do not invent positive direction from revenue presence alone.
-For EXECUTION_DEPENDENT_GROWTH, weigh actual execution; a current pre-profit loss is not by
-itself deterioration. It can support Holder REVIEW and New Buyer AVOID with Overall HOLD.
+For EXECUTION_DEPENDENT_GROWTH, weigh actual direction-eligible execution evidence. A current
+pre-profit loss alone cannot support Overall, Holder or New Buyer action; it is financial context.
 SELL needs eligible deterioration, verified persistence, financing/thesis impairment, or realized
 failure. Mature-business unexpected loss also needs an observed comparable baseline; archetype
 alone does not establish that it was unexpected. No label/distribution quotas or named examples.'''

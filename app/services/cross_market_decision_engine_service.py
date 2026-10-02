@@ -45,6 +45,11 @@ from app.services.financial_context_adapter_service import (
     adapt_fact_catalog_financial_context,
 )
 from app.services.financial_lineage_projection_service import adapter_projection_rows
+from app.services.canonical_evidence_time_service import (
+    CanonicalEvidenceTime,
+    project_canonical_time,
+    source_as_of,
+)
 
 
 CONTRACT_VERSION = "cross-market-ai-decision-engine-v1"
@@ -305,6 +310,7 @@ class DecisionEvidenceRef(FrozenModel):
     metric_refs: tuple[CheckpointMetric, ...] = ()
     logical_condition: SourceLogicalCondition | None = None
     financial_context: FinancialContext | None = None
+    source_time: CanonicalEvidenceTime | None = None
 
     @model_serializer(mode="wrap")
     def serialize_legacy_compatible(
@@ -314,6 +320,8 @@ class DecisionEvidenceRef(FrozenModel):
         serialized = handler(self)
         if self.financial_context is None:
             serialized.pop("financial_context", None)
+        if self.source_time is None:
+            serialized.pop("source_time", None)
         return serialized
 
 
@@ -690,7 +698,11 @@ def build_decision_evidence_packet(
                     category=_category_for_fact(row),
                     label=_model_facing_label_for_fact(row),
                     statement=_compact(row.get("fields") or {}),
-                    as_of=str(row.get("as_of_date") or assessment_date),
+                    as_of=source_as_of(row),
+                    source_time=project_canonical_time(
+                        row, ticker=ticker,
+                        projection_at=str(packet.get("generated_at") or assessment_date) or None,
+                    ),
                     source_ref=f"stock.fact_catalog.{fact_id}",
                     metric_refs=_checkpoint_metrics_for_fact(row),
                     financial_context=(

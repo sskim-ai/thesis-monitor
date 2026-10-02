@@ -43,6 +43,7 @@ from app.services.kr_financial_lineage_service import (
 )
 from app.services.financial_validation import financial_snapshot_is_usable
 from app.services.provider_telemetry_service import ProviderTelemetryService
+from app.services.unified_source_policy import UnifiedSourcePolicy
 from app.services.official_security_identity_service import (
     load_official_identity_provenance,
 )
@@ -887,9 +888,11 @@ def _relative_position(
 
 
 class ValuationSnapshotService:
-    def __init__(self, transport: httpx.AsyncBaseTransport | None = None) -> None:
+    def __init__(self, transport: httpx.AsyncBaseTransport | None = None, *,
+                 source_policy: UnifiedSourcePolicy | None = None) -> None:
         self.settings = get_settings()
         self.transport = transport
+        self.source_policy = source_policy
         self.history_service = HistoricalValuationService()
         self.sec_financial_service = SecFinancialSnapshotService(transport=transport)
         self.dividend_service = DividendHistoryService()
@@ -912,6 +915,9 @@ class ValuationSnapshotService:
                 .order_by(FinancialSnapshot.reported_date)
             ).all()
         )
+        if self.source_policy is not None:
+            rows = [FinancialSnapshot.model_validate(row.model_dump()) for row in rows
+                    if self.source_policy.permits(row.provider)]
         return [row for row in rows if financial_snapshot_is_usable(row)]
 
     def _financial_quality_source_metadata(
@@ -2144,7 +2150,15 @@ class ValuationSnapshotService:
             security_master = session.exec(
                 select(SecurityMaster).where(SecurityMaster.ticker == ticker)
             ).first()
-            identity_provenance = load_official_identity_provenance(session, ticker)
+            if self.source_policy is None:
+                identity_provenance = load_official_identity_provenance(session, ticker)
+            else:
+                from app.services.official_security_identity_service import OFFICIAL_IDENTITY_CACHE_PROVIDER
+                if self.source_policy.permits(OFFICIAL_IDENTITY_CACHE_PROVIDER):
+                    identity_provenance = load_official_identity_provenance(session, ticker)
+                    self.source_policy.check_lineage(identity_provenance)
+                if security_master is not None:
+                    self.source_policy.require(security_master.identity_provider)
             identity_context = _resolve_per_share_basis_context(
                 watchlist_item,
                 security_master,
@@ -2153,8 +2167,9 @@ class ValuationSnapshotService:
                 identity_provenance=identity_provenance,
             )
             if (
-                identity_context.issuer_type in {"adr", "foreign_private_issuer"}
-                or identity_context.is_depositary_security
+                (identity_context.issuer_type in {"adr", "foreign_private_issuer"}
+                 or identity_context.is_depositary_security)
+                and (self.source_policy is None or self.source_policy.permits("sec_edgar"))
             ):
                 foreign_cache = session.exec(
                     select(ProviderResponseCache).where(
@@ -2176,6 +2191,7 @@ class ValuationSnapshotService:
             session is not None
             and _supports_finnhub(exchange, ticker)
             and self.settings.sec_user_agent
+            and self.source_policy is None
             and (
                 len(rows) < self.settings.valuation_model_min_quarters
                 or max((filing_date(row) or date.min for row in rows), default=date.min)
@@ -2213,13 +2229,22 @@ class ValuationSnapshotService:
         dividend_history: list[DividendHistory] = []
         capital_returns: list[CapitalReturnHistory] = []
         if session is not None:
-            dividend_history = self.dividend_service.sync_financial_snapshots(session, ticker, rows)
-            capital_returns = self.dividend_service.sync_capital_returns(session, ticker, rows)
+            if self.source_policy is None:
+                dividend_history = self.dividend_service.sync_financial_snapshots(session, ticker, rows)
+                capital_returns = self.dividend_service.sync_capital_returns(session, ticker, rows)
+            else:
+                dividend_history = list(session.exec(select(DividendHistory).where(
+                    DividendHistory.ticker == ticker).order_by(DividendHistory.fiscal_year)).all())
+                capital_returns = list(session.exec(select(CapitalReturnHistory).where(
+                    CapitalReturnHistory.ticker == ticker).order_by(CapitalReturnHistory.period_end)).all())
+                dividend_history = [r for r in dividend_history if self.source_policy.permits(r.provider)]
+                capital_returns = [r for r in capital_returns if self.source_policy.permits(r.provider)]
         provider_pe: float | None = None
         provider_pb: float | None = None
         alpha_metrics: dict[str, float | None] = {}
 
-        if _supports_finnhub(exchange, ticker) and self.settings.finnhub_api_key:
+        if (_supports_finnhub(exchange, ticker) and self.settings.finnhub_api_key
+                and self.source_policy is None):
             finnhub_started = datetime.now(timezone.utc)
             try:
                 async with httpx.AsyncClient(
@@ -2359,6 +2384,8 @@ class ValuationSnapshotService:
                         ),
                         error_reason="valuation_metric_fetch_failed",
                     )
+        elif self.source_policy is not None:
+            snapshot.warnings.append("source_policy: versioned inputs only; refresh requires a separate owner plan")
         elif _supports_finnhub(exchange, ticker):
             snapshot.warnings.append("Finnhub API key가 없어 Valuation 배수를 수집하지 못했습니다.")
 
@@ -2366,6 +2393,7 @@ class ValuationSnapshotService:
             session is not None
             and _supports_finnhub(exchange, ticker)
             and self.settings.alpha_vantage_api_key
+            and self.source_policy is None
         ):
             existing_alpha_estimate = session.exec(
                 select(ConsensusEstimate).where(
@@ -2409,7 +2437,7 @@ class ValuationSnapshotService:
 
         alpha_estimate: ConsensusEstimate | None = None
         alpha_shares: ShareCountObservation | None = None
-        if session is not None:
+        if session is not None and self.source_policy is None:
             alpha_estimate = session.exec(
                 select(ConsensusEstimate)
                 .where(
@@ -2599,7 +2627,7 @@ class ValuationSnapshotService:
         snapshot.historical_per_share_basis_status = (
             "directly_comparable" if historical_allowed else "historical_per_share_basis_unverified"
         )
-        if session is not None and historical_allowed:
+        if session is not None and historical_allowed and self.source_policy is None:
             observations = self.history_service.update_cache(
                 session,
                 ticker,
@@ -2689,7 +2717,7 @@ class ValuationSnapshotService:
             snapshot.consensus_status = "partial"
             if snapshot.estimate_provider is None:
                 snapshot.estimate_provider = "provider_metadata_partial"
-        if session is not None:
+        if session is not None and self.source_policy is None:
             freshness = self.freshness_service.assess(session, ticker)
             snapshot.financial_refresh_required = freshness.refresh_required
             snapshot.latest_material_financial_event_date = (

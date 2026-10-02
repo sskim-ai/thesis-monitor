@@ -4,7 +4,6 @@ from app.services.night_futures import (
     NIGHT_COMPARISON_SEMANTIC,
     NIGHT_FUTURES_SESSION_BASIS_CONTRACT,
     canonicalize_night_futures_market_summary,
-    night_futures_context_row,
     render_night_futures,
     summarize_night_futures,
 )
@@ -104,13 +103,11 @@ def test_summary_projection_matches_canonical_fact_value_session_and_state() -> 
     projected = [item for item in canonical["items"] if isinstance(item, dict)]
     summary = summarize_night_futures(canonical)
 
-    assert len(projected) == len(summary.items) == 2
+    assert len(projected) == len(summary.items) == 1
     assert [item["fact_id"] for item in projected] == [
         "market:night_futures:1",
-        "market:night_futures:2",
     ]
     assert [item["field_path"] for item in projected] == [
-        "fields.change_pct",
         "fields.change_pct",
     ]
     assert [item["value"] for item in projected] == [
@@ -133,11 +130,8 @@ def test_partial_kosdaq_availability_preserves_fact_identity_two() -> None:
     }
 
     summary = summarize_night_futures(market)
-    context = night_futures_context_row(summary.items[0])
-
-    assert context["fact_id"] == "market:night_futures:2"
-    assert context["field_path"] == "fields.change_pct"
-    assert context["state"] == "CURRENT_DIRECTIONAL"
+    assert summary.items == []
+    assert render_night_futures(summary) == ''
 
 
 def _run51_row(
@@ -214,11 +208,11 @@ def test_run51_ready_two_of_two_adds_only_night_projection_and_rendering() -> No
     rendered = render_night_futures(summary)
 
     assert canonical["items"][: len(non_night_items)] == non_night_items
-    assert len(summary.items) == 2
+    assert len(summary.items) == 1
     assert all(item.reference_date_match for item in summary.items)
     assert all(item.finality_valid for item in summary.items)
     assert {item.provider_raw_bas_dd.isoformat() for item in summary.items} == {
         "2026-09-01"
     }
     assert "KOSPI200 최근월물 1,064.50 · -3.35pt (-0.31%)" in rendered
-    assert "KOSDAQ150 최근월물 1,432.80 · -7.30pt (-0.51%)" in rendered
+    assert "KOSDAQ150" not in rendered

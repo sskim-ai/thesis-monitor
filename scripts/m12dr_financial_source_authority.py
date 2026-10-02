@@ -38,6 +38,7 @@ def source_quality(bundle):
             comparison=(FinancialSnapshot.model_validate(inputs["comparison"])
                         if inputs.get("comparison") else None),
             ticker=inputs["ticker"], cutoff=date.fromisoformat(inputs["cutoff"]),
+            fiscal_policy=inputs.get('issuer_fiscal_policy'), allow_annual=inputs.get('exact_annual_owner') is True,
         )
     if inputs["formal"].get("provider") == "sec_foreign_filing":
         from app.services.sec_foreign_comparison_service import foreign_comparison_quality
@@ -45,6 +46,8 @@ def source_quality(bundle):
             formal=FinancialSnapshot.model_validate(inputs["formal"]),
             candidates=[FinancialSnapshot.model_validate(r) for r in inputs.get("foreign_candidates", [])],
             ticker=inputs["ticker"], cutoff=date.fromisoformat(inputs["cutoff"]),
+            allow_reported_half_year=inputs.get('foreign_period_policy') == 'EXACT_REPORTED_QUARTER_OR_HALF_YEAR_NO_SUBTRACTION',
+            allow_inline_annual=inputs.get('exact_annual_owner') is True,
         )
     return build_reported_observation_quality(
         formal=FinancialSnapshot.model_validate(inputs["formal"]),
@@ -131,13 +134,18 @@ def comparative_facts(quality, *, ticker, issuer_id, projection=None):
             "growth_pct": comparison["growth_pct"], "direction": comparison["direction"],
             "period_start": current["amount_period_start"], "period_end": current["amount_period_end"],
             "prior_period_start": prior["amount_period_start"], "prior_period_end": prior["amount_period_end"],
-            "period_type": "single_quarter", "currency": current["currency"],
+            "period_type": "half_year" if current.get('occurrence', {}).get('period_scope') == 'half-year' else "single_quarter", "currency": current["currency"],
             "statement_basis": current["statement_basis"], "issuer_id": issuer_id,
             "source_ticker": quality["ticker"], "source_receipt": quality["formal_receipt"],
             "source_occurrences": [current["source_row_identity"], prior["source_row_identity"]],
             "anomaly_cautions": quality["quality_reason_codes"],
             "limitations": quality["limitations"], "recurrence_verified": False,
         }
+        if comparison.get('fiscal_comparability'):
+            fields['period_type'] = 'annual'
+            fields['fiscal_comparability'] = deepcopy(comparison['fiscal_comparability'])
+        elif current.get('occurrence', {}).get('period_scope') == 'annual' or comparison.get('reported_period_scope') == 'annual':
+            fields['period_type'] = 'annual'
         document_class = (current.get('occurrence') or {}).get('document_evidence_class')
         if document_class:
             fields['document_evidence_class'] = deepcopy(document_class)
@@ -150,11 +158,14 @@ def comparative_facts(quality, *, ticker, issuer_id, projection=None):
             "issuer_projection": deepcopy(projection), "prose_eligible": True,
             "interpretation_eligible": True, "user_visible": False,
         }
+        if comparison.get('fiscal_comparability'):
+            fact['fiscal_metadata_policy'] = deepcopy(quality['fiscal_metadata_policy'])
         result.append(fact)
     return result
 
 
-def build_source_authority(*, quality_bundles, issuer_bindings, **kwargs):
+def build_source_authority(*, quality_bundles, issuer_bindings, versioned_business_inputs=None,
+                           persisted_event_inputs=None, fresh_business_inputs=None, **kwargs):
     current = build_current_source_authority(**kwargs)
     ticker = kwargs["ticker"]
     packet = kwargs["source_packet"]
@@ -163,12 +174,37 @@ def build_source_authority(*, quality_bundles, issuer_bindings, **kwargs):
     records = {r["ref_id"]: r for r in current["authority"]["authority_records"]}
     quality = None
     projection = None
-    if ticker in quality_bundles:
+    versioned = None
+    fresh = None
+    if fresh_business_inputs is not None:
+        from app.services.fresh_financial_stock_owner import assemble_fresh_stock
+        if quality_bundles or issuer_bindings or versioned_business_inputs or persisted_event_inputs:
+            raise ValueError('fresh_business_authority_ambiguous_owner')
+        fresh = assemble_fresh_stock(**fresh_business_inputs)
+        if (fresh['status'] != 'PASS' or fresh['packet'] != packet
+                or fresh['evidence_packet'] != kwargs['evidence_packet']
+                or fresh['fresh_run_id'] != kwargs['source_generation_id']):
+            raise ValueError('fresh_business_authority_replay_mismatch')
+        source_ticker = None
+    elif versioned_business_inputs is not None:
+        from app.services.versioned_business_stock_owner import replay_version
+        if quality_bundles or issuer_bindings or versioned_business_inputs.get('ticker') != ticker:
+            raise ValueError('versioned_business_authority_ambiguous_owner')
+        if versioned_business_inputs['cutoff'].isoformat() != packet.get('generated_at'):
+            raise ValueError('versioned_business_authority_cutoff_mismatch')
+        versioned = replay_version(**versioned_business_inputs)
+        source_ticker = None
+    elif ticker in quality_bundles:
         source_ticker = ticker
     else:
         source_ticker = ((stock.get("valuation") or {}).get("security_identity_provenance") or {}).get(
             "evidence", {}).get("ordinary_share_identifier")
-    if source_ticker in quality_bundles:
+    if fresh is not None:
+        expected_facts = [f for f in fresh['packet']['stocks'][0]['fact_catalog']
+                          if 'canonical:' + f['fact_id'] in fresh['comparative_fact_refs']]
+    elif versioned is not None:
+        expected_facts = versioned['facts']
+    elif source_ticker in quality_bundles:
         bundle = quality_bundles[source_ticker]
         if (bundle.get("source_generation_id") != kwargs["source_generation_id"]
                 or bundle["source_inputs"].get("ticker") != source_ticker
@@ -203,6 +239,16 @@ def build_source_authority(*, quality_bundles, issuer_bindings, **kwargs):
         owner = quality["contract"] if quality else CONTRACT
         receipt.update(source_family=FAMILY, errors=errors, quality_contract=owner,
                        quality_receipt_sha256=quality["receipt_sha256"] if quality else None)
+        if fresh is not None:
+            receipt.update(source_acquisition_class='FRESH_CURRENT_RUN',
+                fresh_run_id=fresh['fresh_run_id'], fresh_owner_sha256=digest(fresh),
+                quality_receipt_sha256=fact['quality_receipt_sha256'] if fact else None)
+        if versioned is not None:
+            receipt.update(source_acquisition_class='VERSIONED_PERSISTED_ALLOWED',
+                source_version_sha256=versioned['version_sha256'],
+                original_source_artifact_sha256=versioned['original_source_artifact_sha256'],
+                current_eligibility_sha256=digest(versioned['eligibility']),
+                quality_receipt_sha256=fact['quality_receipt_sha256'] if fact else None)
         if not errors:
             record.update(authority_state="RESOLVED", authority_basis=CONTRACT,
                           source_type=FAMILY, source_family=FAMILY,
@@ -214,6 +260,74 @@ def build_source_authority(*, quality_bundles, issuer_bindings, **kwargs):
         receipt.update(allowed_uses=record["allowed_uses"], authority_state=record["authority_state"],
                        authority_basis=record["authority_basis"])
     manifest = current["authority"]
+    if fresh is not None and fresh.get('context_fact_refs'):
+        for receipt in current['family_receipts']:
+            if receipt['ref_id'] not in fresh['context_fact_refs']:
+                continue
+            record = records[receipt['ref_id']]
+            if record['source_family'] != 'unclassified':
+                raise ValueError('fresh_context_existing_restrictive_owner')
+            allowed = {SourceUse.CONTEXT.value}
+            record.update(authority_state='RESOLVED', authority_basis='reported-comparison-applicability-v1',
+                source_family='REPORTED_ABSOLUTE_CONTEXT', source_type='REPORTED_ABSOLUTE_CONTEXT',
+                source_scope='current_reported_context_no_comparison_quality_or_direction',
+                allowed_uses=sorted(allowed), prohibited_uses=sorted({u.value for u in SourceUse} - allowed),
+                denial_reasons=['ABSOLUTE_CURRENT_FINANCIAL_IS_NOT_DIRECTIONAL_EVIDENCE'])
+            receipt.update(errors=[], source_family=record['source_family'],
+                authority_state=record['authority_state'], authority_basis=record['authority_basis'],
+                allowed_uses=record['allowed_uses'],
+                fresh_owner_sha256=digest(fresh), comparison_applicability=fresh['quality_view']['receipt'])
+            receipt.pop('earnings_lineage', None)
+    if persisted_event_inputs is not None:
+        from app.services.persisted_business_event_owner import replay_persisted_event
+        from app.services.unified_stock_event_input import replay_news
+        from app.services.canonical_fact_service import canonical_event_fact
+        source, receipt = replay_persisted_event(**persisted_event_inputs)
+        if (receipt['ticker'] != ticker or receipt['current_run_id'] != kwargs['source_generation_id']
+                or receipt['current_eligibility_cutoff'] != packet['generated_at']):
+            raise ValueError('persisted_event_authority_current_identity_mismatch')
+        replayed = replay_news(source, security=source.read.security,
+            business_cutoff=persisted_event_inputs['cutoff'], policy=persisted_event_inputs['policy'])
+        expected_events = [canonical_event_fact(r) for r in replayed['evidence']]
+        if (stock.get('evidence') != replayed['evidence'] or
+                [f for f in stock['fact_catalog'] if f['fact_id'].startswith('event:')] != expected_events):
+            raise ValueError('persisted_event_authority_source_mismatch')
+        manifest['persisted_business_event_source'] = receipt
+        for item in current['family_receipts']:
+            if item['ref_id'] in {'canonical:' + f['fact_id'] for f in expected_events}:
+                item['persisted_business_event_receipt_sha256'] = digest(receipt)
+                record = records[item['ref_id']]
+                # Resolving the source bytes is not permission to confirm the
+                # headline or use it as decisive directional/valuation evidence.
+                if (record['source_family'] == 'unclassified'
+                        and record['allowed_uses'] == [SourceUse.CONTEXT.value]):
+                    record.update(authority_state='RESOLVED', authority_basis=receipt['contract'],
+                        source_type=receipt['state'], source_family=receipt['state'],
+                        source_scope='source_verified_headline_context_only_requires_review',
+                        denial_reasons=['linked_headline_not_confirmed_contract_or_official_financial'],
+                        required_metadata=['exact_raw_source_replay', 'historical_acquisition_identity',
+                                           'current_eligibility', 'requires_review'],
+                        compatible_source_versions=[receipt['contract']])
+                    item.update(source_family=receipt['state'], authority_state=record['authority_state'],
+                                authority_basis=record['authority_basis'])
+    if fresh is not None and fresh.get('event_view') is not None:
+        event = fresh['event_view']['receipt']
+        manifest['fresh_controller_event_source'] = event
+        for item in current['family_receipts']:
+            if item['ref_id'] not in fresh['event_fact_refs']:
+                continue
+            record = records[item['ref_id']]
+            if record['source_family'] != 'unclassified' or record['allowed_uses'] != ['CONTEXT']:
+                raise ValueError('fresh_event_existing_restrictive_authority')
+            family = ('PERSISTED_SOURCE_OWNED_BUSINESS_EVENT' if event['acquisition_class'] ==
+                      'PERSISTED_SOURCE_RECHECK' else 'FRESH_SOURCE_OWNED_BUSINESS_EVENT')
+            record.update(source_family=family, source_type=family, authority_state='RESOLVED',
+                authority_basis=event['contract'], source_scope='source_verified_headline_context_only_requires_review',
+                allowed_uses=event['allowed_uses'], prohibited_uses=event['prohibited_uses'],
+                denial_reasons=['linked_headline_not_confirmed_contract_or_official_financial'])
+            item.update(errors=[], source_family=family, authority_state='RESOLVED',
+                authority_basis=event['contract'], allowed_uses=event['allowed_uses'],
+                current_event_eligibility_sha256=event['receipt_sha256'])
     manifest.update(reported_quality_owner_contract=CONTRACT,
                     current_source_family_receipts_sha256=canonical_sha256(current["family_receipts"]))
     manifest.pop("authority_manifest_sha256")

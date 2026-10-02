@@ -1,0 +1,64 @@
+{
+  "terminal": "R2B_R9_REV6_PREFLIGHT_CONTRACT_GAP",
+  "phase": "A_PARTIAL_STOP",
+  "implementation": "fd0f1bed69fe8f30a1dbe6c7a76e21ffc695c999",
+  "p0_open": 0,
+  "p1_open": 2,
+  "phase_a_contracts_pass": false,
+  "implemented_offline": [
+    "KOSPI200 scope",
+    "selected Market display",
+    "macro source period",
+    "all22 candidate plan and carry-in guard"
+  ],
+  "open_contracts": [
+    "fresh all22 controller plus quality/valuation/full-source binding",
+    "detailed stock acceptance and renderer"
+  ],
+  "fresh_stock_packets": {
+    "accepted": 0,
+    "target": 22,
+    "status": "NOT_RUN"
+  },
+  "fresh_market_contexts": {
+    "accepted": 0,
+    "target": 2,
+    "status": "NOT_RUN"
+  },
+  "fresh_messages": {
+    "accepted": 0,
+    "target": 24,
+    "status": "NOT_RUN"
+  },
+  "provider_calls": 0,
+  "model_calls": {
+    "Market": 0,
+    "Core": 0,
+    "A": 0,
+    "B": 0
+  },
+  "old_source_or_model_output_substitution": 0,
+  "complete_source_adapter_qualified": false,
+  "external_connections": 0,
+  "full_validation": "PASS",
+  "focused_passed": 948,
+  "full_passed": 6264,
+  "unchanged_skips": 63,
+  "production_side_effects": {
+    "Telegram": 0,
+    "recipient_intent": 0,
+    "production_DB": 0,
+    "warning": 0,
+    "scheduler": 0,
+    "notification": 0,
+    "broker": 0,
+    "deploy": 0,
+    "main_merge": 0,
+    "remote_push": 0,
+    "service_restart": 0
+  },
+  "next_scope": "Finish fresh source/valuation ownership and detailed renderer offline; revalidate Phase A before any provider/model call.",
+  "human_review_bundle_created": false,
+  "scheduler_cutover_instruction_created": false
+}
+

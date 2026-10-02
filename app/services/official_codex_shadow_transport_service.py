@@ -11,7 +11,7 @@ import json
 import os
 import stat
 import subprocess
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 SUPPORTED_VERSION = "codex-cli 0.155.1"
@@ -91,11 +91,27 @@ class OfficialCodexBinding:
 
 
 @dataclass(frozen=True)
+class OfficialShadowExecutionPolicy:
+    timeout_seconds: int = 1200
+    max_calls: int = 26
+    retries: int = 0
+
+    def validate(self) -> None:
+        values = (self.timeout_seconds, self.max_calls, self.retries)
+        _require(
+            all(type(value) is int for value in values)
+            and values in {(1200, 26, 0), (600, 16, 2), (600, 10, 2)},
+            "EXECUTION_POLICY_UNQUALIFIED",
+        )
+
+
+@dataclass(frozen=True)
 class OfficialShadowRequest:
     binding: OfficialCodexBinding
     request_id: str
     prompt_sha256: str
     schema_sha256: str
+    execution_policy: OfficialShadowExecutionPolicy = OfficialShadowExecutionPolicy()
 
 
 def validate_binding(binding: OfficialCodexBinding, codex_bin: str) -> None:
@@ -225,8 +241,12 @@ def invoke_official_shadow(
     request: OfficialShadowRequest,
 ) -> dict[str, object]:
     validate_binding(request.binding, codex_bin)
+    request.execution_policy.validate()
     _require(
-        timeout == 1200 and state_namespace == request.request_id, "REQUEST_ID_OR_TIMEOUT_DRIFT"
+        type(timeout) is int
+        and timeout == request.execution_policy.timeout_seconds
+        and state_namespace == request.request_id,
+        "REQUEST_ID_OR_TIMEOUT_DRIFT",
     )
     _require(cwd.is_absolute() and cwd.is_dir() and not cwd.is_symlink(), "INPUT_CWD_INVALID")
     _require(
@@ -289,6 +309,7 @@ def invoke_official_shadow(
         "provider_attempts": "UNOBSERVABLE_CLI_INTERNAL",
         "source_only_inference_certified": False,
         "qualification_sha256": request.binding.qualification_sha256,
+        "execution_policy": asdict(request.execution_policy),
         "invocation_identity_sha256": hashlib.sha256(
             json.dumps(
                 {
@@ -299,6 +320,7 @@ def invoke_official_shadow(
                     "executable_sha256": request.binding.executable_sha256,
                     "qualification_sha256": request.binding.qualification_sha256,
                     "timeout": timeout,
+                    "execution_policy": asdict(request.execution_policy),
                 },
                 sort_keys=True,
                 separators=(",", ":"),

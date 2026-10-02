@@ -3,9 +3,9 @@ from html.parser import HTMLParser
 import re
 
 CONTRACT = "foreign-statement-boundary-v1"
-TITLE = re.compile(r"(?:consolidated|separate) statements? of (?:comprehensive income|income|operations)|consolidated results\s*:", re.I)
+TITLE = re.compile(r"(?:consolidated|separate) statements? of (?:profit or loss(?: and other comprehensive income)?|comprehensive income|income|operations)|consolidated results\s*:", re.I)
 ANY_STATEMENT = re.compile(r"(?:consolidated|separate) (?:statements?|balance sheets?|results)", re.I)
-UNITS = re.compile(r"(?:in |unit\s*:\s*)(thousands|millions|billions) of (new taiwan dollars|us dollars)|unit\s*:\s*(NT\$|TWD|US\$|USD)\s*(thousand|million|billion)", re.I)
+UNITS = re.compile(r"(?:in |unit\s*:\s*)(thousands|millions|billions) of (new taiwan dollars|us dollars|renminbi|RMB|CNY)|unit\s*:\s*(NT\$|TWD|US\$|USD)\s*(thousand|million|billion)|\b(RMB|CNY) in (thousands|millions|billions)\b", re.I)
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
 
 
@@ -44,9 +44,15 @@ class Document(HTMLParser):
 def unit_candidates(value):
     result = []
     for match in UNITS.finditer(value):
-        scale, currency, symbol, suffix = match.groups()
-        result.append(("TWD" if (currency or symbol).lower() in {"new taiwan dollars", "nt$", "twd"} else "USD",
-                       {"thousand":1000,"million":1000000,"billion":1000000000}[(scale or suffix).lower().rstrip("s")], match[0]))
+        scale, currency, symbol, suffix, rmb, rmb_scale = match.groups()
+        if re.search(r"(?:per[- ]share|earnings per share)\s*(?:data|amounts)?\s*[:(]?\s*$", value[:match.start()], re.I):
+            continue
+        if re.match(r"\s*[,;:]?\s*(?:for )?per[- ]share\b", value[match.end():], re.I):
+            continue
+        name = (currency or symbol or rmb).lower()
+        canonical = "CNY" if name in {"renminbi", "rmb", "cny"} else "TWD" if name in {"new taiwan dollars", "nt$", "twd"} else "USD"
+        result.append((canonical,
+                       {"thousand":1000,"million":1000000,"billion":1000000000}[(scale or suffix or rmb_scale).lower().rstrip("s")], match[0]))
     return result
 
 
@@ -126,8 +132,8 @@ def document_evidence_class(html):
     document.feed(html)
     value = text(document.root)
     patterns = (
-        r"independent auditors[’']? review report",
-        r"we have reviewed the accompanying consolidated",
+        r"independent (?:auditors[’']? review report|review report|auditor[’']s report)",
+        r"we have reviewed the (?:accompanying )?(?:condensed )?consolidated",
         r"interim financial reporting",
     )
     matches = [re.search(p, value, re.I) for p in patterns]

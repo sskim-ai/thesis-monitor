@@ -180,6 +180,9 @@ def _observation_fact(
         "source_url": str(item.get("source_url") or ""),
     }
     temporal = item.get("temporal")
+    publication = (item.get('raw_payload') or {}).get('publication_context')
+    if isinstance(publication, dict):
+        fields['publication_context'] = publication
     if isinstance(temporal, dict):
         fields.update(
             {
@@ -215,6 +218,15 @@ def _observation_fact(
         fields["market_session"] = str(item["market_session"])
 
     if fact_type in {"market_index", "market_sector", "market_style"}:
+        if fact_type == 'market_index':
+            if value is not None:
+                fields['close'] = value
+            if change_value is not None:
+                fields['change_value'] = change_value
+            if _number(item, 'previous_value') is not None:
+                fields['previous_close'] = item['previous_value']
+            fields['currency'] = 'USD'
+            fields['previous_observation_date'] = (item.get('raw_payload') or {}).get('previous_observation_date')
         if value is not None and fact_type in {"market_sector", "market_style"}:
             fields["level"] = value
         if change_pct is not None:

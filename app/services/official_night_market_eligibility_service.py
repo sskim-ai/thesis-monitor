@@ -9,6 +9,7 @@ from app.services.night_futures import (
     NIGHT_COMPARISON_SEMANTIC, NIGHT_FUTURES_FACT_IDS, _validated_timeframes,
 )
 from app.services.night_futures_session_mapping_service import US_MORNING_NIGHT_REFERENCE_DATE_CONTRACT
+from app.services.night_futures_product_scope import SERIES
 
 
 CONTRACT = "official-krx-night-market-consumption-v1"
@@ -28,6 +29,8 @@ def night_catalog_matches(fact, row):
 
 def night_market_eligibility(row, *, market, assessment_date, completed_session_date):
     errors = []
+    if row.get("series_code") not in SERIES:
+        errors.append("night_product_not_configured")
     try:
         assessed = date.fromisoformat(str(assessment_date))
         completed = date.fromisoformat(str(completed_session_date))

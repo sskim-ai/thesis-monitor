@@ -1,5 +1,104 @@
 # Next Session Prompt
 
+## Current Local Track: R2B-R9-REV8 Contract Gap
+
+Read `operations/R9_REV8_OFFLINE_INTEGRATION.md` and
+`reports/20260928-r2b-r9-rev8-offline-integration.md` first. The tested implementation
+is `af7f85eba085748265609b27cda42aefdc58faf6`; tests pass but Phase A does not.
+Do not run providers/models from the synthetic 22/22 direct-source result.
+First close current-only financial source ownership without requiring a comparison
+or granting direction, and prove UNKNOWN_LIMIT through the real local sender.
+Then complete bridge/insurance/taint/event/qualified valuation archetypes, complete
+accepted detailed section owners, all22 whole-source plus Market replay, and exact
+24 capture. Reissue a finite source plan only after every offline gate passes.
+Do not reuse old sources/model outputs, weaken safety, change recipients/schedulers,
+or merge/push/deploy. REV8 created no live generation or human-review messages.
+Older track entries below are historical.
+
+## Current Local Track: R2B-R9-REV7 Contract Gap
+
+Read `operations/R9_REV7_FRESH_DETAILED_PREFLIGHT.md` first. The offline partial
+implementation is `c75222d2b75252e6ab44bd34a71c4f83dc6e59bf`; full validation
+passed, but both end-to-end P1s remain OPEN. Close fresh macro/night/issuer-bridge
+composition and complete detailed normal/UNKNOWN_LIMIT ownership, then prove
+all22 and bind the fresh Market/Core/A/B adapter and exact capture route. No
+provider/model call until all offline contracts and the final finite plan pass.
+Do not treat candidate 2526 attempts, synthetic fixtures, or stock-only replay
+as whole-source qualification. No source/model generation has started; no 24
+messages or human-review/cutover artifacts exist. Preserve no main/push/deploy
+and zero production side effects. Entries below are historical.
+
+## Current Local Track: R2B-R4 Market Input Boundary
+
+Read `reports/20260928-r2b-r4-pre-model-contract-boundary.md` and the latest local
+R4 report. V2 fairness now passes; do not ask again for the received neutral
+receipt. Stock Core/A/B input readiness is 22/22, but the accepted Market owner
+requires `market_context` absent from the unified sealed producer. R4 forbids
+source-policy repair, so no model calls or whole-cohort binding were issued.
+Wait for a bounded Market producer/consumer projection instruction; preserve
+sealed source hashes, independent assessment secrecy and all zero-side-effect
+limits. Do not treat offline stock probes as 24-message readiness.
+
+## Current Local Track: R2B-R3 Blind Disclosure Gate
+
+Read `operations/R2B_TYPED_QUALITY_OWNER.md` and the immutable R3 report first.
+Canonical quality owner reconstruction and actual Core/A/B 22-subject probes
+pass. Model calls remain zero: new concrete quality limitations are missing from
+the frozen blind source view. Terminal is
+`R2B_R3_BLIND_REVIEW_MATERIAL_SOURCE_VIEW_CHANGED`. Do not use schema readiness
+as permission to dispatch, alter the blind bundle, inspect independent judgment,
+or change quality reasons. A new instruction must resolve comparison fairness
+before a request freeze. Do not reacquire sources or modify production. Older
+entries below are historical.
+
+## Current Local Track: R2B-R2 Quality Representation Gap
+
+Read `operations/R2B_WHOLE_DECISION_LIMIT.md` and the immutable R2B-R2 report.
+Do not dispatch models, reveal independent assessment, refresh sources or promote
+this local branch from this handoff. UNKNOWN_LIMIT and 20 price-rule bindings are
+closed, but A/B whole readiness is 8/22. The next bounded decision concerns the
+14 absent typed financial-quality records: determine the correct source owner or
+an explicit typed absence representation without inventing source refs, widening
+authority or weakening quality validation. Rerun whole-cohort actual A
+materialization before any request freeze. Schema-only PASS is insufficient.
+All source/blind hashes must remain exact. Prior entries below are historical.
+
+## Current Local Track: R2B0-R2 Source Owner Gaps
+
+Read the immutable R2 report and `docs/operations/UNIFIED_STOCK_OWNER_BINDING.md`.
+Pure source-only stock assembly is implemented, but supplied inputs do not
+qualify 22/22. Next bounded scope is the precise financial/business owner paths
+in that report, not a new stock price acquisition or CPNG anomaly policy change.
+Do not relax quality, fabricate filing lineage, substitute old assessments or
+count diagnostic packet hashes as accepted hashes. No full prequalification or
+R2B instruction is available. Provider/model/render/send and production changes
+remain outside this local task. Entries below are historical.
+
+## Current Local Track: R2B0-R1 Component Closure, Stock Owner Gap
+
+Read `docs/operations/UNIFIED_STOCK_ANOMALY_SCOPE.md` and the R1 immutable report.
+Do not rerun acquisition. Consumer scoping is implemented offline on exact R2B0
+bytes; CPNG bad rows remain, recent/close-only inputs survive, recursive and
+long-cycle dependencies fail. Full stock materialization remains unimplemented:
+next bounded work is the pure stock owner plus exact Class-C/local seed binding,
+nonempty observed-business union and typed/numeric negative tests. Do not count
+the 22 technical component projections as full packets. R2B execution, models,
+Telegram, main push/deploy and schedulers remain unauthorized by this handoff.
+Older entries below are historical.
+
+## Current Local Unified-Source Track: R2B0 Partial
+
+Start with `docs/operations/UNIFIED_ONE_SHOT_STOCK_ACQUISITION.md` and the immutable
+R2B0 report. The one authorized 88-role acquisition is finished. No further
+network request is authorized by this handoff. Usable receipts are 85/88; CPNG's
+three HIGH_LT_OPEN roles prevent the required 88/88 gate. Native raw replay is
+88/88, so retain the actual provider rows and their request/source hashes.
+Do not rerun all 88, replace responses from an archive, weaken OHLC validation,
+or begin materialization, R2B, models or scheduler cutover. A separate bounded
+CPNG source-integrity decision is needed. Operating main and schedules remain
+unchanged. Earlier session prompts below are historical, not current execution
+authorization.
+
 Latest authoritative work is the 2026-09-05 logical-condition and bounded validation production
 integration. Read `docs/reports/20260905-production-integration-artifact-index.md`,
 `docs/reports/20260905-main-readiness.md`, and both integrated real TEST E2E reports first. Exact

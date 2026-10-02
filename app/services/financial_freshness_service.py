@@ -79,6 +79,25 @@ class FinancialFreshnessService:
                 select(Event).where(Event.ticker == ticker).order_by(Event.date.desc())
             ).all()
         )
+        all_rows = list(session.exec(select(FinancialSnapshot).where(
+            FinancialSnapshot.ticker == ticker).order_by(
+                FinancialSnapshot.financial_period_end.desc(),
+                FinancialSnapshot.filing_date.desc())).all())
+        decision, event_copies, row_copies = evaluate_financial_freshness_records(
+            all_events, all_rows, as_of=today)
+        for original, projected in zip(all_events, event_copies, strict=True):
+            original.financial_refresh_required = projected.financial_refresh_required
+            session.add(original)
+        for original, projected in zip(all_rows, row_copies, strict=True):
+            for field in ("period_mapping_validation_failed", "financial_statement_basis_warning",
+                          "financial_hard_errors", "quality_warnings"):
+                setattr(original, field, getattr(projected, field))
+            session.add(original)
+        return decision
+
+    @staticmethod
+    def _assess_loaded(all_events: list[Event], all_rows: list[FinancialSnapshot], *,
+                       today: date) -> FinancialFreshness:
         events = [
             event
             for event in all_events
@@ -90,7 +109,6 @@ class FinancialFreshnessService:
                 and event.financial_refresh_required
             ):
                 event.financial_refresh_required = False
-                session.add(event)
         material_events = [event for event in events if _material(event)]
         latest_event = material_events[0] if material_events else None
         period_events = [event for event in material_events if event.reporting_period_end]
@@ -99,19 +117,8 @@ class FinancialFreshnessService:
             key=lambda event: (event.reporting_period_end or date.min, event.date),
             default=None,
         )
-        all_rows = list(
-            session.exec(
-                select(FinancialSnapshot)
-                .where(FinancialSnapshot.ticker == ticker)
-                .order_by(
-                    FinancialSnapshot.financial_period_end.desc(),
-                    FinancialSnapshot.filing_date.desc(),
-                )
-            ).all()
-        )
         for candidate in all_rows:
             validate_snapshot_period_chronology(candidate)
-            session.add(candidate)
         rows = [row for row in all_rows if financial_snapshot_is_usable(row)]
         full_row = next(
             (row for row in rows if row.snapshot_type == "full_statement"), None
@@ -177,7 +184,6 @@ class FinancialFreshnessService:
 
         for event in material_events:
             event.financial_refresh_required = False
-            session.add(event)
 
         if latest_event is None and row is None:
             return FinancialFreshness(
@@ -212,7 +218,6 @@ class FinancialFreshnessService:
 
         if refresh_event:
             refresh_event.financial_refresh_required = True
-            session.add(refresh_event)
             result = (
                 "parsing_failed"
                 if refresh_event.document_type in {"full_statement", "preliminary_earnings"}
@@ -304,3 +309,17 @@ class FinancialFreshnessService:
                 else "same_or_older_reporting_period_already_available"
             ),
         )
+
+
+def evaluate_financial_freshness_records(
+    events: list[Event], rows: list[FinancialSnapshot], *, as_of: date,
+) -> tuple[FinancialFreshness, list[Event], list[FinancialSnapshot]]:
+    """Owner's existing decision on detached copies, with explicit proposed updates.
+
+    Inputs retain the same ordering as the legacy query. No session, refresh,
+    autoflush, or network operation is reachable from this boundary.
+    """
+    event_copies = [Event.model_validate(event.model_dump()) for event in events]
+    row_copies = [FinancialSnapshot.model_validate(row.model_dump()) for row in rows]
+    decision = FinancialFreshnessService._assess_loaded(event_copies, row_copies, today=as_of)
+    return decision, event_copies, row_copies

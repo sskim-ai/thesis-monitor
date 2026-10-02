@@ -119,6 +119,72 @@ def test_actual_shared_boundary_single_attempt_original_credentials(invocation, 
     assert len(calls) == 1
 
 
+@pytest.mark.parametrize('market,max_calls', [('us', 16), ('kr', 10)])
+def test_scoped_controller_reaches_real_transport_with_frozen_ten_minutes(
+    invocation, monkeypatch, tmp_path, market, max_calls,
+):
+    from scripts import us14_models as m
+    from scripts.rev46_kr_models import Rev46Kr8Execution
+
+    cls = m.Us14Execution if market == 'us' else Rev46Kr8Execution
+    obj = object.__new__(cls)
+    obj.frozen = dict(timeout_seconds=600, max_calls=max_calls, retries=2)
+    obj.gen = str(tmp_path / 'scoped-execution')
+    obj.sealed = tmp_path / 'sealed'
+    obj.ledger = [dict(attempts=0)]
+    obj.verify = obj.publish = lambda: None
+    obj.current_launch_context = lambda: {}
+    obj.authorize_launch_context = lambda context: None
+    binding = invocation['official_shadow'].binding
+    monkeypatch.setattr(m.p, 'binding', lambda: binding)
+    monkeypatch.setattr(m.p, 'BIN', binding.executable)
+    (invocation['cwd'] / 'internal-semantic-schema.json').write_bytes(invocation['schema'].read_bytes())
+    calls = []
+
+    def capture(argv, **kwargs):
+        calls.append(kwargs)
+        assert kwargs['timeout'] == 600
+        assert kwargs['input'] == invocation['prompt'].read_bytes()
+        assert argv[argv.index('-m') + 1] == 'gpt-5.6-sol'
+        assert 'model_reasoning_effort="xhigh"' in argv
+        Path(argv[argv.index('-o') + 1]).write_text('{"answer":"fixture"}')
+        kwargs['stdout'].write(b'{"type":"thread.started"}\n{"type":"turn.completed"}\n')
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(transport.subprocess, 'run', capture)
+    output, dest = obj.invoke('market', dict(market=market, batch=1, subjects=[]),
+        dict(directory=str(invocation['cwd'])))
+    assert output == {'answer': 'fixture'} and len(calls) == 1
+    receipt = json.loads((dest / 'transport-receipt.json').read_bytes())
+    assert receipt['execution_policy'] == obj.frozen
+    assert obj.ledger[0]['attempts'] == 1
+
+
+@pytest.mark.parametrize('timeout,max_calls,retries', [
+    (600, 26, 2), (600, 16, 3), (600, 10, 0), (1200, 16, 2), (3600, 26, 0),
+    (600.0, 16, 2), (1200, 26, False),
+])
+def test_unqualified_execution_policy_never_spawns(invocation, monkeypatch, timeout, max_calls, retries):
+    policy = transport.OfficialShadowExecutionPolicy(timeout, max_calls, retries)
+    invocation['official_shadow'] = replace(invocation['official_shadow'], execution_policy=policy)
+    invocation['timeout'] = timeout
+    monkeypatch.setattr(transport.subprocess, 'run', lambda *a, **k: pytest.fail('must not spawn'))
+    with pytest.raises(transport.OfficialShadowError, match='EXECUTION_POLICY_UNQUALIFIED'):
+        runtime._invoke_signed_in_codex(**invocation)
+
+
+@pytest.mark.parametrize('timeout,policy', [
+    (600, transport.OfficialShadowExecutionPolicy()),
+    (1200, transport.OfficialShadowExecutionPolicy(600, 16, 2)),
+])
+def test_frozen_timeout_mismatch_never_spawns(invocation, monkeypatch, timeout, policy):
+    invocation['official_shadow'] = replace(invocation['official_shadow'], execution_policy=policy)
+    invocation['timeout'] = timeout
+    monkeypatch.setattr(transport.subprocess, 'run', lambda *a, **k: pytest.fail('must not spawn'))
+    with pytest.raises(transport.OfficialShadowError, match='REQUEST_ID_OR_TIMEOUT_DRIFT'):
+        runtime._invoke_signed_in_codex(**invocation)
+
+
 @pytest.mark.parametrize(
     "kind,code",
     [

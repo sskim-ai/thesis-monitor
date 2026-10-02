@@ -265,7 +265,7 @@ def test_condition_existence_is_not_observation(key):
 def test_verified_earnings_uses_and_field_binding():
     result = run(inputs(("stock.fact_catalog.earnings:" + PERIOD,)))
     uses = result["projection"]["claim_records"]["claim:renamed"]["allowed_uses"]
-    assert SourceUse.OVERALL_DIRECTION in uses and SourceUse.PASS_A_ARCHETYPE in uses
+    assert SourceUse.OVERALL_DIRECTION not in uses and SourceUse.PASS_A_ARCHETYPE in uses
     assert result["family_receipts"][0]["earnings_lineage"]["supported_field_paths"] == [
         "fields.revenue.value"
     ]

@@ -43,6 +43,15 @@ def test_synthetic_packet_preflight_covers_all_frozen_shapes() -> None:
 
 def test_additive_packet_extension_preserves_legacy_schema_and_transport() -> None:
     schema = deepcopy(DecisionEvidencePacket.model_json_schema())
+    schema["$defs"]["DecisionEvidenceRef"]["properties"].pop("source_time")
+    for definition in ("CanonicalEvidenceTime", "SourceTimeKind"):
+        schema["$defs"].pop(definition)
+    before_source_time_sha256 = hashlib.sha256(
+        json.dumps(schema, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    assert before_source_time_sha256 == (
+        "a2b03be7380caebb1f7d772c05866b4aebc3991e0411f6b5f2a3d2c78600991b"
+    )
     schema["$defs"]["DecisionEvidenceRef"]["properties"].pop("financial_context")
     for definition in (
         "FinancialAttributionBasis",
@@ -61,7 +70,7 @@ def test_additive_packet_extension_preserves_legacy_schema_and_transport() -> No
     ).hexdigest()
 
     assert resume.packet_schema_sha256() == (
-        "a2b03be7380caebb1f7d772c05866b4aebc3991e0411f6b5f2a3d2c78600991b"
+        "f7eb1ce83e67b9fe819fc5fcebd1b39dc987aa07bfea9fdba6809521f6ea2461"
     )
     assert legacy_schema_sha256 == resume.EXPECTED_PACKET_SCHEMA_SHA256
     current = resume.transport_hashes(Path.cwd())

@@ -1,5 +1,118 @@
 # Thesis Monitor Project Handoff
 
+## 2026-09-28 R2B-R9-REV8 Handoff
+
+Base `3b8ebcfbe07b91e510013cd07236404fc04e71f0`; instruction-only commit
+`0ae7d84b441921989432437a52b29f4ef2d26d55`; exact tested implementation
+`af7f85eba085748265609b27cda42aefdc58faf6`. Local integration branch only.
+Read `operations/R9_REV8_OFFLINE_INTEGRATION.md` and the REV8 report first.
+Fresh macro raw/time replay, same-run KOSPI200 history, bridge-denied security
+valuation, all22 direct-source Core/A/B probes and NORMAL sender capture pass.
+All22 fixtures are synthetic comparisons, not all required owner archetypes.
+Current-only financial input fails the comparison-dependent quality owner before
+UNKNOWN_LIMIT. Do not clear missing fields or upgrade absolute amounts to direction.
+Whole source/Market replay, exact bridge descriptor, qualified/N-M valuation,
+complete detailed sections and exact24 route are still unqualified. Existing
+valuation capabilities were audited; no universal source-unavailability claim.
+Terminal `R2B_R9_REV8_PREFLIGHT_CONTRACT_GAP`; five P1 integration gates open.
+Focused 1163 / full 6358 PASS, 63 identical skips. Public Action 0.4.5 unchanged,
+20 unique operationIds; Knowledge/Ruff/diff PASS. No external source/model calls,
+live capture, production mutation, main merge, push or deploy. Operating remains
+`b610e6de0a8c33d199961e821ff1b130e1fa9ad4`. Full report ZIP/SHA stay local and are
+delivered to iCloud; final identities and sync receipt are outside the code tree.
+
+## 2026-09-28 R2B-R9-REV7 Handoff
+
+Base `30efc244288d42c13a9b80aa5c4e70c386be26a3`; instruction-only commit
+`bf82dc5fba0362b43bc35a9261e2b01e414b8505`; exact tested implementation
+`c75222d2b75252e6ab44bd34a71c4f83dc6e59bf`.
+Two P1s remain open: fresh macro/night/bridge-to-whole-source composition and
+full detailed normal/UNKNOWN_LIMIT section ownership plus fresh consumer/capture.
+The stock-only offline CLI and synthetic detailed-plan proof do not qualify the
+whole adapter. `CurrentValuationView` deliberately reports unavailable optional
+multiples where fresh denominator rights are absent. No old data substitutions.
+1103 focused and 6298 full tests pass; 63 unchanged skips. Historical R7 diff
+finds two inherited REV6 report EOF blanks; the actual REV7 diff passes. Preserve
+both receipts and do not rewrite old evidence. Source/model calls and messages
+are NOT_RUN, not failed live attempts. Operating remains unchanged. Local only.
+
+## 2026-09-28 R2B-R4 Handoff
+
+Instruction `9e825f499baa18ba985a8eda2cea1402c49e1825`; preflight implementation
+`691c53a3d5258da04637e24acdbafb3d59ed5d05`. V2 neutral receipt SHA
+`9c9eec930400db3e7390984b6045e72961684e3db774eedd633b3f6fa1e9650d` matches.
+This resolves the missing-file and blind-supplement gate, not the Market input
+contract. Stocks pass Core/A/B 22/22, price-rule versions 20/20, unclassified
+model-visible time refs zero. Market adapter readiness is 0/2 with actual
+`KeyError('market_context')`. This is not source hash drift or an AI rejection.
+Do not silently construct an empty/old Market context or skip Market to run
+stocks. A separate bounded owner-approved Market projection needs authorization
+before the unchanged whole-cohort execution can resume. No independent content
+was read; no model input binding, calls, previews or comparison-ready receipt.
+
+## 2026-09-28 R2B-R3 Handoff
+
+R2B-R2 final `9321a76b41b499879e75668348f84c2c1ad59a10` is the base. Instruction
+commit `e5ccd4cd606cd4ef00035ab39c695c8849233fe4` precedes the applicability audit
+and implementation. Read `operations/R2B_TYPED_QUALITY_OWNER.md` and the R3
+immutable report. Core/A/B mechanical readiness reaches 22/22; this is NOT an
+AI result. No model request binding is issued while the blind disclosure gate
+is blocked. Preserve original source/blind hashes and all independent judgments.
+The 003690 quality input had been computed but not canonically materialized;
+generic reconstruction closes it. SKHY follows 000660's issuer source without
+clearing sibling-field denials or transferring security valuation authority.
+CRCL/IBM/SKHY need an explicit fair-comparison disposition, not another silent
+rerun. All production mutation and source refresh remain forbidden.
+
+## 2026-09-28 R2B-R2 Whole-Decision Handoff
+
+Implementation `1ad422c6f6243771740480411f927152ae2c7e7b`, based on R2B-R1
+`98543a8778a0517a0b5c3da69f935c480f8ef302`. Archive-only limitation and stored-rule
+contracts pass. Full implementation regression: 6125 passed / 63 identical skips;
+focused: 330 passed. Final exact-SHA receipts are in the immutable R2B-R2 report.
+The initial schema-only 22/22 is superseded by actual A-materialization readiness
+8/22. Blocked: CORZ, CPNG, CRCL, GOOGL, HUT, IBM, MU, RXRX, SKHY, TSLA, TSM,
+WRD, WULF, 003690. The raw source lacks their financial-quality record; the new
+adapter did not remove it. Do not invent refs or change missing quality to NONE.
+Market/Core/A/B calls 0/0/0/0; actual messages 0/24. SNDK correctly takes the
+generic UNKNOWN_LIMIT branch, not HOLD/5:5. Independent reveal remains CLOSED.
+No main/operating mutation or push. Older entries below are historical.
+
+## 2026-09-26 R2B0-R2 Source Assembly Handoff
+
+The pure owner exists in `unified_stock_owner.py`; it does not call `_stock_packet`
+or access assessments. See `UNIFIED_STOCK_OWNER_BINDING.md` and the immutable R2
+report. Two supplied subject inputs qualify (005930/047810). Remaining evidence
+gaps: US14 exact SEC filing/occurrence selection, 000660 quality taint, 003690
+mixed selected filing tuple, and four KR statement-basis contract failures.
+No old safe period or AI observation is substituted. CPNG price and bounded
+technical context survive unchanged; its business union is empty. Full adapter
+prequalification/R2B are not reached. Preserve all source captures and outcomes.
+No network/model/render/delivery/DB mutation or main push/deploy is authorized.
+
+## 2026-09-26 R2B0-R1 Scoped Source Handoff
+
+Read `docs/operations/UNIFIED_STOCK_ANOMALY_SCOPE.md` first. R1 separates immutable
+source integrity from actual consumer dependencies. All 88 receipt identities
+and source bytes remain exact. CPNG current price and close-only valuation input
+are eligible; full-range/recursive and V3 D/W histories are still blocked.
+22 deterministic component projections are NOT 22 stock packets. Complete
+stock/Class-C/business-union binding remains unimplemented (Outcome C); stock
+hashes null, R2B/R3 blocked. Preserve the sealed acquisition; no fresh call is
+authorized. Local ZIP/SHA are delivered to both iCloud root and Thesis Monitor.
+
+## 2026-09-26 R2B0 One-Shot Source Handoff
+
+Read `docs/operations/UNIFIED_ONE_SHOT_STOCK_ACQUISITION.md` first for this local
+source-adapter track. New role-bound source capture is 88/88 and deterministic
+native replay is 88/88, but usability is 85/88: CPNG adjusted daily, adjusted
+weekly and unadjusted weekly valuation fail the unchanged HIGH_LT_OPEN rule.
+Preserve all original raw responses. No retry, source replacement or row repair
+occurred. The conditional stock materializer was not reached; 21 subjects with
+four usable roles are not 21 qualified stock packets. All full adapter gates
+remain false, and no R2B instruction was generated. KRX historical closure stays
+accepted. The ZIP/SHA are local/iCloud deliverables; no remote push or deployment.
+
 ## 2026-09-04 KR/US Monitoring Infrastructure Integration Handoff
 
 Start with `docs/reports/20260904-infrastructure-artifact-index.md` and

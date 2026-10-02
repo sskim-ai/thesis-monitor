@@ -8,9 +8,11 @@ from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 
 import httpx
+from app.services.unified_run_acquisition import RunAcquisitionObserver
 from pydantic import BaseModel, Field
 
 from app.config import get_settings
+from app.services.night_futures_product_scope import PRODUCTS as TARGET_PRODUCTS
 from app.services.market_session import preceding_exchange_session_date
 from app.services.night_futures_session_mapping_service import (
     KST,
@@ -23,7 +25,6 @@ from app.services.night_futures_session_mapping_service import (
 KRX_FUTURES_DAILY_URL = "https://data-dbg.krx.co.kr/svc/apis/drv/fut_bydd_trd"
 KRX_SERVICE_NAME = "fut_bydd_trd"
 USER_AGENT = "thesis-monitor/KRX-night-futures-probe"
-TARGET_PRODUCTS = ("KOSPI200", "KOSDAQ150")
 NIGHT_FUTURES_SESSION_BASIS_CONTRACT = "night-futures-session-basis-v1"
 NIGHT_COMPARISON_SEMANTIC = "completed_night_close_minus_immediately_preceding_day_close"
 
@@ -253,7 +254,8 @@ def _parse_row(item: dict[str, object]) -> KrxFuturesRow | None:
     contract_code = str(item.get("ISU_CD") or "").strip()
     contract_name = str(item.get("ISU_NM") or "").strip()
     close = _number(item.get("TDD_CLSPRC"))
-    if not all((business_date, product, session, contract_code, contract_name)) or close is None:
+    if (not all((business_date, product, session, contract_code, contract_name))
+            or close is None or product not in TARGET_PRODUCTS):
         return None
     return KrxFuturesRow(
         business_date=business_date,
@@ -327,7 +329,8 @@ def parse_krx_futures_payloads(
         ),
         reason=None if raw_rows else "empty_response",
     )
-    parsed = [row for item in raw_rows if (row := _parse_row(item)) is not None]
+    parsed = [row for item in raw_rows if (row := _parse_row(item)) is not None
+              and row.product in TARGET_PRODUCTS]
     result.parsed_row_count = len(parsed)
     result.parser_status = "PASS" if parsed or not raw_rows else "PARSER_ERROR"
     result.returned_business_dates = sorted({row.business_date for row in parsed})
@@ -673,7 +676,10 @@ async def fetch_live_probe(
     api_key: str | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
     max_lookback_days: int = 7,
+    source_observer: RunAcquisitionObserver | None = None,
 ) -> KrxNightFuturesProbeResult:
+    from app.services.unified_live_source_transport import is_native_live_transport
+
     run_date = run_date or date.today()
     api_key = api_key if api_key is not None else get_settings().krx_open_api_key
     observed = observation_time or datetime.now(timezone.utc)
@@ -708,10 +714,10 @@ async def fetch_live_probe(
             target_date = run_date - timedelta(days=days_back)
             queried_dates.append(target_date)
             try:
-                response = await client.get(
-                    KRX_FUTURES_DAILY_URL,
-                    params={"basDd": target_date.strftime("%Y%m%d")},
-                )
+                params = {"basDd": target_date.strftime("%Y%m%d")}
+                response = (await client.get(KRX_FUTURES_DAILY_URL, params=params)
+                    if source_observer is None else await source_observer.get(
+                        client, KRX_FUTURES_DAILY_URL, params=params))
                 response.raise_for_status()
                 payload = response.json()
             except (httpx.HTTPError, ValueError, TypeError) as exc:
@@ -793,7 +799,7 @@ async def fetch_live_probe(
                     ),
                     payloads=payloads,
                     response_bodies=response_bodies,
-                    live_source=transport is None,
+                    live_source=is_native_live_transport(transport),
                 )
             if row_count:
                 skipped_warnings.append(
@@ -819,7 +825,7 @@ async def fetch_live_probe(
             ),
             payloads=payloads,
             response_bodies=response_bodies,
-            live_source=transport is None,
+            live_source=is_native_live_transport(transport),
         )
     if successful_response_count == 0 and last_fetch_error is not None:
         return _attach_source_captures(
@@ -837,7 +843,7 @@ async def fetch_live_probe(
             ),
             payloads=payloads,
             response_bodies=response_bodies,
-            live_source=transport is None,
+            live_source=is_native_live_transport(transport),
         )
     return _attach_source_captures(
         _attach_fetch_telemetry(
@@ -854,7 +860,7 @@ async def fetch_live_probe(
         ),
         payloads=payloads,
         response_bodies=response_bodies,
-        live_source=transport is None,
+        live_source=is_native_live_transport(transport),
     )
 
 

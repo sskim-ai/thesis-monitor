@@ -14,19 +14,11 @@ from app.services.krx_night_history_service import (
 from app.services.market_session import preceding_exchange_session_date
 
 
-NIGHT_FUTURES_SERIES = (
-    "KRX_KOSPI200_NIGHT_FUT",
-    "KRX_KOSDAQ150_NIGHT_FUT",
+from app.services.night_futures_product_scope import (
+    SERIES as NIGHT_FUTURES_SERIES,
+    LABELS as NIGHT_FUTURES_LABELS,
+    FACT_IDS as NIGHT_FUTURES_FACT_IDS,
 )
-
-NIGHT_FUTURES_LABELS = {
-    "KRX_KOSPI200_NIGHT_FUT": "KOSPI200 최근월물",
-    "KRX_KOSDAQ150_NIGHT_FUT": "KOSDAQ150 최근월물",
-}
-NIGHT_FUTURES_FACT_IDS = {
-    "KRX_KOSPI200_NIGHT_FUT": "market:night_futures:1",
-    "KRX_KOSDAQ150_NIGHT_FUT": "market:night_futures:2",
-}
 NIGHT_FUTURES_SESSION_BASIS_CONTRACT = "night-futures-session-basis-v1"
 NIGHT_FUTURES_SUMMARY_PROJECTION_CONTRACT = "night-futures-summary-canonical-projection-v1"
 NIGHT_COMPARISON_SEMANTIC = "completed_night_close_minus_immediately_preceding_day_close"
@@ -471,6 +463,8 @@ def canonicalize_night_futures_market_summary(
 
 
 def render_night_futures(summary: NightFuturesSummary) -> str:
+    if any(item.series_code not in NIGHT_FUTURES_SERIES for item in summary.items):
+        raise ValueError('unconfigured_night_product_in_display')
     if not summary.items:
         return ""
     source_date = summary.source_date

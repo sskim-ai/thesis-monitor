@@ -121,7 +121,7 @@ def test_run51_official_rows_normalize_exact_ohlc_without_repair() -> None:
         raw_relative_path="raw/2026/09/01/a.json",
     )
 
-    assert len(result.bars) == 2
+    assert len(result.bars) == 1
     assert result.rejections == ()
     by_product = {bar.instrument_root: bar for bar in result.bars}
     assert (
@@ -130,12 +130,7 @@ def test_run51_official_rows_normalize_exact_ohlc_without_repair() -> None:
         by_product["KOSPI200"].low,
         by_product["KOSPI200"].close,
     ) == (1067.0, 1072.45, 1053.8, 1064.5)
-    assert (
-        by_product["KOSDAQ150"].open,
-        by_product["KOSDAQ150"].high,
-        by_product["KOSDAQ150"].low,
-        by_product["KOSDAQ150"].close,
-    ) == (1440.0, 1447.0, 1415.5, 1432.8)
+    assert set(by_product) == {'KOSPI200'}
 
 
 def test_malformed_ohlc_is_rejected_without_clipping_or_swapping() -> None:
@@ -339,7 +334,7 @@ def test_persist_response_stores_both_products_and_raw_receipt(tmp_path: Path) -
         raw_body=body,
     )
     assert receipt.row_count == 2
-    assert len(normalized.bars) == 2
-    assert stored == 2
+    assert len(normalized.bars) == 1
+    assert stored == 1
     assert len(load_history(tmp_path, instrument_root="KOSPI200")) == 1
-    assert len(load_history(tmp_path, instrument_root="KOSDAQ150")) == 1
+    assert len(load_history(tmp_path, instrument_root="KOSDAQ150")) == 0

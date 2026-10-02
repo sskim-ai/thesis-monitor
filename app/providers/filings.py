@@ -580,6 +580,9 @@ async def _resolve_opendart_company(api_key: str, query: str) -> OpenDARTCompany
 
 class OpenDARTProvider(FilingProvider):
     name = "opendart"
+    transport = None
+    as_of = None
+    unified_corp_code = None
     endpoint = "https://opendart.fss.or.kr/api/list.json"
     financial_endpoint = "https://opendart.fss.or.kr/api/fnlttSinglAcnt.json"
     financial_all_endpoint = "https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json"
@@ -853,12 +856,20 @@ class OpenDARTProvider(FilingProvider):
         settings = get_settings()
         if not settings.opendart_api_key:
             return []
-        company = await _resolve_opendart_company(settings.opendart_api_key, ticker)
+        if self.as_of is not None:
+            # Unified identity comes from the bound SecurityMaster, never an
+            # implicit corp-code cache/network lookup outside the receipt owner.
+            if not self.unified_corp_code:
+                raise ValueError("unified_opendart_corporate_identity_missing")
+            company = OpenDARTCompany(corp_code=self.unified_corp_code,
+                                     corp_name=ticker, stock_code=ticker)
+        else:
+            company = await _resolve_opendart_company(settings.opendart_api_key, ticker)
         if company is None:
             return []
-        params = {"crtfc_key": settings.opendart_api_key, "corp_code": company.corp_code, "bgn_de": _yyyymmdd(date.today() - timedelta(days=lookback_days)), "page_count": 20}
+        params = {"crtfc_key": settings.opendart_api_key, "corp_code": company.corp_code, "bgn_de": _yyyymmdd((self.as_of or date.today()) - timedelta(days=lookback_days)), "page_count": 20}
         try:
-            async with httpx.AsyncClient(timeout=8.0) as client:
+            async with httpx.AsyncClient(timeout=8.0, transport=self.transport) as client:
                 response = await client.get(self.endpoint, params=params)
                 response.raise_for_status()
                 payload = response.json()
@@ -872,6 +883,8 @@ class OpenDARTProvider(FilingProvider):
                     try:
                         published = date.fromisoformat(f"{filing_date[:4]}-{filing_date[4:6]}-{filing_date[6:8]}")
                     except ValueError:
+                        if self.as_of is not None:
+                            continue
                         published = date.today()
                     extra_facts: list[str] = []
                     extra_unknowns: list[str] = []
@@ -986,6 +999,9 @@ class OpenDARTProvider(FilingProvider):
 
 class SecEdgarProvider(FilingProvider):
     name = "sec_edgar"
+    transport = None
+    as_of = None
+    unified_cik = None
     endpoint_template = "https://data.sec.gov/submissions/CIK{cik}.json"
 
     async def _resolve_cik(self, client: httpx.AsyncClient, ticker: str) -> str | None:
@@ -1007,13 +1023,16 @@ class SecEdgarProvider(FilingProvider):
             return []
         headers = {"User-Agent": settings.sec_user_agent, "Accept": "application/json"}
         try:
-            async with httpx.AsyncClient(timeout=8.0, headers=headers) as client:
-                cik = await self._resolve_cik(client, ticker)
+            async with httpx.AsyncClient(timeout=8.0, headers=headers, transport=self.transport) as client:
+                cik = (str(self.unified_cik).zfill(10) if self.as_of is not None and self.unified_cik
+                       else await self._resolve_cik(client, ticker))
                 if not cik:
                     return []
                 response = await client.get(self.endpoint_template.format(cik=cik))
                 response.raise_for_status()
                 payload = response.json()
+                if self.as_of is not None and str(payload.get("cik", "")).zfill(10) != cik:
+                    raise ValueError("unified_sec_submission_issuer_mismatch")
         except (httpx.HTTPError, ValueError):
             return []
         recent = payload.get("filings", {}).get("recent", {})
@@ -1022,7 +1041,7 @@ class SecEdgarProvider(FilingProvider):
         accession_numbers = recent.get("accessionNumber", [])
         primary_documents = recent.get("primaryDocument", [])
         company_name = payload.get("name")
-        cutoff = date.today() - timedelta(days=lookback_days)
+        cutoff = (self.as_of or date.today()) - timedelta(days=lookback_days)
         events: list[RawEvent] = []
         for form, filing_date, accession, primary_doc in zip(forms, filing_dates, accession_numbers, primary_documents, strict=False):
             if form not in {"8-K", "10-Q", "10-K", "20-F", "6-K"}:
@@ -1030,6 +1049,8 @@ class SecEdgarProvider(FilingProvider):
             try:
                 published = date.fromisoformat(filing_date)
             except ValueError:
+                if self.as_of is not None:
+                    continue
                 published = date.today()
             if published < cutoff:
                 continue

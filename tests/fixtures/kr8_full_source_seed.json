@@ -1,0 +1,33 @@
+{
+  "attempt_hashes": {
+    "kr": "da7baab0b626d3e995da1d44900df6ed807f40097ffeac86b28de826f60ceec5"
+  },
+  "attempts": {
+    "kr": "rev40-r1-kr8-20261001T082129Z:kr:A1"
+  },
+  "class_c_version_set_sha256": "b712bbcc5b57146751a05ad6530324eb1046319617fc768095184562feff15af",
+  "code_config_sha256": "483f1f9a2ff75bbf1bd57ff93e4309dabdb76446bd67494a0f9dbddcfb2b32b2",
+  "contract": "full-source-run-seed-v1",
+  "fresh_stock_owner_set_sha256": "81f1ad987b0eee02784a9778a3eaff560c086ecf634cb2fb132712e7998487c8",
+  "inventory_sha256": "13ee8291029361200c79af60042c50ee5db512d12974490d6e179dc571f6e7a0",
+  "night_publication_receipt_sha256": "553d3322b76f10fb1f4d635a04ff41ad62fd7bbbdb71729d8b2040493b28d6fd",
+  "optional_denial_set_sha256": "5b367f8fd39dc96685fe1bdbbfa12b233cb677585aefee0c9b6c17a122ef5b67",
+  "packet_scope": "LIVE_SOURCE_ADAPTER_PROOF_NOT_PRODUCTION_DECISION",
+  "parent_run_id": "rev40-r1-kr8-20261001T082129Z",
+  "persisted_event_evidence_sha256": null,
+  "proof_mode": "AD_HOC_LIVE_SOURCE_PROOF",
+  "run_acquisitions": {
+    "night": "92cbcc2df42b8f3a387b9980989c1523d3d9bcb1c1498d4ac3241f253939eced",
+    "publications": "28a9453fb863f4c08c4c09c5bcc48b48ce6b55376d2c8425502bd3da1e7ceff6",
+    "stock": "9e9d248768bdfa9fcae2e09825303974f0de8e91ba0104bb91b6679f3c625153"
+  },
+  "scope": "KR8_ONLY",
+  "skhy_issuer_bridge_sha256": "51c007ad1df0928260674912dd2e87688b1b589797febc957474c7ca29185a14",
+  "source_authority_contract_sha256": "483f1f9a2ff75bbf1bd57ff93e4309dabdb76446bd67494a0f9dbddcfb2b32b2",
+  "source_policy_sha256": "2b2f207cbfba132e8b6ae6b35bfa57aa9c7f1cce0584b812e3efb8ea77446788",
+  "started_at": "2026-10-01T08:21:29.564699Z",
+  "stock_cohort_hashes": {
+    "kr": "2951ffbb7ab549baaaa280a2709c5f1ee2c5dc62e01f4cb496217e3045da2209"
+  },
+  "universe_sha256": "b84aa574fa2a8a35dc1356891c06a2071c0f1302aa9903c0f9f0843f39bf0b3a"
+}

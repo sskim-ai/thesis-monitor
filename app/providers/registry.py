@@ -8,6 +8,7 @@ from app.providers.mock import MockProvider
 from app.providers.naver_news import NaverNewsProvider
 from app.providers.news import GoogleNewsRSSProvider, NewsAPIProvider
 from app.providers.prices import AlphaVantageProvider
+from app.services.unified_source_policy import UnifiedSourcePolicy
 
 
 @dataclass(frozen=True)
@@ -56,6 +57,7 @@ def _status(
 def provider_priority(
     include_live_news: bool = False,
     include_mock_provider: bool = True,
+    *, source_policy: UnifiedSourcePolicy | None = None,
 ) -> list[BaseProvider]:
     """Return providers in execution order."""
     settings = get_settings()
@@ -85,7 +87,7 @@ def provider_priority(
                 CompanyIRProvider(),
             ]
         )
-    return providers
+    return [p for p in providers if source_policy is None or source_policy.permits(p.name)]
 
 
 def provider_statuses() -> list[ProviderStatus]:

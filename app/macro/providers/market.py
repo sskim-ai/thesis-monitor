@@ -1,9 +1,15 @@
 from datetime import datetime, timezone
+import hashlib
+from pathlib import Path
+from math import isfinite
 
 import httpx
+from pydantic import TypeAdapter
 
 from app.config import get_settings
 from app.macro.providers.base import CollectedObservation, MacroProviderResult
+from app.services.unified_source_observer import OhlcvReceiptObserver
+from app.services.market_session import us_market_session
 
 
 MARKET_SYMBOLS = {
@@ -32,15 +38,55 @@ MARKET_SYMBOLS = {
 }
 
 
+def normalize_market_observation(payload: dict, *, symbol: str, source_url: str) -> CollectedObservation | None:
+    """Shared by live collection and child-byte offline replay."""
+    bars = payload.get("periods", {}).get("daily", [])
+    if not bars:
+        return None
+    ordered = sorted(bars, key=lambda row: str(row['date']))
+    if len({row['date'] for row in ordered}) != len(ordered):
+        raise ValueError('market_duplicate_daily_occurrence')
+    latest = ordered[-1]
+    value = float(latest['close'])
+    previous = float(ordered[-2]['close']) if len(ordered) > 1 else None
+    if not isfinite(value) or value <= 0 or (previous is not None and (not isfinite(previous) or previous <= 0)):
+        raise ValueError('market_nonpositive_or_nonfinite_close')
+    prior_date = str(ordered[-2]['date']) if previous is not None else None
+    if prior_date is not None:
+        expected_prior = us_market_session(datetime.fromisoformat(str(latest['date'])).replace(
+            hour=0, tzinfo=timezone.utc)).latest_completed_regular_session_date
+        if datetime.fromisoformat(prior_date).date() != expected_prior:
+            raise ValueError('market_nonadjacent_daily_baseline')
+    return CollectedObservation(
+        series_code=symbol, category=MARKET_SYMBOLS[symbol],
+        observed_at=datetime.fromisoformat(str(latest["date"])).replace(tzinfo=timezone.utc),
+        value=value, previous_value=previous,
+        change_value=value-previous if previous is not None else None,
+        change_pct=(value/previous-1)*100 if previous is not None else None,
+        unit="usd", frequency="daily",
+        market_session="us_regular", source_url=source_url,
+        raw_payload={'previous_observation_date': prior_date,
+                     'return_basis': 'same_response_adjacent_adjusted_regular_closes'},
+    )
+
+
 class OhlcvMarketProvider:
     name = "ohlcv_analyst"
 
-    def __init__(self, transport: httpx.AsyncBaseTransport | None = None) -> None:
+    def __init__(self, transport: httpx.AsyncBaseTransport | None = None, *,
+                 source_observer: OhlcvReceiptObserver | None = None) -> None:
         self.settings = get_settings()
         self.transport = transport
+        self.source_observer = source_observer
 
     async def collect(self, as_of: datetime) -> MacroProviderResult:
         result = MacroProviderResult(provider=self.name)
+        if self.source_observer is not None:
+            self.source_observer.require_market_set(set(MARKET_SYMBOLS))
+            if as_of.utcoffset() is None or self.source_observer.reads[0].session_date != (
+                us_market_session(as_of).latest_completed_regular_session_date
+            ):
+                raise ValueError("market_plan_session_mismatch")
         api_key = self.settings.ohlcv_api_key or self.settings.action_api_key
         headers = {"X-API-Key": api_key} if api_key else {}
         async with httpx.AsyncClient(
@@ -49,9 +95,12 @@ class OhlcvMarketProvider:
             timeout=self.settings.ohlcv_timeout_seconds,
             transport=self.transport,
         ) as client:
-            for symbol, category in MARKET_SYMBOLS.items():
+            for symbol in MARKET_SYMBOLS:
                 try:
-                    response = await client.get(
+                    get = client.get if self.source_observer is None else (
+                        lambda route, **kwargs: self.source_observer.get(client, route, **kwargs)
+                    )
+                    response = await get(
                         "/ohlcv",
                         params={
                             "symbol": symbol,
@@ -64,26 +113,22 @@ class OhlcvMarketProvider:
                         },
                     )
                     response.raise_for_status()
-                    bars = response.json().get("periods", {}).get("daily", [])
-                    if not bars:
+                    observation = normalize_market_observation(response.json(), symbol=symbol,
+                        source_url=f"{self.settings.ohlcv_base_url.rstrip('/')}/ohlcv")
+                    if observation is None:
                         result.warnings.append(f"{symbol}: no daily bars")
                         continue
-                    latest = bars[-1]
-                    observed_at = datetime.fromisoformat(str(latest["date"])).replace(
-                        tzinfo=timezone.utc
-                    )
-                    result.observations.append(
-                        CollectedObservation(
-                            series_code=symbol,
-                            category=category,
-                            observed_at=observed_at,
-                            value=float(latest["close"]),
-                            unit="usd",
-                            frequency="daily",
-                            market_session="us_regular",
-                            source_url=f"{self.settings.ohlcv_base_url.rstrip('/')}/ohlcv",
-                        )
-                    )
+                    observed_at = observation.observed_at
+                    if self.source_observer is not None:
+                        read = next(r for r in self.source_observer.reads if r.symbol == symbol)
+                        if observed_at.date() != read.session_date or observed_at > as_of:
+                            raise ValueError("market_source_session_mismatch")
+                        normalized = TypeAdapter(CollectedObservation).dump_python(
+                            observation, mode="json")
+                        self.source_observer.normalized(response, normalized=normalized,
+                            contract="us-market-observation-session-v1", valid=True,
+                            fingerprint=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
+                    result.observations.append(observation)
                 except (httpx.HTTPError, KeyError, TypeError, ValueError) as exc:
                     result.warnings.append(f"{symbol}: {type(exc).__name__}")
         return result

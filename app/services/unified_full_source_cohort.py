@@ -1,0 +1,329 @@
+"""Whole-source composition over existing independently replayed owners.
+
+This does not accept a caller's PASS flag as source authority. Market components
+are replayed by unified_source_composition and stock authority by its existing
+stock/financial builders. No network or production registration lives here.
+"""
+
+from datetime import datetime
+from typing import Literal
+
+from pydantic import Field, model_validator
+
+from app.services.unified_snapshot_contract import ContractModel, digest, encoded
+from app.services.unified_source_composition import compose_attempt, _resolve
+from app.services.unified_stock_acquisition import UNIVERSE
+from app.services.unified_stock_owner import assemble_stock
+from scripts.m12dr_financial_source_authority import build_source_authority
+from app.services.whole_source_code_owner_registry import (
+    WholeSourceCodeOwnerRegistry, verify_fresh_code_identity,
+)
+
+
+class FullSourceRunSeed(ContractModel):
+    contract: Literal["full-source-run-seed-v1"] = "full-source-run-seed-v1"
+    proof_mode: Literal["AD_HOC_LIVE_SOURCE_PROOF", "SCHEDULED_ELIGIBLE_PROOF"]
+    packet_scope: Literal["LIVE_SOURCE_ADAPTER_PROOF_NOT_PRODUCTION_DECISION"]
+    parent_run_id: str = Field(min_length=1)
+    started_at: datetime
+    source_policy_sha256: str
+    inventory_sha256: str
+    code_config_sha256: str
+    universe_sha256: str
+    attempts: dict[str, str]
+    attempt_hashes: dict[str, str]
+    run_acquisitions: dict[str, str]
+    class_c_version_set_sha256: str
+    stock_cohort_hashes: dict[str, str]
+    night_publication_receipt_sha256: str
+    optional_denial_set_sha256: str
+    skhy_issuer_bridge_sha256: str
+    source_authority_contract_sha256: str
+    persisted_event_evidence_sha256: str | None = None
+
+    @property
+    def universe(self):
+        return UNIVERSE
+
+    @model_validator(mode="after")
+    def explicit_bindings(self):
+        if self.started_at.utcoffset() is None:
+            raise ValueError("aware_proof_time_required")
+        for mapping in (self.attempts, self.attempt_hashes, self.stock_cohort_hashes):
+            if set(mapping) != set(self.universe) or not all(mapping.values()):
+                raise ValueError("exact_two_market_bindings_required")
+        if len(set(self.attempts.values())) != len(self.universe) or not self.run_acquisitions:
+            raise ValueError("distinct_attempts_and_run_acquisition_required")
+        values = self.model_dump()
+        hashes = [v for k, v in values.items() if k.endswith("sha256") and v is not None]
+        hashes += list(self.attempt_hashes.values()) + list(self.stock_cohort_hashes.values())
+        hashes += list(self.run_acquisitions.values())
+        if any(not isinstance(h, str) or len(h) != 64 or any(c not in "0123456789abcdef" for c in h) for h in hashes):
+            raise ValueError("non_null_exact_hash_required")
+        return self
+
+    @property
+    def sha256(self):
+        return digest(self.model_dump(mode="json"))
+
+
+class FreshFullSourceRunSeed(FullSourceRunSeed):
+    """Opt-in extension; legacy run-seed serialization remains byte-compatible."""
+    fresh_stock_owner_set_sha256: str
+
+
+class FreshKRSourceRunSeed(FreshFullSourceRunSeed):
+    scope: Literal["KR8_ONLY"] = "KR8_ONLY"
+
+    @property
+    def universe(self):
+        return {"kr": UNIVERSE["kr"]}
+
+
+class FreshUSSourceRunSeed(FreshFullSourceRunSeed):
+    scope: Literal['US14_ONLY'] = 'US14_ONLY'
+    topology: Literal['US14_WITH_DECLARED_AUXILIARY_ISSUER_V1'] = 'US14_WITH_DECLARED_AUXILIARY_ISSUER_V1'
+    auxiliary_issuer_set_sha256: str
+
+    @property
+    def universe(self):
+        return {'us':UNIVERSE['us']}
+
+
+def auxiliary_issuer_binding(stock_inputs):
+    from app.services.bounded_financial_stock_owner import replay_issuer_source
+    target = stock_inputs['SKHY']['fresh_financial_binding']['financial_inputs']
+    bridge = target.get('issuer_business')
+    if not bridge or 'dependency' not in bridge['source_inputs']:
+        raise ValueError('us14_exact_auxiliary_dependency_required')
+    source = replay_issuer_source(bridge['source_inputs'], target_plan=target['plan'])
+    if source['status'] != 'PASS' or digest(source) != bridge['source_result_sha256']:
+        raise ValueError('us14_auxiliary_source_owner_mismatch')
+    if any(t!='SKHY' and 'issuer_business' in i['fresh_financial_binding']['financial_inputs']
+           for t,i in stock_inputs.items()):
+        raise ValueError('us14_undeclared_auxiliary_dependency')
+    return {'000660':source}
+
+
+def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
+                        authority_inputs, version_set, optional_denials, issuer_bridge,
+                        publication_inputs=None, night_inputs=None, composition_metadata=None,
+                        fresh_context_inputs=None):
+    """All external artifact resolvers are already owned by compose_attempt."""
+    universe = seed.universe
+    auxiliary = None
+    if isinstance(seed, FreshUSSourceRunSeed):
+        if fresh_context_inputs is None or fresh_context_inputs['publications'].get('market_scope') != 'US14_ONLY':
+            raise ValueError('us14_publication_scope_required')
+        if set(stock_inputs) != set(UNIVERSE['us']):
+            raise ValueError('us14_exact_primary_subjects_required')
+        if any(i['fresh_financial_binding']['technical_inputs']['plan'].universe != seed.universe
+               for i in stock_inputs.values()):
+            raise ValueError('us14_primary_stock_plan_scope_mismatch')
+        auxiliary = auxiliary_issuer_binding(stock_inputs)
+        if digest(auxiliary) != seed.auxiliary_issuer_set_sha256:
+            raise ValueError('us14_auxiliary_seed_binding_mismatch')
+    if isinstance(seed, FreshKRSourceRunSeed):
+        if fresh_context_inputs is None or fresh_context_inputs['publications'].get('market_scope') != 'KR8_ONLY':
+            raise ValueError('kr8_publication_scope_required')
+    if (digest(version_set) != seed.class_c_version_set_sha256 or
+            digest(optional_denials) != seed.optional_denial_set_sha256 or
+            digest(issuer_bridge) != seed.skhy_issuer_bridge_sha256):
+        raise ValueError("run_component_hash_mismatch")
+    if issuer_bridge.get("security_valuation_transfer") or issuer_bridge.get("per_share_transfer"):
+        raise ValueError("issuer_bridge_security_transfer_denied")
+    if isinstance(seed, FreshFullSourceRunSeed) and (publication_inputs is not None or night_inputs is not None):
+        # The legacy publication bridge replays persisted Class-C records, not
+        # fresh macro requests. Never silently route a fresh seed through it.
+        raise ValueError('fresh_whole_context_replay_not_closed')
+    if isinstance(seed, FreshFullSourceRunSeed) and (fresh_context_inputs is None or composition_metadata is None):
+        raise ValueError('fresh_complete_context_and_code_inventory_required')
+    if publication_inputs is not None or night_inputs is not None or fresh_context_inputs is not None:
+        from pathlib import Path
+        import json
+        from app.services.unified_run_artifacts import sha256_bytes
+        root = Path(__file__).resolve().parents[2]
+        inventory = json.loads((root / 'docs/operations/UNIFIED_ACQUISITION_CLASSES.json').read_bytes())
+        if (composition_metadata is None or composition_metadata.get('inventory') != inventory
+                or len(inventory['roles']) != 24 or digest(inventory) != seed.inventory_sha256
+                or digest(universe) != seed.universe_sha256
+                or digest(composition_metadata.get('allowed_providers')) != seed.source_policy_sha256):
+            raise ValueError('whole_source_inventory_policy_identity_mismatch')
+        code = composition_metadata.get('code_fingerprints', {})
+        if isinstance(seed, FreshFullSourceRunSeed):
+            verify_fresh_code_identity(root, metadata=composition_metadata,
+                code_sha256=seed.code_config_sha256, authority_sha256=seed.source_authority_contract_sha256,
+                profile="fresh_us14" if isinstance(seed, FreshUSSourceRunSeed) else
+                        "fresh_kr8" if isinstance(seed, FreshKRSourceRunSeed) else "fresh")
+        else:
+            legacy = WholeSourceCodeOwnerRegistry.freeze(root, profile="legacy")
+            if (code != legacy.fingerprints or digest(code) != seed.code_config_sha256
+                    or digest(code) != seed.source_authority_contract_sha256):
+                raise ValueError('whole_source_code_contract_identity_mismatch')
+    expected = {t for tickers in universe.values() for t in tickers}
+    if set(stock_inputs) != expected or set(authority_inputs) != expected or set(market_inputs) != set(universe):
+        raise ValueError("whole_universe_required")
+    fresh_mode = isinstance(seed, FreshFullSourceRunSeed)
+    if fresh_mode:
+        from app.services.fresh_source_run_contract import validate_local_seed
+        for ticker, inputs in stock_inputs.items():
+            if set(inputs) != {'fresh_financial_binding'}:
+                raise ValueError('fresh_whole_cohort_requires_exact_fresh_owner:' + ticker)
+            validate_local_seed(inputs['fresh_financial_binding']['technical_inputs']['local_seed'])
+        bindings = {t: digest({'technical_plan': inputs['fresh_financial_binding']['technical_inputs']['plan'].model_dump(mode='json'),
+            'financial_plan': inputs['fresh_financial_binding']['financial_inputs']['plan']}) for t, inputs in stock_inputs.items()}
+        if digest(bindings) != seed.fresh_stock_owner_set_sha256:
+            raise ValueError('fresh_stock_plan_set_mismatch')
+        supplements = {t: i['fresh_financial_binding']['technical_inputs']['completed_close_source']
+            for t,i in stock_inputs.items() if 'completed_close_source' in i['fresh_financial_binding']['technical_inputs']}
+        if supplements or 'completed_close_supplement' in seed.run_acquisitions:
+            if (set(universe) != {'us'} or set(supplements) != expected
+                    or digest(supplements) != seed.run_acquisitions.get('completed_close_supplement')):
+                raise ValueError('completed_close_whole_source_seal_mismatch')
+    markets, stocks, authorities = {}, {}, {}
+    persisted_events = {}
+    for market in universe:
+        params = market_inputs[market]
+        native = params.get("native_aggregate")
+        attempt = native["attempt_id"] if native is not None else params["attempt_id"]
+        started = native["start"] if native is not None else params["started_at"]
+        if attempt != seed.attempts[market] or started < seed.started_at:
+            raise ValueError("market_attempt_generation_mismatch")
+        if native is not None:
+            role_key = {'us': 'us_market_prices', 'kr': 'kr_local_indices_sectors_breadth'}[market]
+            if (native["role"].market != market or native["run_id"] != seed.parent_run_id
+                    or native["role"].key != role_key):
+                raise ValueError("native_market_run_or_market_mismatch")
+            packet = {"run_id": native["run_id"], "attempt_id": attempt,
+                "attempt_started_at": started.isoformat(), "cutoff": native["cutoff"].isoformat(),
+                "component": _resolve(**native)}
+        else:
+            packet = compose_attempt(**params)
+        if packet["run_id"] != seed.parent_run_id or digest(packet) != seed.attempt_hashes[market]:
+            raise ValueError("market_replayed_packet_mismatch")
+        markets[market] = packet
+        current = {}
+        for ticker in universe[market]:
+            inputs = stock_inputs[ticker]
+            versioned = inputs.get("versioned_binding")
+            persisted = inputs.get("persisted_binding")
+            fresh = inputs.get('fresh_financial_binding')
+            if versioned is not None and persisted is not None:
+                raise ValueError("ambiguous_stock_business_owner")
+            direct = fresh['technical_inputs'] if fresh is not None else (versioned or persisted or {}).get("stock_inputs", inputs)
+            plan = direct["plan"]
+            if plan.run_id != seed.parent_run_id or plan.frozen_at != seed.started_at:
+                raise ValueError("inherited_class_a_stock_denied")
+            if composition_metadata is not None:
+                if seed.run_acquisitions.get('stock') != digest(plan.model_dump(mode='json')):
+                    raise ValueError('stock_acquisition_seed_mismatch')
+                required_versions = [(f'class-c/local-{market}.json', direct['local_seed'])]
+                if not fresh_mode:
+                    required_versions.append((f'class-c/financial-{ticker}.json', direct['financial']))
+                for name, value in required_versions:
+                    if sha256_bytes(encoded(value) + b'\n') != version_set.get(name):
+                        raise ValueError('stock_persisted_version_seed_mismatch')
+            if fresh is not None:
+                if not fresh_mode:
+                    raise ValueError('fresh_stock_seed_binding_required')
+                from app.services.fresh_financial_stock_owner import assemble_fresh_stock
+                stock = assemble_fresh_stock(**fresh)
+                event = stock.get('event_view', {}).get('receipt')
+                if event and event['acquisition_class'] == 'PERSISTED_SOURCE_RECHECK':
+                    persisted_events[ticker] = event
+            elif versioned is not None:
+                from app.services.versioned_business_stock_owner import bind_current_stock
+                stock = bind_current_stock(**versioned)["result"]
+            elif persisted is not None:
+                from app.services.persisted_business_event_owner import bind_persisted_event
+                stock = bind_persisted_event(**persisted)["result"]
+                persisted_events[ticker] = stock["persisted_event_receipt"]
+            else:
+                stock = assemble_stock(**inputs)
+            if stock["status"] != "PASS" or stock["market"] != market:
+                raise ValueError("current_complete_stock_required:" + ticker)
+            authority = authority_inputs[ticker]
+            if fresh is not None and authority.get('fresh_business_inputs') != fresh:
+                raise ValueError('fresh_authority_owner_input_mismatch')
+            if (authority["source_packet"] != stock["packet"] or authority["ticker"] != ticker
+                    or authority["evidence_packet"] != stock["evidence_packet"]):
+                raise ValueError("authority_stock_packet_mismatch")
+            # Existing financial/current-source authority is the only allocator.
+            resolved = build_source_authority(**authority)
+            if any(r.get("errors") for r in resolved["family_receipts"]):
+                raise ValueError("stock_authority_unresolved:" + ticker)
+            current[ticker] = stock
+            authorities[ticker] = resolved
+        if digest(current) != seed.stock_cohort_hashes[market]:
+            raise ValueError("current_stock_cohort_hash_mismatch")
+        stocks[market] = current
+    if seed.persisted_event_evidence_sha256 is not None:
+        if not persisted_events or digest(persisted_events) != seed.persisted_event_evidence_sha256:
+            raise ValueError("persisted_event_seed_binding_mismatch")
+    elif persisted_events:
+        raise ValueError("persisted_event_seed_binding_required")
+    publications, night = None, None
+    if fresh_context_inputs is not None:
+        if (not fresh_mode or publication_inputs is not None or night_inputs is not None
+                or set(fresh_context_inputs) != {'publications', 'night'}):
+            raise ValueError('fresh_context_requires_exclusive_fresh_seed')
+        from app.services.fresh_publication_replay import replay_fresh_publications
+        from app.services.unified_sealed_context import replay_night
+        pub, night_source = (fresh_context_inputs[k] for k in ('publications', 'night'))
+        for inputs in (pub, night_source):
+            if (inputs['run_id'] != seed.parent_run_id or inputs['run_started_at'] != seed.started_at
+                    or digest(sorted(inputs['policy'].allowed_providers)) != seed.source_policy_sha256):
+                raise ValueError('fresh_context_generation_or_policy_mismatch')
+        publications = replay_fresh_publications(**pub)
+        night = replay_night(**night_source)
+        if (digest(publications) != seed.run_acquisitions.get('publications')
+                or night['value_sha256'] != seed.run_acquisitions.get('night')
+                or digest({'probe': night['original_receipts'], 'history': night.get('history_receipts', [])})
+                   != seed.night_publication_receipt_sha256):
+            raise ValueError('fresh_context_run_binding_mismatch')
+    if publication_inputs is not None or night_inputs is not None:
+        if publication_inputs is None or night_inputs is None:
+            raise ValueError("complete_publication_and_night_inputs_required")
+        from app.services.unified_sealed_context import replay_night, replay_publications
+        if publication_inputs["cutoff"] != seed.started_at:
+            raise ValueError("publication_cutoff_seed_mismatch")
+        expected_publications = {n for n in version_set
+            if not any(part in n for part in ('/local-', '/financial-', '/business-versioned-'))}
+        if set(publication_inputs['documents']) != expected_publications:
+            raise ValueError('publication_complete_version_set_required')
+        if any(digest(sorted(inputs['policy'].allowed_providers)) != seed.source_policy_sha256
+               for inputs in (publication_inputs, night_inputs)):
+            raise ValueError('context_policy_seed_mismatch')
+        if any(version_set.get(k) != v for k, v in publication_inputs["hashes"].items()):
+            raise ValueError("publication_version_seed_mismatch")
+        publications = replay_publications(**publication_inputs)
+        night = replay_night(**night_inputs)
+        if (digest(night["original_receipts"]) != seed.night_publication_receipt_sha256
+                or night["original_run_id"] != seed.parent_run_id
+                or night["value_sha256"] != seed.run_acquisitions.get("night")):
+            raise ValueError("night_run_seed_binding_mismatch")
+    graph = {"contract": "full-source-authority-graph-v1", "run_seed_sha256": seed.sha256,
+        "markets": markets, "stocks": authorities, "issuer_bridge": issuer_bridge,
+        "class_c": version_set, "optional_denials": optional_denials,
+        "persisted_business_events": persisted_events, "publication_context": publications, "night": night}
+    if auxiliary is not None:
+        graph['auxiliary_issuers'] = auxiliary
+    if composition_metadata is not None:
+        graph["source_contract"] = composition_metadata
+    output = {m: {"run_seed_sha256": seed.sha256, "market": m,
+                  "market_sources": markets[m], "stocks": stocks[m],
+                  "authority_graph_sha256": digest(graph)} for m in markets}
+    for market, packet in output.items():
+        packet.update(class_c_versions=version_set, publication_context=publications,
+            optional_denials=optional_denials,
+            authority_subset={t: authorities[t] for t in universe[market]},
+            persisted_business_events={t: persisted_events[t] for t in universe[market] if t in persisted_events})
+        if market == "us":
+            packet["night_and_publication_context"] = night
+    combined = {"contract": "full-source-cohort-v1", "seed": seed.model_dump(mode="json"),
+                "packets": output, "authority_graph": graph,
+                "model_dispatch_qualified": False, "production_dispatch_enabled": False}
+    return {"seed": seed.model_dump(mode="json"), "seed_sha256": seed.sha256,
+            "packets": output, "packet_hashes": {m: digest(p) for m, p in output.items()},
+            "combined": combined, "combined_sha256": digest(combined),
+            "authority_graph": graph, "authority_graph_sha256": digest(graph)}

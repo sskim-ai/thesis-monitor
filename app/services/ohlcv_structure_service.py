@@ -99,6 +99,8 @@ MAJOR_CONFIG: dict[Timeframe, MajorSwingConfig] = {
     "monthly": MajorSwingConfig(0.18, 2.0, 2, 60),
 }
 
+LOCAL_PIVOT_LOOKBACKS = {"daily": 300, "weekly": 120, "monthly": 60}
+
 _RECENCY = {
     "daily": ((20, 2), (60, 1)),
     "weekly": ((8, 2), (20, 1)),
@@ -248,7 +250,7 @@ def detect_local_pivots(
     timeframe: Timeframe,
 ) -> list[LocalPivot]:
     config = LOCAL_CONFIG[timeframe]
-    bars = normalize_structure_bars(raw_bars, lookback=300 if timeframe == "daily" else 120 if timeframe == "weekly" else 60)
+    bars = normalize_structure_bars(raw_bars, lookback=LOCAL_PIVOT_LOOKBACKS[timeframe])
     atr = calc_wilder_atr(bars)
     pivots: list[LocalPivot] = []
     for index in range(config.left, len(bars) - config.right):

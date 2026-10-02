@@ -1,0 +1,51 @@
+{
+  "contract": "m12ds-official-codex-launch-context-parity-v1",
+  "goal": "Restore the already-qualified official Codex launch context without mutating authentication/provider/security semantics.",
+  "compare_known_good_to_failed": [
+    "absolute codex binary path and sha256",
+    "version and codesign/team identity",
+    "parent process provenance and effective uid/gid",
+    "HOME presence/path hash and stat metadata",
+    "CODEX_HOME presence/path hash and stat metadata",
+    "TMPDIR presence/path hash and stat metadata",
+    "cwd canonical path and stat metadata",
+    "state_namespace",
+    "official invocation flags",
+    "read-only child sandbox flags",
+    "selected safe environment-variable presence/hashes",
+    "state-db path/parent directory identity and effective access result",
+    "inherited app-server/nested-runtime marker presence",
+    "request prompt/schema hashes"
+  ],
+  "safe_env_inventory": [
+    "HOME",
+    "CODEX_HOME",
+    "TMPDIR",
+    "XDG_CONFIG_HOME",
+    "XDG_STATE_HOME",
+    "HTTP_PROXY",
+    "HTTPS_PROXY",
+    "ALL_PROXY",
+    "NO_PROXY",
+    "SSL_CERT_FILE",
+    "SSL_CERT_DIR",
+    "REQUESTS_CA_BUNDLE",
+    "CURL_CA_BUNDLE",
+    "NODE_EXTRA_CA_CERTS"
+  ],
+  "value_handling": "For credential-bearing or potentially sensitive values record only presence + sha256. For HOME/CODEX_HOME/TMPDIR record canonical path only if already present in prior safe runtime receipts; otherwise record path hash + filesystem mode/access metadata.",
+  "repair_preference": [
+    "Prefer restoring the same normal host-authorized parent execution context proven by M12DM.",
+    "Keep the official CLI child on the qualified ephemeral/read-only/no-tools boundary.",
+    "Do not chmod/chown/delete/rebuild the user's Codex auth or state database.",
+    "Do not create a custom runtime or copy credentials into a new ad-hoc home.",
+    "Do not disable sandbox/TLS/auth controls merely to launch."
+  ],
+  "systemic_startup_markers": [
+    "attempt to write a readonly database",
+    "failed to initialize in-process app-server client",
+    "Operation not permitted before event stream",
+    "permission denied opening official state/auth runtime",
+    "identical pre-dispatch initialization error across batches"
+  ]
+}

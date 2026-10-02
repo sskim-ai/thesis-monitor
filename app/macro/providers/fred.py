@@ -1,9 +1,12 @@
 from datetime import datetime, timezone
+from math import isfinite
+from collections.abc import Callable
 
 import httpx
 
 from app.config import get_settings
 from app.macro.providers.base import CollectedObservation, MacroProviderResult
+from app.services.macro_source_time import publication_context
 
 
 FRED_SERIES = {
@@ -26,9 +29,11 @@ FRED_SERIES = {
 class FredProvider:
     name = "fred"
 
-    def __init__(self, transport: httpx.AsyncBaseTransport | None = None) -> None:
+    def __init__(self, transport: httpx.AsyncBaseTransport | None = None, *,
+                 clock: Callable[[], datetime] | None = None) -> None:
         self.settings = get_settings()
         self.transport = transport
+        self.clock = clock or (lambda: datetime.now(timezone.utc))
 
     async def collect(self, as_of: datetime) -> MacroProviderResult:
         result = MacroProviderResult(provider=self.name)
@@ -55,12 +60,21 @@ class FredProvider:
                         },
                     )
                     response.raise_for_status()
+                    retrieved_at = self.clock()
                     rows = response.json().get("observations", [])
-                    valid_rows = [item for item in rows if item.get("value") != "."][:2]
+                    qualified = [item for item in rows if item.get("value") not in {None, "."}]
+                    if (len({r['date'] for r in qualified}) != len(qualified)
+                            or any(not isfinite(float(r['value'])) for r in qualified)):
+                        raise ValueError("ambiguous_or_nonfinite_observation")
+                    valid_rows = sorted(qualified, key=lambda item: item["date"], reverse=True)[:2]
                     if not valid_rows:
                         result.warnings.append(f"{series_code}: no current observation")
                         continue
                     for row in reversed(valid_rows):
+                        temporal = publication_context(provider=self.name, series=series_code,
+                            period=row["date"], query_as_of=as_of, retrieved_at=retrieved_at,
+                            response_bytes=response.content, cadence=frequency,
+                            latest_verified=row == valid_rows[0], daily_required=True)
                         observed_at = datetime.fromisoformat(str(row["date"])).replace(
                             tzinfo=timezone.utc
                         )
@@ -77,6 +91,7 @@ class FredProvider:
                                     "observation_date": row.get("date"),
                                     "realtime_start": row.get("realtime_start"),
                                     "realtime_end": row.get("realtime_end"),
+                                    "publication_context": temporal,
                                 },
                             )
                         )

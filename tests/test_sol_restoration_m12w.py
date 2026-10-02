@@ -227,14 +227,39 @@ def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
     assert result["status"] == "FAIL"
     if result["verification_mode"] == "EXACT_BASE_ARCHIVE_SHA256":
         assert set(result["changed_existing_paths"]) == {
+            "app/jobs/probe_krx_night_futures.py",
+            "app/macro/kr_close.py",
+            "app/macro/providers/ecos.py",
+            "app/macro/providers/eia.py",
+            "app/macro/providers/finnhub.py",
+            "app/macro/providers/fred.py",
+            "app/macro/providers/krx.py",
+            "app/macro/providers/market.py",
+            "app/providers/filings.py",
+            "app/providers/kiwoom_rest_client.py",
+            "app/providers/nasdaq_trader_breadth_provider.py",
+            "app/providers/news.py",
+            "app/providers/registry.py",
+            "app/services/ai_review_service.py",
+            "app/services/collection_service.py",
             "app/services/direction_timing_ownership_service.py",
             "app/services/directional_balance_service.py",
             "app/services/directional_financial_context_service.py",
             "app/services/evidence_maturity_pricing_service.py",
             "app/services/financial_framework_claim_service.py",
+            "app/services/financial_freshness_service.py",
+            "app/services/kiwoom_kr_market_context_service.py",
+            "app/services/krx_night_history_service.py",
             "app/services/krx_night_session_contract_service.py",
             "app/services/market_intelligence_service.py",
+            "app/services/night_futures.py",
+            "app/services/numeric_semantic_registry.py",
+            "app/services/ohlcv_client.py",
+            "app/services/ohlcv_feature_engine_service.py",
+            "app/services/ohlcv_structure_service.py",
             "app/services/structured_autonomy_alias_service.py",
+            "app/services/us_exchange_breadth_service.py",
+            "app/services/valuation_snapshot_service.py",
             "scripts/directional_core_price_timing_holdout.py",
             "scripts/directional_financial_context_m12.py",
             "scripts/financial_exclusion_expectation_m12u.py",
@@ -242,16 +267,24 @@ def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
             "scripts/new_issuer_final_freeze_ownership_proof.py",
             "scripts/new_issuer_holdout_selection_ownership_proof.py",
             "tests/test_bounded_fictional_websocket_reconnect_diagnostic.py",
+            "tests/test_ai_review_service.py",
             "tests/test_evidence_maturity_pricing_service.py",
             "tests/test_financial_boundary_calibration_m12e.py",
             "tests/test_financial_exclusion_expectation_m12u.py",
             "tests/test_financial_exclusion_leverage_m12f.py",
             "tests/test_first_class_typed_financial_evidence_m12b.py",
+            "tests/test_krx_night_futures_probe.py",
+            "tests/test_krx_night_history_service.py",
             "tests/test_market_intelligence_service.py",
+            "tests/test_morning_gate.py",
+            "tests/test_night_futures_publication_telemetry.py",
+            "tests/test_night_futures_summary_canonicalization.py",
             "tests/test_partial_output_forensics_transport_stall_review.py",
+            "tests/test_providers.py",
+            "tests/test_synthetic_canary_fixture_repair_ownership_resume.py",
         }
-        assert result["financial_semantic_change_count"] == 22
-        assert result["directional_semantic_change_count"] == 22
+        assert result["financial_semantic_change_count"] == 55
+        assert result["directional_semantic_change_count"] == 55
         assert result["fictional_case_change_count"] == 0
     else:
         assert result["verification_mode"] == "CI_PORTABLE_AGGREGATE_SHA256"
