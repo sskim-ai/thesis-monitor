@@ -165,13 +165,41 @@ def test_released_fed_context_not_prior_ai_output(session, future, tmp_path):
 
 
 def test_estimate_inventory_does_not_forge_unavailable_basis(session, tmp_path):
-    session.add(ConsensusEstimate(ticker="FIX", provider="finnhub", estimate_as_of=CUTOFF.date(),
+    session.add(ConsensusEstimate(ticker="FIX", provider="finnhub", estimate_as_of=CUTOFF,
         estimate_period="provider-defined forward consensus", metric="forward_pe", value=10))
     session.commit()
     result = project_estimate_inventory(session, ticker="FIX", cutoff=CUTOFF, policy=POLICY)
     assert result["records"] and not result["eligible"]
     assert result["qualification"] == "GAP_PERSISTED_ESTIMATE_OWNER_NOT_IMPLEMENTED"
     durable_json(tmp_path / "estimate-owner-gap.json", result)
+    clean(session)
+
+
+@pytest.mark.parametrize("as_of", [CUTOFF, CUTOFF + timedelta(hours=7, minutes=13, seconds=17)])
+def test_estimate_utc_datetime_persistence_preserves_metadata_and_ineligibility(session, as_of):
+    assert ConsensusEstimate.model_fields["estimate_as_of"].annotation is datetime
+    assert as_of.utcoffset() == timedelta(0)
+    period = "provider-defined forward consensus"
+    estimate = ConsensusEstimate(ticker="FIX", provider="finnhub", estimate_as_of=as_of,
+        estimate_period=period, basis="provider-defined", metric="forward_pe", value=10)
+    session.add(estimate)
+    session.commit()
+    identity = estimate.id
+    session.expunge(estimate)
+
+    stored = session.get(ConsensusEstimate, identity)
+    assert stored is not None
+    assert isinstance(stored.estimate_as_of, datetime)
+    persisted = stored.estimate_as_of
+    # Older SQLite adapters return the stored UTC wall time without tzinfo.
+    if persisted.tzinfo is None:
+        persisted = persisted.replace(tzinfo=timezone.utc)
+    assert persisted.astimezone(timezone.utc) == as_of
+    assert (stored.estimate_period, stored.basis, stored.metric, stored.value) == (
+        period, "provider-defined", "forward_pe", 10)
+    result = project_estimate_inventory(session, ticker="FIX", cutoff=as_of, policy=POLICY)
+    assert result["records"] and result["values"] == [] and not result["eligible"]
+    assert result["qualification"] == "GAP_PERSISTED_ESTIMATE_OWNER_NOT_IMPLEMENTED"
     clean(session)
 
 
