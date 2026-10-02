@@ -219,3 +219,10 @@ def test_context_metadata_forgery_rejected(valuation, field, value):
     context["metric_states"][2][field] = value
     with pytest.raises(ValueError, match="horizon_label_unowned"):
         ValuationCalibrationContext.model_validate(rehash(context, "context_sha256"))
+
+
+def test_context_qualification_state_must_match_atomic_owner(valuation):
+    context = calibration_context(valuation[0])
+    context['metric_states'][2]['state'] = native.FORWARD_FY1_QUALIFIED
+    with pytest.raises(ValueError, match='forward_owner_binding'):
+        ValuationCalibrationContext.model_validate(rehash(context, 'context_sha256'))

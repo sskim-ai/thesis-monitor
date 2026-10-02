@@ -74,6 +74,7 @@ class ValuationCalibrationContext(ContractModel):
                     fact = self.facts[row['fact_ref']]['fact']
                     snapshot = ProviderNativeForwardValuationSnapshot.model_validate(fact['provider_snapshot'])
                     if (not snapshot.display_eligible or snapshot.snapshot_sha256 != row['snapshot_sha256']
+                            or snapshot.state != row['state'] or fact['fact_id'] != row['fact_ref']
                             or snapshot.value != row['value']
                             or snapshot.run_id != self.run_id or snapshot.canonical_security_id != self.security_id
                             or fact['fields'] != {'forward_pe': snapshot.value}):
