@@ -19,13 +19,14 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def compile_plan(*, stock, identities, news_reads, config_identities, rev10_receipt,
                  configured_kr_pages, kr_post_acquisition_completeness_approved, exact_financial_owner=False,
-                 valuation_market_types=None):
+                 valuation_market_types=None, auxiliary_security=None, auxiliary_identity_sha256=None):
     if kr_post_acquisition_completeness_approved is not True:
         raise ValueError('explicit_kr_post_acquisition_completeness_approval_required')
     if configured_kr_pages < 1:
         raise ValueError('kr_configured_page_cap_invalid')
     local_kr_cap = min(configured_kr_pages, MAX_KR_REQUEST_PAGES)
-    candidate = acquisition_plan(stock, identities, kr_max_pages=local_kr_cap, exact_financial_owner=exact_financial_owner)
+    candidate = acquisition_plan(stock, identities, kr_max_pages=local_kr_cap, exact_financial_owner=exact_financial_owner,
+        auxiliary_security=auxiliary_security, auxiliary_identity_sha256=auxiliary_identity_sha256)
     descriptors, owners, roles, page_proof = [], {}, {}, []
     def add(key, provider, role, market, subject, operation, request, *, mandatory=True,
             binding=None, pages=1, retries=2):

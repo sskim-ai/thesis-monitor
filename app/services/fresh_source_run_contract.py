@@ -63,20 +63,34 @@ def _budget(count):
         timeout_seconds=600, transient_retries=2, semantic_retries=0)
 
 
-def acquisition_plan(stock_plan, identities, *, kr_max_pages, exact_financial_owner=False):
+def acquisition_plan(stock_plan, identities, *, kr_max_pages, exact_financial_owner=False,
+                     auxiliary_security=None, auxiliary_identity_sha256=None):
     """Freeze every source class before network. No retained-subject exemption."""
     stock = StockPlan.model_validate(stock_plan)
     if type(kr_max_pages) is not int or not 1 <= kr_max_pages <= MAX_KR_REQUEST_PAGES:
         raise ValueError('finite_kr_page_cap_required')
     universe = stock.universe
     kr_only = set(universe) == {'kr'}
+    us_only = set(universe) == {'us'}
     expected = {t for subjects in universe.values() for t in subjects}
     if set(identities) != expected:
         raise ValueError('exact_22_current_security_identities_required')
     financial = {t: make_plan(identities[t], market=m, cutoff=stock.frozen_at,
         run_id=stock.run_id, all_subjects_fresh=True, exact_financial_owner=exact_financial_owner)
         for m, subjects in universe.items() for t in subjects}
-    kr = kiwoom_market_reads(session_date=korea_market_session(stock.frozen_at).latest_completed_regular_session_date,
+    auxiliary = {}
+    if us_only:
+        from app.services.auxiliary_issuer_financial_owner import AuxiliaryIssuerDependency
+        if not auxiliary_security or auxiliary_security.get('ticker') != '000660':
+            raise ValueError('us14_declared_auxiliary_issuer_required')
+        financial['000660'] = make_plan(auxiliary_security, market='kr', cutoff=stock.frozen_at,
+            run_id=stock.run_id, all_subjects_fresh=True, exact_financial_owner=exact_financial_owner)
+        auxiliary['000660'] = AuxiliaryIssuerDependency(run_id=stock.run_id,cutoff=stock.frozen_at,
+            source_plan_sha256=digest(financial['000660']),
+            official_identity_sha256=auxiliary_identity_sha256).model_dump(mode='json')
+    elif auxiliary_security is not None or auxiliary_identity_sha256 is not None:
+        raise ValueError('auxiliary_issuer_only_allowed_in_us14_scope')
+    kr = () if us_only else kiwoom_market_reads(session_date=korea_market_session(stock.frozen_at).latest_completed_regular_session_date,
         max_pages=kr_max_pages, max_requests_per_page=1)
     at = stock.frozen_at.astimezone(ZoneInfo('Asia/Seoul')).date()
     # Current-month DWM plus a bounded prior-month boundary; official missing
@@ -90,6 +104,8 @@ def acquisition_plan(stock_plan, identities, *, kr_max_pages, exact_financial_ow
     if kr_only:
         for name in ('us_market_wire', 'fred', 'eia'):
             del maxima[name]
+    if us_only:
+        del maxima['kr_market_wire']
     budgets = {name: _budget(count) for name, count in maxima.items()}
     for ticker, plan in financial.items():
         budgets['financial:'+ticker] = _budget(plan['maximum_logical_requests'])
@@ -112,6 +128,10 @@ def acquisition_plan(stock_plan, identities, *, kr_max_pages, exact_financial_ow
         result.update(scope='KR8_ONLY', us_market_symbols=[],
             macro_queries={'ecos': result['macro_queries']['ecos']})
         result['optional_unavailable'].pop('us_exchange_breadth')
+    if us_only:
+        result.update(scope='US14_ONLY', auxiliary_issuer_dependencies=auxiliary,
+            primary_monitored_subjects=list(universe['us']),
+            auxiliary_issuer_subjects=['000660'])
     return {**result, 'plan_sha256': digest(result)}
 
 

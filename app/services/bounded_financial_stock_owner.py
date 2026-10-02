@@ -91,19 +91,8 @@ def validate_frozen_baseline(baseline):
     return validate_assembled(replay, expected_result_sha256=digest(replay))
 
 
-def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, followup_directory=None, phase2=None, field_semantics=False, coverage_window=None, issuer_business=None):
-    validate_frozen_baseline(baseline)
-    if baseline['ticker'] != plan['ticker'] or baseline['market'] != plan['market']:
-        raise ValueError('financial_stock_subject_mismatch')
-    if digest(local_seed) != baseline['input_hashes']['local'] or digest(plan['security']) != plan['identity_sha256']:
-        raise ValueError('financial_identity_input_hash_mismatch')
-    identities = [r['record'] for component in local_seed['roles'].values() for r in component['records']
-        if r['table']=='securitymaster' and r['record'].get('ticker')==plan['ticker']]
-    if not identities or any(any(r.get(k)!=plan['security'].get(k) for k in
-            ('canonical_company_id','canonical_security_id','cik','corp_code')) for r in identities):
-        raise ValueError('financial_security_identity_mismatch')
-    projection = project(plan, acquisition, directory, receipts, followup_directory=followup_directory, phase2=phase2,
-        field_semantics=field_semantics, coverage_window=coverage_window)
+def reported_comparisons(plan, projection):
+    """Shared financial-only selector; no security price or technical baseline."""
     issuer = ('CIK:' if plan['market'] == 'us' else 'DART:') + plan['issuer']
     candidates = []
     for bundle in projection['quality_bundles']:
@@ -121,6 +110,23 @@ def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, fo
             denied.append({'metric': metric, 'reason': 'MULTIPLE_CURRENT_COMPARISON_OWNERS'})
         else:
             facts.extend(unique.values())
+    return facts, denied
+
+
+def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, followup_directory=None, phase2=None, field_semantics=False, coverage_window=None, issuer_business=None):
+    validate_frozen_baseline(baseline)
+    if baseline['ticker'] != plan['ticker'] or baseline['market'] != plan['market']:
+        raise ValueError('financial_stock_subject_mismatch')
+    if digest(local_seed) != baseline['input_hashes']['local'] or digest(plan['security']) != plan['identity_sha256']:
+        raise ValueError('financial_identity_input_hash_mismatch')
+    identities = [r['record'] for component in local_seed['roles'].values() for r in component['records']
+        if r['table']=='securitymaster' and r['record'].get('ticker')==plan['ticker']]
+    if not identities or any(any(r.get(k)!=plan['security'].get(k) for k in
+            ('canonical_company_id','canonical_security_id','cik','corp_code')) for r in identities):
+        raise ValueError('financial_security_identity_mismatch')
+    projection = project(plan, acquisition, directory, receipts, followup_directory=followup_directory, phase2=phase2,
+        field_semantics=field_semantics, coverage_window=coverage_window)
+    facts, denied = reported_comparisons(plan, projection)
     bridge, origin = None, None
     if issuer_business is not None:
         if facts:
@@ -189,13 +195,17 @@ def _issuer_business_facts(plan, inputs):
     from app.services.issuer_business_bridge import identity_bridge, bind_comparison
 
     source_inputs = inputs['source_inputs']
+    if 'dependency' in source_inputs and (
+            source_inputs['dependency']['official_identity_sha256'] != inputs['official_identity_sha256']
+            or digest(inputs['official_identity']) != inputs['official_identity_sha256']):
+        raise ValueError('auxiliary_official_identity_binding_mismatch')
     if source_inputs.get('issuer_business') is not None:
         raise ValueError('recursive_issuer_bridge_denied')
     source_plan = source_inputs['plan']
     if (source_plan['provider'] != 'opendart' or source_plan['cutoff'] != plan['cutoff']
             or source_plan['ticker'] == plan['ticker']):
         raise ValueError('issuer_business_source_scope_or_cutoff_mismatch')
-    source = assemble(**source_inputs)
+    source = replay_issuer_source(source_inputs, target_plan=plan)
     if source['status'] != 'PASS' or digest(source) != inputs['source_result_sha256']:
         raise ValueError('issuer_business_source_owner_replay_mismatch')
     captures = [r for r in source_inputs['receipts'] if r['stage'] == 'discovery' and not r['failure_class']]
@@ -210,8 +220,11 @@ def _issuer_business_facts(plan, inputs):
         dart_rows=rows, dart_receipt=captures[0], cutoff=plan['cutoff'])
     if bridge['status'] != 'PASS':
         raise ValueError('issuer_business_identity_unproven:' + ','.join(bridge['errors']))
-    selected = {f['fact_id']: f for f in source['packet']['stocks'][0]['fact_catalog']
-                if 'canonical:' + f['fact_id'] in source['comparative_fact_refs']}
+    if source.get('contract') == 'auxiliary-issuer-financial-owner-v1':
+        selected = {f['fact_id']: f for f in source['comparative_facts']}
+    else:
+        selected = {f['fact_id']: f for f in source['packet']['stocks'][0]['fact_catalog']
+                    if 'canonical:' + f['fact_id'] in source['comparative_fact_refs']}
     facts = []
     for bundle in source['projection']['quality_bundles']:
         quality = source_quality(bundle)
@@ -225,6 +238,13 @@ def _issuer_business_facts(plan, inputs):
     if not unique:
         raise ValueError('issuer_business_no_eligible_original_comparison')
     return bridge, list(unique.values()), source
+
+
+def replay_issuer_source(inputs, *, target_plan):
+    if 'dependency' in inputs:
+        from app.services.auxiliary_issuer_financial_owner import assemble_issuer
+        return assemble_issuer(**inputs, target_plan=target_plan)
+    return assemble(**inputs)
 
 
 def validate(result, **inputs):

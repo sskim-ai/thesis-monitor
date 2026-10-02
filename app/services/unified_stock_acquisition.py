@@ -70,7 +70,7 @@ class StockRead(ContractModel):
 
 
 class StockPlan(ContractModel):
-    contract: Literal["one-shot-stock-source-acquisition-v1", "one-shot-kr8-source-acquisition-v1"] = "one-shot-stock-source-acquisition-v1"
+    contract: Literal["one-shot-stock-source-acquisition-v1", "one-shot-kr8-source-acquisition-v1", "one-shot-us14-source-acquisition-v1"] = "one-shot-stock-source-acquisition-v1"
     run_id: str = Field(min_length=1)
     acquisition_id: str = Field(min_length=1)
     frozen_at: datetime
@@ -87,6 +87,8 @@ class StockPlan(ContractModel):
 
     @property
     def universe(self):
+        if self.contract == "one-shot-us14-source-acquisition-v1":
+            return {"us": UNIVERSE["us"]}
         return {"kr": UNIVERSE["kr"]} if self.contract == "one-shot-kr8-source-acquisition-v1" else UNIVERSE
 
     @model_validator(mode="after")
@@ -94,6 +96,8 @@ class StockPlan(ContractModel):
         expected = {f"{market}:{ticker}:{role}" for market, tickers in self.universe.items()
                     for ticker in tickers for role in ROLES}
         if len(self.reads) != len(expected) or {r.entry_id for r in self.reads} != expected:
+            if self.contract == "one-shot-us14-source-acquisition-v1":
+                raise ValueError("exact_us14_declared_stock_reads_required")
             raise ValueError("exact_88_stock_plan_required")
         if self.frozen_at.tzinfo is None or not self.owner_files:
             raise ValueError("stock_plan_owner_time_required")
@@ -101,8 +105,12 @@ class StockPlan(ContractModel):
 
 
 def make_reads(universe: dict, identities: dict, *, at: datetime, counts: dict,
-               kr_only: bool = False) -> tuple[StockRead, ...]:
-    selected = {"kr": UNIVERSE["kr"]} if kr_only else UNIVERSE
+               kr_only: bool = False, us_only: bool = False) -> tuple[StockRead, ...]:
+    if kr_only and us_only:
+        raise ValueError("exclusive_stock_scope_required")
+    selected = {"us": UNIVERSE["us"]} if us_only else {"kr": UNIVERSE["kr"]} if kr_only else UNIVERSE
+    if us_only and set(universe) != {"us"}:
+        raise ValueError("us14_exact_market_scope_required")
     if kr_only and set(universe) != {"kr"}:
         raise ValueError("kr8_exact_market_scope_required")
     for market, expected in selected.items():
@@ -217,9 +225,12 @@ def validate_role(plan: StockPlan, read: StockRead, receipt: dict, root: Path) -
 
 def coverage(plan: StockPlan, rows: list[dict]) -> dict:
     expected = {r.entry_id for r in plan.reads}
-    if len(rows) != 88 or {r["entry_id"] for r in rows} != expected:
+    count = len(expected) if plan.contract == "one-shot-us14-source-acquisition-v1" else 88
+    if len(rows) != count or {r["entry_id"] for r in rows} != expected:
+        if plan.contract == "one-shot-us14-source-acquisition-v1":
+            raise ValueError("exact_us14_result_coverage_required")
         raise ValueError("exact_88_result_coverage_required")
     passed = sum(r["status"] == "PASS" for r in rows)
-    return {"attempted": 88, "usable": passed, "failed": 88 - passed,
-            "complete": passed == 88, "stock_materialization_allowed": passed == 88,
+    return {"attempted": count, "usable": passed, "failed": count - passed,
+            "complete": passed == count, "stock_materialization_allowed": passed == count,
             "rows": rows}

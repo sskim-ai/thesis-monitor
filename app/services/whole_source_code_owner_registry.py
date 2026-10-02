@@ -13,7 +13,7 @@ from app.services.unified_run_artifacts import sha256_bytes
 
 VERSION = "whole-source-code-owner-registry-v1"
 SEMANTIC_ID = "whole-source-code-identity"
-Profile = Literal["fresh", "fresh_kr8", "legacy"]
+Profile = Literal["fresh", "fresh_kr8", "fresh_us14", "legacy"]
 
 # The only inventory. The final flag selects the pre-fresh legacy contract.
 _OWNER_SPECS = (
@@ -56,12 +56,18 @@ _KR8_OWNER_SPECS = (
     ("scripts/kis_current_fy1_owner.py", "kis_current_fy1_fper_owner", False),
     ("scripts/kis_exact_action_guard.py", "kis_exact_security_action_owner", False),
 )
+_US14_OWNER_SPECS = (
+    ('app/services/auxiliary_issuer_financial_owner.py', 'auxiliary_issuer_only', False),
+    ('scripts/us14_source_scope.py', 'us14_acquisition_scope', False),
+    ('scripts/us14_models.py', 'us14_model_and_capture_scope', False),
+    ('scripts/fresh_source_only_export.py', 'us14_source_only_export', False),
+)
 
 
 def _specs(profile):
-    if profile not in ("fresh", "fresh_kr8", "legacy"):
+    if profile not in ("fresh", "fresh_kr8", "fresh_us14", "legacy"):
         raise ValueError("whole_source_registry_profile_unknown")
-    specs = _OWNER_SPECS + (_KR8_OWNER_SPECS if profile == "fresh_kr8" else ())
+    specs = _OWNER_SPECS + (_KR8_OWNER_SPECS if profile == "fresh_kr8" else _US14_OWNER_SPECS if profile == 'fresh_us14' else ())
     return {path: role for path, role, legacy in specs if profile != "legacy" or legacy}
 
 
@@ -144,7 +150,7 @@ def verify_fresh_code_identity(root, *, metadata, code_sha256, authority_sha256,
 
 
 def replay_identity_receipt(root, *, seed, metadata, first, second):
-    profile = "fresh_kr8" if getattr(seed, "scope", None) == "KR8_ONLY" else "fresh"
+    profile = {'KR8_ONLY':'fresh_kr8', 'US14_ONLY':'fresh_us14'}.get(getattr(seed,'scope',None),'fresh')
     registry = verify_fresh_code_identity(root, metadata=metadata,
         code_sha256=seed.code_config_sha256, authority_sha256=seed.source_authority_contract_sha256, profile=profile)
     identities = dict(seed_registry_sha256=seed.code_config_sha256,

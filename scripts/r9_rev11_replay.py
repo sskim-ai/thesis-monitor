@@ -117,6 +117,30 @@ def stock_inputs(root, frozen, policy, outcome):
         official = read(root/'static/official-security-identity.json')
         inputs['SKHY']['financial_inputs']['issuer_business'] = dict(source_inputs=source_owner,
             official_identity=official, official_identity_sha256=digest(official), source_result_sha256=digest(assemble_financial(**source_owner)))
+    if frozen.get('scope') == 'US14_ONLY' and 'SKHY' in inputs:
+        from app.services.bounded_financial_stock_owner import replay_issuer_source
+        path = root/'financial/000660'
+        try:
+            receipts = read(path/'owner-receipts.json')
+            for receipt in receipts:
+                key = receipt['sealed_logical_id']
+                final = results[key]
+                if (receipt['sealed_generation_id'] != plan.run_id
+                        or receipt['sealed_final_receipt_sha256'] != final['receipt_sha256']):
+                    raise ValueError('auxiliary_sealed_receipt_mismatch')
+                if final['status'] == 'PASS':
+                    consume_bound_result(root=root/'dispatch', plan=sealed, logical_id=key,
+                        receipt_sha256=final['receipt_sha256'])
+            source_owner = dict(plan=frozen['candidate']['financial_plans']['000660'],
+                acquisition=read(path/'owner-acquisition.json'),receipts=receipts,directory=path,
+                field_semantics=True,dependency=frozen['candidate']['auxiliary_issuer_dependencies']['000660'])
+            target = inputs['SKHY']['financial_inputs']['plan']
+            source = replay_issuer_source(source_owner, target_plan=target)
+            official = read(root/'static/official-security-identity.json')
+            inputs['SKHY']['financial_inputs']['issuer_business'] = dict(source_inputs=source_owner,
+                official_identity=official,official_identity_sha256=digest(official),source_result_sha256=digest(source))
+        except (ValueError,KeyError,TypeError,OSError) as exc:
+            errors['SKHY:auxiliary:000660'] = dict(error_class=type(exc).__name__,reason=str(exc))
     return inputs, errors
 
 
@@ -219,8 +243,8 @@ def publication_inputs(root, frozen, outcome, policy):
     publications = dict(run_id=frozen['generation_id'], run_started_at=start, acquisition_cutoff=cutoff, as_of=start,
         providers={p: captured(root/'publications'/p, p) for p in
             (('ecos',) if frozen.get('scope') == 'KR8_ONLY' else ('fred', 'eia', 'ecos'))}, policy=policy)
-    if frozen.get('scope') == 'KR8_ONLY':
-        publications['market_scope'] = 'KR8_ONLY'
+    if frozen.get('scope') in {'KR8_ONLY','US14_ONLY'}:
+        publications['market_scope'] = frozen['scope']
     night_id = frozen['generation_id']+':night'
     probe = captured(root/'night/probe', 'krx_night_futures', night_id)
     history = captured(root/'night/history', 'krx_night_futures', night_id)
@@ -233,6 +257,9 @@ def publication_inputs(root, frozen, outcome, policy):
 
 
 def whole_inputs(root, frozen, outcome, policy):
+    if frozen.get('scope') == 'US14_ONLY':
+        from scripts.us14_source_scope import require_us14_plan
+        require_us14_plan(frozen)
     if frozen.get('scope') == 'KR8_ONLY':
         from scripts.kr8_source_scope import require_kr8_plan
         require_kr8_plan(frozen)
@@ -251,7 +278,7 @@ def whole_inputs(root, frozen, outcome, policy):
     context = publication_inputs(root, frozen, outcome, policy)
     pub, night = replay_fresh_publications(**context['publications']), replay_night(**context['night'])
     from app.services.latest_published_fx import display_receipt
-    fx = display_receipt(pub, frozen["sessions"]["kr"])
+    fx = display_receipt(pub, frozen['context_sessions']['kr_fx'] if frozen.get('scope')=='US14_ONLY' else frozen["sessions"]["kr"])
     rows = {t: assemble_fresh_stock(**i) for t, i in inputs.items()}
     event_errors = [t for t, row in rows.items()
                     if str(row.get("event_view", {}).get("binding", {}).get("denial") or "").startswith("event_owner_error:")]
@@ -264,13 +291,16 @@ def whole_inputs(root, frozen, outcome, policy):
     repo = Path(__file__).resolve().parents[1]
     inventory = read(repo/'docs/operations/UNIFIED_ACQUISITION_CLASSES.json')
     from app.services.whole_source_code_owner_registry import WholeSourceCodeOwnerRegistry
-    registry = WholeSourceCodeOwnerRegistry.freeze(repo, profile='fresh' if 'us' in universe else 'fresh_kr8')
+    registry = WholeSourceCodeOwnerRegistry.freeze(repo,
+        profile='fresh_us14' if frozen.get('scope')=='US14_ONLY' else 'fresh' if 'us' in universe else 'fresh_kr8')
     denials = dict(kr_market_investor_flows=dict(status='OPTIONAL_UNAVAILABLE', value=None,
         denial='NOT_SELECTED_FOR_MARKET_COMPOSITION', run_id=frozen['generation_id']))
     bridge = rows['SKHY']['issuer_business_bridge'] if 'us' in universe else {'status': 'NOT_APPLICABLE_KR8_ONLY'}
     bindings = {t: digest(dict(technical_plan=plan.model_dump(mode='json'),financial_plan=i['financial_inputs']['plan'])) for t,i in inputs.items()}
-    from app.services.unified_full_source_cohort import FreshKRSourceRunSeed
-    seed_type = FreshFullSourceRunSeed if 'us' in universe else FreshKRSourceRunSeed
+    from app.services.unified_full_source_cohort import FreshKRSourceRunSeed, FreshUSSourceRunSeed, auxiliary_issuer_binding
+    seed_type = FreshUSSourceRunSeed if frozen.get('scope')=='US14_ONLY' else FreshFullSourceRunSeed if 'us' in universe else FreshKRSourceRunSeed
+    auxiliary = {'auxiliary_issuer_set_sha256':digest(auxiliary_issuer_binding(
+        {t:dict(fresh_financial_binding=i) for t,i in inputs.items()}))} if seed_type is FreshUSSourceRunSeed else {}
     seed = seed_type(proof_mode='AD_HOC_LIVE_SOURCE_PROOF', packet_scope='LIVE_SOURCE_ADAPTER_PROOF_NOT_PRODUCTION_DECISION',
         parent_run_id=plan.run_id, started_at=plan.frozen_at, source_policy_sha256=digest(sorted(policy.allowed_providers)),
         inventory_sha256=digest(inventory), **registry.seed_bindings, universe_sha256=digest(universe),
@@ -279,7 +309,7 @@ def whole_inputs(root, frozen, outcome, policy):
         class_c_version_set_sha256=digest(versions), stock_cohort_hashes={m:digest({t:rows[t] for t in ts}) for m,ts in universe.items()},
         night_publication_receipt_sha256=digest(dict(probe=night['original_receipts'],history=night.get('history_receipts',[]))),
         optional_denial_set_sha256=digest(denials), skhy_issuer_bridge_sha256=digest(bridge),
-        fresh_stock_owner_set_sha256=digest(bindings))
+        fresh_stock_owner_set_sha256=digest(bindings), **auxiliary)
     args = dict(seed=seed, market_inputs=markets, stock_inputs={t:dict(fresh_financial_binding=i) for t,i in inputs.items()},
         authority_inputs={t:fresh_authority_inputs(rows[t],i) for t,i in inputs.items()}, version_set=versions,
         optional_denials=denials, issuer_bridge=bridge, composition_metadata=dict(inventory=inventory,

@@ -29,6 +29,10 @@ class FreshExecution(Execution):
     DETAILED_PRESENTATION = True
     # Match REV10 detailed capture; the older typed path expects legacy packets.
     TYPED_PRESENTATION = False
+    TIMEOUT_SECONDS = 1200
+    MAX_RETRIES = 0
+    ATTEMPT_BUDGET = 26
+    MESSAGE_COUNT = 24
 
     def freeze_extra(self):
         return {}
@@ -89,7 +93,7 @@ class FreshExecution(Execution):
         for stage, sha in self.stage_manifests.items():
             path=self.sealed/(stage+'-request-freeze.json')
             p.require(p.sha(path)==sha and p.manifest(self.requests/stage)==p.read(path)['files'], 'stage_request_drift')
-        p.require(sum(r['attempts'] for r in self.ledger)<=26, 'official_call_budget')
+        p.require(sum(r['attempts'] for r in self.ledger)<=self.ATTEMPT_BUDGET, 'official_call_budget')
 
     def prepare(self):
         from scripts.sealed_cohort_offline_proof import network_guard
@@ -138,7 +142,7 @@ class FreshExecution(Execution):
             stage_manifests=self.stage_manifests,initial_request_manifest_sha256=p.sha(self.sealed/'initial-requests.json'),
             host_context_sha256=p.sha(self.report/'host-context.json'),
             launch_contract_sha256=p.sha(launch.INSTRUCTION/'m12ds-launch-context-parity-contract.json'),
-            model='gpt-5.6-sol',effort='xhigh',timeout_seconds=1200,retries=0,fallback=0,judge=0,provider_refresh=0,
+            model='gpt-5.6-sol',effort='xhigh',timeout_seconds=self.TIMEOUT_SECONDS,retries=self.MAX_RETRIES,fallback=0,judge=0,provider_refresh=0,
             transport_policy='EXISTING_OFFICIAL_SHADOW_CONTRACT_UNCHANGED',max_calls=sum(self.CALL_LIMITS.values()),
             fresh_source_replay=receipt,independent_assessment_content_read=False,production_side_effects=0,
             **self.freeze_extra())
@@ -154,7 +158,7 @@ class FreshExecution(Execution):
         output=self.root/'messages'
         output.mkdir(exist_ok=False)
         captures={}
-        for market in ('us','kr'):
+        for market in self.MARKET_SCOPES:
             captures['MARKET_'+market.upper()]=replay_market(whole,market,self.markets[market])['capture']
         for ticker,stock in self.fresh_stocks.items():
             ep=DecisionEvidencePacket.model_validate(stock['evidence_packet'])
@@ -172,7 +176,7 @@ class FreshExecution(Execution):
             key=stock['market']+'-'+ticker
             captures[key]=asyncio.run(capture_payload(dict(type='stock_review',market=stock['market'],ticker=ticker,text=rendered.text,use_llm=False)))
             p.write(output/'bindings'/(key+'.json'),dict(plan=plan.model_dump(mode='json'),audit=audit))
-        p.require(len(captures)==24,'exact24_required')
+        p.require(len(captures)==self.MESSAGE_COUNT,'exact24_required' if self.MESSAGE_COUNT==24 else 'scoped_message_count_required')
         rows=[]
         for key,receipt in captures.items():
             p.require(receipt['production_sends']==0 and receipt['network_requests']==0,'delivery_not_disabled')
@@ -181,7 +185,7 @@ class FreshExecution(Execution):
             rows.append(dict(message=key,sha256=receipt['prepared_text_sha256']))
         (output/'ALL_MESSAGES.md').write_text('\n\n'.join('## '+k+'\n\n'+r['prepared_text'] for k,r in captures.items()))
         p.write(output/'manifest.json',dict(generation_id=self.gen,source_generation_id=self.source_gen,messages=rows,
-            total=24,source_sha256=digest(whole),production_sends=0))
+            total=self.MESSAGE_COUNT,source_sha256=digest(whole),production_sends=0))
 
 
 def main():

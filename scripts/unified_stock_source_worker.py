@@ -216,7 +216,7 @@ def acquire(plan, root, owner, settings):
             write(root / f"role-{ordinal:03d}.receipt.json", receipt)
             print(json.dumps({"logical": ordinal, "subject": entry["subject"],
                 "role": entry["role"], "status": receipt["status"], "pages": len(wire.pages)}), flush=True)
-        write(root / "transport-counts.json", {"logical_roles_attempted": 88,
+        write(root / "transport-counts.json", {"logical_roles_attempted": len(plan['reads']),
             "provider_data_requests": wire.data_calls, "auth_requests": wire.auth_calls,
             "external_transport_requests": wire.data_calls + wire.auth_calls,
             "automatic_retries": 0, "alpha_vantage_calls": 0, "massive_calls": 0,

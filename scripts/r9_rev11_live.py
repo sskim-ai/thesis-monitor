@@ -111,15 +111,22 @@ def freeze(args):
         raise ValueError('native_owner_not_ready')
     s = Settings(_env_file=args.operating/'.env')
     kr_only = getattr(args, 'kr_only', False)
-    selected = {'kr': UNIVERSE['kr']} if kr_only else UNIVERSE
+    us_only = getattr(args, 'us_only', False)
+    if kr_only and us_only:
+        raise ValueError('exclusive_stock_scope_required')
+    selected = {'us': UNIVERSE['us']} if us_only else {'kr': UNIVERSE['kr']} if kr_only else UNIVERSE
     config = credentials(s, native_valuation=args.provider_native_valuation, kr_only=kr_only)
     if not all(all(values) for values in config.values()):
         raise ValueError('configured_credential_missing')
     at = datetime.now(timezone.utc)
+    if us_only:
+        from app.services.market_session import us_market_session
+        if us_market_session(at).latest_completed_regular_session_date.isoformat() != args.target_completed_session:
+            raise ValueError('us14_target_completed_session_mismatch')
     db = args.operating/'data/thesis_monitor.sqlite3'
     universe = current_universe(db,at)
-    if kr_only:
-        universe = {'kr': universe['kr']}
+    if kr_only or us_only:
+        universe = {m:universe[m] for m in selected}
     def connect():
         conn=sqlite3.connect(f'{db.as_uri()}?mode=ro',uri=True)
         conn.execute('PRAGMA query_only=ON')
@@ -134,14 +141,18 @@ def freeze(args):
             for role,(period,adjusted) in ROLES.items()}
     from sqlmodel import select
     with Session(engine) as session:
-        records=[r.model_dump(mode='json') for r in session.exec(select(SecurityMaster)).all()
-                 if r.ticker in {t for ts in selected.values() for t in ts}]
+        all_records=[r.model_dump(mode='json') for r in session.exec(select(SecurityMaster)).all()]
+        records=[r for r in all_records
+                 if r['ticker'] in {t for ts in selected.values() for t in ts}]
+        auxiliary = [r for r in all_records if r['ticker']=='000660'] if us_only else []
+        if us_only and len(auxiliary)!=1:
+            raise ValueError('us14_auxiliary_identity_missing_or_ambiguous')
         identities={r['ticker']:r for r in records}
         run=args.generation_prefix+'-'+at.strftime('%Y%m%dT%H%M%SZ')
         stock=StockPlan(run_id=run,acquisition_id=run+':stock',frozen_at=at,
-            contract='one-shot-kr8-source-acquisition-v1' if kr_only else 'one-shot-stock-source-acquisition-v1',
+            contract='one-shot-us14-source-acquisition-v1' if us_only else 'one-shot-kr8-source-acquisition-v1' if kr_only else 'one-shot-stock-source-acquisition-v1',
             instruction_sha=git('rev-parse',args.instruction_ref),implementation_sha=head,universe_sha256=digest(universe),
-            reads=make_reads(universe,identities,at=at,counts=counts,kr_only=kr_only),
+            reads=make_reads(universe,identities,at=at,counts=counts,kr_only=kr_only,us_only=us_only),
             **{k:native[k] for k in ('owner_head','owner_files','settings_sha256','request_environment_sha256')})
         for market in selected:
             local=project_local_seed(session,market=market,session_key=next(r.latest_completed_session for r in stock.reads if r.market==market),cutoff=at,policy=POLICY)
@@ -151,12 +162,15 @@ def freeze(args):
     valuation_markets, valuation_official, routing_reference = None, {}, None
     if args.provider_native_valuation:
         from app.services.provider_native_valuation_acquisition import routing_markets
-        if args.valuation_listing_reference is None:
+        if args.valuation_listing_reference is None and not us_only:
             raise ValueError('valuation_listing_routing_reference_required')
-        reference_raw = args.valuation_listing_reference.read_bytes()
-        valuation_markets = routing_markets(identities, listing_rows=json.loads(reference_raw)['list'])
-        routing_reference = dict(sha256=sha256_bytes(reference_raw), market_types=valuation_markets,
-            role='ROUTING_REFERENCE_ONLY_CURRENT_IDENTITY_REQUIRES_FRESH_LIST', mutable_current_values_reused=False)
+        if us_only:
+            valuation_markets = routing_markets(identities, listing_rows=[])
+        else:
+            reference_raw = args.valuation_listing_reference.read_bytes()
+            valuation_markets = routing_markets(identities, listing_rows=json.loads(reference_raw)['list'])
+            routing_reference = dict(sha256=sha256_bytes(reference_raw), market_types=valuation_markets,
+                role='ROUTING_REFERENCE_ONLY_CURRENT_IDENTITY_REQUIRES_FRESH_LIST', mutable_current_values_reused=False)
         with connect() as connection:
             for ticker in identities:
                 cached = connection.execute('SELECT payload FROM providerresponsecache WHERE ticker=? '
@@ -171,7 +185,9 @@ def freeze(args):
     hashes={k:digest(v) for k,v in config.items()}
     result=compile_plan(stock=stock,identities=identities,news_reads=news,config_identities=hashes,
         rev10_receipt=root_receipt,configured_kr_pages=s.kiwoom_rest_max_pages,kr_post_acquisition_completeness_approved=True,
-        exact_financial_owner=args.exact_financial_owner, valuation_market_types=valuation_markets)
+        exact_financial_owner=args.exact_financial_owner, valuation_market_types=valuation_markets,
+        auxiliary_security=auxiliary[0] if us_only else None,
+        auxiliary_identity_sha256=digest(official) if us_only else None)
     plan=result.pop('plan')
     admission=plan.admission(rev10_receipt=root_receipt,owners=result['owners'],config_identities=hashes,
         credential_presence={k:all(v) for k,v in config.items()})
@@ -197,6 +213,12 @@ def freeze(args):
         from scripts.kr8_source_scope import require_kr8_plan
         frozen['scope'] = 'KR8_ONLY'
         require_kr8_plan(frozen)
+    if us_only:
+        from scripts.us14_source_scope import require_us14_plan
+        from app.services.market_session import korea_market_session
+        frozen['scope'] = 'US14_ONLY'
+        frozen['context_sessions'] = {'kr_fx':korea_market_session(at).latest_completed_regular_session_date.isoformat()}
+        require_us14_plan(frozen)
     durable_json(args.output/'r9-rev11-final-provider-plan.json',frozen,exclusive=True)
     durable_json(args.output/'r9-rev11-provider-role-coverage.json',result['role_coverage'],exclusive=True)
     durable_json(args.output/'preflight.json',dict(admission,implementation=head,final_plan_sha256=digest(frozen)),exclusive=True)
@@ -211,6 +233,8 @@ def main():
     p.add_argument('--exact-financial-owner', action='store_true')
     p.add_argument('--provider-native-valuation', action='store_true')
     p.add_argument('--kr-only', action='store_true')
+    p.add_argument('--us-only', action='store_true')
+    p.add_argument('--target-completed-session')
     p.add_argument('--valuation-listing-reference', type=Path)
     for name in ('output','operating','native-owner','validation','rev10-receipt'):
         p.add_argument('--'+name,type=Path,required=True)
@@ -231,6 +255,14 @@ def main():
                 raise SourceSafetyStop('frozen_static_input_drift')
     guard()
     if args.mode=='acquire':
+        if frozen.get('scope') == 'US14_ONLY':
+            from app.services.market_session import us_market_session
+            from scripts.us14_source_scope import require_us14_plan
+            require_us14_plan(frozen)
+            now = datetime.now(timezone.utc)
+            if (us_market_session(now).latest_completed_regular_session_date.isoformat() != frozen['sessions']['us']
+                    or now.astimezone(ZoneInfo('Asia/Seoul')).date().isoformat() != frozen['query_kst_date']):
+                raise SourceSafetyStop('us14_acquisition_target_session_drift')
         require_disk_capacity(args.output, source_disk_minimum(
             kr_only=frozen.get('scope') == 'KR8_ONLY', native_valuation=frozen.get('provider_native_valuation')))
         s=Settings(_env_file=args.operating/'.env')

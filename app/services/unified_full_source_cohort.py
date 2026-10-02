@@ -80,12 +80,49 @@ class FreshKRSourceRunSeed(FreshFullSourceRunSeed):
         return {"kr": UNIVERSE["kr"]}
 
 
+class FreshUSSourceRunSeed(FreshFullSourceRunSeed):
+    scope: Literal['US14_ONLY'] = 'US14_ONLY'
+    topology: Literal['US14_WITH_DECLARED_AUXILIARY_ISSUER_V1'] = 'US14_WITH_DECLARED_AUXILIARY_ISSUER_V1'
+    auxiliary_issuer_set_sha256: str
+
+    @property
+    def universe(self):
+        return {'us':UNIVERSE['us']}
+
+
+def auxiliary_issuer_binding(stock_inputs):
+    from app.services.bounded_financial_stock_owner import replay_issuer_source
+    target = stock_inputs['SKHY']['fresh_financial_binding']['financial_inputs']
+    bridge = target.get('issuer_business')
+    if not bridge or 'dependency' not in bridge['source_inputs']:
+        raise ValueError('us14_exact_auxiliary_dependency_required')
+    source = replay_issuer_source(bridge['source_inputs'], target_plan=target['plan'])
+    if source['status'] != 'PASS' or digest(source) != bridge['source_result_sha256']:
+        raise ValueError('us14_auxiliary_source_owner_mismatch')
+    if any(t!='SKHY' and 'issuer_business' in i['fresh_financial_binding']['financial_inputs']
+           for t,i in stock_inputs.items()):
+        raise ValueError('us14_undeclared_auxiliary_dependency')
+    return {'000660':source}
+
+
 def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
                         authority_inputs, version_set, optional_denials, issuer_bridge,
                         publication_inputs=None, night_inputs=None, composition_metadata=None,
                         fresh_context_inputs=None):
     """All external artifact resolvers are already owned by compose_attempt."""
     universe = seed.universe
+    auxiliary = None
+    if isinstance(seed, FreshUSSourceRunSeed):
+        if fresh_context_inputs is None or fresh_context_inputs['publications'].get('market_scope') != 'US14_ONLY':
+            raise ValueError('us14_publication_scope_required')
+        if set(stock_inputs) != set(UNIVERSE['us']):
+            raise ValueError('us14_exact_primary_subjects_required')
+        if any(i['fresh_financial_binding']['technical_inputs']['plan'].universe != seed.universe
+               for i in stock_inputs.values()):
+            raise ValueError('us14_primary_stock_plan_scope_mismatch')
+        auxiliary = auxiliary_issuer_binding(stock_inputs)
+        if digest(auxiliary) != seed.auxiliary_issuer_set_sha256:
+            raise ValueError('us14_auxiliary_seed_binding_mismatch')
     if isinstance(seed, FreshKRSourceRunSeed):
         if fresh_context_inputs is None or fresh_context_inputs['publications'].get('market_scope') != 'KR8_ONLY':
             raise ValueError('kr8_publication_scope_required')
@@ -116,7 +153,8 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
         if isinstance(seed, FreshFullSourceRunSeed):
             verify_fresh_code_identity(root, metadata=composition_metadata,
                 code_sha256=seed.code_config_sha256, authority_sha256=seed.source_authority_contract_sha256,
-                profile="fresh_kr8" if isinstance(seed, FreshKRSourceRunSeed) else "fresh")
+                profile="fresh_us14" if isinstance(seed, FreshUSSourceRunSeed) else
+                        "fresh_kr8" if isinstance(seed, FreshKRSourceRunSeed) else "fresh")
         else:
             legacy = WholeSourceCodeOwnerRegistry.freeze(root, profile="legacy")
             if (code != legacy.fingerprints or digest(code) != seed.code_config_sha256
@@ -262,6 +300,8 @@ def compose_full_source(*, seed: FullSourceRunSeed, market_inputs, stock_inputs,
         "markets": markets, "stocks": authorities, "issuer_bridge": issuer_bridge,
         "class_c": version_set, "optional_denials": optional_denials,
         "persisted_business_events": persisted_events, "publication_context": publications, "night": night}
+    if auxiliary is not None:
+        graph['auxiliary_issuers'] = auxiliary
     if composition_metadata is not None:
         graph["source_contract"] = composition_metadata
     output = {m: {"run_seed_sha256": seed.sha256, "market": m,

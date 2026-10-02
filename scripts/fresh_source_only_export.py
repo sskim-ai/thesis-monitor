@@ -202,13 +202,32 @@ def source_only_market(packet, *, generation_id):
 
 
 def project_cohort(whole, *, generation_id, whole_source_sha256):
-    if digest(whole) != whole_source_sha256 or set(whole['packets']) != set(UNIVERSE):
+    return _project_cohort(whole, generation_id=generation_id,
+        whole_source_sha256=whole_source_sha256, universe=UNIVERSE)
+
+
+def project_us14_cohort(whole, *, generation_id, whole_source_sha256):
+    from app.services.unified_full_source_cohort import FreshUSSourceRunSeed
+    seed = FreshUSSourceRunSeed.model_validate(whole['seed'])
+    if seed.parent_run_id != generation_id:
+        raise ValueError('source_only_us14_generation_mismatch')
+    auxiliary = whole['authority_graph'].get('auxiliary_issuers')
+    if not auxiliary or set(auxiliary) != {'000660'} or digest(auxiliary) != seed.auxiliary_issuer_set_sha256:
+        raise ValueError('source_only_us14_auxiliary_binding_mismatch')
+    result = _project_cohort(whole, generation_id=generation_id,
+        whole_source_sha256=whole_source_sha256, universe=seed.universe)
+    result['audit'].update(scope='US14_ONLY', auxiliary_issuer_set_sha256=seed.auxiliary_issuer_set_sha256)
+    return result
+
+
+def _project_cohort(whole, *, generation_id, whole_source_sha256, universe):
+    if digest(whole) != whole_source_sha256 or set(whole['packets']) != set(universe):
         raise ValueError('source_only_whole_identity_mismatch')
-    expected = {t for ts in UNIVERSE.values() for t in ts}
+    expected = {t for ts in universe.values() for t in ts}
     if set(whole['authority_graph']['stocks']) != expected:
         raise ValueError('source_only_authority_roster_mismatch')
     stocks, markets, rows = {}, {}, []
-    for market, tickers in UNIVERSE.items():
+    for market, tickers in universe.items():
         packet = whole['packets'][market]
         if packet['market'] != market or set(packet['stocks']) != set(tickers):
             raise ValueError('source_only_exact_roster_required')

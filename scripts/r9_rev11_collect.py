@@ -65,6 +65,9 @@ async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guar
     if kr_only:
         from scripts.kr8_source_scope import require_kr8_plan
         require_kr8_plan(frozen)
+    if frozen.get('scope') == 'US14_ONLY':
+        from scripts.us14_source_scope import require_us14_plan
+        require_us14_plan(frozen)
     durable_json(root / 'live-dispatch-once.json', {'started_at': now().isoformat(),
         'plan_sha256': dispatcher.plan.plan_sha256}, exclusive=True)
     sealed = SealedSourceTransport(dispatcher, inner, providers={d.provider for d in dispatcher.plan.descriptors})
@@ -222,7 +225,8 @@ async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guar
         if not kr_only:
             await phase('us-market', us_market)
         await phase('stock-native-replay', lambda: bridge.command({'replay-stocks': True}))
-        await phase('kr-market', kr_market)
+        if frozen.get('scope') != 'US14_ONLY':
+            await phase('kr-market', kr_market)
         for ticker, plan in frozen['candidate']['financial_plans'].items():
             await phase('financial-'+ticker, lambda t=ticker, p=plan: financial(t, p))
         for name in (('ecos',) if kr_only else PROVIDERS):

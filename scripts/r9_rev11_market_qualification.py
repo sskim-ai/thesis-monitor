@@ -37,7 +37,8 @@ def check_projection(projected, market, publications=None):
 
 def qualify_markets(whole):
     result = {}
-    expected = {'kr'} if whole['seed'].get('scope') == 'KR8_ONLY' else {'us','kr'}
+    scope = whole['seed'].get('scope')
+    expected = {'us'} if scope == 'US14_ONLY' else {'kr'} if scope == 'KR8_ONLY' else {'us','kr'}
     if set(whole['packets']) != expected:
         raise ValueError('market_qualification_scope_mismatch')
     for market in sorted(expected):

@@ -84,7 +84,7 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
                 raise ValueError('fresh_bridge_source_receipt_predates_generation')
             if window is not None and end > window.business_availability_cutoff:
                 raise ValueError('bridge_response_after_business_availability')
-        source_result = financial.assemble(**source_inputs)
+        source_result = financial.replay_issuer_source(source_inputs, target_plan=fp)
         projection = source_result['projection']
         source_ticker = source_inputs['plan']['ticker']
     else:
