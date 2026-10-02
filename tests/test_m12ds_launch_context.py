@@ -14,6 +14,8 @@ from scripts.m12ds_same_blind_reproof import Reproof
 
 PORTABLE_BASELINE = Path(__file__).resolve().parents[1] / "docs/architecture/M12DS_R5_PORTABLE_HISTORICAL_BASELINES.json"
 REVIEWED_ATTESTATION_SHA256 = "ae8d685c86913f39e85c1bdf0ee03b925dfa45b75218fb8f5e8a692e02232efc"
+TRANSPORT_AMENDMENT = PORTABLE_BASELINE.with_name('REV47_APPROVED_TRANSPORT_POLICY_AMENDMENT.json')
+REVIEWED_AMENDMENT_SHA256 = 'b9b3b324247c277c4a870e9485eba808d9a7c52c713e3efb869eeef5e86166cc'
 
 
 def portable_baseline(payload=None):
@@ -51,6 +53,25 @@ def assert_runner_semantics(source, baseline):
 
 def assert_transport_bytes(payload, baseline):
     assert sha256(payload).hexdigest() == baseline["reviewed_root_file_sha256"], "transport_bytes"
+
+
+def current_transport_baseline(payload=None):
+    baseline = portable_baseline()['transport']
+    raw = TRANSPORT_AMENDMENT.read_bytes() if payload is None else payload
+    assert sha256(raw).hexdigest() == REVIEWED_AMENDMENT_SHA256, 'transport_amendment_identity'
+    amendment = json.loads(raw)
+    assert amendment['legacy_attestation_sha256'] == REVIEWED_ATTESTATION_SHA256
+    assert amendment['path'] == baseline['path']
+    assert amendment['legacy_file_sha256'] == baseline['reviewed_root_file_sha256']
+    assert sha256((previous.REPO/amendment['authorization_path']).read_bytes()).hexdigest() == amendment['authorization_sha256']
+    for commit, path, expected in (
+        (amendment['authorization_commit'], amendment['authorization_path'], amendment['authorization_sha256']),
+        (amendment['implementation_commit'], amendment['path'], amendment['approved_file_sha256']),
+    ):
+        subprocess.check_call(['git','merge-base','--is-ancestor',commit,'HEAD'],cwd=previous.REPO)
+        source = subprocess.check_output(['git','show',commit+':'+path],cwd=previous.REPO)
+        assert sha256(source).hexdigest() == expected, 'transport_amendment_provenance'
+    return {**baseline, 'reviewed_root_file_sha256': amendment['approved_file_sha256']}
 
 
 @pytest.mark.parametrize("message,kind", [
@@ -118,8 +139,8 @@ def test_runner_hook_preserves_all_financial_semantic_methods():
     assert "authority_core_schema" not in Reproof.__dict__
 
 
-def test_original_child_transport_byte_identity():
-    baseline = portable_baseline()["transport"]
+def test_reviewed_child_transport_byte_identity_with_authorized_policy_amendment():
+    baseline = current_transport_baseline()
     assert baseline["path"] == launch.HELPER
     assert_transport_bytes((previous.REPO / launch.HELPER).read_bytes(), baseline)
     assert "read-only" in previous.transport.COMMAND_PREFIX
@@ -153,10 +174,40 @@ def test_portable_runner_keeps_original_unprotected_scope():
 
 
 def test_portable_transport_detects_one_byte_mutation():
-    baseline = portable_baseline()["transport"]
+    baseline = current_transport_baseline()
     raw = (previous.REPO / baseline["path"]).read_bytes()
     with pytest.raises(AssertionError, match="transport_bytes"):
         assert_transport_bytes(raw + b" ", baseline)
+
+
+@pytest.mark.parametrize('key', ['approved_file_sha256','legacy_file_sha256','authorization_sha256',
+    'authorization_commit','implementation_commit','path'])
+def test_transport_amendment_cannot_self_authorize_a_changed_hash(key):
+    amendment = json.loads(TRANSPORT_AMENDMENT.read_bytes())
+    amendment[key] = 'unapproved'
+    with pytest.raises(AssertionError, match='transport_amendment_identity'):
+        current_transport_baseline(json.dumps(amendment).encode())
+
+
+def test_transport_policy_amendment_preserves_auth_and_event_boundary_owners():
+    baseline = portable_baseline()
+    path = baseline['transport']['path']
+    old = subprocess.check_output(['git','show',baseline['clean_root_sha']+':'+path],cwd=previous.REPO).decode()
+    new = (previous.REPO/path).read_text()
+    def owners(source):
+        result = {}
+        for node in ast.parse(source).body:
+            if isinstance(node, (ast.FunctionDef, ast.ClassDef)):
+                result[node.name] = ast.dump(node, include_attributes=False)
+            elif isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if isinstance(target, ast.Name):
+                        result[target.id] = ast.dump(node, include_attributes=False)
+        return result
+    before, after = owners(old), owners(new)
+    for name in ('validate_binding','classify_input_events','OfficialCodexBinding',
+                 'CONFIG_CONTROLS','COMMAND_PREFIX','OVERRIDE_VARIABLES'):
+        assert before[name] == after[name], name
 
 
 @pytest.mark.parametrize("case", ["malformed", "root", "tree", "hash", "fingerprint", "owner", "path"])

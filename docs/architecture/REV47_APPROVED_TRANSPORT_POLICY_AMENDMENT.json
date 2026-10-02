@@ -1,0 +1,14 @@
+{
+  "contract": "reviewed-official-transport-policy-amendment-v1",
+  "legacy_attestation_sha256": "ae8d685c86913f39e85c1bdf0ee03b925dfa45b75218fb8f5e8a692e02232efc",
+  "path": "app/services/official_codex_shadow_transport_service.py",
+  "legacy_file_sha256": "16ceba30b662be5055e430614c45bdf1e0c5f4d3bf2881fb437fb5abe24a6eb4",
+  "approved_file_sha256": "1960937effd4cf31efc251ca9e3f3e24b0f4bf947b8de22f7e1260d562865173",
+  "authorization_path": "docs/work-instructions/20261002-rev47-ten-minute-execution-clarification.md",
+  "authorization_sha256": "7cd9f121dfdec15f35827ed2fe695bbf0cc493694207a3c3bf8822441d33fadd",
+  "authorization_commit": "7a62463c6ac89f591d546cf8a66baf7c96055f3b",
+  "implementation_commit": "ca965e75bf3fc3bf1879de06d2247223d6605d2a",
+  "scope": "Explicit request-bound execution policy; legacy 1200/26/0 remains default; US14 600/16/2 and KR8 600/10/2 are opt-in.",
+  "unchanged": ["official executable and auth qualification", "sol/xhigh", "tool controls", "input hashes and layout", "exclusive output", "single transport attempt", "financial semantics", "production default path"],
+  "historical_attestation_mutated": false
+}
