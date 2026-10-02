@@ -54,7 +54,8 @@ and transport retries are zero. CORZ was not called again.
 `scripts/completed_close_capture.py` durably retains market response bytes and
 their hash before parser or scanner execution. It accepts string/byte secrets,
 records sanitized failures, forbids overwrites and does not authorize provider
-retries after a response. It has no network transport and no production imports.
+retries after a response. It has no network transport and is not imported by the
+production runtime.
 
 Focused capture/legacy-price tests: 36 passed. Knowledge tests: 2 passed.
 Repository Ruff and Investment Knowledge check passed. Full pytest and the
