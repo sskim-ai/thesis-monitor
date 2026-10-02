@@ -99,4 +99,3 @@ Telegram/recipient intent/DB writes/warning/scheduler/notification/broker action
 결과는 비밀값 검사 후 ZIP 1개와 SHA 1개로 봉인합니다. iCloud Drive 루트와
 Thesis Monitor 폴더에 복사하고 destination hash 및 파일별 업로드 완료를 확인합니다.
 클라우드 전달 결과는 로컬 `icloud-delivery.json`에 별도 기록합니다.
-
