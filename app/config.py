@@ -7,6 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    newbuyer_qualified_valuation_shadow: bool = False
     app_env: str = "local"
     data_dir: str = "./data"
     database_url: str = "sqlite:///./data/thesis_monitor.sqlite3"

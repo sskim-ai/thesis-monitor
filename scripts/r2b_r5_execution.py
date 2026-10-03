@@ -85,6 +85,16 @@ class Execution(OfficialLaunch):
     def valuation_context(self, ticker):
         return None
 
+    def newbuyer_shadow_requests(self, settings):
+        """Explicit artifact-only entry point; never part of run()/delivery."""
+        if not settings.newbuyer_qualified_valuation_shadow:
+            return {}
+        from scripts.newbuyer_b2_shadow import build_request
+        return {ticker: build_request(settings=settings, context=self.bctx[ticker],
+                    accepted=accepted, core=self.cores[ticker], pass_a=self.arows[ticker],
+                    source_generation_id=self.source_gen)
+                for ticker, accepted in self.brows.items()}
+
     def freeze_stage(self, stage, requests):
         path = self.sealed/(stage+'-request-freeze.json')
         p.require(not path.exists(), 'stage_already_frozen')
