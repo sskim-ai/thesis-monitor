@@ -1,0 +1,97 @@
+{
+  "type": "object",
+  "properties": {
+    "new_buyer_shadow": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "contract": {
+              "const": "newbuyer-qualified-valuation-context-v1"
+            },
+            "input_sha256": {
+              "const": "160498b2972ec494312328dcb565ccffde6886c93e88ddfd033af4ecb65cb442"
+            },
+            "decision_path": {
+              "const": "ACTIVE_RISK"
+            },
+            "valuation_context": {
+              "type": "object",
+              "properties": {
+                "state": {
+                  "const": "UNRESOLVED"
+                },
+                "authority": {
+                  "const": "NOT_RESOLVED"
+                },
+                "reason_class": {
+                  "const": "JUDGMENT_NOT_RESOLVED"
+                },
+                "valuation_evidence_refs": {
+                  "const": []
+                },
+                "business_evidence_refs": {
+                  "const": []
+                },
+                "relation_refs": {
+                  "const": []
+                }
+              },
+              "required": [
+                "state",
+                "authority",
+                "reason_class",
+                "valuation_evidence_refs",
+                "business_evidence_refs",
+                "relation_refs"
+              ],
+              "additionalProperties": false
+            },
+            "timing_context": {
+              "const": {
+                "state": "UNRESOLVED",
+                "relation": "UNRESOLVED",
+                "selected": "UNRESOLVED",
+                "evidence_refs": [],
+                "reason": "NO_ELIGIBLE_SELECTED_CANDIDATE",
+                "kind": "TACTICAL_NOT_FAIR_VALUE"
+              }
+            },
+            "new_buyer": {
+              "const": "AVOID"
+            },
+            "reason_class": {
+              "const": "ACTIVE_ADVERSE_UNCOMPENSATED"
+            },
+            "reason_evidence_refs": {
+              "const": [
+                "maturity-claim:28e4943373d0af4641b0d5103db7dbd7f7d741aa39dadc14362194bb8a38f0c0"
+              ]
+            },
+            "active_risk_refs": {
+              "const": [
+                "maturity-claim:28e4943373d0af4641b0d5103db7dbd7f7d741aa39dadc14362194bb8a38f0c0"
+              ]
+            }
+          },
+          "required": [
+            "contract",
+            "input_sha256",
+            "decision_path",
+            "valuation_context",
+            "timing_context",
+            "new_buyer",
+            "reason_class",
+            "reason_evidence_refs",
+            "active_risk_refs"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "required": [
+    "new_buyer_shadow"
+  ],
+  "additionalProperties": false
+}
