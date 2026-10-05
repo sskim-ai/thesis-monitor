@@ -7,6 +7,15 @@ contracts are unchanged. It must not be confused with a completed live blind run
 
 ## Ownership
 
+REV59C binds an explicit request scope and market into the plan, canonical
+envelope, detached authorization, and output seal. Only the registered `MARKET`
+stage is `MARKET_SCOPED`; its native US/KR contract requires `subjects=[]`.
+Its payload's uppercase market must match the envelope. US and KR native
+capture contracts and their committed code hashes are frozen independently of
+the unchanged native payload. A fake Market ticker is rejected. Every other
+stage remains `SUBJECT_SCOPED`, requiring nonempty exact subjects. No default
+scope or empty-subject compatibility fallback exists.
+
 - Canonical requests use the existing UTF-8 sorted JSON serializer. Identity
   includes payload SHA, serialization version, logical ID, generation, stage,
   subjects/batch, exact context refs and prompt/schema/policy hashes. Tuple and
@@ -77,3 +86,11 @@ explicitly synthetic. No official state, source provider or model is accessed.
 The test suite includes all 20 required control classes and additional identity,
 retry, raw-first, causal-order, view and mutation checks. The proof is not an
 automatic authorization to run the next REV59 or to promote production.
+
+`python -B -m scripts.strict_blind_native_market_proof NEW_DIRECTORY` adds the
+actual US14/KR8 capture paths, native prompt/schema and native semantic validator
+to a complete synthetic lifecycle. Both Market requests preserve native bytes,
+authorize detached tuple/list representations, persist simulated raw bytes
+before validation, and seal both outputs before Core can start. Source, response
+and host fixtures are invented; no live auth, market, or economic qualification
+is claimed. Existing host, retry, resume, isolation and reveal negatives still run.

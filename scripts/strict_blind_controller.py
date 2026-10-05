@@ -25,6 +25,12 @@ STATES = (
     "B2_REQUESTS_SEALED", "B2_EXECUTION", "B2_OUTPUTS_SEALED", "REVEAL_COMPARISON", "COMPLETE",
 )
 MODEL_STAGES = ("BLIND", "MARKET", "CORE", "A", "B", "B2")
+MARKET_CONTRACTS = {"US": "US14_NATIVE_MARKET_CAPTURE", "KR": "KR8_NATIVE_MARKET_CAPTURE"}
+NATIVE_MARKET_FILES = (
+    "us14_models.py", "rev46_kr_models.py", "kr8_fy1_models.py", "r9_rev11_models.py",
+    "m12ds_r2_shadow_reproof.py", "m12ds_r4_r4_market.py", "m12ds_r4_r1_market.py",
+    "m12ds_r3_market.py", "m12ds_r2_market.py",
+)
 AUTHORITIES = frozenset({"blind_rubric", "blind_schema", "blind_prompt", "comparison",
     "acceptance", "blind_controller_policy", "monitoring_controller_policy",
     "execution_plan", "source_dag"})
@@ -36,6 +42,11 @@ AI_KINDS = frozenset({"source", "owner", "upstream", "ai_contract", "ai_request_
 class Mode(StrEnum):
     CLEAN_START = "CLEAN_START"
     RESUME = "RESUME_AFTER_RETRYABLE_EXECUTION_FAILURE"
+
+
+class RequestScope(StrEnum):
+    MARKET = "MARKET_SCOPED"
+    SUBJECT = "SUBJECT_SCOPED"
 
 
 class ControllerError(ValueError):
@@ -61,11 +72,30 @@ def canonical(value):
     return json.loads(encoded(value))
 
 
-def request_identity(*, generation, stage, logical_id, subjects, batch, payload,
+def validate_scope(*, stage, scope, market, subjects, native_market_contract):
+    require(stage in MODEL_STAGES and market in MARKET_CONTRACTS, "REQUEST_SCOPE_OR_MARKET_GAP")
+    require(isinstance(subjects, (list, tuple)), "SUBJECT_SEQUENCE_REQUIRED")
+    if stage == "MARKET":
+        require(scope == RequestScope.MARKET and not subjects, "MARKET_SCOPE_OR_FAKE_SUBJECT")
+        require(native_market_contract == MARKET_CONTRACTS[market], "NATIVE_MARKET_CONTRACT_MISMATCH")
+    else:
+        require(scope == RequestScope.SUBJECT and subjects and native_market_contract is None,
+                "SUBJECT_SCOPE_REQUIRED")
+        require(all(isinstance(t, str) and t for t in subjects)
+                and len(set(subjects)) == len(subjects), "SUBJECT_IDENTITY_GAP")
+
+
+def request_identity(*, generation, stage, scope, market, native_market_contract,
+                     logical_id, subjects, batch, payload,
                      prompt_sha256, schema_sha256, policy_sha256, context_refs):
-    require(stage in MODEL_STAGES and generation and logical_id and subjects,
+    require(stage in MODEL_STAGES and generation and logical_id,
             "REQUEST_IDENTITY_INCOMPLETE")
+    validate_scope(stage=stage, scope=scope, market=market, subjects=subjects,
+                   native_market_contract=native_market_contract)
+    if stage == "MARKET":
+        require(payload.get("input", {}).get("market") == market, "MARKET_PAYLOAD_IDENTITY_MISMATCH")
     value = canonical(dict(serialization=SERIALIZATION, generation=generation, stage=stage,
+        scope=scope, market=market, native_market_contract=native_market_contract,
         logical_id=logical_id, subjects=subjects, batch=batch, payload=payload,
         request_sha256=sha256_bytes(encoded(payload)), prompt_sha256=prompt_sha256,
         schema_sha256=schema_sha256, policy_sha256=policy_sha256, context_refs=context_refs))
@@ -111,11 +141,14 @@ class StrictBlindController:
                 and all(isinstance(v, int) and v > 0 for v in plan["caps"].values()),
                 "PHYSICAL_CAP_REQUIRED")
         ids = []
-        for slots in plan["stages"].values():
+        for stage, slots in plan["stages"].items():
             require(bool(slots), "EMPTY_STAGE_PLAN")
             for slot in slots:
-                require(set(slot) == {"logical_id", "subjects", "batch"} and slot["subjects"],
+                require(set(slot) == {"logical_id", "subjects", "batch", "scope", "market",
+                                     "native_market_contract"},
                         "TICKER_EXCEPTION_OR_SLOT_GAP")
+                validate_scope(stage=stage, **{k: slot[k] for k in
+                    ("scope", "market", "subjects", "native_market_contract")})
                 ids.append(slot["logical_id"])
         require(len(ids) == len(set(ids)), "DUPLICATE_LOGICAL_ID")
         require(plan["source_slots"] and len(set(plan["source_slots"])) == len(plan["source_slots"]),
@@ -123,7 +156,8 @@ class StrictBlindController:
         require(set(declared_host_transitions) <= native.ALLOWED_TRANSITION,
                 "DENIED_HOST_TRANSITION")
         require(bool(code_files) and bool(host_preparation), "PREPARATION_PROVENANCE_MISSING")
-        frozen_files = [*code_files, __file__, native.__file__, failure.__file__]
+        frozen_files = [*code_files, __file__, native.__file__, failure.__file__,
+                        *(Path(__file__).with_name(name) for name in NATIVE_MARKET_FILES)]
         files = {str(Path(p).resolve()): sha256_bytes(Path(p).read_bytes()) for p in frozen_files}
         value = dict(generation=generation, plan=plan, code=files, offline=offline,
             serialization=SERIALIZATION, host_preparation=canonical(host_preparation),
@@ -370,6 +404,7 @@ class StrictBlindController:
         slot = self.contract["plan"]["stages"][stage][slot_index]
         policy = "blind_controller_policy" if stage == "BLIND" else "monitoring_controller_policy"
         return request_identity(generation=self.generation, stage=stage,
+            scope=slot["scope"], market=slot["market"], native_market_contract=slot["native_market_contract"],
             logical_id=slot["logical_id"], subjects=slot["subjects"], batch=slot["batch"], payload=payload,
             prompt_sha256=digest(payload["prompt"]), schema_sha256=digest(payload["response_schema"]),
             policy_sha256=self.data["artifacts"][policy]["sha256"],
@@ -415,6 +450,11 @@ class StrictBlindController:
     def _check_request(self, request, stage):
         require(request["generation"] == self.generation and request["stage"] == stage,
                 "REQUEST_GENERATION_OR_STAGE_MISMATCH")
+        validate_scope(stage=stage, **{k: request.get(k) for k in
+            ("scope", "market", "subjects", "native_market_contract")})
+        if stage == "MARKET":
+            require(request["payload"].get("input", {}).get("market") == request["market"],
+                    "MARKET_PAYLOAD_IDENTITY_MISMATCH")
         require(request["serialization"] == SERIALIZATION
                 and request["request_sha256"] == sha256_bytes(encoded(request["payload"])),
                 "REQUEST_CANONICAL_SHA_MISMATCH")
@@ -450,6 +490,8 @@ class StrictBlindController:
         host.verify(context=context, identity=host.identity, preparation_sha256=host.preparation_sha256,
                     freeze_sha256=host.sha256)
         auth = dict(mode=self.data["mode"], generation=self.generation, stage=stage,
+            scope=request["scope"], market=request["market"],
+            native_market_contract=request["native_market_contract"],
             sealed_request_set_sha256=self.data["requests"][stage], canonical_request_sha256=digest(request),
             request_sha256=request["request_sha256"], serialization=SERIALIZATION,
             logical_id=request["logical_id"], subjects=request["subjects"], batch=request["batch"],
@@ -556,6 +598,8 @@ class StrictBlindController:
             require(sha256_bytes((self.root/row["raw_path"]).read_bytes()) == row["raw_response_sha256"],
                     "RAW_OUTPUT_DRIFT")
             results.append(dict(logical_id=request["logical_id"], subjects=request["subjects"],
+                scope=request["scope"], market=request["market"],
+                native_market_contract=request["native_market_contract"],
                 canonical_request_sha256=digest(request), receipt_sha256=row["receipt_sha256"],
                 raw_response_sha256=row["raw_response_sha256"],
                 output=json.loads((self.root/row["raw_path"]).read_bytes())))
