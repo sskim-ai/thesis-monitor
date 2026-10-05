@@ -240,7 +240,8 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
                    business_cutoff: datetime | None = None,
                    financial_tuple_denial: bool = False,
                    fresh_financial_pending: bool = False,
-                   completed_close_source: dict | None = None) -> dict:
+                   completed_close_source: dict | None = None,
+                   completed_price_source: dict | None = None) -> dict:
     """No path lookup, providers, prior assessments or downstream model output."""
     for key, value in (("local", local_seed), ("financial", financial), ("components", components),
                        ("receipts", receipts), ("plan", plan.model_dump(mode="json"))):
@@ -278,7 +279,17 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     if security["canonical_security_id"] != reads[0].canonical_security_id:
         raise ValueError("stock_local_security_receipt_mismatch")
     price_projection = None
-    if completed_close_source is not None:
+    price_state = None
+    if completed_price_source is not None:
+        from app.services.completed_price_state import project_state, require_runtime, materialize_state
+        if completed_close_source is not None or not fresh_financial_pending or market != 'us':
+            raise ValueError('typed_price_requires_single_fresh_us_source')
+        _exact(completed_price_source, expected_hashes['completed_price_source'])
+        price_state = require_runtime(project_state(source=completed_price_source, plan=plan,
+            read=next(r for r in reads if r.role == 'adjusted_daily'), security=security, artifact_reader=artifact))
+        price_projection = price_state.numeric_owner
+        replayed_components = materialize_state(state=price_state, **params)
+    elif completed_close_source is not None:
         from app.services.kiwoom_completed_close_owner import project, materialize
         if not fresh_financial_pending or market != "us":
             raise ValueError("completed_close_requires_fresh_us_owner")
@@ -294,11 +305,20 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     if digest(replayed_components) != digest(components):
         raise ValueError("sealed_component_replay_mismatch")
     if fresh_financial_pending and price_projection is None:
-        from app.services.completed_session_current_price import project_completed_price
-        daily = next(r for r in reads if r.role == "adjusted_daily")
-        price_projection = project_completed_price(plan=plan, read=daily, receipt=receipts[daily.role],
-            artifact_reader=artifact, security=security, currency="USD" if market == "us" else "KRW")
+        if market == 'us' and price_state is None:
+            raise ValueError('PLAN_GAP_REQUIRED_OWNER_NOT_REQUESTED')
+        if market == 'kr':
+            from app.services.completed_session_current_price import project_completed_price
+            daily = next(r for r in reads if r.role == "adjusted_daily")
+            price_projection = project_completed_price(plan=plan, read=daily, receipt=receipts[daily.role],
+                artifact_reader=artifact, security=security, currency="KRW")
     binding = component_binding(components, price_projection)
+    if price_state is not None and price_projection is None:
+        for row in binding:
+            if row['requirement'] == 'MANDATORY':
+                row.update(requirement='TYPED_UNAVAILABLE', eligible=False, selected_value_in_packet=False,
+                    behavior='COMPLETED_SESSION_PRICE_UNAVAILABLE', owner=price_state.contract,
+                    price_state_ref=price_state.receipt_sha256, renderer_requires=False)
     missing = [r["packet_path"] for r in binding if r["requirement"] == "MANDATORY" and not r["eligible"]]
     if event_source is not None:
         if event_source.read.market != market:
@@ -325,6 +345,8 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     if price_projection is not None:
         decision.update(current_price=price_projection.current_price, currency=price_projection.currency,
                         price_as_of=price_projection.price_as_of, price_basis=price_projection.adjustment_basis)
+    elif price_state is not None:
+        decision.update(current_price=None, price_as_of=None, price_basis='UNAVAILABLE_COMPLETED_CLOSE')
     timeframes = {}
     for tf in periods:
         consumers = {c["consumer"]: c for c in components["role_consumer_matrix"]["adjusted_" + tf]}
@@ -343,8 +365,8 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     structure_ready = all(c["eligible"] for rows in components["role_consumer_matrix"].values() for c in rows
         if c["consumer"] in {"legacy_local_pivots", "legacy_major_swings_atr", "legacy_boxes"})
     structure = analyze_chart_structure(periods, timeframe_contexts=timeframes) if structure_ready else {}
-    chart = {"available": False if completed_close_source is not None else bool(timeframes),
-        "quality": "unavailable" if completed_close_source is not None else "fresh", "source": "kiwoom",
+    chart = {"available": False if completed_close_source is not None or price_state is not None else bool(timeframes),
+        "quality": "unavailable" if completed_close_source is not None or price_state is not None else "fresh", "source": "kiwoom",
         "timeframes": timeframes, "structure": _compact_chart_structure(structure) if structure else {},
         "stored_price_rules": json.loads(thesis["price_rules"])}
     event_evidence = event_binding["evidence"] if event_binding else []
@@ -353,6 +375,16 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
         valuation=valuation, price={"price": decision}, chart=chart, monitoring_state={})
     # Empty auto-generated earnings envelopes are not observed evidence.
     facts = [f for f in facts if f["fact_type"] != "earnings" or financial_refs]
+    if price_state is not None and price_projection is None:
+        # An attempted-but-unavailable price is not an undated numeric fact.
+        # Its exact source decision travels separately in current_price_state.
+        facts = [f for f in facts if f['fact_type'] != 'price']
+        facts.append(dict(fact_id='price:availability', fact_type='price',
+            as_of_date=price_state.observation_time.date().isoformat(),
+            source=price_state.contract, fields=dict(availability=price_state.state,
+                reason_code=price_state.reason_code, price_state_ref=price_state.receipt_sha256,
+                observation_time=price_state.observation_time.isoformat(),
+                temporal_scope='SOURCE_ATTEMPT_OBSERVATION_NOT_PRICE_ASOF')))
     company = tables.get("company", {})
     stock = {"ticker": ticker, "company_name": watch["company_name"], "thesis_version": thesis["version"],
         "industry": company.get("industry"), "sector": company.get("sector"),
@@ -367,9 +399,17 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
         "data_cautions": sorted({r["behavior"] + ":" + r["role"] + ":" + r["consumer"]
             for r in binding if not r["eligible"]} | {"OPTIONAL_ESTIMATE_UNAVAILABLE", "OPTIONAL_CF_WC_UNAVAILABLE",
                 "QUERY_TIME_SOURCE_NOT_OFFICIAL_REGULAR_CLOSE_AUTHORITY"})}
-    if completed_close_source is not None:
+    if price_state is not None:
+        from app.services.completed_price_state import technical_state
+        stock['current_price_state'] = price_state.model_dump(mode='json')
+        stock['technical_chart_state'] = technical_state(roles, target_session=cutoff)
+        if price_projection is None:
+            stock['current_price_context'].update(contract='current-price-context-v2', availability='UNAVAILABLE',
+                reason=price_state.reason_code, current_price=None, as_of_date=None,
+                price_basis='UNAVAILABLE_COMPLETED_CLOSE', price_state=price_state.model_dump(mode='json'))
+    if completed_close_source is not None or price_state is not None:
         stock["data_cautions"].remove("QUERY_TIME_SOURCE_NOT_OFFICIAL_REGULAR_CLOSE_AUTHORITY")
-        stock["data_cautions"].append("COMPLETED_REGULAR_SESSION_CLOSE_NOT_REALTIME")
+        stock["data_cautions"].append("COMPLETED_REGULAR_SESSION_CLOSE_NOT_REALTIME" if price_projection else 'COMPLETED_CLOSE_UNAVAILABLE')
     stock["knowledge_routing"] = investment_framework_routing(stock["industry"], stock["business_model"],
         thesis["core_thesis"], sector=stock["sector"], revenue_sources=stock["revenue_sources"],
         has_earnings=bool(financial_refs), has_price_context=bool(decision["current_price"]),
@@ -466,6 +506,7 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
         "numeric_registry_unregistered": registry_errors, "input_hashes": deepcopy(expected_hashes),
         "complete_source_adapter_qualified": False,
         **({"completed_session_current_price": price_projection.model_dump(mode="json")} if price_projection else {}),
+        **({'current_price_state': price_state.model_dump(mode='json')} if price_state else {}),
         **({"event_binding": event_binding, "event_source": event_source.model_dump(mode="json"),
             "business_cutoff": business_cutoff.isoformat(), "event_policy": sorted(policy.allowed_providers)}
            if event_source is not None else {})}
@@ -476,6 +517,20 @@ def validate_assembled(result, *, expected_result_sha256, versioned_business_inp
     if digest(result) != expected_result_sha256:
         raise ValueError("assembled_result_hash_mismatch")
     stock = result["packet"]["stocks"][0]
+    state = None
+    if 'current_price_state' in result:
+        from app.services.completed_price_state import require_runtime
+        state = require_runtime(result['current_price_state'])
+        if (state.source_input_sha256 != result['input_hashes'].get('completed_price_source')
+                or stock.get('current_price_state') != state.model_dump(mode='json')
+                or state.ticker != stock['ticker']):
+            raise ValueError('completed_price_state_binding_mismatch')
+        if state.numeric_owner is None:
+            context = stock['current_price_context']
+            if (context.get('contract') != 'current-price-context-v2' or context.get('current_price') is not None
+                    or context.get('price_state') != state.model_dump(mode='json')
+                    or result.get('completed_session_current_price') is not None):
+                raise ValueError('unavailable_price_packet_binding_mismatch')
     if "completed_session_current_price" in result:
         from app.services.completed_session_current_price import CompletedSessionCurrentPriceProjection
         from app.services.kiwoom_completed_close_owner import KiwoomCompletedClose, CONTRACT as CLOSE_V2
@@ -483,7 +538,8 @@ def validate_assembled(result, *, expected_result_sha256, versioned_business_inp
             else CompletedSessionCurrentPriceProjection)
         price = projection_type.model_validate(result["completed_session_current_price"])
         if projection_type is KiwoomCompletedClose and (
-                price.supplement_source_sha256 != result["input_hashes"].get("completed_close_source")):
+                (state is not None and state.numeric_owner != price) or
+                (state is None and price.supplement_source_sha256 != result["input_hashes"].get("completed_close_source"))):
             raise ValueError("completed_close_supplement_binding_mismatch")
         context = stock["current_price_context"]
         decision = stock["price_and_positioning"]["price"]

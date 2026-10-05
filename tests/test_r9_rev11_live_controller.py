@@ -176,9 +176,16 @@ def test_systemic_stop_never_continues_independent_phases(tmp_path, monkeypatch)
             pass
     monkeypatch.setattr(collect, 'SealedNativeBridge', Bridge)
     monkeypatch.setattr(collect, 'SealedSourceTransport', Transport)
-    dispatcher = SimpleNamespace(plan=SimpleNamespace(plan_sha256='a'*64,descriptors=()),results={})
-    frozen = dict(native_owner={},stock_plan={},us_market_symbols=[],native_owner_root=str(tmp_path),us_market_reads=[],
-                  sessions={'us':'2026-09-25'})
+    from tests.test_r9_rev11_full_plan import compiled
+    from tests.completed_price_fixtures import official_spec
+    from app.services.unified_run_artifacts import sha256_bytes
+    stock, _, out = compiled()
+    raw = official_spec()
+    (tmp_path/'close-documentation.json').write_bytes(raw)
+    dispatcher = SimpleNamespace(plan=out['plan'], results={})
+    frozen = dict(native_owner={}, stock_plan=stock.model_dump(mode='json'), us_market_symbols=[],
+        native_owner_root=str(tmp_path), us_market_reads=[], sessions={'us':'2026-09-22'},
+        completed_close_documentation=dict(path='close-documentation.json', sha256=sha256_bytes(raw)))
     result = asyncio.run(collect.acquire_all(root=tmp_path,frozen=frozen,settings=None,dispatcher=dispatcher,
         inner=None,policy=None,guard=lambda:None))
     assert calls == [{'stocks':True}]

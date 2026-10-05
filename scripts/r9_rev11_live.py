@@ -19,7 +19,7 @@ from app.services.fresh_source_run_contract import validate_local_seed
 from app.services.sealed_fresh_dispatch import ProviderPlan, SealedDispatcher
 from app.services.unified_class_c_owners import project_local_seed
 from app.services.unified_live_source_transport import SourceSafetyStop
-from app.services.unified_run_artifacts import durable_json, sha256_bytes
+from app.services.unified_run_artifacts import durable_json, durable_bytes, sha256_bytes
 from app.services.unified_snapshot_contract import digest
 from app.services.unified_source_policy import UnifiedSourcePolicy
 from app.services.unified_stock_acquisition import StockPlan, UNIVERSE, ROLES, make_reads
@@ -180,6 +180,18 @@ def freeze(args):
                     valuation_official[ticker] = json.loads(cached[0][0]).get('evidence_payload')
     official=static_official_identity()
     durable_json(args.output/'static/official-security-identity.json',official,exclusive=True)
+    completed_documentation = None
+    if not kr_only:
+        from app.services.kiwoom_completed_close_owner import OFFICIAL_SPEC_SHA256
+        path = getattr(args, 'completed_close_documentation', None)
+        if path is None or path.is_symlink():
+            raise ValueError('completed_close_locked_documentation_required')
+        raw = path.read_bytes()
+        if sha256_bytes(raw) != OFFICIAL_SPEC_SHA256:
+            raise ValueError('completed_close_locked_documentation_mismatch')
+        name = 'static/completed-close-documentation.json'
+        durable_bytes(args.output/name, raw, exclusive=True)
+        completed_documentation = dict(path=name, sha256=OFFICIAL_SPEC_SHA256)
     news=[make_read(security=identities[t],market=m,run_id=run,lookback_days=s.monitor_lookback_days,security_records=records)
           for m,ts in selected.items() for t in ts]
     hashes={k:digest(v) for k,v in config.items()}
@@ -207,7 +219,8 @@ def freeze(args):
         protected_input_hashes={str(p.relative_to(args.output)):sha256_bytes(p.read_bytes()) for p in args.output.rglob('*.json')},
         execution_mode='AD_HOC_LIVE_REQUALIFICATION',model_policy='EXISTING_OFFICIAL_SOL_XHIGH_CONTRACT_NO_FALLBACK',
         valuation_official_identities=valuation_official, valuation_routing_reference=routing_reference,
-        provider_native_valuation=args.provider_native_valuation, production_side_effects=0)
+        provider_native_valuation=args.provider_native_valuation, production_side_effects=0,
+        completed_close_documentation=completed_documentation)
     frozen['disk_guard_at_freeze'] = disk_guard
     if kr_only:
         from scripts.kr8_source_scope import require_kr8_plan
@@ -236,6 +249,7 @@ def main():
     p.add_argument('--us-only', action='store_true')
     p.add_argument('--target-completed-session')
     p.add_argument('--valuation-listing-reference', type=Path)
+    p.add_argument('--completed-close-documentation', type=Path)
     for name in ('output','operating','native-owner','validation','rev10-receipt'):
         p.add_argument('--'+name,type=Path,required=True)
     args=p.parse_args()

@@ -36,7 +36,7 @@ def load_stock_inputs(root, descriptor, stock_plan, *, _bridge_source=False):
     """Explicit data-only inputs; no dynamic imports, callbacks or old result."""
     required = {'ticker', 'local', 'receipts', 'components', 'artifacts', 'financial_plan',
                 'financial_acquisition', 'financial_receipts', 'financial_raw', 'allowed_providers'}
-    if (set(descriptor) - {'issuer_bridge', 'valuation', 'event_carrier', 'source_window'} != required or descriptor['ticker'] not in ALL22
+    if (set(descriptor) - {'issuer_bridge', 'valuation', 'event_carrier', 'source_window', 'completed_price_source'} != required or descriptor['ticker'] not in ALL22
             or (_bridge_source and descriptor.get('issuer_bridge') is not None)):
         raise ValueError('fresh_stock_descriptor_shape_or_subject')
     def read(name):
@@ -54,6 +54,9 @@ def load_stock_inputs(root, descriptor, stock_plan, *, _bridge_source=False):
         policy=UnifiedSourcePolicy(frozenset(descriptor['allowed_providers'])))
     technical['expected_hashes'] = dict(plan=digest(stock_plan.model_dump(mode='json')),
         local=digest(local), financial=digest(None), receipts=digest(receipts), components=digest(components))
+    if descriptor.get('completed_price_source') is not None:
+        technical['completed_price_source'] = read('completed_price_source')
+        technical['expected_hashes']['completed_price_source'] = digest(technical['completed_price_source'])
     financial_receipts = read('financial_receipts')
     for receipt in financial_receipts:
         if receipt.get('artifact'):

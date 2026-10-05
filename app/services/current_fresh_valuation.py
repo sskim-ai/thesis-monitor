@@ -148,10 +148,12 @@ class CurrentValuationView(ContractModel):
 
 
 def derive_current_valuation(*, ticker, run_id, security, price, projection, issuer_bridge=None,
-                             native_input=None, unadjusted_price_binding=None, denominator_source_inputs=None):
+                             native_input=None, unadjusted_price_binding=None, denominator_source_inputs=None,
+                             price_state=None):
     if security['ticker'] != ticker or not security.get('canonical_security_id'):
         raise ValueError('valuation_security_identity_mismatch')
-    if (price.get('contract') != 'current-price-context-v1' or not price.get('currency')
+    unavailable = price_state is not None and price_state['state'] != 'AVAILABLE'
+    if not unavailable and (price.get('contract') != 'current-price-context-v1' or not price.get('currency')
             or isinstance(price.get('current_price'), bool) or not price.get('current_price')):
         raise ValueError('valuation_current_price_missing')
     if issuer_bridge is not None:
@@ -172,6 +174,10 @@ def derive_current_valuation(*, ticker, run_id, security, price, projection, iss
     rows = [] if issuer_bridge else [FinancialSnapshot.model_validate(r) for r in projection['snapshots']]
     if any(r.ticker != ticker for r in rows):
         raise ValueError('valuation_cross_security_denominator_denied')
+    if unavailable:
+        from app.services.unavailable_price_valuation import derive
+        return derive(ticker=ticker, run_id=run_id, security=security, price=price,
+            projection=projection, price_state=price_state, native_input=native_input)
     current_price = price['current_price']
     price_owned = price['price_basis'] in {'close', 'regular_close'}
     if unadjusted_price_binding is not None:
@@ -308,7 +314,7 @@ def valuation_numeric_bindings(view):
     fields = {'PER': 'trailing_pe', 'PBR': 'price_to_book', 'fPER': 'forward_pe', 'FORWARD_PE': 'forward_pe'}
     result = {}
     for metric in view.metrics:
-        CurrentMultiple.model_validate(metric.model_dump(mode='json'))
+        type(metric).model_validate(metric.model_dump(mode='json'))
         if metric.status != 'QUALIFIED':
             continue
         fact = dict(fact_id=f'current-valuation:{view.security_id}:{metric.metric}', fact_type='valuation',

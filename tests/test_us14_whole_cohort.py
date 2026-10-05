@@ -33,6 +33,10 @@ def us_cohort(root):
         for r in tech['receipts'].values():
             r['plan_sha256'] = plan_hash
         tech['expected_hashes'].update(plan=plan_hash, receipts=digest(tech['receipts']))
+        from app.services.completed_price_state import bind_source
+        # Narrowing the stock plan changes the numeric owner's plan binding.
+        i['technical_inputs'] = bind_source(tech, source=tech['completed_price_source'], artifacts={},
+            security=i['financial_inputs']['plan']['security'])
     target = inputs['SKHY']['financial_inputs']
     bridge = target['issuer_business']
     source = bridge['source_inputs']

@@ -68,6 +68,12 @@ async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guar
     if frozen.get('scope') == 'US14_ONLY':
         from scripts.us14_source_scope import require_us14_plan
         require_us14_plan(frozen)
+    from app.services.completed_price_state import require_plan
+    from app.services.unified_stock_acquisition import StockPlan
+    from app.services.sealed_completed_price import collect_one, documentation
+    close_slots = require_plan(dispatcher.plan, StockPlan.model_validate(frozen['stock_plan']))
+    if close_slots:
+        documentation(root, frozen)
     durable_json(root / 'live-dispatch-once.json', {'started_at': now().isoformat(),
         'plan_sha256': dispatcher.plan.plan_sha256}, exclusive=True)
     sealed = SealedSourceTransport(dispatcher, inner, providers={d.provider for d in dispatcher.plan.descriptors})
@@ -222,6 +228,9 @@ async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guar
 
     try:
         await phase('stocks', lambda: bridge.command({'stocks': True}))
+        for slot in close_slots:
+            await phase('completed-close-' + slot.subject,
+                lambda d=slot: collect_one(slot=d, settings=settings, sealed=sealed))
         if not kr_only:
             await phase('us-market', us_market)
         await phase('stock-native-replay', lambda: bridge.command({'replay-stocks': True}))

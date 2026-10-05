@@ -1,12 +1,13 @@
 {
   "app/services/provider_native_valuation_snapshot.py": "8ffe274a182b676168e5f91738140b13d6563281ef26a96b186eb714a24fa7b7",
-  "app/services/current_fresh_valuation.py": "3a13a60b2c4fc0f6923730f59aed551002d047a16d74900bc363a042122ded2b",
+  "app/services/current_fresh_valuation.py": "a9548ea267cd6453b97104b113f36820e7a29784c64d4c28530262030f3b00e9",
   "app/services/canonical_business_quality_owner.py": "9beef504a1de0258a303c7a4da8edc1f3c9e8f49698ebfb29408ac49f0d29d1a",
   "app/services/kr_forward_valuation_context.py": "3fc93adc5198d23dc2a4e13150de5aece5ac385a811d77a948eb7cb1986b2ab0",
-  "app/services/provider_valuation_calibration_context.py": "1dfb6406d5659425fdd9ba2752dc5a997b454844b6c4ef28396df4abdd96c70c",
+  "app/services/provider_valuation_calibration_context.py": "d1471429fb5ed2921fe25cff6a864016920267366251a2e4559339ae0a13d01b",
   "scripts/newbuyer_b2_shadow.py": "cd70877df2a299b9fa6340ce44e7e3350f58ae2827fd8cfc84a3bcc182e82e25",
   "scripts/newbuyer_b2_contract.py": "f37ae71d6a5dc79eabfaf15a00f6a070c0c417afbb458dcf4f6b9eb4d0141f60",
   "scripts/newbuyer_fper_prerequisite_scope.py": "b07eb9de7e327ff855fdec89b6e6469d794d49cdf47c8eed1201430fa7f2f346",
   "scripts/kis_no_estimate_owner.py": "58f1d85429b7ac596e49cd919870a70cded487eab15e2eb0c319ab65cd1b1b04",
-  "scripts/kis_current_fy1_owner.py": "5c2823d3b2c34fe9939e974d83171c0d45fbf09b066298d103a608465afe20d4"
+  "scripts/kis_current_fy1_owner.py": "5c2823d3b2c34fe9939e974d83171c0d45fbf09b066298d103a608465afe20d4",
+  "app/services/unavailable_price_valuation.py": "76bcc4be772f7dfd2936991e25798c87358934c1fa87ade4657479238d174409"
 }

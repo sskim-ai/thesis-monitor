@@ -126,7 +126,7 @@ def test_later_bad_row_never_restores_technical_features(tmp_path):
     from app.services.unified_stock_anomaly_scope import materialize_source_components
     from tests.test_unified_stock_owner import freeze_hashes
     plan, _ = plan_and_securities()
-    item = fresh_inputs(tmp_path, "CORZ", plan=plan)
+    item = fresh_inputs(tmp_path, "CORZ", plan=plan, completed_price=False)
     tech = item["technical_inputs"]
     roles = {r: json.loads(tech["artifacts"][r + ".json"]) for r in tech["receipts"]}
     target = roles["adjusted_daily"][-1]
@@ -139,7 +139,12 @@ def test_later_bad_row_never_restores_technical_features(tmp_path):
     components = materialize_source_components(ticker="CORZ", market="us", cutoff=date(2026, 9, 22),
         observed_at=plan.frozen_at.isoformat(), roles=roles)
     tech["components"] = components
-    item["technical_inputs"] = freeze_hashes(tech)
+    from tests.completed_price_fixtures import source
+    from app.services.completed_price_state import bind_source
+    security = item['financial_inputs']['plan']['security']
+    close_source, artifacts = source(plan, security, value=target['close'])
+    item["technical_inputs"] = bind_source(freeze_hashes(tech), source=close_source,
+        artifacts=artifacts, security=security)
     before = digest(components)
     result = assemble_fresh_stock(**item)
     assert result["status"] == "PASS"

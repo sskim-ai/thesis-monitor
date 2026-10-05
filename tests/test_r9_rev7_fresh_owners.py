@@ -9,7 +9,13 @@ from tests.test_unified_stock_owner import source as existing_source, freeze_has
 
 @pytest.fixture
 def source():
-    return existing_source.__wrapped__()
+    from app.services.completed_price_state import bind_source
+    from tests.completed_price_fixtures import source as completed_source
+    value = existing_source.__wrapped__()
+    security = next(r['record'] for role in value['local_seed']['roles'].values()
+                    for r in role['records'] if r['table'] == 'securitymaster')
+    close_source, artifacts = completed_source(value['plan'], security)
+    return bind_source(value, source=close_source, artifacts=artifacts, security=security)
 
 
 def test_fresh_technical_baseline_has_no_stored_financial_facts(source):

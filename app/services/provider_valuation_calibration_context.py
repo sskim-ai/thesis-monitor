@@ -6,7 +6,8 @@ from typing import Literal
 
 from pydantic import model_validator
 
-from app.services.current_fresh_valuation import CurrentValuationView, valuation_numeric_bindings
+from app.services.current_fresh_valuation import valuation_numeric_bindings
+from app.services.unavailable_price_valuation import parse_view
 from app.services.provider_native_valuation_snapshot import (
     FORWARD_FY1_QUALIFIED, FORWARD_QUALIFIED, ProviderNativeForwardValuationSnapshot,
     forward_horizon_metadata,
@@ -96,7 +97,7 @@ class ValuationCalibrationContext(ContractModel):
 
 
 def calibration_context(view):
-    view = CurrentValuationView.model_validate(view)
+    view = parse_view(view)
     bindings = valuation_numeric_bindings(view)
     rows, facts = [], {}
     for metric in view.metrics:

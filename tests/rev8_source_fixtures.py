@@ -29,7 +29,7 @@ POLICY = UnifiedSourcePolicy(frozenset({'kiwoom', 'local', 'canonical_local', 's
 
 def fresh_inputs(root, ticker, *, current_only=False, conflict=False, insurance=False,
                  verified_identity=False, policy=POLICY, security_overrides=None, empty_financial=False,
-                 denied_quality=False, plan=None, cohort_securities=None):
+                 denied_quality=False, plan=None, cohort_securities=None, completed_price=True):
     plan = plan or stock_plan_fixture.__wrapped__()
     reads = [r for r in plan.reads if r.subject == ticker]
     market, session_key = reads[0].market, reads[0].latest_completed_session
@@ -86,6 +86,13 @@ def fresh_inputs(root, ticker, *, current_only=False, conflict=False, insurance=
         cutoff=date.fromisoformat(session_key), observed_at=plan.frozen_at.isoformat(), roles=roles)
     technical = freeze_hashes(dict(plan=plan, ticker=ticker, receipts=receipts, artifacts=artifacts,
         local_seed=local, financial=None, components=components, policy=policy))
+    if market == 'us' and completed_price:
+        from tests.completed_price_fixtures import source
+        from app.services.completed_price_state import bind_source
+        # Two fictional provider responses share a generated fixture value, but
+        # the price owner must consume the separate usa20590 wire and receipt.
+        close_source, close_artifacts = source(plan, identity, value=roles['adjusted_daily'][-1]['close'])
+        technical = bind_source(technical, source=close_source, artifacts=close_artifacts, security=identity)
     fp = make_plan(identity, market=market, cutoff=plan.frozen_at, run_id=plan.run_id, all_subjects_fresh=True)
     f = filing('6-K' if foreign else '10-Q')
     f['accessionNumber'] = '0000001234-26-000001'

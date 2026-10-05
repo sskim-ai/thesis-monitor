@@ -36,7 +36,7 @@ ID = r'^[A-Za-z0-9_.:-]+$'
 
 def read_route(provider, method, path):
     routes = {
-        'kiwoom': r'(?:/api/(?:us/(?:chart|stkinfo)|dostk/(?:chart|sect|mrkcond|stkinfo))|/oauth2/token)',
+        'kiwoom': r'(?:/api/(?:us/(?:chart|stkinfo|mrkcond)|dostk/(?:chart|sect|mrkcond|stkinfo))|/oauth2/token)',
         'sec_edgar': r'/(?:submissions/CIK\d{10}\.json|api/xbrl/companyfacts/CIK\d{10}\.json|Archives/edgar/data/\d+/\d{18}/[A-Za-z0-9_.-]+)',
         'opendart': r'/api/(?:list|fnlttSinglAcntAll)\.json',
         'fred': r'/fred/series/observations', 'eia': r'/v2/seriesid/[A-Z0-9.]+',
@@ -104,6 +104,9 @@ class FreshRequestDescriptor(ContractModel):
             raise ValueError('undeclared_provider_or_route')
         if not read_route(self.provider, value['method'], url.path):
             raise ValueError('nonreadonly_or_undeclared_operation')
+        if url.path == '/api/us/mrkcond' and (self.endpoint_operation != 'usa20590'
+                or dict(value['headers']).get('api-id') != 'usa20590'):
+            raise ValueError('us_mrkcond_completed_close_read_only')
         if self.page_ordinal > self.max_pages or self.document_ordinal > self.max_documents:
             raise ValueError('descriptor_page_document_budget_exceeded')
         path = Path(self.raw_path)

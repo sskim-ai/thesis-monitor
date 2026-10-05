@@ -4,7 +4,7 @@ import asyncio
 import shutil
 from pathlib import Path
 
-from app.services.current_fresh_valuation import CurrentValuationView
+from app.services.unavailable_price_valuation import parse_view
 from app.services.cross_market_decision_engine_service import DecisionEvidencePacket
 from app.services.detailed_stock_message_service import build_detailed_plan, build_unknown_plan, final_detailed_audit
 from app.services.accepted_decision_v2_service import render_accepted_v2_production
@@ -36,6 +36,16 @@ class FreshExecution(Execution):
 
     def freeze_extra(self):
         return {}
+
+    def newbuyer_shadow_requests(self, settings):
+        if not settings.newbuyer_qualified_valuation_shadow:
+            return {}
+        from scripts.newbuyer_b2_shadow import build_request
+        from app.services.unavailable_price_valuation import shadow_request_context
+        return {ticker: build_request(settings=settings,
+            context=shadow_request_context(self.bctx[ticker], self.fresh_stocks[ticker]),
+            accepted=accepted, core=self.cores[ticker], pass_a=self.arows[ticker],
+            source_generation_id=self.source_gen) for ticker, accepted in self.brows.items()}
 
     def valuation_context(self, ticker):
         if not self.source_frozen.get('provider_native_valuation'):
@@ -162,7 +172,7 @@ class FreshExecution(Execution):
             captures['MARKET_'+market.upper()]=replay_market(whole,market,self.markets[market])['capture']
         for ticker,stock in self.fresh_stocks.items():
             ep=DecisionEvidencePacket.model_validate(stock['evidence_packet'])
-            valuation=CurrentValuationView.model_validate(stock['valuation_view'])
+            valuation=parse_view(stock['valuation_view'])
             if self.prepared[ticker]['mode']=='UNKNOWN_LIMIT':
                 plan=build_unknown_plan(source_stock=stock,source_authority=self.prepared[ticker]['source_authority'],
                     local_seed=self.locals[ticker],decision=self.limits['pass-b'][ticker],execution_generation_id=self.gen,valuation=valuation)

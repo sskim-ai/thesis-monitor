@@ -6,7 +6,7 @@ model contracts are never rewritten to satisfy the review archive.
 from copy import deepcopy
 import json
 
-from app.services.current_fresh_valuation import CurrentValuationView
+from app.services.unavailable_price_valuation import parse_view
 from app.services.selected_financial_owner import SelectedFinancialOwnerEnvelope
 from app.services.unified_snapshot_contract import digest
 from app.services.unified_stock_acquisition import UNIVERSE
@@ -122,7 +122,7 @@ def _financial(stock, facts):
 
 def _valuation(stock, subject):
     value = stock['valuation_view']
-    CurrentValuationView.model_validate(value)
+    parse_view(value)
     if (value != subject['current_valuation_view'] or value['ticker'] != stock['ticker']
             or value['run_id'] != stock['fresh_run_id']
             or value['price_context_sha256'] != digest(subject['current_price_context'])
@@ -143,6 +143,8 @@ def _valuation(stock, subject):
     result['denominator_scope_receipt'] = _select(value.get('denominator_scope_receipt') or {}, (
         'contract', 'status', 'reason', 'limitations', 'receipt_sha256', 'source_authority_expanded'))
     result['original_valuation_view_sha256'] = digest(value)
+    if value.get('price_state') is not None:
+        result['price_state'] = deepcopy(value['price_state'])
     result['omitted_denominator_inventory_sha256'] = digest(value.get('denominator_candidate_inventory', []))
     return result
 

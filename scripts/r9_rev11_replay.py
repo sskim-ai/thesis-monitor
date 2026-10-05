@@ -44,6 +44,9 @@ def stock_inputs(root, frozen, policy, outcome):
     plan = StockPlan.model_validate(frozen['stock_plan'])
     native = root/'native/stocks'
     sealed = ProviderPlan.model_validate(frozen['plan'])
+    from app.services.completed_price_state import require_plan, bind_source
+    from app.services.sealed_completed_price import replay_source
+    require_plan(sealed, plan)
     results = outcome['logical_results']
     inputs, errors = {}, {}
     replay = read(root/'native/raw-owner-replay.json')
@@ -82,6 +85,11 @@ def stock_inputs(root, frozen, policy, outcome):
                     receipts=receipts, artifacts=artifacts, components=components, policy=policy,
                     expected_hashes=dict(plan=digest(plan.model_dump(mode='json')), local=digest(local),
                         financial=digest(None), receipts=digest(receipts), components=digest(components)))
+                if market == 'us':
+                    daily = next(r for r in plan.reads if r.subject == ticker and r.role == 'adjusted_daily')
+                    close_input = replay_source(root=root, frozen=frozen, outcome=outcome, read=daily)
+                    technical = bind_source(technical, security=frozen['candidate']['financial_plans'][ticker]['security'],
+                                            **close_input)
                 path = root/'financial'/ticker
                 financial_receipts = read(path/'owner-receipts.json')
                 for receipt in financial_receipts:

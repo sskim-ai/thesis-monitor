@@ -142,7 +142,7 @@ def test_fresh_owner_price_valuation_binding_and_source_removal_fail_closed(tmp_
     from tests.rev8_source_fixtures import fresh_inputs
     from app.services.fresh_financial_stock_owner import assemble_fresh_stock
     inputs, artifacts, _ = source_fixture(monkeypatch)
-    item = fresh_inputs(tmp_path, "CORZ", plan=inputs["plan"])
+    item = fresh_inputs(tmp_path, "CORZ", plan=inputs["plan"], completed_price=False)
     item["technical_inputs"] = owner.bind_technical_input(item["technical_inputs"],
         source=inputs["source"], artifacts=artifacts, security=inputs["security"])
     result = assemble_fresh_stock(**item)

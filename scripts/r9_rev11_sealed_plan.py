@@ -64,6 +64,11 @@ def compile_plan(*, stock, identities, news_reads, config_identities, rev10_rece
             page_proof.append(dict(role=role, configured_cap=configured_kr_pages, accepted_bound=MAX_KR_REQUEST_PAGES,
                 request_local_cap=r.max_pages, consumer_rows=r.count, policy='EXISTING_OWNER_CAP_POST_ACQUISITION_COMPLETENESS',
                 cap_exhaustion='SOURCE_PARTIAL', global_setting_changed=False))
+    for r in stock.reads:
+        if r.market == 'us' and r.role == 'adjusted_daily':
+            kiwoom('completed_close:' + r.subject, 'completed_close:' + r.subject, 'us', r.subject,
+                'usa20590', '/api/us/mrkcond', dict(stex_tp=r.exchange, stk_cd=r.subject,
+                    base_dt=r.latest_completed_session.replace('-', '')))
     discovery = []
     for exchange in (('ND', 'NY', 'NA') if 'us' in stock.universe else ()):
         discovery.append(kiwoom('us_market:discovery:' + exchange, 'us_market:exchange_discovery', 'us', '*',
@@ -124,6 +129,8 @@ def compile_plan(*, stock, identities, news_reads, config_identities, rev10_rece
         binding_owner_sha256=binding_owner_hash())
     for role, row in roles.items():
         row['descriptor_ids'] = [d.logical_request_id for d in descriptors if d.consumer_role == role]
+    from app.services.completed_price_state import require_plan
+    require_plan(plan, stock)
     return dict(plan=plan, candidate=candidate, owners=owners, role_coverage=roles, kr_page_proof=page_proof,
         optional_valuation={t: {'native_metric': ('PLANNED_NATIVE_SNAPSHOT_OPTIONAL_VALUE' if valuation_slots else 'OPTIONAL_UNAVAILABLE_NO_PLANNED_NATIVE_READ'),
             'financial_price_inputs': 'CURRENT_GENERATION_ONLY', 'no_new_provider': True} for t in identities},

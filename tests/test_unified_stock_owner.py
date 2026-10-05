@@ -24,6 +24,9 @@ def freeze_hashes(params):
     params["expected_hashes"] = {"plan": digest(params["plan"].model_dump(mode="json")),
         **{k: digest(params[v]) for k, v in {"local": "local_seed", "financial": "financial",
             "components": "components", "receipts": "receipts"}.items()}}
+    for key in ('completed_close_source', 'completed_price_source'):
+        if key in params:
+            params['expected_hashes'][key] = digest(params[key])
     return params
 
 

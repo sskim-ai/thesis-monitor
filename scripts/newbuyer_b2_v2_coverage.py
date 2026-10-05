@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 
 from app.services import canonical_business_quality_owner as business
-from app.services.current_fresh_valuation import CurrentValuationView
+from app.services.unavailable_price_valuation import parse_view
 from app.services.kr_forward_valuation_context import KrForwardValuationView
 from app.services.kr_forward_valuation_context import calibration_context as kr_context
 from app.services.provider_valuation_calibration_context import calibration_context
@@ -92,7 +92,7 @@ def dataflow_proof():
 
 def _source_context(ticker, owners):
     stock, security = owners.stock, owners.security
-    view = CurrentValuationView.model_validate(stock['valuation_view'])
+    view = parse_view(stock['valuation_view'])
     require(stock['ticker'] == security['ticker'] == view.ticker == ticker, 'ticker_binding')
     require(stock['fresh_run_id'] == view.run_id == owners.generation, 'generation_binding')
     require(view.security_sha256 == digest(security)
@@ -136,6 +136,10 @@ def _source_context(ticker, owners):
         require(completed['generation_id'] == owners.generation
                 and completed['canonical_security_id'] == view.security_id
                 and completed['current_price'] == view.price, 'completed_price_owner_binding')
+    if view.price is None:
+        require(stock.get('current_price_state') == view.price_state.model_dump(mode='json')
+                == packet_stock.get('current_price_state')
+                == packet_stock['current_price_context'].get('price_state'), 'typed_price_owner_binding')
     if owners.kis_row is None:
         require(owners.kis_plan is None and owners.availability_inputs is None,
                 'partial_kis_input')
@@ -166,9 +170,13 @@ def _row(ticker, owners, context, facts):
         family = 'DERIVED_KIS' if name == 'CURRENT_FY1_FPER' else 'ATOMIC'
         for requirement in cells.requirements(name, family, security):
             if family == 'ATOMIC':
-                snapshot = next(m['native_snapshot'] for m in view['metrics'] if m['metric'] == name)
-                require(snapshot is not None, 'native_owner_missing')
-                categories.append(cells.native_cell(requirement, ticker, ref, source, snapshot, security))
+                owned = next(m for m in view['metrics'] if m['metric'] == name)
+                snapshot = owned['native_snapshot']
+                if snapshot is None and owned.get('price_dependency') == 'CURRENT_PRICE_ARITHMETIC_REQUIRED':
+                    categories.append(cells.price_prerequisite_cell(requirement, ticker, ref, source, owned))
+                else:
+                    require(snapshot is not None, 'native_owner_missing')
+                    categories.append(cells.native_cell(requirement, ticker, ref, source, snapshot, security))
             else:
                 categories.append(cells.kis_cell(requirement, ticker, ref, source, owners.kis_row, digest(context)))
     require(relevant, 'relevant_metric_universe_missing')

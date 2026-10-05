@@ -27,6 +27,8 @@ def write_descriptor(root, inputs):
         financial_acquisition=put('financial-acquisition.json', fin['acquisition']),
         financial_receipts=put('financial-receipts.json', fin['receipts']),
         financial_raw=str(fin['directory'].relative_to(root)), allowed_providers=sorted(tech['policy'].allowed_providers))
+    if 'completed_price_source' in tech:
+        result['completed_price_source'] = put('completed-price-source.json', tech['completed_price_source'])
     if 'valuation_inputs' in inputs:
         native = inputs['valuation_inputs']
         result['valuation'] = dict(raw=put('valuation.body', native['raw'], True),

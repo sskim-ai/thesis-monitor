@@ -134,11 +134,19 @@ def historical_only_roles(roles, *, cutoff):
 
 
 def materialize(*, projection, roles, ticker, market, cutoff, observed_at):
+    if projection.ticker != ticker or market != "us" or projection.target_session != str(cutoff):
+        raise ValueError("completed_close_component_identity_mismatch")
+    return materialize_price_context(current_price=projection.current_price,
+        projection_ref=projection.projection_sha256, compatibility=projection.technical_compatibility,
+        roles=roles, ticker=ticker, market=market, cutoff=cutoff, observed_at=observed_at)
+
+
+def materialize_price_context(*, current_price, projection_ref, compatibility,
+                              roles, ticker, market, cutoff, observed_at):
+    """Shared chart isolation; None is a typed caller's unavailable price only."""
     from app.services.unified_stock_anomaly_scope import materialize_source_components
     from app.services.current_effective_technical import project as effective
     from app.services.packet_owned_technical_context_service import build_packet_owned_technical_context
-    if projection.ticker != ticker or market != "us" or projection.target_session != str(cutoff):
-        raise ValueError("completed_close_component_identity_mismatch")
     view = historical_only_roles(roles, cutoff=cutoff)
     components = materialize_source_components(ticker=ticker, market=market, cutoff=cutoff,
         observed_at=observed_at, roles=view)
@@ -154,11 +162,11 @@ def materialize(*, projection, roles, ticker, market, cutoff, observed_at):
     context = build_packet_owned_technical_context(ticker=ticker, market=market, session="closed",
         as_of=observed_at, periods=periods, cutoff=cutoff, expected_daily_completed=str(cutoff),
         source="sealed_r2b0_kiwoom", source_version="one-shot-stock-source-acquisition-v1")
-    components.update(source_rows_sha256=digest(roles), current_price=projection.current_price,
-        current_price_eligible=True, mandatory_current_price_failure=False,
-        completed_close_projection_sha256=projection.projection_sha256,
+    components.update(source_rows_sha256=digest(roles), current_price=current_price,
+        current_price_eligible=current_price is not None, mandatory_current_price_failure=False,
+        completed_close_projection_sha256=projection_ref,
         latest_chart_close_disqualification=CHART_DENIAL,
-        technical_compatibility=projection.technical_compatibility,
+        technical_compatibility=compatibility,
         technical_context_id=effective(context, components["features"]).technical_context_id)
     components["component_projection_sha256"] = None
     components["component_projection_sha256"] = digest(components)

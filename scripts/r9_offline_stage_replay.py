@@ -7,7 +7,7 @@ import asyncio
 from types import SimpleNamespace
 
 from app.services.cross_market_decision_engine_service import DecisionEvidencePacket
-from app.services.current_fresh_valuation import CurrentValuationView
+from app.services.unavailable_price_valuation import parse_view
 from app.services.detailed_stock_message_service import build_detailed_plan, build_unknown_plan, final_detailed_audit
 from app.services.accepted_decision_v2_service import render_accepted_v2_production
 from app.services.unified_snapshot_contract import digest
@@ -67,7 +67,7 @@ def replay_stages(result, generation, outputs):
     data, stock = result['prepared'], result['stock']
     t = stock['ticker']
     ep = DecisionEvidencePacket.model_validate(stock['evidence_packet'])
-    valuation = CurrentValuationView.model_validate(stock['valuation_view'])
+    valuation = parse_view(stock['valuation_view'])
     schemas, accepted, stage_receipts = {}, {}, {}
     if data['mode'] == 'UNKNOWN_LIMIT':
         for stage in ('core', 'a', 'b'):

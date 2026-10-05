@@ -206,7 +206,19 @@ def bound_chain(view, authority, *, atomic, generation, source_generation, view_
 def decision_mode(stock, authority, observations):
     _require(stock["status"] == "PASS" and not stock["mandatory_missing"], "source_assembly_incomplete")
     mandatory = [r for r in stock["component_binding"] if r["requirement"] == "MANDATORY"]
-    _require(mandatory and all(r["eligible"] and r["selected_value_in_packet"] for r in mandatory),
+    unavailable = False
+    if stock.get('current_price_state') is not None:
+        from app.services.completed_price_state import require_runtime
+        state = require_runtime(stock['current_price_state'])
+        rows = [r for r in stock['component_binding'] if r['requirement'] == 'TYPED_UNAVAILABLE']
+        quote = stock['packet']['stocks'][0]['current_price_context']
+        unavailable = (state.state != 'AVAILABLE' and state.ticker == stock['ticker']
+            and state.source_generation == stock['fresh_run_id'] and bool(rows)
+            and quote.get('price_state') == state.model_dump(mode='json')
+            and quote['current_price'] is None
+            and all(r.get('price_state_ref') == state.receipt_sha256 and not r['eligible']
+                    and not r['selected_value_in_packet'] for r in rows))
+    _require((mandatory or unavailable) and all(r["eligible"] and r["selected_value_in_packet"] for r in mandatory),
              "mandatory_price_technical_incomplete")
     _require(authority["status"] == "PASS" and not authority["authority_errors"], "source_authority_incomplete")
     records = authority["authority_records"]

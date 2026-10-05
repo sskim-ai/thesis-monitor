@@ -4,6 +4,7 @@ import json
 
 from app.services.fresh_financial_stock_owner import assemble_fresh_stock
 from app.services.current_fresh_valuation import CurrentValuationView
+from app.services.unavailable_price_valuation import parse_view
 from app.services.provider_native_valuation_snapshot import FORWARD_FY1_QUALIFIED, forward_horizon_metadata
 from app.services.unified_snapshot_contract import digest, encoded
 from app.services.unified_run_artifacts import sha256_bytes
@@ -17,7 +18,13 @@ def replay_matrix(stocks, inputs):
     base = inputs[sorted(qualified)[0]]
     rows = []
     for t, stock in stocks.items():
-        view = CurrentValuationView.model_validate(stock['valuation_view'])
+        view = parse_view(stock['valuation_view'])
+        if view.price is None:
+            rows.append(dict(case='current:' + t, output_sha256=digest(view.model_dump(mode='json')),
+                states={r.metric: r.status for r in view.metrics},
+                scope=dict(price_prerequisite_denial=view.price_state.receipt_sha256,
+                           denominator_consumed=False)))
+            continue
         scope = view.denominator_scope_receipt
         if not scope or scope['receipt_sha256'] != digest({k: v for k, v in scope.items() if k != 'receipt_sha256'}):
             raise ValueError('matrix_denominator_capability_receipt_missing')

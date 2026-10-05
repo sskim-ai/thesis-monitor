@@ -200,3 +200,36 @@ def business_cell(ticker, source):
     if any(r['state'] not in {'denied', 'verified_usable', 'caution_usable'} for r in fields):
         cell['owner_state'] = 'UNKNOWN'
     return finish(cell)
+
+
+def price_prerequisite_cell(req, ticker, ref, source, metric):
+    """The V2 early-return path consumes price state, not missing denominators.
+
+    Positive code non-consumption is bound by the reviewed dataflow manifest.
+    It does not grant any current security, currency, or denominator decision.
+    """
+    from app.services.completed_price_state import require_runtime
+    from app.services.unavailable_price_valuation import parse_view
+    view = parse_view(source['valuation_view'])
+    state = require_runtime(view.price_state)
+    if (state.state == 'AVAILABLE' or metric['price_state_ref'] != state.receipt_sha256
+            or metric['native_snapshot'] is not None or metric['status'] != 'UNAVAILABLE'
+            or metric['source_method'] != 'price_prerequisite_short_circuit'):
+        raise ValueError('price_prerequisite_coverage_scope')
+    required = req['category'] in {'PRICE_TO_SECURITY_BINDING', 'VALUATION_SOURCE_QUALITY'}
+    req = dict(req, required=required, requirement_reason=(
+        'Exact attempted completed-price owner denies the arithmetic prerequisite; no market-price absence inferred.'
+        if required else 'The V2 unavailable-price return consumes no positive valuation/denominator domain.'),
+        producer_dataflow_proof_refs=['app/services/unavailable_price_valuation.py'],
+        requirement_owner_contract='current-fresh-valuation-unavailable-price-v2')
+    owner = state.model_dump(mode='json')
+    cell = base_cell(req, ticker, ref, view.run_id, view.security_id, owner)
+    if not required:
+        return nonapplicable(cell)
+    cell.update(owner_state='DENIED', owner_decision_version=state.decision_version,
+        owner_field_eligibility=state.field_eligibility,
+        owner_as_of=state.observation_time.isoformat(), owner_temporal_scope=state.temporal_provenance,
+        input_refs=[state.receipt_sha256, state.planner_slot_ref, state.request_ref,
+                    state.source_receipt_ref, *state.attempt_refs],
+        denial_reason_codes=[state.reason_code], scope_level='METRIC_SCOPED')
+    return finish(cell)

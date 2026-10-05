@@ -13,6 +13,7 @@ from pydantic import Field, model_validator
 from app.services.accepted_calibration_message_service import AcceptedDetailedCalibrationPlan, calibration_render
 from app.services.accepted_decision_v2_service import AcceptedRenderValidationResult
 from app.services.current_fresh_valuation import CurrentValuationView, valuation_numeric_bindings
+from app.services.unavailable_price_valuation import UnavailablePriceValuationView
 from app.services.unified_snapshot_contract import ContractModel, digest
 
 SECTION_ORDER = ('judgment', 'reevaluation', 'thesis_state', 'core', 'business',
@@ -60,7 +61,7 @@ class DetailedStockMessagePlan(ContractModel):
     core: dict
     pass_a: dict
     source_stock: dict
-    valuation: CurrentValuationView
+    valuation: CurrentValuationView | UnavailablePriceValuationView
     selections: tuple[RowSelection, ...]
     rows: tuple[DetailedRow, ...]
     acceptance: dict
@@ -76,7 +77,7 @@ class DetailedUnknownMessagePlan(ContractModel):
     source_authority: dict
     local_seed: dict
     decision: dict
-    valuation: CurrentValuationView
+    valuation: CurrentValuationView | UnavailablePriceValuationView
     rows: tuple[DetailedRow, ...]
     acceptance: dict
     acceptance_sha256: str
@@ -174,6 +175,27 @@ def _valuation_rows(valuation):
     return rows
 
 
+def _price_selection(source, valuation):
+    stock = source['packet']['stocks'][0]
+    quote = stock['current_price_context']
+    if valuation.price is None:
+        _require(isinstance(valuation, UnavailablePriceValuationView)
+                 and valuation.price_state.model_dump(mode='json') == stock.get('current_price_state')
+                 == quote.get('price_state') and quote['current_price'] is None,
+                 'detailed_typed_price_binding_mismatch')
+        return None
+    prices = [f for f in stock['fact_catalog'] if f['fact_type'] == 'price'
+              and f.get('fields', {}).get('current_price') == quote['current_price']]
+    _require(len(prices) == 1, 'detailed_current_price_owner_not_unique')
+    return RowSelection(section='price', owner='source_numeric', ref=prices[0]['fact_id'],
+                        field_path='fields.current_price')
+
+
+def _unavailable_price_row(valuation):
+    return _row('price', 'unavailable', '정식 종가 확인 불가',
+        hashes=(valuation.price_state.receipt_sha256,), formatting='completed-current-price-state-v1')
+
+
 def build_unknown_plan(*, source_stock, source_authority, local_seed, decision,
                        execution_generation_id, valuation):
     from scripts.r2b_r2_preflight import preflight_subject
@@ -205,12 +227,8 @@ def build_unknown_plan(*, source_stock, source_authority, local_seed, decision,
         _require(recovery['kind'] in labels, 'detailed_unowned_recovery_label')
         rows.append(_row('reevaluation', key, labels[recovery['kind']],
             hashes=(digest(recovery),), formatting='source-recovery-catalog-v1'))
-    quote = stock['current_price_context']
-    prices = [f for f in stock['fact_catalog'] if f['fact_type'] == 'price'
-              and f.get('fields', {}).get('current_price') == quote['current_price']]
-    _require(len(prices) == 1, 'detailed_current_price_owner_not_unique')
-    rows.append(_numeric(RowSelection(section='price', owner='source_numeric', ref=prices[0]['fact_id'],
-                                      field_path='fields.current_price'), source))
+    price_selection = _price_selection(source, valuation)
+    rows.append(_numeric(price_selection, source) if price_selection else _unavailable_price_row(valuation))
     rows.append(_row('flow', 'unavailable', '자료 부족', hashes=(digest(source),), formatting='explicit-unavailable-v1'))
     rows.extend(_valuation_rows(valuation))
     rows.sort(key=lambda r: SECTION_ORDER.index(r.section))
@@ -282,9 +300,9 @@ def build_detailed_plan(*, packet, accepted, source_stock, core, pass_a, valuati
              'detailed_valuation_source_mismatch')
     quote = stock['current_price_context']
     _require(valuation.price_context_sha256 == digest(quote)
-             and valuation.price_session.isoformat() == quote['as_of_date']
+             and (valuation.price is None or valuation.price_session.isoformat() == quote['as_of_date'])
              and valuation.price == quote['current_price'], 'detailed_current_price_mismatch')
-    _require(date.fromisoformat(quote['as_of_date']) <= date.fromisoformat(str(packet.assessment_date)),
+    _require(valuation.price_session <= date.fromisoformat(str(packet.assessment_date)),
              'detailed_future_price')
     _require(core.get('binding_sha256') == digest({'atomic': core['atomic_claims'], 'effects': core['effects']}),
              'detailed_core_binding_mismatch')
@@ -332,13 +350,11 @@ def build_detailed_plan(*, packet, accepted, source_stock, core, pass_a, valuati
         selected_claims.add(ref)
     _require(len(set((r.section, r.owner, r.ref, r.field_path) for r in selections)) == len(selections),
              'detailed_duplicate_row_selection')
-    prices = [f for f in stock['fact_catalog'] if f['fact_type'] == 'price'
-              and f.get('fields', {}).get('current_price') == quote['current_price']]
-    _require(len(prices) == 1, 'detailed_current_price_owner_not_unique')
-    mandatory_price = RowSelection(section='price', owner='source_numeric', ref=prices[0]['fact_id'],
-                                    field_path='fields.current_price')
+    mandatory_price = _price_selection(source, valuation)
     effective_selections = (*selections, *automatic)
-    if mandatory_price not in effective_selections:
+    if mandatory_price is None:
+        rows.append(_unavailable_price_row(valuation))
+    elif mandatory_price not in effective_selections:
         effective_selections = (*effective_selections, mandatory_price)
     for selected in effective_selections:
         if selected.owner == 'source_numeric':

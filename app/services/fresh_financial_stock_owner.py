@@ -121,7 +121,7 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
     # Issuer business bridges deliberately cannot supply a security denominator.
     valuation_projection = result['projection']
     # usa20590 is itself a raw completed close, not adjusted/weekly equivalence.
-    price_binding = (None if tech.get('completed_close_source') is not None else
+    price_binding = (None if tech.get('completed_close_source') is not None or tech.get('completed_price_source') is not None else
         _unadjusted_price_binding(tech, stock['current_price_context']))
     if valuation_inputs is not None and (valuation_inputs['run_started_at'] != plan.frozen_at
             or valuation_inputs['policy'] != tech['policy']):
@@ -131,7 +131,7 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
     valuation = derive_current_valuation(ticker=fp['ticker'], run_id=plan.run_id,
         security=fp['security'], price=stock['current_price_context'], projection=valuation_projection,
         issuer_bridge=bridge, native_input=valuation_inputs, unadjusted_price_binding=price_binding,
-        denominator_source_inputs=fin)
+        denominator_source_inputs=fin, price_state=baseline.get('current_price_state'))
     valuation_denial = 'ISSUER_BRIDGE_HAS_NO_SECURITY_VALUATION_AUTHORITY' if bridge else None
     stock['current_valuation_view'] = valuation.model_dump(mode='json')
     stock['current_valuation_denial'] = valuation_denial
@@ -195,7 +195,8 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
         'diagnostic_packet_sha256': digest(packet), 'evidence_packet': evidence.model_dump(mode='json'),
         'ownership': owned.model_dump(mode='json'), 'source_graph': graph,
         'component_binding': baseline['component_binding'],
-        'completed_session_current_price': baseline['completed_session_current_price'],
+        'completed_session_current_price': baseline.get('completed_session_current_price'),
+        **({'current_price_state': baseline['current_price_state']} if 'current_price_state' in baseline else {}),
         'financial_state': dict(status='FORMAL_FINANCIAL_SOURCE_COMPLETE_NO_QUALIFIED_FIELD' if source_absent else 'FRESH_SELECTED_SOURCE',
             quality=quality['receipt']['state'],
             denials=result['acquisition_denials'], receipt_sha256=quality['receipt']['receipt_sha256']),
