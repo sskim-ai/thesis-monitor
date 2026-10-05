@@ -8,13 +8,14 @@ import sys
 import time
 import traceback
 
-from app.services.unified_run_artifacts import durable_json
+from app.services.unified_run_artifacts import durable_bytes, durable_json
 from app.services.unified_stock_acquisition import UNIVERSE
 from scripts import qualified_official_launch_context as q
 from scripts import m12dr_fresh_blind_reproof as p
 from scripts.r9_rev11_models import FreshExecution, owner
 from scripts.r2b_r5_execution import STAGES
 from scripts.us14_source_scope import require_us14_plan
+from scripts import scoped_attempt_failure as failures
 
 AUTHORITY = p.REPO/'docs/work-instructions/20260930-rev31-c1-state-ownership-clarification.md'
 SUBJECTS = UNIVERSE['us']
@@ -163,6 +164,9 @@ class Us14Execution(FreshExecution):
         if row['attempts']:
             p.require(all(row[k] == value for k, value in hashes.items()), 'us14_retry_request_drift')
         row.update(status='INVOKING', attempts=attempt, **hashes)
+        attempt_receipt = failures.begin(row, generation=self.gen, stage=stage, spec=spec,
+            destination=dest, request_hashes={**hashes,
+                'internal_schema_sha256': p.sha(src/'internal-semantic-schema.json')})
         self.publish()
         started = time.monotonic()
         try:
@@ -171,11 +175,18 @@ class Us14Execution(FreshExecution):
                 cwd=inp, timeout=self.TIMEOUT_SECONDS, state_namespace=reqid, request=req)
             p.write(dest/'transport-receipt.json', receipt)
         except p.transport.OfficialShadowError as exc:
-            p.Reproof.transport_failure(self, exc, dst, time.monotonic()-started)
+            p.write(dest/'transport-failure.json', dict(code=exc.code, elapsed_seconds=time.monotonic()-started))
+            try:
+                p.Reproof.transport_failure(self, exc, dst, time.monotonic()-started)
+            except p.BatchFailure as allowed:
+                raise failures.ResponseFormFailure(str(allowed)) from exc
         finally:
             row.update(completed_at=p.now(), elapsed_seconds=round(time.monotonic()-started, 3))
             if (dst/'raw-output.json').exists():
-                shutil.copy2(dst/'raw-output.json', dest/'raw-output.json')
+                durable_bytes(dest/'raw-output.json', (dst/'raw-output.json').read_bytes(), exclusive=True)
+                attempt_receipt['raw_response_sha256'] = p.sha(dest/'raw-output.json')
+            # Seal the response bytes before any local validator can reject them.
+            durable_json(dest/'raw-response-receipt.json', dict(attempt_receipt), exclusive=True)
             events, unsafe = [], False
             if (dst/'events.jsonl').exists():
                 for line in (dst/'events.jsonl').read_bytes().splitlines():
@@ -196,11 +207,17 @@ class Us14Execution(FreshExecution):
         if any(s in stderr for s in ('attempt to write a readonly database', 'unknownissuer',
                                     'invalid peer certificate', 'failed to initialize in-process app-server client')):
             raise p.SystemicFailure('OFFICIAL_RUNTIME_WARNING_RECURRED')
-        output = p.read(dest/'raw-output.json')
+        try:
+            output = p.read(dest/'raw-output.json')
+        except (FileNotFoundError, json.JSONDecodeError, UnicodeDecodeError) as exc:
+            attempt_receipt['provider_schema_status'] = 'FAIL'
+            raise failures.ResponseFormFailure('MALFORMED_OR_MISSING_RESPONSE') from exc
         errors = {name: owner.validate_json_schema(output, p.read(src/name))
             for name in ('provider-wire-schema.json', 'internal-semantic-schema.json')}
         p.write(dest/'schema-validation.json', errors)
-        p.require(not any(errors.values()), 'SCHEMA_REJECT')
+        attempt_receipt['provider_schema_status'] = 'FAIL' if any(errors.values()) else 'PASS'
+        if any(errors.values()):
+            raise failures.ResponseFormFailure('SCHEMA_REJECT')
         return output, dest
 
     def bounded(self, stage, spec, request):
@@ -213,19 +230,27 @@ class Us14Execution(FreshExecution):
             snapshot = deepcopy({key: getattr(self, key) for key in
                 ('cores', 'arows', 'brows', 'markets', 'entries', 'limits')})
             prior_attempts = row['attempts']
+            row['active_attempt'] = None
+            error = None
             try:
                 getattr(self, stage.replace('-', '_'))(spec, request)
-                row['status'] = 'PASS'
+                row.update(status='PASS', failure_class=None, retry_eligible=False)
                 break
             except Exception as exc:
+                error = exc
                 for key, value in snapshot.items():
                     setattr(self, key, value)
                 row.update(status='FAIL', failure_type=type(exc).__name__, failure_code=str(exc))
                 row['failures'].append(dict(attempt=row['attempts'], type=type(exc).__name__, code=str(exc)))
                 self.publish()
-                if isinstance(exc, p.SystemicFailure) or row['attempts'] == prior_attempts:
+                failure_class, retry_eligible = failures.classify(exc, row.get('active_attempt'))
+                row.update(failure_class=failure_class, retry_eligible=retry_eligible)
+                if failure_class == failures.SYSTEMIC or row['attempts'] == prior_attempts:
                     raise
+                if not retry_eligible:
+                    break
             finally:
+                failures.finish(row, error)
                 self.publish()
         return row['status'] == 'PASS'
 

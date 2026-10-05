@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from scripts import us14_models as m
+from scripts import scoped_attempt_failure as attempt_failure
 
 
 def controller():
@@ -35,7 +36,7 @@ def test_only_failed_logical_calls_retry_unchanged_request(failures, expected):
         obj.ledger[-1]['attempts'] += 1
         obj.cores['IBM'] = 'partial'
         if len(seen) <= failures:
-            raise m.p.BatchFailure('SCHEMA_REJECT')
+            raise attempt_failure.ResponseFormFailure('SCHEMA_REJECT')
     obj.core = core
     spec = dict(market='us', batch=1, subjects=['IBM'])
     assert obj.bounded('core', spec, request) == (failures < 3)
@@ -73,6 +74,11 @@ def test_stage_sweep_continues_independent_batches_without_rerunning_success(tmp
     seen = []
     def stage_call(stage, spec, req):
         obj.ledger[-1]['attempts'] += 1
+        row = obj.ledger[-1]
+        receipt = attempt_failure.begin(row, generation=obj.gen, stage=stage, spec=spec,
+            destination=tmp_path/'attempts'/stage/str(spec['batch'])/str(row['attempts']),
+            request_hashes={'fixture': 'unchanged'})
+        receipt['provider_schema_status'] = 'PASS'
         seen.append((stage, spec['batch']))
         if stage == 'core' and spec['batch'] == failing_batch:
             raise m.p.BatchFailure('synthetic-semantic-reject')
@@ -94,10 +100,10 @@ def test_stage_sweep_continues_independent_batches_without_rerunning_success(tmp
         assert complete['calls'] == obj.CALL_LIMITS
     else:
         assert complete['terminal'] == obj.FAILURE_TERMINAL and complete['messages'] == 0
-        assert seen.count(('core', failing_batch)) == 3
+        assert seen.count(('core', failing_batch)) == 1
         assert ('core', 5) in seen and ('pass-b', 5) in seen
         assert not any((stage, failing_batch) in seen for stage in ('pass-a', 'pass-b'))
-        assert complete['calls'] == dict(market=1, core=7, **{'pass-a':4, 'pass-b':4})
+        assert complete['calls'] == dict(market=1, core=5, **{'pass-a':4, 'pass-b':4})
 
 
 def test_rev46_kr_attempt_policy_preserves_kis_owner_and_legacy():
