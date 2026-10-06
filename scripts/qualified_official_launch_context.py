@@ -77,6 +77,41 @@ def _descriptor_path(fd):
     raise ValueError('FD_PATH_PLATFORM_UNSUPPORTED')
 
 
+def _darwin_fd_type(fd):
+    import ctypes
+
+    class FDInfo(ctypes.Structure):
+        _fields_ = [('fd', ctypes.c_int32), ('kind', ctypes.c_uint32)]
+
+    query = ctypes.CDLL('/usr/lib/libproc.dylib', use_errno=True).proc_pidinfo
+    query.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_uint64, ctypes.c_void_p, ctypes.c_int]
+    query.restype = ctypes.c_int
+    # PROC_PIDLISTFDS=1; proc_fdinfo is defined by Darwin sys/proc_info.h.
+    required = query(os.getpid(), 1, 0, None, 0)
+    if required <= 0:
+        raise ValueError('PIPE_KERNEL_TYPE_UNAVAILABLE')
+    rows = (FDInfo * (required // ctypes.sizeof(FDInfo) + 32))()
+    copied = query(os.getpid(), 1, 0, rows, ctypes.sizeof(rows))
+    if copied <= 0 or copied >= ctypes.sizeof(rows) or copied % ctypes.sizeof(FDInfo):
+        raise ValueError('PIPE_KERNEL_TYPE_INCOMPLETE')
+    matches = [row.kind for row in rows[:copied // ctypes.sizeof(FDInfo)] if row.fd == fd]
+    if len(matches) != 1:
+        raise ValueError('PIPE_KERNEL_TYPE_UNRESOLVED')
+    return matches[0]
+
+
+def _anonymous_pipe_authority(fd):
+    info = os.fstat(fd)
+    if not stat.S_ISFIFO(info.st_mode) or info.st_nlink != 0:
+        raise ValueError('FD_NOT_ANONYMOUS_PIPE')
+    if sys.platform == 'darwin' and _darwin_fd_type(fd) == 6:  # PROX_FDTYPE_PIPE
+        return 'DARWIN_KERNEL_PIPE_TYPE'
+    if (sys.platform.startswith('linux')
+            and os.readlink(f'/proc/self/fd/{fd}') == f'pipe:[{info.st_ino}]'):
+        return 'LINUX_PROC_ANONYMOUS_PIPE_IDENTITY'
+    raise ValueError('ANONYMOUS_PIPE_AUTHORITY_UNRESOLVED')
+
+
 def _canonical_entry(path, seen=None):
     try:
         parent = path.parent.resolve(strict=True)
@@ -115,8 +150,9 @@ class _MutationTargets:
 
     def __init__(self):
         self.pins = []
+        self.pipe_pins = {}
 
-    def descriptor(self, fd, *, directory):
+    def descriptor(self, fd, *, directory, allow_pipe=False):
         if type(fd) is not int or fd < 0:
             raise ValueError('FD_INVALID')
         before = _file_identity(os.fstat(fd))
@@ -126,6 +162,11 @@ class _MutationTargets:
             raise ValueError('FD_REUSE_MISMATCH')
         if directory and before[2] != stat.S_IFDIR:
             raise ValueError('DIR_FD_NOT_DIRECTORY')
+        if allow_pipe and not directory and before[2] == stat.S_IFIFO:
+            authority = _anonymous_pipe_authority(pinned)
+            self.pipe_pins[pinned] = authority
+            return None, dict(fd=fd, directory_required=False, identity=list(before),
+                authority=authority)
         if before[2] not in (stat.S_IFDIR, stat.S_IFREG):
             raise ValueError('FD_NOT_FILESYSTEM_TARGET')
         path = _descriptor_path(pinned)
@@ -137,13 +178,18 @@ class _MutationTargets:
         return path, dict(fd=fd, directory_required=directory,
             identity=list(before), canonical_directory_or_file=str(path))
 
-    def resolve(self, raw, fd=-1, *, role='target', base=None):
+    def resolve(self, raw, fd=-1, *, role='target', base=None, allow_pipe=False):
         record = dict(role=role, raw_path=os.fsdecode(raw) if isinstance(raw, (str, bytes, os.PathLike))
             else raw if type(raw) is int else None, dir_fd=fd, fd_identity=None)
         if type(raw) is int:
             if fd not in (None, -1) or base is not None:
                 raise ValueError('AMBIGUOUS_FILE_FD')
-            path, record['fd_identity'] = self.descriptor(raw, directory=False)
+            path, record['fd_identity'] = self.descriptor(raw, directory=False, allow_pipe=allow_pipe)
+            if path is None:
+                record.update(path_kind='ANONYMOUS_PIPE_DESCRIPTOR',
+                    resolution_confidence='VERIFIED_ANONYMOUS_IPC_IDENTITY', protected_roots=[],
+                    protected_relation_basis='KERNEL_NON_FILESYSTEM_PIPE')
+                return record
             record['path_kind'] = 'FILE_DESCRIPTOR'
         else:
             if not isinstance(raw, (str, bytes, os.PathLike)):
@@ -187,6 +233,11 @@ class _MutationTargets:
             if (_file_identity(os.fstat(original)) != identity
                     or _file_identity(os.fstat(pinned)) != identity):
                 raise ValueError('FD_REUSE_MISMATCH')
+            if pinned in self.pipe_pins:
+                if any(_anonymous_pipe_authority(fd) != self.pipe_pins[pinned]
+                        for fd in (original, pinned)):
+                    raise ValueError('PIPE_AUTHORITY_CHANGED')
+                continue
             path = _descriptor_path(pinned)
             if not path.is_absolute() or _file_identity(path.resolve(strict=True).stat()) != identity:
                 raise ValueError('FD_PATH_IDENTITY_MISMATCH')
@@ -229,7 +280,7 @@ class ManualMutationGuard:
                 # cannot be distinguished from one based on a protected fd.
                 if mode is None and not isinstance(path, int) and not Path(os.fsdecode(path)).is_absolute():
                     raise ValueError('OPEN_DIR_FD_NOT_OBSERVABLE')
-                targets.append(resolver.resolve(path))
+                targets.append(resolver.resolve(path, allow_pipe=True))
             elif event in {'os.rename', 'os.link'}:
                 src, dst, src_fd, dst_fd = args
                 targets.append(resolver.resolve(src, src_fd, role='source'))
@@ -259,6 +310,8 @@ class ManualMutationGuard:
                 targets.append(resolver.resolve(path))
             resolver.verify()
             for target in targets:
+                if target['path_kind'] == 'ANONYMOUS_PIPE_DESCRIPTOR':
+                    continue
                 paths = [Path(target[key]) for key in
                     ('lexical_absolute_target', 'canonical_entry', 'canonical_target')]
                 ancestor_identities = set()
@@ -271,11 +324,14 @@ class ManualMutationGuard:
                     if any(path == root or root in path.parents for path in paths)
                     or self.root_identities[root] in ancestor_identities]
                 target['protected_relation_basis'] = 'PATH_CONTAINMENT_AND_FILESYSTEM_ANCESTOR_IDENTITY'
-            receipt['resolution_confidence'] = 'VERIFIED_FILESYSTEM_IDENTITY'
+            pipe_open = event == 'open' and targets[0]['path_kind'] == 'ANONYMOUS_PIPE_DESCRIPTOR'
+            receipt['resolution_confidence'] = ('VERIFIED_ANONYMOUS_IPC_IDENTITY' if pipe_open
+                else 'VERIFIED_FILESYSTEM_IDENTITY')
             if any(target['protected_roots'] for target in targets):
                 receipt['reason'] = 'PROTECTED_ROOT'
             else:
-                receipt.update(decision='ALLOW', reason='OUTSIDE_PROTECTED_ROOTS')
+                receipt.update(decision='ALLOW', reason='VERIFIED_ANONYMOUS_PIPE_OPEN' if pipe_open
+                    else 'OUTSIDE_PROTECTED_ROOTS')
         except (OSError, ValueError, TypeError, RuntimeError) as exc:
             receipt['reason'] = 'TARGET_RESOLUTION_FAILED:' + type(exc).__name__
             receipt['resolution_error'] = str(exc)

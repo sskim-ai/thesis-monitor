@@ -1,5 +1,6 @@
 """Filesystem ownership proof, without touching actual production paths."""
 import os
+import json
 from pathlib import Path
 import subprocess
 import sys
@@ -7,6 +8,102 @@ import sys
 import pytest
 
 from scripts import qualified_official_launch_context as q
+
+
+def test_verified_anonymous_pipe_write_open(targets):
+    guard, _, _, _, _ = targets
+    reader, writer = os.pipe()
+    try:
+        guard('open', (writer, 'w', os.O_WRONLY))
+        receipt = guard.receipts[-1]
+        assert receipt['reason'] == 'VERIFIED_ANONYMOUS_PIPE_OPEN'
+        assert receipt['targets'][0]['path_kind'] == 'ANONYMOUS_PIPE_DESCRIPTOR'
+        assert receipt['resolution_confidence'] == 'VERIFIED_ANONYMOUS_IPC_IDENTITY'
+        assert 'canonical_target' not in receipt['targets'][0]
+        for event, args in [('os.truncate', (writer, 0)), ('os.chmod', (writer, 0o600, -1)),
+                ('os.chown', (writer, os.getuid(), os.getgid(), -1)),
+                ('os.remove', ('item', writer))]:
+            with pytest.raises(q.LaunchQualificationError):
+                guard(event, args)
+    finally:
+        os.close(reader)
+        os.close(writer)
+
+
+@pytest.mark.parametrize('unlinked', [False, True])
+def test_named_fifo_is_not_anonymous_ipc(targets, unlinked):
+    guard, protected, _, _, _ = targets
+    fifo = protected / 'fifo'
+    os.mkfifo(fifo)
+    fd = os.open(fifo, os.O_RDWR | os.O_NONBLOCK)
+    try:
+        if unlinked:
+            fifo.unlink()
+        with pytest.raises(q.LaunchQualificationError):
+            guard('open', (fd, 'w', os.O_WRONLY))
+    finally:
+        os.close(fd)
+
+
+def test_pipe_unknown_authority_denies(targets, monkeypatch):
+    guard, _, _, _, _ = targets
+    reader, writer = os.pipe()
+    def unavailable(fd):
+        raise OSError('kernel authority unavailable')
+    monkeypatch.setattr(q, '_anonymous_pipe_authority', unavailable)
+    try:
+        with pytest.raises(q.LaunchQualificationError):
+            guard('open', (writer, 'w', os.O_WRONLY))
+        assert guard.receipts[-1]['decision'] == 'DENY'
+    finally:
+        os.close(reader)
+        os.close(writer)
+
+
+def test_pipe_descriptor_reuse_denies(targets, monkeypatch):
+    guard, protected, _, _, _ = targets
+    reader, writer = os.pipe()
+    file_fd = os.open(protected / 'item', os.O_RDWR)
+    authority = q._anonymous_pipe_authority
+    def swap_original(fd):
+        value = authority(fd)
+        os.dup2(file_fd, writer)
+        return value
+    monkeypatch.setattr(q, '_anonymous_pipe_authority', swap_original)
+    try:
+        with pytest.raises(q.LaunchQualificationError):
+            guard('open', (writer, 'w', os.O_WRONLY))
+        assert guard.receipts[-1]['resolution_error'] == 'FD_REUSE_MISMATCH'
+        assert (protected / 'item').read_text() == 'preserve'
+    finally:
+        for fd in (reader, writer, file_fd):
+            os.close(fd)
+
+
+def test_actual_subprocess_stdin_under_installed_guard(tmp_path):
+    code = r'''
+import json, subprocess, sys
+from pathlib import Path
+from scripts.qualified_official_launch_context import ManualMutationGuard
+root = Path(sys.argv[1]); protected = root / 'protected'; protected.mkdir()
+guard = ManualMutationGuard([protected, Path.cwd()])
+sys.addaudithook(guard)
+payload = b'exact synthetic stdin\x00bytes\n'
+with (root/'events').open('xb') as events, (root/'errors').open('xb') as errors:
+    result = subprocess.run([sys.executable, '-B', '-c',
+        'import sys; sys.stdout.buffer.write(sys.stdin.buffer.read())'],
+        input=payload, stdout=events, stderr=errors, cwd=root, timeout=10, check=False)
+assert result.returncode == 0
+assert (root/'events').read_bytes() == payload
+assert (root/'errors').read_bytes() == b''
+assert guard.blocked_attempts == 0
+assert any(r['reason'] == 'VERIFIED_ANONYMOUS_PIPE_OPEN' for r in guard.receipts)
+print(json.dumps({'status': 'PASS', 'receipts': guard.receipts}))
+'''
+    result = subprocess.run([sys.executable, '-B', '-c', code, str(tmp_path)],
+        cwd=Path(__file__).resolve().parents[1], capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout)['status'] == 'PASS'
 
 
 @pytest.fixture

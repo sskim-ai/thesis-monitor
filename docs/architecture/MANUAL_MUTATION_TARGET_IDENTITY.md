@@ -37,7 +37,7 @@ ancestors, so case-insensitive filesystem aliases do not gain new authority.
 | `os.rename`, `os.link` | independent source/destination FD and path checks |
 | `os.symlink` | destination FD; relative referent relative to link parent |
 | `os.truncate` | plain path or verified file descriptor |
-| `open` write | absolute path, builtin cwd-relative path, or verified file FD |
+| `open` write | absolute path, builtin cwd-relative path, verified file FD, or verified anonymous pipe FD |
 | `sqlite3.connect` | plain filesystem path only; URI/special targets deny |
 
 `unlink` aliases `os.remove`; `replace` aliases `os.rename` at this audit surface.
@@ -50,6 +50,30 @@ Event signatures were checked against the official
 [Python audit table](https://docs.python.org/3.11/library/audit_events.html) and
 [filesystem API semantics](https://docs.python.org/3.11/library/os.html#dir-fd).
 Darwin's local SDK `sys/fcntl.h` defines `F_GETPATH` as 50.
+
+## Anonymous Stdin Pipe
+
+An actual `subprocess.run(input=bytes)` probe found that Python opens its anonymous
+stdin pipe with `io.open(fd, 'wb')` before launching the child. The initial
+filesystem-only FD resolver rejected this legitimate IPC target. The original
+failure and stop report are preserved; a user-authorized, pre-source repair adds
+a separate `ANONYMOUS_PIPE_DESCRIPTOR` target for write-open only.
+
+This target must be an unlinked FIFO by `fstat` and have positive kernel authority:
+Darwin `proc_pidinfo(PROC_PIDLISTFDS)` must identify `PROX_FDTYPE_PIPE`, or Linux
+`/proc/self/fd` must return the exact `pipe:[inode]` identity. Darwin constants and
+the `proc_fdinfo` layout come from Apple's
+[sys/proc_info.h](https://github.com/apple-oss-distributions/xnu/blob/main/bsd/sys/proc_info.h).
+Both original and pinned descriptors are rechecked. Missing authority, named or
+unlinked named FIFOs, sockets, closed descriptors and observed reuse deny.
+Truncate/chmod/chown and directory-FD uses remain filesystem-only. No pipe is
+treated as a filesystem path outside the protected roots; its receipt explicitly
+records verified non-filesystem IPC ownership. This permits parent stdin wiring,
+not arbitrary child actions or new model authorization.
+
+Regression proof must use an actual subprocess under the installed audit hook,
+with exact synthetic stdin bytes and file stdout/stderr. A mocked transport
+preflight alone cannot qualify this path.
 
 ## Proof Boundaries
 
