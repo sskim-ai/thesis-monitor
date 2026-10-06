@@ -19,6 +19,12 @@ one denied metric cannot deny another usable metric. Downstream business gates,
 model stances, private observation classifications and evaluability verdicts
 are not serialized into the blind request. Axis ref permissions are not stances.
 
+Blind source assembly uses the same `shadow_request_context` boundary as B2.
+A typed unavailable price becomes a mapping with a null value and its existing
+price-state receipt reference, never a reconstructed price. Available-price
+inputs remain unchanged. Native metrics with context-only price dependencies
+remain independently usable; missing timing cannot veto fundamental judgment.
+
 Every axis has a judgment, exact source refs, qualitative rationale, and diagnostic
 confidence. No numeric literals are permitted in these rationales. This is a
 bounded numeric-claim check, not a claim that arbitrary prose is fully understood.

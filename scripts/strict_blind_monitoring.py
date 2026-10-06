@@ -10,6 +10,7 @@ from tempfile import TemporaryDirectory
 from types import MethodType, SimpleNamespace
 
 from app.services.unified_snapshot_contract import digest
+from app.services.unavailable_price_valuation import shadow_request_context
 from scripts import r2b_r5_execution as native
 from scripts import strict_blind_contract as blind
 from scripts import newbuyer_b2_v2_shadow as b2
@@ -44,7 +45,8 @@ def from_sources(*, whole, local_seeds, valuation_contexts, generation, coverage
                 authority=deepcopy(data["initial_chain"]["authority"]),
                 frozen_fact_fields=native.c.policy.frozen_fact_fields(stock["packet"], ticker, sub["decision_evidence"]),
                 valuation_context=deepcopy(valuation_contexts[ticker]), coverage=deepcopy(coverage), census=deepcopy(census),
-                current_price=deepcopy(sub["current_price"]), tactical_candidates=deepcopy(sub["tactical_candidates"]))
+                current_price=deepcopy(shadow_request_context(sub, stock)["current_price"]),
+                tactical_candidates=deepcopy(sub["tactical_candidates"]))
     markets = {market: project_sealed_market_context(packet, whole["seed"], whole["authority_graph"],
         expected_authority_sha256=whole["authority_graph_sha256"]) for market, packet in whole["packets"].items()}
     return dict(prepared=prepared, stocks=stocks, markets=markets, valuation_contexts=deepcopy(valuation_contexts),
@@ -143,7 +145,6 @@ class NativeSession:
 
     def b2_request(self, ticker):
         e = self.execution
-        from app.services.unavailable_price_valuation import shadow_request_context
         v1 = b1.build_request(settings=SimpleNamespace(newbuyer_qualified_valuation_shadow=True),
             context=shadow_request_context(e.bctx[ticker], e.fresh_stocks[ticker]), accepted=e.brows[ticker],
             core=e.cores[ticker], pass_a=e.arows[ticker], source_generation_id=e.source_gen)
