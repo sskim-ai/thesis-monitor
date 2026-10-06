@@ -19,7 +19,18 @@ from scripts.m12da_source_use_contract import (
     canonical_sha256, canonical_source_metadata_sha256,
 )
 
-CONTRACT = "strict-blind-seven-axis-v1"
+CONTRACT = "strict-blind-seven-axis-v2"
+CAPABILITY_CONTRACT = dict(
+    contract="blind-capability-contract-v2",
+    timing_owner="newbuyer_b2_contract.timing",
+    timing_binding="exact selected range AND same-basis current-price refs",
+    risk_owner="r2b_r2_contract.policy.observations",
+    absolute_accounting_loss="CONTEXT_ONLY; not automatic active material risk",
+    holder_review="active risk AND admitted adverse observation",
+    holder_reduce="active risk AND verified persistence or realized impairment",
+    source_capability_is_economic_judgment=False,
+    ticker_exceptions=[],
+)
 AXES = {
     "overall_direction": ["BUY", "HOLD", "SELL"],
     "new_buyer": ["ATTRACTIVE", "WAIT", "AVOID"],
@@ -43,15 +54,26 @@ RUBRIC = {
     "usable_metric_requires_resolved_valuation_judgment": True,
     "positive_eligible_business_supportive_no_risk_requires_attractive": True,
     "economic_agreement_threshold": None, "ticker_exceptions": [],
+    "capability_contract_sha256": digest(CAPABILITY_CONTRACT),
 }
 PROMPT = """Independently assess the seven axes from this source-only package.
 Do not use tools, external knowledge, earlier judgments, ticker targets or desired distributions.
 Overall BUY/HOLD/SELL concerns observed business direction, not price or valuation.
 NewBuyer ATTRACTIVE/WAIT/AVOID concerns fundamental/valuation attractiveness, separate from timing.
 Entry timing is FAVORABLE_NOW, WAIT_FOR_ZONE or UNRESOLVED, never a fundamental fair-value claim.
+For non-UNRESOLVED timing choose an exposed timing_relation with that state and cite its
+complete required_evidence_refs, including the current-price ref. Generic risk/reward,
+resistance, chart state or proximity does not replace an owned range relation.
+FAVORABLE_NOW requires current price INSIDE an owned range; ABOVE/BELOW supports WAIT_FOR_ZONE.
 Holder is HOLDABLE, REVIEW or REDUCE. Holding-relevant observed material risk supports REVIEW;
 REDUCE needs verified persistent deterioration or realized impairment, not one weak period.
+REVIEW and REDUCE require active_material_risk=true and the corresponding admitted refs in
+capabilities.risk. There is no separate watch-only REVIEW capability in this contract.
 Active material risk is a separate boolean judgment grounded in observed adverse business evidence.
+Use only capabilities.risk.adverse_refs for an active risk. Capabilities describe evidence
+permissions, not severity or investment recommendations. No adverse refs means risk=false.
+A reported accounting loss and a narrowing loss can coexist. Absolute-level context does
+not convert directional improvement into deterioration or grant material-risk permission.
 An active material risk requires NewBuyer AVOID. Do not convert missing data or a future condition into a realized risk.
 When a relevant metric is usable, valuation is EVALUABLE and SUPPORTIVE/NEUTRAL/BURDENSOME.
 Only complete typed denials of all relevant metrics support ALL_RELEVANT_METRICS_UNUSABLE and UNRESOLVED.
@@ -90,6 +112,50 @@ def reject_contamination(value):
 
 def _refs(records, predicate):
     return sorted(ref for ref, row in records.items() if predicate(row))
+
+
+def _risk_capability(observations):
+    rows = list(observations.values())
+    adverse = [r for r in rows if r["effect"] in business.ADVERSE]
+    persistent = [r for r in adverse if r["persistence_verified"] or r["impairment_realized"]]
+    return dict(adverse_refs=sorted({r["source_ref"] for r in adverse}),
+        persistent_refs=sorted({r["source_ref"] for r in persistent}),
+        improvement_refs=sorted({r["source_ref"] for r in rows if r["effect"] == business.Effect.POSITIVE}),
+        deterioration_refs=sorted({r["source_ref"] for r in rows if r["effect"] == business.Effect.DETERIORATION}),
+        no_adverse_capability=not adverse, automatic_materiality=False,
+        review_requires_active_risk=True, reduce_requires_verified_persistence_or_impairment=True)
+
+
+def _capabilities(inputs, generation, observations, relations, evidence):
+    binding = {k: inputs[k] for k in ("source_generation_id", "security_id", "ticker", "source_sha256")}
+    binding.update(generation=generation, source_input_sha256=digest(inputs))
+    absolute = []
+    for row in observations.values():
+        scope = row["financial_scope"]
+        period = scope.get("current_period")
+        if not isinstance(period, dict) and row.get("fact_binding") and all(scope.get(k) for k in
+                ("period_start", "period_end", "period_type", "currency", "issuer_id", "statement_basis")):
+            period = {k: deepcopy(scope[k]) for k in
+                ("period_start", "period_end", "period_type", "currency", "issuer_id", "statement_basis")}
+        nested_period = isinstance(period, dict) and all(period.get(k) for k in
+            ("start", "end", "period_type", "currency", "entity_scope", "statement_basis"))
+        canonical_period = isinstance(period, dict) and all(period.get(k) for k in
+            ("period_start", "period_end", "period_type", "currency", "issuer_id", "statement_basis"))
+        value = business.number(row["value"])
+        if (row["metric"] != "operating_income" or value is None or value >= 0
+                or not (nested_period or canonical_period)):
+            continue
+        absolute.append(dict(kind="ABSOLUTE_LEVEL_ADVERSE_STATE", proposition="REPORTED_OPERATING_LOSS",
+            evidence_ref=row["source_ref"], value=row["value"], period=deepcopy(period),
+            source_sha256=evidence[row["source_ref"]]["source_sha256"],
+            observation_id=row["observation_id"], permitted_use="CONTEXT_ONLY",
+            grants_active_material_risk=False, binding=deepcopy(binding)))
+    return dict(contract=deepcopy(CAPABILITY_CONTRACT), binding=binding,
+        timing_relations=deepcopy(relations), risk=_risk_capability(observations),
+        absolute_level_context=absolute,
+        observation_roles=[dict(observation_id=r["observation_id"], evidence_ref=r["source_ref"],
+            effect=r["effect"], persistence_verified=r["persistence_verified"],
+            impairment_realized=r["impairment_realized"]) for r in observations.values()])
 
 
 def project_subject(inputs, *, generation):
@@ -141,8 +207,7 @@ def project_subject(inputs, *, generation):
                 if b["blocker_ref"] in row["exact_blocker_refs"]],
             relevant=row["relevant"], source_sha256=digest(row),
             allowed_uses=["VALUATION"] if fact else [])
-    # Deterministic observations check evidence capability privately. Their polarity
-    # and downstream classifications are deliberately absent from the model input.
+    # Expose source permissions, never an earlier model's severity or stock judgment.
     observations = business.observations(metadata, authority, inputs["frozen_fact_fields"])
     ranges = tactical_catalog(dict(current_price=inputs["current_price"], decision_evidence=metadata,
         source_use_projection=dict(source_permissions=list(owners.values())),
@@ -154,7 +219,15 @@ def project_subject(inputs, *, generation):
             tactical_catalog=ranges, current_price=inputs["current_price"],
             selected_tactical_candidate=candidate["candidate_id"]))
         if relation["state"] != "UNRESOLVED":
-            timing_options.append(dict(state=relation["state"], evidence_refs=candidate["evidence_refs"]))
+            required = sorted(set(relation["evidence_refs"]))
+            require(required and all(r in evidence and bool({"ENTRY", "PRICE_ENTRY_CONTEXT"}
+                & set(evidence[r]["allowed_uses"])) for r in required), "BLIND_TIMING_RELATION_SOURCE_GAP")
+            owned = dict(state=relation["state"], required_evidence_refs=required,
+                evidence_refs=required, candidate=deepcopy(candidate), owner_result=deepcopy(relation),
+                generation=generation, source_generation_id=inputs["source_generation_id"],
+                security_id=inputs["security_id"], ticker=ticker, source_input_sha256=digest(inputs),
+                ref_sha256={r: evidence[r]["source_sha256"] for r in required})
+            timing_options.append(dict(relation_id="owned-timing:" + digest(owned), **owned))
     directional = sorted({r["source_ref"] for r in observations.values()})
     context = _refs(evidence, lambda r: r["kind"] == "SOURCE" and "CONTEXT" in r["allowed_uses"])
     timing_refs = _refs(evidence, lambda r: r["kind"] == "SOURCE" and bool(
@@ -174,6 +247,7 @@ def project_subject(inputs, *, generation):
         fact_fields=deepcopy(inputs["frozen_fact_fields"]),
         current_price=deepcopy(inputs["current_price"]),
         tactical_candidates=deepcopy(ranges),
+        capabilities=_capabilities(inputs, generation, observations, timing_options, evidence),
         ownership=dict(source_authority_sha256=authority["authority_manifest_sha256"],
             coverage_sha256=coverage["receipt_sha256"], census_sha256=census["receipt_sha256"]),
         rubric_sha256=digest(RUBRIC))
@@ -206,6 +280,23 @@ def response_schema(subject):
                 "minItems": 1, "maxItems": len(subject["axis_eligible_refs"][name]), "uniqueItems": True},
             rationale={"type": "string", "minLength": 1, "maxLength": 500},
             confidence={"type": "string", "enum": ["LOW", "MEDIUM", "HIGH"]}))
+    choices = []
+    for relation in subject["capabilities"]["timing_relations"]:
+        option = deepcopy(axes["entry_timing"])
+        option["properties"]["judgment"] = {"const": relation["state"]}
+        refs = relation["required_evidence_refs"]
+        option["properties"]["evidence_refs"] = dict(type="array", items=dict(type="string", enum=refs),
+            minItems=len(refs), maxItems=len(refs), uniqueItems=True)
+        choices.append(option)
+    unresolved = deepcopy(axes["entry_timing"])
+    unresolved["properties"]["judgment"] = {"const": "UNRESOLVED"}
+    axes["entry_timing"] = {"anyOf": choices + [unresolved]}
+    risk = subject["capabilities"]["risk"]
+    if not risk["adverse_refs"]:
+        axes["active_material_risk"]["properties"]["judgment"] = {"const": False}
+        axes["holder"]["properties"]["judgment"] = {"const": "HOLDABLE"}
+    elif not risk["persistent_refs"]:
+        axes["holder"]["properties"]["judgment"]["enum"] = ["HOLDABLE", "REVIEW"]
     return obj(dict(contract={"const": CONTRACT},
         **{k: {"const": subject[k]} for k in ("generation", "source_generation_id", "ticker", "security_id")},
         subject_sha256={"const": digest(subject)}, axes=obj(axes)))
@@ -222,7 +313,12 @@ def validate_output(output, subject, audit):
     errors = validate_json_schema(output, response_schema(subject))
     if errors:
         return dict(status="FAIL", category="SOURCE_BINDING", errors=errors, retryable=False)
-    axes = output["axes"]
+    return _validate_axes(output["axes"], subject, audit)
+
+
+def _validate_axes(axes, subject, audit):
+    """Semantic layer only; never an output admission without validate_output binding."""
+    errors = []
     judgments = {k: v["judgment"] for k, v in axes.items()}
     def need(ok, code):
         if not ok:
@@ -271,7 +367,7 @@ def validate_output(output, subject, audit):
         need(all(bool({"ENTRY", "PRICE_ENTRY_CONTEXT"} & set(subject["evidence"][r]["allowed_uses"]))
             for r in axes["entry_timing"]["evidence_refs"]), "TIMING_WITHOUT_PRICE_EVIDENCE")
         selected = set(axes["entry_timing"]["evidence_refs"])
-        need(any(r["state"] == judgments["entry_timing"] and set(r["evidence_refs"]) <= selected
+        need(any(r["state"] == judgments["entry_timing"] and set(r["evidence_refs"]) == selected
             for r in audit["timing_options"]), "TIMING_WITHOUT_OWNED_RANGE_RELATION")
     return dict(status="FAIL" if errors else "PASS", category="CONTRACT_SEMANTICS", errors=errors,
         retryable=False, economic_correctness_proven=False,

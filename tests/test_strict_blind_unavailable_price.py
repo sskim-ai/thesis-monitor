@@ -74,7 +74,9 @@ def test_typed_unavailable_price_preserves_independent_metrics(tmp_path, monkeyp
     raw["axes"]["entry_timing"]["judgment"] = "FAVORABLE_NOW"
     failed = blind.validate_output(raw, subject, audit)
     assert failed["status"] == "FAIL" and not failed["retryable"]
-    assert "TIMING_WITHOUT_OWNED_RANGE_RELATION" in failed["errors"]
+    assert "$.axes.entry_timing:no_anyOf_match" in failed["errors"]
+    assert "TIMING_WITHOUT_OWNED_RANGE_RELATION" in blind._validate_axes(
+        raw["axes"], subject, audit)["errors"]
 
 
 def test_available_price_assembly_bytes_unchanged(tmp_path, monkeypatch):

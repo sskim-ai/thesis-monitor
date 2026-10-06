@@ -95,7 +95,7 @@ def response(subject, audit, *, risk=False, timing="WAIT_FOR_ZONE", valuation="S
     refs["valuation_evaluability"] = usable[:1] if usable else audit["evaluability"]["relevant_valuation_metric_refs"]
     refs["valuation_state"] = usable[:1] if usable else refs["valuation_evaluability"]
     refs["new_buyer"] = ["source:business"] + usable[:1]
-    refs["entry_timing"] = ["source:zone"] if timing != "UNRESOLVED" else ["source:price"]
+    refs["entry_timing"] = ["source:price", "source:zone"] if timing != "UNRESOLVED" else ["source:price"]
     return dict(contract=blind.CONTRACT, **{k: subject[k] for k in
         ("generation", "source_generation_id", "ticker", "security_id")}, subject_sha256=digest(subject),
         axes={k: dict(judgment=v, evidence_refs=refs[k], rationale="Observed source evidence; uncertainty remains.",

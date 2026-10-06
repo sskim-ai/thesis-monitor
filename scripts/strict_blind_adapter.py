@@ -7,12 +7,17 @@ from scripts import strict_blind_comparison as comparison
 from scripts.strict_blind_controller import RequestScope
 
 
+def schema_authority():
+    return dict(contract=contract.CONTRACT, builder="strict_blind_contract.response_schema",
+        capabilities=deepcopy(contract.CAPABILITY_CONTRACT),
+        axes=deepcopy(contract.AXES), subject_binding="exact source-only subset digest")
+
+
 def authorities(plan, source_dag):
     """These are real locked contracts; invented fixtures are only transport data."""
     return dict(blind_rubric=deepcopy(contract.RUBRIC),
         blind_prompt=contract.PROMPT,
-        blind_schema=dict(contract=contract.CONTRACT, builder="strict_blind_contract.response_schema",
-            axes=deepcopy(contract.AXES), subject_binding="exact source-only subset digest"),
+        blind_schema=schema_authority(),
         comparison=deepcopy(comparison.AUTHORITY), acceptance=deepcopy(comparison.ACCEPTANCE),
         blind_controller_policy=dict(model=plan["model"], effort=plan["effort"], timeout_seconds=600,
             retries=2, physical_cap=30, semantic_retry=False, mode="CLEAN_START"),
@@ -31,6 +36,8 @@ class BlindSubjectAdapter:
             "BLIND_UNDECLARED_VIEW")
         contract.require(view["blind_rubric"] == contract.RUBRIC and view["blind_prompt"] == contract.PROMPT,
             "BLIND_PROMPT_RUBRIC_DRIFT")
+        contract.require(view["blind_schema"] == schema_authority(),
+            "BLIND_CAPABILITY_SCHEMA_DRIFT")
         package = view["blind_package"]
         contract.require(package["rubric_sha256"] == digest(contract.RUBRIC), "BLIND_PACKAGE_RUBRIC_DRIFT")
         subject = package["subjects"][self.ticker]
