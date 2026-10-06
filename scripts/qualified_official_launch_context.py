@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path
 import stat
+import sys
 
 from app.services.official_codex_shadow_transport_service import (
     OfficialShadowError,
@@ -56,33 +57,234 @@ def inventory_names():
         "GRPC_DEFAULT_SSL_ROOTS_FILE_PATH", "NIX_SSL_CERT_FILE"]))
 
 
+MUTATION_TARGET_CONTRACT = 'manual-mutation-target-identity-v1'
+_MUTATION_EVENTS = frozenset({'open', 'os.remove', 'os.rmdir', 'os.mkdir', 'os.chmod',
+    'os.chown', 'os.truncate', 'os.rename', 'os.link', 'os.symlink', 'sqlite3.connect'})
+
+
+def _file_identity(value):
+    return (value.st_dev, value.st_ino, stat.S_IFMT(value.st_mode))
+
+
+def _descriptor_path(fd):
+    if sys.platform == 'darwin':
+        import fcntl
+        # F_GETPATH is 50 in the Darwin SDK (sys/fcntl.h).
+        raw = fcntl.fcntl(fd, getattr(fcntl, 'F_GETPATH', 50), b'\0' * 1024)
+        return Path(os.fsdecode(raw.split(b'\0', 1)[0]))
+    if sys.platform.startswith('linux'):
+        return Path(os.readlink(f'/proc/self/fd/{fd}'))
+    raise ValueError('FD_PATH_PLATFORM_UNSUPPORTED')
+
+
+def _canonical_entry(path, seen=None):
+    try:
+        parent = path.parent.resolve(strict=True)
+    except FileNotFoundError:
+        # Path.mkdir(parents=True) first tries the complete path. Resolve missing
+        # components from a verified ancestor, without suppressing other errors.
+        _, parent = _canonical_entry(path.parent, seen)
+    try:
+        parent_info = parent.stat()
+    except FileNotFoundError:
+        pass
+    else:
+        if not stat.S_ISDIR(parent_info.st_mode):
+            raise ValueError('PARENT_NOT_DIRECTORY')
+    entry = Path(os.path.normpath(parent / path.name))
+    try:
+        info = entry.lstat()
+    except FileNotFoundError:
+        return entry, entry
+    if not stat.S_ISLNK(info.st_mode):
+        return entry, entry.resolve(strict=True)
+    seen = set() if seen is None else seen
+    identity = _file_identity(info)
+    if identity in seen:
+        raise ValueError('SYMLINK_CYCLE')
+    seen.add(identity)
+    target = Path(os.readlink(entry))
+    # Unlinking a dangling symlink is valid. Its known parent still owns the
+    # target path; do not treat arbitrary unresolved parent directories as safe.
+    _, canonical = _canonical_entry(target if target.is_absolute() else parent / target, seen)
+    return entry, canonical
+
+
+class _MutationTargets:
+    """Resolve one event while pinning descriptors; never cache a numeric fd."""
+
+    def __init__(self):
+        self.pins = []
+
+    def descriptor(self, fd, *, directory):
+        if type(fd) is not int or fd < 0:
+            raise ValueError('FD_INVALID')
+        before = _file_identity(os.fstat(fd))
+        pinned = os.dup(fd)
+        self.pins.append((fd, pinned, before))
+        if before != _file_identity(os.fstat(pinned)):
+            raise ValueError('FD_REUSE_MISMATCH')
+        if directory and before[2] != stat.S_IFDIR:
+            raise ValueError('DIR_FD_NOT_DIRECTORY')
+        if before[2] not in (stat.S_IFDIR, stat.S_IFREG):
+            raise ValueError('FD_NOT_FILESYSTEM_TARGET')
+        path = _descriptor_path(pinned)
+        if not path.is_absolute():
+            raise ValueError('FD_PATH_NOT_ABSOLUTE')
+        path = path.resolve(strict=True)
+        if _file_identity(path.stat()) != before:
+            raise ValueError('FD_PATH_IDENTITY_MISMATCH')
+        return path, dict(fd=fd, directory_required=directory,
+            identity=list(before), canonical_directory_or_file=str(path))
+
+    def resolve(self, raw, fd=-1, *, role='target', base=None):
+        record = dict(role=role, raw_path=os.fsdecode(raw) if isinstance(raw, (str, bytes, os.PathLike))
+            else raw if type(raw) is int else None, dir_fd=fd, fd_identity=None)
+        if type(raw) is int:
+            if fd not in (None, -1) or base is not None:
+                raise ValueError('AMBIGUOUS_FILE_FD')
+            path, record['fd_identity'] = self.descriptor(raw, directory=False)
+            record['path_kind'] = 'FILE_DESCRIPTOR'
+        else:
+            if not isinstance(raw, (str, bytes, os.PathLike)):
+                raise ValueError('UNKNOWN_PATH_TYPE')
+            value = os.fsdecode(raw)
+            if not value or '\0' in value:
+                raise ValueError('EMPTY_OR_NUL_PATH')
+            path = Path(value)
+            record['path_kind'] = 'ABSOLUTE' if path.is_absolute() else 'RELATIVE'
+            if not path.is_absolute():
+                if base is not None:
+                    anchor = base
+                elif fd not in (None, -1):
+                    anchor, record['fd_identity'] = self.descriptor(fd, directory=True)
+                else:
+                    anchor = Path.cwd().resolve(strict=True)
+                record['anchor'] = str(anchor)
+                path = anchor / path
+            else:
+                record['absolute_path_ignores_dir_fd'] = True
+        lexical = Path(os.path.abspath(path))
+        entry, canonical = _canonical_entry(path)
+        ancestor = canonical
+        while True:
+            try:
+                ancestor_info = ancestor.stat()
+                break
+            except FileNotFoundError:
+                if ancestor.parent == ancestor:
+                    raise ValueError('EXISTING_ANCESTOR_UNRESOLVED')
+                ancestor = ancestor.parent
+        record.update(lexical_absolute_target=str(lexical), canonical_entry=str(entry),
+            canonical_target=str(canonical), symlink_or_traversal_normalized=path != canonical,
+            existing_ancestor=dict(path=str(ancestor), identity=list(_file_identity(ancestor_info))),
+            resolution_confidence='VERIFIED_FILESYSTEM_IDENTITY' if ancestor == canonical else
+                'VERIFIED_ANCESTOR_TARGET_PROJECTION')
+        return record
+
+    def verify(self):
+        for original, pinned, identity in self.pins:
+            if (_file_identity(os.fstat(original)) != identity
+                    or _file_identity(os.fstat(pinned)) != identity):
+                raise ValueError('FD_REUSE_MISMATCH')
+            path = _descriptor_path(pinned)
+            if not path.is_absolute() or _file_identity(path.resolve(strict=True).stat()) != identity:
+                raise ValueError('FD_PATH_IDENTITY_MISMATCH')
+
+    def close(self):
+        for _, pinned, _ in self.pins:
+            os.close(pinned)
+
+
 class ManualMutationGuard:
-    """Parent-only audit guard. It does not observe native CLI housekeeping."""
+    """Parent-only ownership checks, not an OS sandbox or a native-child monitor."""
 
     def __init__(self, roots):
         self.roots = tuple(Path(path).resolve() for path in roots)
+        self.root_identities = {}
+        for root in self.roots:
+            try:
+                self.root_identities[root] = _file_identity(root.stat())
+            except FileNotFoundError:
+                self.root_identities[root] = None
         self.blocked_attempts = 0
+        self.receipts = []
 
     def __call__(self, event, args):
-        paths = []
-        if event == 'open':
-            path, mode, flags = args
-            if (flags & (os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_TRUNC | os.O_APPEND)
-                    or isinstance(mode, str) and any(c in mode for c in 'wax+')):
-                paths = [path]
-        elif event in {'os.remove', 'os.rmdir', 'os.mkdir', 'os.chmod', 'os.chown', 'os.truncate'}:
-            paths = args[:1]
-        elif event in {'os.rename', 'os.link', 'os.symlink'}:
-            paths = args[:2]
-        elif event == 'sqlite3.connect':
-            paths = args[:1]
-        for path in paths:
-            if not isinstance(path, (str, bytes, os.PathLike)):
-                continue
-            path = Path(os.fsdecode(path)).resolve()
-            if any(path == root or root in path.parents for root in self.roots):
-                self.blocked_attempts += 1
-                raise LaunchQualificationError(PREFIX + 'MANUAL_STATE_MUTATION_BLOCKED')
+        if event not in _MUTATION_EVENTS:
+            return
+        receipt = dict(contract=MUTATION_TARGET_CONTRACT, operation=event, targets=[],
+            raw_arguments=[os.fsdecode(arg) if isinstance(arg, (str, bytes, os.PathLike))
+                else arg if arg is None or type(arg) in (int, bool) else type(arg).__name__ for arg in args],
+            decision='DENY', resolution_confidence='UNRESOLVED', reason=None)
+        resolver = _MutationTargets()
+        try:
+            targets = receipt['targets']
+            if event == 'open':
+                path, mode, flags = args
+                if not (flags & (os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_TRUNC | os.O_APPEND)
+                        or isinstance(mode, str) and any(c in mode for c in 'wax+')):
+                    return
+                # os.open's audit event omits dir_fd. A relative raw OS open
+                # cannot be distinguished from one based on a protected fd.
+                if mode is None and not isinstance(path, int) and not Path(os.fsdecode(path)).is_absolute():
+                    raise ValueError('OPEN_DIR_FD_NOT_OBSERVABLE')
+                targets.append(resolver.resolve(path))
+            elif event in {'os.rename', 'os.link'}:
+                src, dst, src_fd, dst_fd = args
+                targets.append(resolver.resolve(src, src_fd, role='source'))
+                targets.append(resolver.resolve(dst, dst_fd, role='destination'))
+            elif event == 'os.symlink':
+                src, dst, fd = args
+                destination = resolver.resolve(dst, fd, role='destination')
+                targets.append(destination)
+                targets.append(resolver.resolve(src, role='symlink_referent',
+                    base=Path(destination['canonical_entry']).parent))
+            elif event in {'os.remove', 'os.rmdir'}:
+                path, fd = args
+                targets.append(resolver.resolve(path, fd))
+            elif event in {'os.mkdir', 'os.chmod'}:
+                path, _, fd = args
+                targets.append(resolver.resolve(path, fd))
+            elif event == 'os.chown':
+                path, _, _, fd = args
+                targets.append(resolver.resolve(path, fd))
+            elif event == 'os.truncate':
+                path, _ = args
+                targets.append(resolver.resolve(path))
+            else:
+                (path,) = args
+                if not isinstance(path, (str, bytes, os.PathLike)) or os.fsdecode(path).startswith(('file:', ':')):
+                    raise ValueError('SQLITE_TARGET_NOT_PLAIN_PATH')
+                targets.append(resolver.resolve(path))
+            resolver.verify()
+            for target in targets:
+                paths = [Path(target[key]) for key in
+                    ('lexical_absolute_target', 'canonical_entry', 'canonical_target')]
+                ancestor_identities = set()
+                for path in {p for value in paths for p in (value, *value.parents)}:
+                    try:
+                        ancestor_identities.add(_file_identity(path.stat()))
+                    except FileNotFoundError:
+                        continue
+                target['protected_roots'] = [str(root) for root in self.roots
+                    if any(path == root or root in path.parents for path in paths)
+                    or self.root_identities[root] in ancestor_identities]
+                target['protected_relation_basis'] = 'PATH_CONTAINMENT_AND_FILESYSTEM_ANCESTOR_IDENTITY'
+            receipt['resolution_confidence'] = 'VERIFIED_FILESYSTEM_IDENTITY'
+            if any(target['protected_roots'] for target in targets):
+                receipt['reason'] = 'PROTECTED_ROOT'
+            else:
+                receipt.update(decision='ALLOW', reason='OUTSIDE_PROTECTED_ROOTS')
+        except (OSError, ValueError, TypeError, RuntimeError) as exc:
+            receipt['reason'] = 'TARGET_RESOLUTION_FAILED:' + type(exc).__name__
+            receipt['resolution_error'] = str(exc)
+        finally:
+            resolver.close()
+        self.receipts.append(receipt)
+        if receipt['decision'] == 'DENY':
+            self.blocked_attempts += 1
+            raise LaunchQualificationError(PREFIX + 'MANUAL_STATE_MUTATION_BLOCKED')
 
 
 @dataclass(frozen=True)

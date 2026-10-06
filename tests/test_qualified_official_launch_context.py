@@ -205,6 +205,7 @@ def test_manual_mutation_guard_denies_parent_writes(tmp_path, monkeypatch, event
 
 
 def test_manual_guard_allows_reads_and_owned_report_files(tmp_path):
+    (tmp_path/'reports').mkdir()
     guard=q.ManualMutationGuard([tmp_path/'protected'])
     guard('open',(tmp_path/'protected/state','r',q.os.O_RDONLY))
     guard('open',(tmp_path/'reports/result','w',q.os.O_WRONLY))
