@@ -8,6 +8,7 @@ from datetime import date, datetime
 import json
 from zoneinfo import ZoneInfo
 
+from app.jobs.probe_krx_night_futures import KRX_FUTURES_DAILY_URL
 from app.services.ai_review_service import _market_packet_session, validate_market_packet_session_parity
 from app.services.fact_consumer_scope_service import (
     MARKET_CONTEXT_CONSUMER_SCOPES, NIGHT_FUTURES_CONSUMER_SCOPES, with_fact_consumer_scopes,
@@ -15,7 +16,9 @@ from app.services.fact_consumer_scope_service import (
 from app.services.market_context_adapter_service import market_context_adapter, NormalizedMarketContext
 from app.services.market_cross_section_service import MarketCrossSection
 from app.services.market_intelligence_service import _SERIES, _observation_fact, _coverage, build_market_intelligence
-from app.services.night_futures import summarize_night_futures, night_futures_context_row, night_futures_timeframe_facts
+from app.services.night_futures import night_futures_context_row, night_futures_timeframe_facts, summarize_night_futures
+from app.services.night_futures_product_scope import SERIES as NIGHT_SERIES
+from app.services.night_futures_session_mapping_service import resolve_us_morning_night_reference_date
 from app.services.numeric_semantic_registry import build_numeric_registry
 from app.services.unified_snapshot_contract import digest
 from app.services.market_display_view import display_origin, market_views
@@ -30,6 +33,71 @@ ROLE = {'us': 'us_market_prices', 'kr': 'kr_local_indices_sectors_breadth'}
 def require(ok, reason):
     if not ok:
         raise ValueError(reason)
+
+
+def project_optional_night(night, *, seed, cutoff):
+    """Bind optional availability to sealed provenance and native eligibility."""
+    value = night['value']
+    require(digest(value) == night['value_sha256'] == seed['run_acquisitions']['night'],
+        'night_authority_mismatch')
+    require(night.get('observed_at') and night.get('original_receipts'), 'PLAN_GAP:night_request_provenance')
+    observed = datetime.fromisoformat(night['observed_at'])
+    start = datetime.fromisoformat(seed['started_at'])
+    require(observed.utcoffset() is not None and start <= observed <= cutoff,
+        'night_sealed_observation_clock_mismatch')
+    clock = resolve_us_morning_night_reference_date(observed)
+    require(clock is not None, 'night_calendar_owner_unresolved')
+    expected = clock.expected_reference_date.isoformat()
+    final = clock.session_clock_finality == 'FINAL_BY_06_00_KST'
+    telemetry = value['telemetry']
+    require(telemetry.get('reference_date_contract') == clock.contract
+        and telemetry.get('expected_reference_date') == expected
+        and telemetry.get('expected_latest_session_date') == expected
+        and telemetry.get('finality_valid') is final, 'night_temporal_finality_provenance_mismatch')
+    dates, statuses = telemetry.get('queried_dates', []), telemetry.get('date_statuses', [])
+    receipts = night['original_receipts']
+    require(dates and expected in dates and len(set(dates)) == len(dates)
+        and len(dates) == len(statuses) == len(receipts), 'PLAN_GAP:night_current_request_coverage')
+    require(night.get('original_run_id') == seed['parent_run_id']
+        and night.get('original_acquisition_id'), 'night_acquisition_identity_mismatch')
+    for day, status, receipt in zip(dates, statuses, receipts, strict=True):
+        request = receipt['request']
+        require(request == dict(method='GET', route=KRX_FUTURES_DAILY_URL,
+            params={'basDd': day.replace('-', '')}) and status['query_date'] == day,
+            'night_request_date_identity_mismatch')
+        require(receipt['run_id'] == night['original_run_id']
+            and receipt['acquisition_id'] == night['original_acquisition_id']
+            and receipt['provider'] == value['provider'] == 'krx_night_futures'
+            and receipt['outcome'] == 'HTTP_RESPONSE'
+            and receipt['http_status'] == status['http_status'] == 200
+            and receipt['artifact_sha256'] == status['raw_payload_sha256']
+                == night['source_hashes'].get(receipt['artifact']), 'night_request_receipt_mismatch')
+        requested, received = (datetime.fromisoformat(receipt[k]) for k in ('requested_at', 'received_at'))
+        require(all(t.utcoffset() is not None for t in (requested, received))
+            and start <= requested <= received <= cutoff, 'night_request_time_mismatch')
+    observations = value['observations']
+    eligible, row_audit = [], []
+    for index, row in enumerate(observations):
+        normalized = {**row, **row['raw_payload']}
+        require(normalized.get('series_code') in NIGHT_SERIES, 'night_unowned_product')
+        # Evaluate separately so the native summary cannot collapse conflicting owners.
+        summary = summarize_night_futures({'observations': [normalized]})
+        current = (final and normalized.get('expected_reference_date') == expected
+            and normalized.get('session_date') == expected and normalized.get('finality_valid') is True)
+        if current:
+            eligible.extend((index, item) for item in summary.items)
+        row_audit.append(dict(index=index, source_sha256=digest(row),
+            current_consumer_eligible=bool(current and summary.items)))
+    require(len(eligible) <= 1, 'INVALID_CONTRADICTORY_OWNERSHIP:night_current_owners')
+    state = ('AVAILABLE_FINAL' if eligible else 'UNAVAILABLE_NO_CURRENT_FINAL_ROW' if final
+             else 'UNAVAILABLE_BEFORE_FINALITY')
+    receipt = dict(state=state, optional=True, coverage_resolved=True,
+        producer_observation_count=len(observations), current_consumer_eligible_count=len(eligible),
+        observation_clock=json.loads(json.dumps(clock.to_dict(), default=str)),
+        source_value_sha256=digest(value), request_provenance_sha256=digest(receipts),
+        producer_rows=row_audit, value=None if not eligible else 'NATIVE_CONSUMER_OWNED',
+        stale_promoted=False, provider_outage_inferred=False)
+    return eligible, receipt
 
 
 def contract_inventory():
@@ -311,19 +379,21 @@ def project_sealed_market_context(packet, seed, graph, *, expected_authority_sha
         coverage[key]['availability_basis'] = 'sealed_published_observation; per-row temporal eligibility remains separate'
     require(len({f['fact_id'] for f in facts}) == len(facts), 'duplicate_source_market_fact')
     night_rows, night_cautions = [], []
+    night_ownership = None
     if market == 'us':
-        observations = packet['night_and_publication_context']['value']['observations']
-        normalized = [{**o, **o['raw_payload']} for o in observations]
-        night = summarize_night_futures({'observations': normalized})
-        require(len(night.items) == len(observations), 'normalized_night_owner_rejected')
-        for item in night.items:
+        eligible, night_ownership = project_optional_night(packet['night_and_publication_context'],
+            seed=seed, cutoff=cutoff)
+        coverage['night_futures'] = dict(status='available' if eligible else 'unavailable',
+            state=night_ownership['state'], optional=True, coverage_resolved=True)
+        for producer_index, item in eligible:
             row = json.loads(json.dumps(night_futures_context_row(item), default=str))
             night_rows.append(row)
             facts.append(dict(fact_id=row['fact_id'], fact_type='night_futures', as_of_date=row['session_date'], fields=row))
             facts.extend(night_futures_timeframe_facts(item))
             for ref in [row['fact_id'], *[f['fact_id'] for f in night_futures_timeframe_facts(item)]]:
-                refs[ref] = ['night_and_publication_context/value/observations/' + str(len(night_rows)-1)]
-        night_cautions = night.cautions
+                refs[ref] = ['night_and_publication_context/value/observations/' + str(producer_index)]
+        if not eligible:
+            night_cautions = ['한국 야간선물은 현재 최종 행을 확인하지 못해 수치와 방향 신호에서 제외했습니다.']
     facts = [with_fact_consumer_scopes(f, NIGHT_FUTURES_CONSUMER_SCOPES
         if f['fact_type'].startswith('night_futures') else MARKET_CONTEXT_CONSUMER_SCOPES) for f in facts]
     facts, numeric_denials = registered_projection(facts)
@@ -334,6 +404,10 @@ def project_sealed_market_context(packet, seed, graph, *, expected_authority_sha
     source = dict(session=session, adapter_context=adapter, fact_catalog=facts, numeric_registry=registry,
         coverage=coverage, night_futures=night_rows, night_futures_cautions=night_cautions,
         optional_denials=deepcopy(packet['optional_denials']), publication_denials=publication_denials)
+    if night_ownership is not None:
+        source['night_futures_ownership'] = night_ownership
+        if not night_rows:
+            source['optional_denials']['night_futures'] = deepcopy(night_ownership)
     projected = dict(market=market, assessment_date=assessed.isoformat(), generated_at=cutoff.isoformat(),
         proof_mode=seed['proof_mode'], market_context=source)
     parity = validate_market_packet_session_parity(projected)
@@ -354,4 +428,5 @@ def project_sealed_market_context(packet, seed, graph, *, expected_authority_sha
             source_authority_sha256=expected_authority_sha256, numeric_boundary=boundary,
             numeric_alias_binding=aliases, provider_refresh=0, source_mutation=False, policy_mutation=False,
             numeric_field_denials=numeric_denials,
+            night_futures_ownership=night_ownership,
             proof_mode=seed['proof_mode'], optional_denials=deepcopy(packet['optional_denials'])))

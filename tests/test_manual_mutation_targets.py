@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+import socket
 
 import pytest
 
@@ -58,6 +59,67 @@ def test_pipe_unknown_authority_denies(targets, monkeypatch):
     finally:
         os.close(reader)
         os.close(writer)
+
+
+@pytest.mark.skipif(not sys.platform.startswith('linux'), reason='actual Linux procfs required')
+@pytest.mark.parametrize('mismatch', ['link', 'stat', 'unresolved'])
+def test_linux_pipe_procfs_fstat_coherence(targets, monkeypatch, mismatch):
+    guard, protected, _, _, _ = targets
+    reader, writer = os.pipe()
+    readlink, stat = os.readlink, os.stat
+    def link(path, *args, **kwargs):
+        if str(path).startswith('/proc/self/fd/'):
+            if mismatch == 'unresolved':
+                raise FileNotFoundError('procfs identity unavailable')
+            if mismatch == 'link':
+                return 'pipe:[0]'
+        return readlink(path, *args, **kwargs)
+    def stat_path(path, *args, **kwargs):
+        if mismatch == 'stat' and str(path).startswith('/proc/self/fd/'):
+            return stat(protected / 'item')
+        return stat(path, *args, **kwargs)
+    monkeypatch.setattr(os, 'readlink', link)
+    monkeypatch.setattr(os, 'stat', stat_path)
+    try:
+        with pytest.raises(q.LaunchQualificationError):
+            guard('open', (writer, 'w', os.O_WRONLY))
+        assert guard.receipts[-1]['decision'] == 'DENY'
+    finally:
+        os.close(reader)
+        os.close(writer)
+
+
+def test_nonpipe_descriptors_never_gain_ipc_authority(targets):
+    guard, protected, _, local, fds = targets
+    left, right = socket.socketpair()
+    file_fd = os.open(local / 'item', os.O_RDWR)
+    protected_fd = os.open(protected / 'item', os.O_RDWR)
+    try:
+        for fd in (left.fileno(), file_fd, protected_fd, fds[0], fds[2]):
+            with pytest.raises(ValueError, match='FD_NOT_ANONYMOUS_PIPE'):
+                q._anonymous_pipe_authority(fd)
+        for fd in (left.fileno(), protected_fd, fds[0]):
+            with pytest.raises(q.LaunchQualificationError):
+                guard('open', (fd, 'w', os.O_WRONLY))
+        guard('open', (file_fd, 'w', os.O_WRONLY))
+        assert guard.receipts[-1]['reason'] != 'VERIFIED_ANONYMOUS_PIPE_OPEN'
+    finally:
+        left.close()
+        right.close()
+        os.close(file_fd)
+        os.close(protected_fd)
+
+
+def test_closed_pipe_descriptor_denies(targets):
+    guard, _, _, _, _ = targets
+    reader, writer = os.pipe()
+    os.close(writer)
+    try:
+        with pytest.raises(q.LaunchQualificationError):
+            guard('open', (writer, 'w', os.O_WRONLY))
+        assert guard.receipts[-1]['decision'] == 'DENY'
+    finally:
+        os.close(reader)
 
 
 def test_pipe_descriptor_reuse_denies(targets, monkeypatch):

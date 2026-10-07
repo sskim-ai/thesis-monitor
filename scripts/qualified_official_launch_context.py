@@ -102,13 +102,19 @@ def _darwin_fd_type(fd):
 
 def _anonymous_pipe_authority(fd):
     info = os.fstat(fd)
-    if not stat.S_ISFIFO(info.st_mode) or info.st_nlink != 0:
+    if not stat.S_ISFIFO(info.st_mode):
         raise ValueError('FD_NOT_ANONYMOUS_PIPE')
-    if sys.platform == 'darwin' and _darwin_fd_type(fd) == 6:  # PROX_FDTYPE_PIPE
-        return 'DARWIN_KERNEL_PIPE_TYPE'
-    if (sys.platform.startswith('linux')
-            and os.readlink(f'/proc/self/fd/{fd}') == f'pipe:[{info.st_ino}]'):
-        return 'LINUX_PROC_ANONYMOUS_PIPE_IDENTITY'
+    if sys.platform == 'darwin':
+        if info.st_nlink == 0 and _darwin_fd_type(fd) == 6:  # PROX_FDTYPE_PIPE
+            return 'DARWIN_KERNEL_PIPE_TYPE'
+    elif sys.platform.startswith('linux'):
+        # Linux anonymous pipes normally have one link. Their positive authority
+        # is the procfs pipe identity, not a filesystem unlink count.
+        proc = f'/proc/self/fd/{fd}'
+        if (os.readlink(proc) == f'pipe:[{info.st_ino}]'
+                and _file_identity(os.stat(proc)) == _file_identity(info)
+                and _file_identity(os.fstat(fd)) == _file_identity(info)):
+            return 'LINUX_PROC_ANONYMOUS_PIPE_IDENTITY'
     raise ValueError('ANONYMOUS_PIPE_AUTHORITY_UNRESOLVED')
 
 

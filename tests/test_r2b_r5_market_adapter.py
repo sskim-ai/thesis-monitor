@@ -9,6 +9,7 @@ from scripts.r2b_r5_market_adapter import (
     PUBLICATIONS, contract_inventory, numeric_alias_audit, project_sealed_market_context,
     registered_projection,
 )
+from tests.night_owner_fixtures import night_fixture
 
 
 def fixture(market='us'):
@@ -34,7 +35,7 @@ def fixture(market='us'):
     source = dict(component=component, run_id='test', attempt_id='test:'+market, cutoff='2026-09-27T08:02:00Z')
     versions = {name:'a'*64 for name in publications}
     denials = dict(kr_market_investor_flows=dict(status='OPTIONAL_UNAVAILABLE', value=None))
-    night = dict(value={'observations': []}, value_sha256=digest({'observations': []}))
+    night = night_fixture()
     seed = dict(parent_run_id='test', attempts={market:'test:'+market}, attempt_hashes={market:digest(source)},
         started_at='2026-09-27T08:00:00Z', optional_denial_set_sha256=digest(denials),
         class_c_version_set_sha256=digest(versions), run_acquisitions=dict(night=night['value_sha256']),
