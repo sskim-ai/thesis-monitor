@@ -37,11 +37,11 @@ _OWNER_SPECS = (
     ("app/services/selected_financial_owner.py", "selected_financial_owner", False),
     ("app/services/security_valuation_basis.py", "security_valuation_basis", False),
     ("app/services/sec_logical_cell_reference.py", "sec_logical_reference_structure", False),
-    ("app/services/unified_full_source_cohort.py", "full_source_composition", True),
+    ("app/services/canonical_source_composition.py", "full_source_composition", True),
     ("app/services/unified_sealed_context.py", "sealed_context", True),
     ("app/services/unified_stock_event_input.py", "stock_event_input", False),
     ("scripts/m12dr_financial_source_authority.py", "financial_source_authority", True),
-    ("scripts/r2b_r5_market_adapter.py", "market_source_projection", False),
+    ("app/services/canonical_market_projection.py", "market_source_projection", False),
     ("scripts/r9_rev11_market_qualification.py", "market_display_qualification", False),
     ("scripts/r9_offline_stage_replay.py", "market_capture_binding", False),
 )

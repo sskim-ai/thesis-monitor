@@ -35,13 +35,10 @@ from scripts.m12ds_r4_r2_selected_source_quality import (
 )
 
 
-def read(path):
-    return json.loads(path.read_bytes())
+from app.services.canonical_monitoring_io import read  # noqa: E402,F401
 
 
-def write(path, value):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2, default=str) + "\n")
+from app.services.canonical_monitoring_io import write  # noqa: E402,F401
 
 
 def sha(path):

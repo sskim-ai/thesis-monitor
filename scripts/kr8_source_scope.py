@@ -1,7 +1,7 @@
 """Explicit KR8 plan admission. Scope is checked before any provider transport."""
 import json
 
-from app.services.sealed_fresh_dispatch import ProviderPlan
+from app.services.sealed_fresh_dispatch import decode_request_plan
 from app.services.unified_stock_acquisition import StockPlan, UNIVERSE
 
 SCOPE = 'KR8_ONLY'
@@ -23,7 +23,7 @@ def require_kr8_plan(frozen):
             {r['subject'] for r in frozen['news_reads']} != set(UNIVERSE['kr']) or
             any(r['market'] != 'kr' for r in frozen['news_reads'])):
         raise ValueError('kr8_source_scope_mismatch')
-    plan = ProviderPlan.model_validate(frozen['plan'])
+    plan = decode_request_plan(frozen['plan'])
     if plan.generation_id != stock.run_id or plan.code_sha != stock.implementation_sha:
         raise ValueError('kr8_plan_identity_mismatch')
     for d in plan.descriptors:

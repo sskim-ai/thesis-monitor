@@ -16,7 +16,7 @@ from app.services.provider_native_valuation_snapshot import (
     KIWOOM_ROUTE,
     FINNHUB_BASE,
 )
-from app.services.sealed_fresh_dispatch import ProviderPlan, consume_bound_result
+from app.services.sealed_fresh_dispatch import decode_request_plan, consume_bound_result
 from app.services.unified_live_source_transport import SourceSafetyStop
 from app.services.unified_run_artifacts import sha256_bytes
 from app.services.unified_snapshot_contract import digest
@@ -187,7 +187,7 @@ def replay_native(*, root, frozen, outcome, security, policy):
     inventory = frozen["valuation_slots"][ticker]
     if inventory["security_sha256"] != digest(security):
         raise ValueError("valuation_slot_security_drift")
-    plan = ProviderPlan.model_validate(frozen["plan"])
+    plan = decode_request_plan(frozen["plan"])
     if plan.generation_id != frozen["generation_id"]:
         raise ValueError("valuation_plan_generation_drift")
     bindings = []

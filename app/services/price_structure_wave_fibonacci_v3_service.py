@@ -9,6 +9,7 @@ from collections.abc import Mapping, Sequence
 from datetime import date, datetime, timedelta, timezone
 from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal
 from enum import StrEnum
+from functools import lru_cache
 from typing import Literal
 from zoneinfo import ZoneInfo
 
@@ -458,6 +459,12 @@ def _parse_observed_at(value: str, *, market: Literal["KR", "US"]) -> datetime:
     return parsed.astimezone(zone)
 
 
+@lru_cache(maxsize=32)
+def _exact_range_calendar(factory, name: str, start: date, end: date):
+    # Calendars are queried only; current market/source observations are not cached.
+    return factory(name, start=start, end=end)
+
+
 def _calendar_for_range(
     market: Literal["KR", "US"],
     *,
@@ -465,10 +472,10 @@ def _calendar_for_range(
     end: date,
 ):
     name = "XKRX" if market == "KR" else "XNYS"
-    return name, exchange_calendar.get_calendar(
-        name,
-        start=start - timedelta(days=370),
-        end=end + timedelta(days=370),
+    return name, _exact_range_calendar(
+        exchange_calendar.get_calendar, name,
+        start - timedelta(days=370),
+        end + timedelta(days=370),
     )
 
 

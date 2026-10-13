@@ -188,20 +188,7 @@ def _manifest_verification(root: Path, *, expected_count: int) -> dict[str, obje
     }
 
 
-def _batch_topology() -> list[dict[str, object]]:
-    rows: list[dict[str, object]] = []
-    for market in ("us", "kr"):
-        subjects = POPULATION[market]
-        for offset in range(0, len(subjects), 3):
-            rows.append(
-                {
-                    "market": market,
-                    "batch": offset // 3 + 1,
-                    "subjects": subjects[offset : offset + 3],
-                }
-            )
-    require(len(rows) == 8, "batch_topology_not_8")
-    return rows
+from app.services.canonical_monitoring_helpers import _batch_topology  # noqa: E402,F401
 
 
 def _load_archived_inputs(
@@ -248,16 +235,7 @@ def _load_archived_inputs(
     return subjects, catalogs, archived_batches
 
 
-def _source_context(ticker: str, row: Mapping[str, object]) -> dict[str, object]:
-    metadata = deepcopy(list(row.get("decision_evidence") or ()))
-    return {
-        "ticker": ticker,
-        "decision_evidence": deepcopy(metadata),
-        "evidence_packets": [{"ticker": ticker, "evidence": deepcopy(metadata)}],
-        "current_price": deepcopy(row.get("current_price")),
-        "tactical_candidates": deepcopy(row.get("tactical_candidates") or []),
-        "security_valuation_basis_state": deepcopy(row.get("security_valuation_basis_state") or {}),
-    }
+from app.services.canonical_monitoring_helpers import _source_context  # noqa: E402,F401
 
 
 def _source_chains(

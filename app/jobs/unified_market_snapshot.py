@@ -34,10 +34,26 @@ class UnqualifiedAdapter:
 
 
 def load_adapter(settings):
-    # No production adapter is qualified by the state-machine fixture alone.
-    # This registry stays closed until concrete source and Market/Core/A/B parity
-    # is proven; a dotted-path setting cannot bypass that qualification.
+    if settings.unified_snapshot_adapter_version == "production-v1":
+        from app.services.production_adapter_factory import build_production_adapter
+        return build_production_adapter(settings)
     return UnqualifiedAdapter()
+
+
+def build_engine(settings, adapter, *, repo_commit, adapter_fingerprint, clock=None):
+    config = RunConfiguration(
+        root=Path(settings.data_dir) / "unified-snapshot-runs",
+        debug_destination=(Path(settings.unified_snapshot_debug_destination)
+                           if settings.unified_snapshot_debug_destination else None),
+        repo_commit=repo_commit, scheduler_identity="unified-runtime",
+        adapter_fingerprint=adapter_fingerprint,
+        runtime_contract=settings.unified_snapshot_runtime_contract,
+        stage_timeout_seconds=600 if settings.unified_snapshot_runtime_contract.endswith("-v2") else 1200,
+        collection_timeout_seconds=600 if settings.unified_snapshot_runtime_contract.endswith("-v2") else 1200,
+        secrets=tuple(value.get_secret_value() if hasattr(value, "get_secret_value") else str(value)
+                      for key, value in settings.model_dump().items() if value and SECRET_KEY.search(key)),
+    )
+    return UnifiedMarketRun(config, adapter, clock=clock)
 
 
 async def run_selected(market, engine, day):
@@ -55,16 +71,10 @@ async def main():
     if not settings.unified_snapshot_enabled:
         print(json.dumps({"status": "DISABLED", "mutations": 0}))
         return
-    config = RunConfiguration(
-        root=Path(settings.data_dir) / "unified-snapshot-runs",
-        debug_destination=(Path(settings.unified_snapshot_debug_destination)
-                           if settings.unified_snapshot_debug_destination else None),
-        repo_commit="UNQUALIFIED", scheduler_identity=f"unified-{args.market}",
-        adapter_fingerprint="UNQUALIFIED",
-        secrets=tuple(str(value) for key, value in settings.model_dump().items()
-                      if value and SECRET_KEY.search(key)),
-    )
-    result = await run_selected(args.market, UnifiedMarketRun(config, load_adapter(settings)),
+    adapter = load_adapter(settings)
+    engine = build_engine(settings, adapter, repo_commit=getattr(adapter, "repository_commit", "UNQUALIFIED"),
+                          adapter_fingerprint=getattr(adapter, "adapter_fingerprint", "UNQUALIFIED"))
+    result = await run_selected(args.market, engine,
                                 datetime.now(KST).date())
     print(json.dumps([{"run_id": r["run_id"], "status": r["status"]} for r in result]))
     if any(r["status"] == "FAILED" for r in result):

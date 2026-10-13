@@ -68,17 +68,14 @@ def binding():
         qualification_path=QUALIFICATION, qualification_sha256="c31565c76cb9d7fc521d21343ccdd45c9515fd3988683f1dbcee1503107936ab")
 
 
-class BatchFailure(ValueError):
-    pass
+from app.services.canonical_monitoring_io import BatchFailure  # noqa: E402,F401
 
 
 class SystemicFailure(ValueError):
     pass
 
 
-def require(ok, code):
-    if not ok:
-        raise BatchFailure(code)
+from app.services.canonical_monitoring_io import require  # noqa: E402,F401
 
 
 def authority_core_schema(context, subjects, authorities):

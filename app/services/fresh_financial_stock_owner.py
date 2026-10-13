@@ -185,6 +185,7 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
             source='source_owned_event_context', event_receipt_sha256=event['receipt']['receipt_sha256'],
             acquisition_class=event['receipt']['acquisition_class'])
     input_hashes = {**result['input_hashes'], 'technical_owner': digest(baseline),
+                   'local': baseline['input_hashes']['local'],
                    'selected_financial_owner': selected_owner['envelope_sha256'],
                    'quality': digest(quality), 'valuation': digest(stock['current_valuation_view'])}
     if event:

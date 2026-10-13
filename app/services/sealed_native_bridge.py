@@ -90,16 +90,26 @@ class SealedNativeBridge(httpx.AsyncBaseTransport):
     async def shutdown(self):
         if self.process is None:
             return
+        async def graceful_close():
+            self.process.stdin.write(b'{"close":true}\n')
+            await self.process.stdin.drain()
+            return await self.process.communicate()
+
         if self.process.returncode is None:
             try:
-                self.process.stdin.write(b'{"close":true}\n')
-                await self.process.stdin.drain()
-                _, error = await asyncio.wait_for(self.process.communicate(), timeout=10)
+                _, error = await asyncio.wait_for(graceful_close(), timeout=10)
             except (TimeoutError, BrokenPipeError, ConnectionResetError):
-                self.process.terminate()
-                _, error = await self.process.communicate()
+                if self.process.returncode is None:
+                    self.process.terminate()
+                try:
+                    _, error = await asyncio.wait_for(self.process.communicate(), timeout=3)
+                except TimeoutError:
+                    if self.process.returncode is None:
+                        self.process.kill()
+                    await asyncio.wait_for(self.process.wait(), timeout=3)
+                    _, error = await asyncio.wait_for(self.process.communicate(), timeout=3)
         else:
-            _, error = await self.process.communicate()
+            _, error = await asyncio.wait_for(self.process.communicate(), timeout=3)
         self.exit_receipt = dict(returncode=self.process.returncode, stderr_bytes=len(error),
             stderr_sha256=sha256_bytes(error), private_protocol_exported=False)
 

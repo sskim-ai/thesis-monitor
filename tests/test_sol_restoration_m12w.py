@@ -223,6 +223,10 @@ def test_required_report_contract_has_69_unique_entries():
 
 
 def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
+    from tests.historical_scope_descendant_fixture import require_exact_calendar_descendant
+
+    # REV63D's sealed cache-only descendant is expected drift, not a scope exemption.
+    require_exact_calendar_descendant()
     result = v.freeze()
     assert result["status"] == "FAIL"
     if result["verification_mode"] == "EXACT_BASE_ARCHIVE_SHA256":
@@ -257,6 +261,7 @@ def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
             "app/services/ohlcv_client.py",
             "app/services/ohlcv_feature_engine_service.py",
             "app/services/ohlcv_structure_service.py",
+            "app/services/price_structure_wave_fibonacci_v3_service.py",
             "app/services/structured_autonomy_alias_service.py",
             "app/services/us_exchange_breadth_service.py",
             "app/services/valuation_snapshot_service.py",
@@ -283,8 +288,8 @@ def test_only_approved_descendant_semantic_files_changed_from_m12v_base():
             "tests/test_providers.py",
             "tests/test_synthetic_canary_fixture_repair_ownership_resume.py",
         }
-        assert result["financial_semantic_change_count"] == 55
-        assert result["directional_semantic_change_count"] == 55
+        assert result["financial_semantic_change_count"] == 56
+        assert result["directional_semantic_change_count"] == 56
         assert result["fictional_case_change_count"] == 0
     else:
         assert result["verification_mode"] == "CI_PORTABLE_AGGREGATE_SHA256"

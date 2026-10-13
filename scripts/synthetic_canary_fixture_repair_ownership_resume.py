@@ -355,7 +355,12 @@ def fictional_owned(
             [row.ref.model_dump(mode="json") for row in rows]
         ),
     )
-    return OwnedEvidencePacket(source_packet=packet, evidence=rows)
+    from app.services.reviewed_fixture_authority import issue_reviewed_owned_fixture
+
+    return issue_reviewed_owned_fixture(
+        OwnedEvidencePacket(source_packet=packet, evidence=rows),
+        recipe_id="canary:" + market, synthetic_identity=ticker, padding=padding_bytes,
+    )
 
 
 def fixture_core(owned: OwnedEvidencePacket) -> DirectionalCoreCandidate:

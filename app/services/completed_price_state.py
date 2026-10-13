@@ -10,7 +10,7 @@ from typing import Literal
 from pydantic import Field, TypeAdapter, model_validator
 
 from app.services import kiwoom_completed_close_owner as close
-from app.services.sealed_fresh_dispatch import ProviderPlan
+from app.services.sealed_fresh_dispatch import decode_request_plan
 from app.services.unified_run_artifacts import sha256_bytes
 from app.services.unified_snapshot_contract import ContractModel, digest, encoded
 
@@ -76,7 +76,11 @@ class CurrentPriceState(ContractModel):
 
 
 def required_slot(provider_plan, read):
-    plan = ProviderPlan.model_validate(provider_plan)
+    plan = decode_request_plan(provider_plan)
+    return required_source_slot(plan, read)
+
+
+def required_source_slot(plan, read):
     matches = [d for d in plan.descriptors if d.subject == read.subject
                and (d.endpoint_operation == 'usa20590' or d.consumer_role == 'completed_close:' + read.subject)]
     if not matches:
@@ -98,11 +102,16 @@ def required_slot(provider_plan, read):
 
 
 def require_plan(provider_plan, stock_plan):
-    plan = ProviderPlan.model_validate(provider_plan)
+    plan = decode_request_plan(provider_plan)
+    return require_slots(plan, stock_plan)
+
+
+def require_slots(plan, stock_plan):
+    """Check close-role ownership; this does not authorize request dispatch."""
     if plan.generation_id != stock_plan.run_id or plan.frozen_at != stock_plan.frozen_at:
         raise ValueError('completed_close_plan_generation')
     reads = [r for r in stock_plan.reads if r.market == 'us' and r.role == 'adjusted_daily']
-    slots = [required_slot(plan, r) for r in reads]
+    slots = [required_source_slot(plan, r) for r in reads]
     if any(d is None for d in slots):
         raise ValueError(PLAN_GAP)
     return slots
@@ -110,7 +119,7 @@ def require_plan(provider_plan, stock_plan):
 
 def project_state(*, source, plan, read, security, artifact_reader):
     """No catch-all: only enumerated provider/row failures become typed states."""
-    provider = ProviderPlan.model_validate(source['provider_plan'])
+    provider = decode_request_plan(source['provider_plan'])
     if provider.generation_id != plan.run_id or provider.frozen_at != plan.frozen_at:
         raise ValueError('price_source_generation')
     d = required_slot(provider, read)

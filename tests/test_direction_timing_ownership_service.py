@@ -20,7 +20,6 @@ from app.services.direction_timing_ownership_service import (
     TechnicalState,
     TimingNewBuyerModifier,
     TimingClaim,
-    build_owned_evidence_packet,
     compose_decision,
     core_fingerprint,
     stage_alias_catalogs,
@@ -29,6 +28,7 @@ from app.services.direction_timing_ownership_service import (
     validate_ownership,
 )
 from app.services.directional_balance_service import DirectionalBalance
+from app.services.reviewed_fixture_authority import build_reviewed_packet_fixture as build_owned_evidence_packet
 
 
 def _ref(

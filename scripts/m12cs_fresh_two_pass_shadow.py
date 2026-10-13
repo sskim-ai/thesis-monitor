@@ -329,43 +329,7 @@ def compare_source_hashes(
     }
 
 
-def pass_a_output_leak_scan(output: Mapping[str, object]) -> dict[str, object]:
-    forbidden = (
-        "current price",
-        "technical",
-        "entry range",
-        "new buyer",
-        "holder",
-        "현재가",
-        "기술적",
-        "진입가",
-        "진입 범위",
-        "신규 매수",
-        "보유자",
-    )
-    hits: list[dict[str, str]] = []
-
-    def visit(value: object, path: str) -> None:
-        if isinstance(value, Mapping):
-            for key, item in value.items():
-                visit(item, f"{path}.{key}")
-        elif isinstance(value, list):
-            for index, item in enumerate(value):
-                visit(item, f"{path}[{index}]")
-        elif isinstance(value, str):
-            folded = value.casefold()
-            for token in forbidden:
-                if token.casefold() in folded:
-                    hits.append({"path": path, "token": token})
-
-    visit(output, "$output")
-    return {
-        "contract": "m12cs-pass-a-output-price-technical-language-scan-v1",
-        "forbidden_tokens": list(forbidden),
-        "hits": hits,
-        "hit_count": len(hits),
-        "status": "PASS" if not hits else "FAIL",
-    }
+from app.services.canonical_monitoring_helpers import pass_a_output_leak_scan  # noqa: E402,F401
 
 
 def _build_preflight(
