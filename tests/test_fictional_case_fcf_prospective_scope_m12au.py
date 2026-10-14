@@ -1,10 +1,8 @@
 from dataclasses import dataclass
 
-from app.services.directional_financial_context_service import (
-    validate_directional_financial_semantics,
-)
-from scripts import configured_signal_field_ownership_m12at as m12at
 from scripts import directional_financial_context_m12 as m12
+from scripts.reviewed_financial_semantic_adapter_v1 import validate_m12au_financial_v1
+from scripts.reviewed_configured_semantic_adapter_v1 import validate_m12au_configured_v1
 
 
 TICKER = "FIC-FIN-01"
@@ -22,22 +20,8 @@ class _Candidate:
         return self.payload
 
 
-def _inputs() -> tuple[tuple[object, ...], tuple[str, ...]]:
-    _packets, owned, catalogs, _contexts = m12at._m12at_fictional_inputs(
-        "m12au-test"
-    )
-    refs = tuple(row.ref for row in owned[TICKER].evidence)
-    return refs, tuple(catalogs[TICKER].by_ref)
-
-
 def _semantic(candidate: dict[str, object]):
-    refs, allowed = _inputs()
-    return validate_directional_financial_semantics(
-        candidate,
-        supplied_refs=refs,
-        allowed_ref_ids=allowed,
-        sector_framework="standard_operating_company",
-    )
+    return validate_m12au_configured_v1(candidate)
 
 
 def _with_material_anchor(candidate: dict[str, object]) -> dict[str, object]:
@@ -92,7 +76,7 @@ def test_proxy_as_current_fcf_remains_a_hard_generic_failure() -> None:
         ],
     }
 
-    semantic = _semantic(candidate)
+    semantic = validate_m12au_financial_v1(candidate)
 
     assert not semantic.valid
     assert semantic.affirmative_proxy_as_fcf_violation_count == 1
@@ -111,7 +95,7 @@ def test_not_fcf_disclaimer_remains_valid_for_proxy_evidence() -> None:
         },
     }
 
-    semantic = _semantic(candidate)
+    semantic = validate_m12au_financial_v1(candidate)
 
     assert semantic.valid
     assert semantic.explicit_not_fcf_disclaimer_count == 1
@@ -129,7 +113,7 @@ def test_unsupported_current_fcf_claim_remains_a_hard_generic_failure() -> None:
         ],
     }
 
-    semantic = _semantic(candidate)
+    semantic = validate_m12au_financial_v1(candidate)
 
     assert not semantic.valid
     assert semantic.unsupported_current_fcf_claim_count == 1

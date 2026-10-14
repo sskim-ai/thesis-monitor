@@ -71,14 +71,6 @@ def _require(condition: bool, code: str) -> None:
         raise OfficialShadowError(code)
 
 
-def _unique_schema_object(pairs):
-    value = {}
-    for key, item in pairs:
-        _require(key not in value, "INPUT_ENCODING_OR_SCHEMA_INVALID")
-        value[key] = item
-    return value
-
-
 def file_sha256(path: Path) -> str:
     with path.open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()
@@ -275,15 +267,10 @@ def invoke_official_shadow(
     _require(hashlib.sha256(prompt_bytes).hexdigest() == request.prompt_sha256, "PROMPT_DRIFT")
     _require(hashlib.sha256(schema_bytes).hexdigest() == request.schema_sha256, "SCHEMA_DRIFT")
     try:
-        prompt_text = prompt_bytes.decode("utf-8", errors="strict")
-        schema_value = json.loads(schema_bytes, object_pairs_hook=_unique_schema_object)
-        _require(isinstance(schema_value, dict), "SCHEMA_INVALID")
+        prompt_bytes.decode("utf-8", errors="strict")
+        _require(isinstance(json.loads(schema_bytes), dict), "SCHEMA_INVALID")
     except (UnicodeError, json.JSONDecodeError) as exc:
         raise OfficialShadowError("INPUT_ENCODING_OR_SCHEMA_INVALID") from exc
-    # Transport identity owns parsing precedence; fixture denial still precedes effects.
-    from app.services.fixture_context_authority import reject_test_only_production
-
-    reject_test_only_production({"prompt": prompt_text, "response_schema": schema_value})
     stderr = log.with_name(log.name + ".stderr")
     claim = output.with_name(output.name + ".invocation")
     paths = (output, log, stderr, claim)

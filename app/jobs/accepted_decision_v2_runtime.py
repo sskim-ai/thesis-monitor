@@ -297,6 +297,9 @@ def _invoke_signed_in_codex(
         )
 
         if isinstance(official_shadow, OfficialShadowRequest):
+            from app.services.official_transport_input_preflight import preflight_official_input
+
+            preflight_official_input(prompt=prompt, schema=schema, cwd=cwd, request=official_shadow)
             return invoke_official_shadow(
                 codex_bin=codex_bin,
                 prompt=prompt,

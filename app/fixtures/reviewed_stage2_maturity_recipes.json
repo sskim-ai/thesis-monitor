@@ -1,0 +1,979 @@
+{
+  "contract": "reviewed-test-only-semantic-recipes-v1",
+  "provenance": "TEST_ONLY",
+  "production_eligible": false,
+  "consumer_scope": "STAGE2_MATURITY_MATERIALIZATION_ONLY_NOT_ECONOMIC_ACCEPTANCE",
+  "source_test": "tests/test_preconfirmation_decision_v2_service.py",
+  "source_test_sha256": "81ffc37841cebd833371545e804bc2b46713c2d45ce0c11f4dd30ae5f3faa24a",
+  "recipes": {
+    "stage2-maturity:base": {
+      "scope": "CORE_CONTEXT",
+      "purpose": "FROZEN_STAGE2_MATURITY",
+      "parameters": [],
+      "fixture_kind": "STAGE2_MATURITY",
+      "arguments": {
+        "packet": {
+          "packet_id": "packet-v2",
+          "market": "us",
+          "assessment_date": "2026-08-30",
+          "stocks": [
+            {
+              "ticker": "TEST"
+            }
+          ]
+        },
+        "claim_id": "claim-stage2-materialization",
+        "evidence_packets": [
+          {
+            "packet_id": "packet-v2",
+            "ticker": "TEST",
+            "company_name": "\ud14c\uc2a4\ud2b8\uae30\uc5c5",
+            "market": "us",
+            "assessment_date": "2026-08-30",
+            "horizon": "\uc7a5\uae30",
+            "evidence": [
+              {
+                "ref_id": "ref:thesis",
+                "category": "thesis",
+                "label": "thesis",
+                "statement": "thesis canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:earnings",
+                "category": "earnings",
+                "label": "earnings",
+                "statement": "earnings canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:expectations",
+                "category": "expectations",
+                "label": "expectations",
+                "statement": "expectations canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:valuation",
+                "category": "valuation",
+                "label": "valuation",
+                "statement": "valuation canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:risks",
+                "category": "risks",
+                "label": "risks",
+                "statement": "risks canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:market",
+                "category": "market",
+                "label": "market",
+                "statement": "market canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:price",
+                "category": "price_structure",
+                "label": "price",
+                "statement": "price canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:quality",
+                "category": "quality",
+                "label": "quality",
+                "statement": "quality canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:unknown",
+                "category": "unknown",
+                "label": "unknown",
+                "statement": "unknown canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              }
+            ],
+            "prohibited_claims": [],
+            "evidence_sha256": "fixture"
+          }
+        ]
+      }
+    },
+    "stage2-maturity:quality": {
+      "scope": "CORE_CONTEXT",
+      "purpose": "FROZEN_STAGE2_MATURITY",
+      "parameters": [],
+      "fixture_kind": "STAGE2_MATURITY",
+      "arguments": {
+        "packet": {
+          "packet_id": "packet-v2",
+          "market": "us",
+          "assessment_date": "2026-08-30",
+          "stocks": [
+            {
+              "ticker": "TEST"
+            }
+          ]
+        },
+        "claim_id": "claim-stage2-materialization",
+        "evidence_packets": [
+          {
+            "packet_id": "packet-v2",
+            "ticker": "TEST",
+            "company_name": "\ud14c\uc2a4\ud2b8\uae30\uc5c5",
+            "market": "us",
+            "assessment_date": "2026-08-30",
+            "horizon": "\uc7a5\uae30",
+            "evidence": [
+              {
+                "ref_id": "ref:thesis",
+                "category": "thesis",
+                "label": "thesis",
+                "statement": "thesis canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:earnings",
+                "category": "earnings",
+                "label": "earnings",
+                "statement": "earnings canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:expectations",
+                "category": "expectations",
+                "label": "expectations",
+                "statement": "expectations canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:valuation",
+                "category": "valuation",
+                "label": "valuation",
+                "statement": "valuation canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:risks",
+                "category": "risks",
+                "label": "risks",
+                "statement": "risks canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:market",
+                "category": "market",
+                "label": "market",
+                "statement": "market canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:price",
+                "category": "price_structure",
+                "label": "price",
+                "statement": "price canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:quality",
+                "category": "quality",
+                "label": "quality",
+                "statement": "quality canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:unknown",
+                "category": "unknown",
+                "label": "unknown",
+                "statement": "unknown canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "canonical:financial_quality:latest",
+                "category": "earnings",
+                "label": "financial_quality",
+                "statement": "{\"decision_version\": \"financial-quality-taint-v2\", \"reason_codes\": [\"provider_not_supported\"], \"source_period\": null, \"source_type\": \"unknown\", \"state\": \"unknown\"}",
+                "as_of": "latest",
+                "source_ref": "stock.fact_catalog.financial_quality:latest"
+              }
+            ],
+            "prohibited_claims": [],
+            "evidence_sha256": "fixture"
+          }
+        ]
+      }
+    },
+    "stage2-maturity:quality-missing-period": {
+      "scope": "CORE_CONTEXT",
+      "purpose": "FROZEN_STAGE2_MATURITY",
+      "parameters": [],
+      "fixture_kind": "STAGE2_MATURITY",
+      "arguments": {
+        "packet": {
+          "packet_id": "packet-v2",
+          "market": "us",
+          "assessment_date": "2026-08-30",
+          "stocks": [
+            {
+              "ticker": "TEST"
+            }
+          ]
+        },
+        "claim_id": "claim-stage2-materialization",
+        "evidence_packets": [
+          {
+            "packet_id": "packet-v2",
+            "ticker": "TEST",
+            "company_name": "\ud14c\uc2a4\ud2b8\uae30\uc5c5",
+            "market": "us",
+            "assessment_date": "2026-08-30",
+            "horizon": "\uc7a5\uae30",
+            "evidence": [
+              {
+                "ref_id": "ref:thesis",
+                "category": "thesis",
+                "label": "thesis",
+                "statement": "thesis canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:earnings",
+                "category": "earnings",
+                "label": "earnings",
+                "statement": "earnings canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:expectations",
+                "category": "expectations",
+                "label": "expectations",
+                "statement": "expectations canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:valuation",
+                "category": "valuation",
+                "label": "valuation",
+                "statement": "valuation canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:risks",
+                "category": "risks",
+                "label": "risks",
+                "statement": "risks canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:market",
+                "category": "market",
+                "label": "market",
+                "statement": "market canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:price",
+                "category": "price_structure",
+                "label": "price",
+                "statement": "price canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:quality",
+                "category": "quality",
+                "label": "quality",
+                "statement": "quality canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:unknown",
+                "category": "unknown",
+                "label": "unknown",
+                "statement": "unknown canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "canonical:financial_quality:latest",
+                "category": "earnings",
+                "label": "financial_quality",
+                "statement": "{\"decision_version\": \"financial-quality-taint-v2\", \"reason_codes\": [\"provider_not_supported\"], \"source_type\": \"unknown\", \"state\": \"unknown\"}",
+                "as_of": "latest",
+                "source_ref": "stock.fact_catalog.financial_quality:latest"
+              }
+            ],
+            "prohibited_claims": [],
+            "evidence_sha256": "fixture"
+          }
+        ]
+      }
+    },
+    "stage2-maturity:earnings": {
+      "scope": "CORE_CONTEXT",
+      "purpose": "FROZEN_STAGE2_MATURITY",
+      "parameters": [],
+      "fixture_kind": "STAGE2_MATURITY",
+      "arguments": {
+        "packet": {
+          "packet_id": "packet-v2",
+          "market": "us",
+          "assessment_date": "2026-08-30",
+          "stocks": [
+            {
+              "ticker": "TEST"
+            }
+          ]
+        },
+        "claim_id": "claim-stage2-materialization",
+        "evidence_packets": [
+          {
+            "packet_id": "packet-v2",
+            "ticker": "TEST",
+            "company_name": "\ud14c\uc2a4\ud2b8\uae30\uc5c5",
+            "market": "us",
+            "assessment_date": "2026-08-30",
+            "horizon": "\uc7a5\uae30",
+            "evidence": [
+              {
+                "ref_id": "ref:thesis",
+                "category": "thesis",
+                "label": "thesis",
+                "statement": "thesis canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:earnings",
+                "category": "earnings",
+                "label": "earnings",
+                "statement": "earnings canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:expectations",
+                "category": "expectations",
+                "label": "expectations",
+                "statement": "expectations canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:valuation",
+                "category": "valuation",
+                "label": "valuation",
+                "statement": "valuation canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:risks",
+                "category": "risks",
+                "label": "risks",
+                "statement": "risks canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:market",
+                "category": "market",
+                "label": "market",
+                "statement": "market canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:price",
+                "category": "price_structure",
+                "label": "price",
+                "statement": "price canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:quality",
+                "category": "quality",
+                "label": "quality",
+                "statement": "quality canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:unknown",
+                "category": "unknown",
+                "label": "unknown",
+                "statement": "unknown canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "canonical:earnings:latest",
+                "category": "earnings",
+                "label": "earnings",
+                "statement": "{\"field_period_labels\": {}, \"field_statement_basis\": {}, \"financial_period_required\": true, \"period\": \"latest\", \"period_label\": null, \"period_type\": null, \"preliminary\": false}",
+                "as_of": "latest",
+                "source_ref": "stock.fact_catalog.earnings:latest"
+              }
+            ],
+            "prohibited_claims": [],
+            "evidence_sha256": "fixture"
+          }
+        ]
+      }
+    },
+    "stage2-maturity:risk-current": {
+      "scope": "CORE_CONTEXT",
+      "purpose": "FROZEN_STAGE2_MATURITY",
+      "parameters": [],
+      "fixture_kind": "STAGE2_MATURITY",
+      "arguments": {
+        "packet": {
+          "packet_id": "packet-v2",
+          "market": "us",
+          "assessment_date": "2026-08-30",
+          "stocks": [
+            {
+              "ticker": "TEST"
+            }
+          ]
+        },
+        "claim_id": "claim-stage2-materialization",
+        "evidence_packets": [
+          {
+            "packet_id": "packet-v2",
+            "ticker": "TEST",
+            "company_name": "\ud14c\uc2a4\ud2b8\uae30\uc5c5",
+            "market": "us",
+            "assessment_date": "2026-08-30",
+            "horizon": "\uc7a5\uae30",
+            "evidence": [
+              {
+                "ref_id": "ref:thesis",
+                "category": "thesis",
+                "label": "thesis",
+                "statement": "thesis canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:earnings",
+                "category": "earnings",
+                "label": "earnings",
+                "statement": "earnings canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:expectations",
+                "category": "expectations",
+                "label": "expectations",
+                "statement": "expectations canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:valuation",
+                "category": "valuation",
+                "label": "valuation",
+                "statement": "valuation canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:risks",
+                "category": "risks",
+                "label": "risks",
+                "statement": "risks canonical evidence",
+                "as_of": "current",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:market",
+                "category": "market",
+                "label": "market",
+                "statement": "market canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:price",
+                "category": "price_structure",
+                "label": "price",
+                "statement": "price canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:quality",
+                "category": "quality",
+                "label": "quality",
+                "statement": "quality canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:unknown",
+                "category": "unknown",
+                "label": "unknown",
+                "statement": "unknown canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              }
+            ],
+            "prohibited_claims": [],
+            "evidence_sha256": "fixture"
+          }
+        ]
+      }
+    },
+    "stage2-maturity:risk-latest": {
+      "scope": "CORE_CONTEXT",
+      "purpose": "FROZEN_STAGE2_MATURITY",
+      "parameters": [],
+      "fixture_kind": "STAGE2_MATURITY",
+      "arguments": {
+        "packet": {
+          "packet_id": "packet-v2",
+          "market": "us",
+          "assessment_date": "2026-08-30",
+          "stocks": [
+            {
+              "ticker": "TEST"
+            }
+          ]
+        },
+        "claim_id": "claim-stage2-materialization",
+        "evidence_packets": [
+          {
+            "packet_id": "packet-v2",
+            "ticker": "TEST",
+            "company_name": "\ud14c\uc2a4\ud2b8\uae30\uc5c5",
+            "market": "us",
+            "assessment_date": "2026-08-30",
+            "horizon": "\uc7a5\uae30",
+            "evidence": [
+              {
+                "ref_id": "ref:thesis",
+                "category": "thesis",
+                "label": "thesis",
+                "statement": "thesis canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:earnings",
+                "category": "earnings",
+                "label": "earnings",
+                "statement": "earnings canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:expectations",
+                "category": "expectations",
+                "label": "expectations",
+                "statement": "expectations canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:valuation",
+                "category": "valuation",
+                "label": "valuation",
+                "statement": "valuation canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:risks",
+                "category": "risks",
+                "label": "risks",
+                "statement": "risks canonical evidence",
+                "as_of": "latest",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:market",
+                "category": "market",
+                "label": "market",
+                "statement": "market canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:price",
+                "category": "price_structure",
+                "label": "price",
+                "statement": "price canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:quality",
+                "category": "quality",
+                "label": "quality",
+                "statement": "quality canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:unknown",
+                "category": "unknown",
+                "label": "unknown",
+                "statement": "unknown canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              }
+            ],
+            "prohibited_claims": [],
+            "evidence_sha256": "fixture"
+          }
+        ]
+      }
+    },
+    "stage2-maturity:valuation-prior": {
+      "scope": "CORE_CONTEXT",
+      "purpose": "FROZEN_STAGE2_MATURITY",
+      "parameters": [],
+      "fixture_kind": "STAGE2_MATURITY",
+      "arguments": {
+        "packet": {
+          "packet_id": "packet-v2",
+          "market": "us",
+          "assessment_date": "2026-08-30",
+          "stocks": [
+            {
+              "ticker": "TEST"
+            }
+          ]
+        },
+        "claim_id": "claim-stage2-materialization",
+        "evidence_packets": [
+          {
+            "packet_id": "packet-v2",
+            "ticker": "TEST",
+            "company_name": "\ud14c\uc2a4\ud2b8\uae30\uc5c5",
+            "market": "us",
+            "assessment_date": "2026-08-30",
+            "horizon": "\uc7a5\uae30",
+            "evidence": [
+              {
+                "ref_id": "ref:thesis",
+                "category": "thesis",
+                "label": "thesis",
+                "statement": "thesis canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:earnings",
+                "category": "earnings",
+                "label": "earnings",
+                "statement": "earnings canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:expectations",
+                "category": "expectations",
+                "label": "expectations",
+                "statement": "expectations canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:valuation",
+                "category": "valuation",
+                "label": "valuation",
+                "statement": "valuation canonical evidence",
+                "as_of": "2026-06-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:risks",
+                "category": "risks",
+                "label": "risks",
+                "statement": "risks canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:market",
+                "category": "market",
+                "label": "market",
+                "statement": "market canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:price",
+                "category": "price_structure",
+                "label": "price",
+                "statement": "price canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:quality",
+                "category": "quality",
+                "label": "quality",
+                "statement": "quality canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:unknown",
+                "category": "unknown",
+                "label": "unknown",
+                "statement": "unknown canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              }
+            ],
+            "prohibited_claims": [],
+            "evidence_sha256": "fixture"
+          }
+        ]
+      }
+    },
+    "stage2-maturity:all-symbolic": {
+      "scope": "CORE_CONTEXT",
+      "purpose": "FROZEN_STAGE2_MATURITY",
+      "parameters": [],
+      "fixture_kind": "STAGE2_MATURITY",
+      "arguments": {
+        "packet": {
+          "packet_id": "packet-v2",
+          "market": "us",
+          "assessment_date": "2026-08-30",
+          "stocks": [
+            {
+              "ticker": "TEST"
+            }
+          ]
+        },
+        "claim_id": "claim-stage2-materialization",
+        "evidence_packets": [
+          {
+            "packet_id": "packet-v2",
+            "ticker": "TEST",
+            "company_name": "\ud14c\uc2a4\ud2b8\uae30\uc5c5",
+            "market": "us",
+            "assessment_date": "2026-08-30",
+            "horizon": "\uc7a5\uae30",
+            "evidence": [
+              {
+                "ref_id": "ref:thesis",
+                "category": "thesis",
+                "label": "thesis",
+                "statement": "thesis canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:earnings",
+                "category": "earnings",
+                "label": "earnings",
+                "statement": "earnings canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:expectations",
+                "category": "expectations",
+                "label": "expectations",
+                "statement": "expectations canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:valuation",
+                "category": "valuation",
+                "label": "valuation",
+                "statement": "valuation canonical evidence",
+                "as_of": "latest",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:risks",
+                "category": "risks",
+                "label": "risks",
+                "statement": "risks canonical evidence",
+                "as_of": "latest",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:market",
+                "category": "market",
+                "label": "market",
+                "statement": "market canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:price",
+                "category": "price_structure",
+                "label": "price",
+                "statement": "price canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:quality",
+                "category": "quality",
+                "label": "quality",
+                "statement": "quality canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:unknown",
+                "category": "unknown",
+                "label": "unknown",
+                "statement": "unknown canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              }
+            ],
+            "prohibited_claims": [],
+            "evidence_sha256": "fixture"
+          }
+        ]
+      }
+    },
+    "stage2-maturity:risk-future": {
+      "scope": "CORE_CONTEXT",
+      "purpose": "FROZEN_STAGE2_MATURITY",
+      "parameters": [],
+      "fixture_kind": "STAGE2_MATURITY",
+      "arguments": {
+        "packet": {
+          "packet_id": "packet-v2",
+          "market": "us",
+          "assessment_date": "2026-08-30",
+          "stocks": [
+            {
+              "ticker": "TEST"
+            }
+          ]
+        },
+        "claim_id": "claim-stage2-materialization",
+        "evidence_packets": [
+          {
+            "packet_id": "packet-v2",
+            "ticker": "TEST",
+            "company_name": "\ud14c\uc2a4\ud2b8\uae30\uc5c5",
+            "market": "us",
+            "assessment_date": "2026-08-30",
+            "horizon": "\uc7a5\uae30",
+            "evidence": [
+              {
+                "ref_id": "ref:thesis",
+                "category": "thesis",
+                "label": "thesis",
+                "statement": "thesis canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:earnings",
+                "category": "earnings",
+                "label": "earnings",
+                "statement": "earnings canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:expectations",
+                "category": "expectations",
+                "label": "expectations",
+                "statement": "expectations canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:valuation",
+                "category": "valuation",
+                "label": "valuation",
+                "statement": "valuation canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:risks",
+                "category": "risks",
+                "label": "risks",
+                "statement": "risks canonical evidence",
+                "as_of": "2026-08-31",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:market",
+                "category": "market",
+                "label": "market",
+                "statement": "market canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:price",
+                "category": "price_structure",
+                "label": "price",
+                "statement": "price canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:quality",
+                "category": "quality",
+                "label": "quality",
+                "statement": "quality canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              },
+              {
+                "ref_id": "ref:unknown",
+                "category": "unknown",
+                "label": "unknown",
+                "statement": "unknown canonical evidence",
+                "as_of": "2026-08-30",
+                "source_ref": "fixture"
+              }
+            ],
+            "prohibited_claims": [],
+            "evidence_sha256": "fixture"
+          }
+        ]
+      }
+    }
+  }
+}

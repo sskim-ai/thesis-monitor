@@ -5,6 +5,7 @@ import sys
 
 from app.services.official_codex_shadow_transport_service import OfficialShadowError
 from app.services.official_codex_production_executor import invoke_official_bound
+from app.services.official_transport_input_preflight import PREFLIGHT_REJECT_EXIT, preflight_official_input
 from app.services.production_model_transport import CONTRACT, ProductionWireRequest, binding_from_json
 from app.services.unified_run_artifacts import durable_json
 
@@ -16,6 +17,11 @@ def main():
     path = Path(frame["directory"])
     binding = binding_from_json(frame["binding"])
     request = ProductionWireRequest(binding, frame["request_id"], frame["prompt_sha256"], frame["schema_sha256"])
+    try:
+        preflight_official_input(prompt=path / "approved-input/prompt.txt",
+            schema=path / "approved-input/provider-wire-schema.json", cwd=path / "approved-input", request=request)
+    except (OfficialShadowError, ValueError):
+        return PREFLIGHT_REJECT_EXIT
     try:
         receipt = invoke_official_bound(codex_bin=str(binding.executable), prompt=path / "approved-input/prompt.txt",
             schema=path / "approved-input/provider-wire-schema.json", output=path / "raw-output.json",
@@ -31,4 +37,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

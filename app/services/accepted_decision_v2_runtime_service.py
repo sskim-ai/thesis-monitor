@@ -1405,6 +1405,21 @@ def materialize_accepted_v2_stage2_output(
 ) -> AcceptedV2ProductionBatchOutput | AcceptedV2ProductionBatchOutputV2:
     """Materialize runtime-owned source refs and provenance into a typed contract."""
     verify_legacy_context(context)
+    return _materialize_v2_stage2_output(
+        context, raw_output, fundamental_cores=fundamental_cores,
+        subjects=subjects, normalized_contract=normalized_contract,
+    )
+
+
+def _materialize_v2_stage2_output(
+    context: AcceptedV2ProductionContext,
+    raw_output: Mapping[str, object],
+    *,
+    fundamental_cores: Sequence[AcceptedV2FundamentalCoreCandidate] | None = None,
+    subjects: Sequence[str] | None = None,
+    normalized_contract: str = STAGE2_MATURITY_PROVENANCE_MATERIALIZATION_CONTRACT,
+) -> AcceptedV2ProductionBatchOutput | AcceptedV2ProductionBatchOutputV2:
+    """Shared semantics; callers must validate their distinct ownership contract."""
     if normalized_contract not in {
         STAGE2_MATURITY_AS_OF_MATERIALIZATION_CONTRACT,
         STAGE2_MATURITY_PROVENANCE_MATERIALIZATION_CONTRACT,
@@ -2033,6 +2048,9 @@ def validate_accepted_v2_production_output(
     validated_at: datetime | None = None,
 ) -> AcceptedV2ProductionArtifact | AcceptedV2ProductionArtifactV2:
     verify_legacy_context(context)
+    from app.services.fixture_context_authority import reject_test_only_production
+
+    reject_test_only_production(output)
     if (
         output.packet_id,
         output.claim_id,

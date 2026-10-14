@@ -22,6 +22,7 @@ CONTRACT = "reviewed-test-only-semantic-recipes-v1"
 OWNED_CONTRACT = "test-only-reviewed-owned-evidence-v1"
 RECIPE_SHA256 = "38e3bf787a36885358466e433a0bd69cb0e1cac1a8fa0f3491b3f39257045a38"
 PACKET_RECIPE_SHA256 = "e833d6fcb421f4e9f6d318179138eae6fac903cd9675310d53a777d6920a6592"
+MATURITY_RECIPE_SHA256 = "a4286002e0ebc1e0a7797d2758f860ecf36d00ece9ade4985c1eeb45c347de82"
 _PID = os.getpid()
 _LIFETIME = secrets.token_hex(24)
 _ISSUED = {}
@@ -33,6 +34,7 @@ _CONSUMERS = {
     "FROZEN_CORE_TIMING_SEMANTICS": frozenset({"REF_CATALOG", "FINANCIAL_CONTEXT", "BUSINESS_DELTA", "MARKET_EXPECTATION", "CORE_TIMING_SEMANTICS", "OWNED_CONTEXT"}),
     "FROZEN_DELTA_SEMANTICS": frozenset({"REF_CATALOG", "BUSINESS_DELTA", "ALIAS_CONTEXT"}),
     "FROZEN_CORE_SCHEMA_SEMANTICS": frozenset({"CORE_SCHEMA", "STAGE2_SCHEMA", "CORE_PROMPT", "STAGE2_PROMPT"}),
+    "FROZEN_STAGE2_MATURITY": frozenset({"STAGE2_SCHEMA", "STAGE2_MATERIALIZATION"}),
 }
 
 
@@ -68,6 +70,10 @@ def _process():
         raise ValueError("reviewed_fixture_owner_process_mismatch")
 
 
+def _recipe_identity(recipe_id):
+    return MATURITY_RECIPE_SHA256 if recipe_id.startswith("stage2-maturity:") else RECIPE_SHA256
+
+
 def _issue_seal(value, recipe_id, recipe, parameters):
     """Repeated issuance is idempotent only while the exact live capability exists."""
     parameters = tuple(sorted(parameters.items()))
@@ -79,7 +85,7 @@ def _issue_seal(value, recipe_id, recipe, parameters):
     if len(_ISSUED) >= _MAX_ISSUED:
         raise ValueError("reviewed_fixture_registry_capacity")
     seal = ReviewedFixtureSeal(scope=recipe["scope"], recipe_id=recipe_id,
-        recipe_sha256=RECIPE_SHA256, purpose=recipe["purpose"], parameters=parameters,
+        recipe_sha256=_recipe_identity(recipe_id), purpose=recipe["purpose"], parameters=parameters,
         owner_pid=_PID, owner_lifetime=_LIFETIME, receipt_id=secrets.token_hex(32),
         payload_sha256=payload_sha)
     _ISSUED[seal.receipt_id] = seal.model_dump_json()
@@ -102,6 +108,16 @@ def _recipes():
     if packet_value["contract"] != CONTRACT or packet_value["provenance"] != "TEST_ONLY" or packet_value["production_eligible"] is not False:
         raise ValueError("reviewed_fixture_recipe_contract_invalid")
     value["recipes"].update(packet_value["recipes"])
+    maturity_raw = (Path(__file__).parents[1] / "fixtures/reviewed_stage2_maturity_recipes.json").read_bytes()
+    if hashlib.sha256(maturity_raw).hexdigest() != MATURITY_RECIPE_SHA256:
+        raise ValueError("reviewed_fixture_maturity_recipe_identity_mismatch")
+    maturity = json.loads(maturity_raw)
+    if (maturity["contract"] != CONTRACT or maturity["provenance"] != "TEST_ONLY"
+            or maturity["production_eligible"] is not False
+            or any(not key.startswith("stage2-maturity:") for key in maturity["recipes"])
+            or set(maturity["recipes"]) & set(value["recipes"])):
+        raise ValueError("reviewed_fixture_maturity_recipe_contract_invalid")
+    value["recipes"].update(maturity["recipes"])
     return value
 
 
@@ -123,6 +139,9 @@ def _expected(recipe_id, parameters):
     if recipe is None or set(parameters) != set(recipe["parameters"]):
         raise ValueError("reviewed_fixture_unapproved_recipe_or_parameters")
     if recipe["scope"] == "CORE_CONTEXT":
+        if recipe.get("fixture_kind") == "STAGE2_MATURITY":
+            from app.services.reviewed_stage2_maturity_fixture import frozen_maturity_context
+            return frozen_maturity_context(recipe["arguments"]), recipe
         from app.services.reviewed_core_fixture import frozen_core_context
         return frozen_core_context(recipe["arguments"]), recipe
     payload = json.loads(json.dumps(recipe["payload"]))
@@ -207,7 +226,7 @@ def verify_reviewed_owned_fixture(owned, *, consumer):
         raise ValueError("reviewed_fixture_consumer_forbidden")
     if (seal.owner_pid != _PID or seal.owner_lifetime != _LIFETIME or
             _ISSUED.get(seal.receipt_id) != seal.model_dump_json() or
-            seal.recipe_sha256 != RECIPE_SHA256 or _digest(_payload(owned)) != seal.payload_sha256):
+            seal.recipe_sha256 != _recipe_identity(seal.recipe_id) or _digest(_payload(owned)) != seal.payload_sha256):
         raise ValueError("reviewed_fixture_unissued_revoked_or_changed")
     expected, recipe = _expected(seal.recipe_id, dict(seal.parameters))
     if recipe["scope"] == "OWNED_EVIDENCE":
@@ -387,5 +406,7 @@ def contains_reviewed_fixture(value):
 
 def revoke_reviewed_fixture(owned):
     consumer = "CORE_SCHEMA" if getattr(owned.backend_seal,"scope",None) == "CORE_CONTEXT" else "REF_CATALOG"
+    if getattr(owned.backend_seal, "purpose", None) == "FROZEN_STAGE2_MATURITY":
+        consumer = "STAGE2_MATERIALIZATION"
     seal=verify_reviewed_owned_fixture(owned,consumer=consumer)
     _ISSUED.pop(seal.receipt_id)

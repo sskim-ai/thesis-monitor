@@ -8,7 +8,6 @@ from app.services.directional_core_semantic_audit_service import (
 )
 from scripts import boundary_band_application_scope_m12aa as boundary
 from scripts import business_delta_alias_balance_confidence_m12z as delta
-from scripts import configured_signal_field_ownership_m12at as configured
 from scripts import directional_financial_context_m12 as monitored
 from scripts import new_issuer_holdout_selection_ownership_proof as fresh
 from scripts import synthetic_canary_fixture_repair_ownership_resume as synthetic
@@ -37,7 +36,7 @@ def test_owned_adapter_runs_every_applicable_canonical_service() -> None:
 
 
 def test_canonical_financial_failure_is_a_shared_hard_error() -> None:
-    _packets, owned, catalogs, _contexts = configured._m12at_fictional_inputs(
+    _packets, owned, catalogs, _contexts = monitored.fictional_inputs(
         "m12bi-test"
     )
     candidate = {

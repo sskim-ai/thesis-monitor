@@ -1,0 +1,563 @@
+{
+  "contract": "reviewed-financial-configured-semantic-composition-v1",
+  "provenance": "TEST_ONLY",
+  "production_eligible": false,
+  "producer": "scripts/configured_signal_field_ownership_m12at.py::_fictional_configured_refs",
+  "independent_template_evidence_sha256": "132d04aef13d20f515fbb4a8a77198e9e62d6929e8f93a36bb95f30f9b2465c1",
+  "recipes": [
+    {
+      "id": "m12au-test:FIC-FIN-01",
+      "subject": "FIC-FIN-01",
+      "market": "us",
+      "generation": "m12au-test",
+      "parent_recipe": "financial:FIC-FIN-01",
+      "parent_payload_sha256": "1de50bcf4c4b2dd5f54278cace137ad94f07d1cc3e06e69422d2564389600535",
+      "parent_catalog_sha256": "ced97ebf99c9b221cc662bd65c308a42166eed46ac265683953317c6acc73184",
+      "parent_cutoff": "2026-09-09",
+      "definition_as_of": "2026-09-12",
+      "temporal_role": "PROSPECTIVE",
+      "consumers": [
+        "M12AU_PROSPECTIVE_FINANCIAL_SEMANTICS_V1"
+      ],
+      "purpose": "FROZEN_CONFIGURED_FUTURE_SEMANTICS",
+      "allowed_uses": [
+        "REEVALUATION",
+        "RISK",
+        "CONDITION"
+      ],
+      "configured_rows": [
+        {
+          "as_of": "2026-09-12",
+          "value": null,
+          "unit": null,
+          "numeric_prose_eligible": false,
+          "metric_refs": [
+            "OCF"
+          ],
+          "logical_condition": {
+            "contract": "source-owned-logical-condition-v1",
+            "subject": "FIC-FIN-01",
+            "generation_id": "m12au-test",
+            "source_condition_ref": "logical-condition:4aff4c754757662492e9",
+            "severity": "STRENGTHENING",
+            "metric_refs": [
+              "OCF"
+            ],
+            "expression": {
+              "condition_id": "logical-condition:4aff4c754757662492e9",
+              "type": "LEAF",
+              "statement": "영업현금흐름과 영업이익률의 동반 개선이 확인"
+            }
+          },
+          "ref_id": "m12at:FIC-FIN-01:strengthen",
+          "category": "risks",
+          "label": "설정된 미래 논리 조건",
+          "statement": "영업현금흐름과 영업이익률의 동반 개선이 확인",
+          "source_ref": "stock.thesis.strengthen_signals"
+        },
+        {
+          "as_of": "2026-09-12",
+          "value": null,
+          "unit": null,
+          "numeric_prose_eligible": false,
+          "metric_refs": [
+            "FCF"
+          ],
+          "logical_condition": {
+            "contract": "source-owned-logical-condition-v1",
+            "subject": "FIC-FIN-01",
+            "generation_id": "m12au-test",
+            "source_condition_ref": "logical-condition:8a9b85ca95b3713cee67",
+            "severity": "WEAKENING",
+            "metric_refs": [
+              "FCF"
+            ],
+            "expression": {
+              "condition_id": "logical-condition:8a9b85ca95b3713cee67",
+              "type": "LEAF",
+              "statement": "FCF 감소와 순부채 증가가 동반"
+            }
+          },
+          "ref_id": "m12at:FIC-FIN-01:weaken",
+          "category": "risks",
+          "label": "설정된 미래 논리 조건",
+          "statement": "FCF 감소와 순부채 증가가 동반",
+          "source_ref": "stock.thesis.weaken_signals"
+        },
+        {
+          "as_of": "2026-09-12",
+          "value": null,
+          "unit": null,
+          "numeric_prose_eligible": false,
+          "metric_refs": [
+            "OCF"
+          ],
+          "logical_condition": {
+            "contract": "source-owned-logical-condition-v1",
+            "subject": "FIC-FIN-01",
+            "generation_id": "m12au-test",
+            "source_condition_ref": "logical-condition:88b2e5963eb6b58d0063",
+            "severity": "INVALIDATION_CANDIDATE",
+            "metric_refs": [
+              "OCF"
+            ],
+            "expression": {
+              "condition_id": "logical-condition:88b2e5963eb6b58d0063",
+              "type": "LEAF",
+              "statement": "지속적인 음의 영업현금흐름이 구조적으로 확인"
+            }
+          },
+          "ref_id": "m12at:FIC-FIN-01:invalidate",
+          "category": "risks",
+          "label": "설정된 미래 논리 조건",
+          "statement": "지속적인 음의 영업현금흐름이 구조적으로 확인",
+          "source_ref": "stock.thesis.invalidation_signals"
+        }
+      ]
+    },
+    {
+      "id": "m12at-deterministic-preflight:FIC-FIN-01",
+      "subject": "FIC-FIN-01",
+      "market": "us",
+      "generation": "m12at-deterministic-preflight",
+      "parent_recipe": "financial:FIC-FIN-01",
+      "parent_payload_sha256": "88de0890a08259bd7e8771359dc5d01f0a72ef9ac7da7917a2c16ab5ec73b891",
+      "parent_catalog_sha256": "48ba6daa221807b83c3ec546d2af4838ecfb67c796f8035200242b68e30271cf",
+      "parent_cutoff": "2026-09-09",
+      "definition_as_of": "2026-09-12",
+      "temporal_role": "PROSPECTIVE",
+      "consumers": [
+        "M12AT_CONTEXT0_SCHEMA_V1",
+        "M12AT_CONTEXT0_MODEL_VIEW_V1"
+      ],
+      "purpose": "FROZEN_CONFIGURED_FUTURE_SEMANTICS",
+      "allowed_uses": [
+        "REEVALUATION",
+        "RISK",
+        "CONDITION"
+      ],
+      "configured_rows": [
+        {
+          "as_of": "2026-09-12",
+          "value": null,
+          "unit": null,
+          "numeric_prose_eligible": false,
+          "metric_refs": [
+            "OCF"
+          ],
+          "logical_condition": {
+            "contract": "source-owned-logical-condition-v1",
+            "subject": "FIC-FIN-01",
+            "generation_id": "m12at-deterministic-preflight",
+            "source_condition_ref": "logical-condition:48b3f5f8e8c4ea5e26ca",
+            "severity": "STRENGTHENING",
+            "metric_refs": [
+              "OCF"
+            ],
+            "expression": {
+              "condition_id": "logical-condition:48b3f5f8e8c4ea5e26ca",
+              "type": "LEAF",
+              "statement": "영업현금흐름과 영업이익률의 동반 개선이 확인"
+            }
+          },
+          "ref_id": "m12at:FIC-FIN-01:strengthen",
+          "category": "risks",
+          "label": "설정된 미래 논리 조건",
+          "statement": "영업현금흐름과 영업이익률의 동반 개선이 확인",
+          "source_ref": "stock.thesis.strengthen_signals"
+        },
+        {
+          "as_of": "2026-09-12",
+          "value": null,
+          "unit": null,
+          "numeric_prose_eligible": false,
+          "metric_refs": [
+            "FCF"
+          ],
+          "logical_condition": {
+            "contract": "source-owned-logical-condition-v1",
+            "subject": "FIC-FIN-01",
+            "generation_id": "m12at-deterministic-preflight",
+            "source_condition_ref": "logical-condition:d63cf1dcc73b9ffe56b1",
+            "severity": "WEAKENING",
+            "metric_refs": [
+              "FCF"
+            ],
+            "expression": {
+              "condition_id": "logical-condition:d63cf1dcc73b9ffe56b1",
+              "type": "LEAF",
+              "statement": "FCF 감소와 순부채 증가가 동반"
+            }
+          },
+          "ref_id": "m12at:FIC-FIN-01:weaken",
+          "category": "risks",
+          "label": "설정된 미래 논리 조건",
+          "statement": "FCF 감소와 순부채 증가가 동반",
+          "source_ref": "stock.thesis.weaken_signals"
+        },
+        {
+          "as_of": "2026-09-12",
+          "value": null,
+          "unit": null,
+          "numeric_prose_eligible": false,
+          "metric_refs": [
+            "OCF"
+          ],
+          "logical_condition": {
+            "contract": "source-owned-logical-condition-v1",
+            "subject": "FIC-FIN-01",
+            "generation_id": "m12at-deterministic-preflight",
+            "source_condition_ref": "logical-condition:6cde3ae28583952b30a2",
+            "severity": "INVALIDATION_CANDIDATE",
+            "metric_refs": [
+              "OCF"
+            ],
+            "expression": {
+              "condition_id": "logical-condition:6cde3ae28583952b30a2",
+              "type": "LEAF",
+              "statement": "지속적인 음의 영업현금흐름이 구조적으로 확인"
+            }
+          },
+          "ref_id": "m12at:FIC-FIN-01:invalidate",
+          "category": "risks",
+          "label": "설정된 미래 논리 조건",
+          "statement": "지속적인 음의 영업현금흐름이 구조적으로 확인",
+          "source_ref": "stock.thesis.invalidation_signals"
+        }
+      ]
+    },
+    {
+      "id": "m12at-deterministic-preflight:FIC-FIN-02",
+      "subject": "FIC-FIN-02",
+      "market": "us",
+      "generation": "m12at-deterministic-preflight",
+      "parent_recipe": "financial:FIC-FIN-02",
+      "parent_payload_sha256": "4fe3485009e45bf76fc9e53725574e310c7322c33829dba6430cca84b522b3b0",
+      "parent_catalog_sha256": "6a42b7596d0dd4e59191baac8f711ae4aaebf222c115c8fbc68edb21570d6252",
+      "parent_cutoff": "2026-09-09",
+      "definition_as_of": "2026-09-12",
+      "temporal_role": "PROSPECTIVE",
+      "consumers": [
+        "M12AT_CONTEXT0_SCHEMA_V1",
+        "M12AT_CONTEXT0_MODEL_VIEW_V1"
+      ],
+      "purpose": "FROZEN_CONFIGURED_FUTURE_SEMANTICS",
+      "allowed_uses": [
+        "REEVALUATION",
+        "RISK",
+        "CONDITION"
+      ],
+      "configured_rows": [
+        {
+          "as_of": "2026-09-12",
+          "value": null,
+          "unit": null,
+          "numeric_prose_eligible": false,
+          "metric_refs": [
+            "OCF"
+          ],
+          "logical_condition": {
+            "contract": "source-owned-logical-condition-v1",
+            "subject": "FIC-FIN-02",
+            "generation_id": "m12at-deterministic-preflight",
+            "source_condition_ref": "logical-condition:bd815ac3462a58bdbec9",
+            "severity": "STRENGTHENING",
+            "metric_refs": [
+              "OCF"
+            ],
+            "expression": {
+              "condition_id": "logical-condition:bd815ac3462a58bdbec9",
+              "type": "LEAF",
+              "statement": "영업현금흐름과 영업이익률의 동반 개선이 확인"
+            }
+          },
+          "ref_id": "m12at:FIC-FIN-02:strengthen",
+          "category": "risks",
+          "label": "설정된 미래 논리 조건",
+          "statement": "영업현금흐름과 영업이익률의 동반 개선이 확인",
+          "source_ref": "stock.thesis.strengthen_signals"
+        },
+        {
+          "as_of": "2026-09-12",
+          "value": null,
+          "unit": null,
+          "numeric_prose_eligible": false,
+          "metric_refs": [
+            "FCF"
+          ],
+          "logical_condition": {
+            "contract": "source-owned-logical-condition-v1",
+            "subject": "FIC-FIN-02",
+            "generation_id": "m12at-deterministic-preflight",
+            "source_condition_ref": "logical-condition:40f4e8ffa30a08674198",
+            "severity": "WEAKENING",
+            "metric_refs": [
+              "FCF"
+            ],
+            "expression": {
+              "condition_id": "logical-condition:40f4e8ffa30a08674198",
+              "type": "LEAF",
+              "statement": "FCF 감소와 순부채 증가가 동반"
+            }
+          },
+          "ref_id": "m12at:FIC-FIN-02:weaken",
+          "category": "risks",
+          "label": "설정된 미래 논리 조건",
+          "statement": "FCF 감소와 순부채 증가가 동반",
+          "source_ref": "stock.thesis.weaken_signals"
+        },
+        {
+          "as_of": "2026-09-12",
+          "value": null,
+          "unit": null,
+          "numeric_prose_eligible": false,
+          "metric_refs": [
+            "OCF"
+          ],
+          "logical_condition": {
+            "contract": "source-owned-logical-condition-v1",
+            "subject": "FIC-FIN-02",
+            "generation_id": "m12at-deterministic-preflight",
+            "source_condition_ref": "logical-condition:d63a081902b856ca10d2",
+            "severity": "INVALIDATION_CANDIDATE",
+            "metric_refs": [
+              "OCF"
+            ],
+            "expression": {
+              "condition_id": "logical-condition:d63a081902b856ca10d2",
+              "type": "LEAF",
+              "statement": "지속적인 음의 영업현금흐름이 구조적으로 확인"
+            }
+          },
+          "ref_id": "m12at:FIC-FIN-02:invalidate",
+          "category": "risks",
+          "label": "설정된 미래 논리 조건",
+          "statement": "지속적인 음의 영업현금흐름이 구조적으로 확인",
+          "source_ref": "stock.thesis.invalidation_signals"
+        }
+      ]
+    },
+    {
+      "id": "m12at-deterministic-preflight:FIC-FIN-03",
+      "subject": "FIC-FIN-03",
+      "market": "us",
+      "generation": "m12at-deterministic-preflight",
+      "parent_recipe": "financial:FIC-FIN-03",
+      "parent_payload_sha256": "bafb540fbefcf9cd9e3a56bdf12c501649e1c11e3866425f9a8592ac2eb3f913",
+      "parent_catalog_sha256": "b768e0c9556a1d6ce6c3f22e98a6cfd0411326af55e288b6aa040fdd0086fe31",
+      "parent_cutoff": "2026-09-09",
+      "definition_as_of": "2026-09-12",
+      "temporal_role": "PROSPECTIVE",
+      "consumers": [
+        "M12AT_CONTEXT0_SCHEMA_V1",
+        "M12AT_CONTEXT0_MODEL_VIEW_V1"
+      ],
+      "purpose": "FROZEN_CONFIGURED_FUTURE_SEMANTICS",
+      "allowed_uses": [
+        "REEVALUATION",
+        "RISK",
+        "CONDITION"
+      ],
+      "configured_rows": [
+        {
+          "as_of": "2026-09-12",
+          "value": null,
+          "unit": null,
+          "numeric_prose_eligible": false,
+          "metric_refs": [
+            "OCF"
+          ],
+          "logical_condition": {
+            "contract": "source-owned-logical-condition-v1",
+            "subject": "FIC-FIN-03",
+            "generation_id": "m12at-deterministic-preflight",
+            "source_condition_ref": "logical-condition:3809a728f77068b521f7",
+            "severity": "STRENGTHENING",
+            "metric_refs": [
+              "OCF"
+            ],
+            "expression": {
+              "condition_id": "logical-condition:3809a728f77068b521f7",
+              "type": "LEAF",
+              "statement": "영업현금흐름과 영업이익률의 동반 개선이 확인"
+            }
+          },
+          "ref_id": "m12at:FIC-FIN-03:strengthen",
+          "category": "risks",
+          "label": "설정된 미래 논리 조건",
+          "statement": "영업현금흐름과 영업이익률의 동반 개선이 확인",
+          "source_ref": "stock.thesis.strengthen_signals"
+        },
+        {
+          "as_of": "2026-09-12",
+          "value": null,
+          "unit": null,
+          "numeric_prose_eligible": false,
+          "metric_refs": [
+            "FCF"
+          ],
+          "logical_condition": {
+            "contract": "source-owned-logical-condition-v1",
+            "subject": "FIC-FIN-03",
+            "generation_id": "m12at-deterministic-preflight",
+            "source_condition_ref": "logical-condition:1155221f1f4292140e27",
+            "severity": "WEAKENING",
+            "metric_refs": [
+              "FCF"
+            ],
+            "expression": {
+              "condition_id": "logical-condition:1155221f1f4292140e27",
+              "type": "LEAF",
+              "statement": "FCF 감소와 순부채 증가가 동반"
+            }
+          },
+          "ref_id": "m12at:FIC-FIN-03:weaken",
+          "category": "risks",
+          "label": "설정된 미래 논리 조건",
+          "statement": "FCF 감소와 순부채 증가가 동반",
+          "source_ref": "stock.thesis.weaken_signals"
+        },
+        {
+          "as_of": "2026-09-12",
+          "value": null,
+          "unit": null,
+          "numeric_prose_eligible": false,
+          "metric_refs": [
+            "OCF"
+          ],
+          "logical_condition": {
+            "contract": "source-owned-logical-condition-v1",
+            "subject": "FIC-FIN-03",
+            "generation_id": "m12at-deterministic-preflight",
+            "source_condition_ref": "logical-condition:3f2db6a806a3fa0f337f",
+            "severity": "INVALIDATION_CANDIDATE",
+            "metric_refs": [
+              "OCF"
+            ],
+            "expression": {
+              "condition_id": "logical-condition:3f2db6a806a3fa0f337f",
+              "type": "LEAF",
+              "statement": "지속적인 음의 영업현금흐름이 구조적으로 확인"
+            }
+          },
+          "ref_id": "m12at:FIC-FIN-03:invalidate",
+          "category": "risks",
+          "label": "설정된 미래 논리 조건",
+          "statement": "지속적인 음의 영업현금흐름이 구조적으로 확인",
+          "source_ref": "stock.thesis.invalidation_signals"
+        }
+      ]
+    },
+    {
+      "id": "m12at-deterministic-preflight:FIC-FIN-04",
+      "subject": "FIC-FIN-04",
+      "market": "us",
+      "generation": "m12at-deterministic-preflight",
+      "parent_recipe": "financial:FIC-FIN-04",
+      "parent_payload_sha256": "2c9827f150c6822be84ad81b78a91b65833b8775dc204f640f6fb746eb8569ee",
+      "parent_catalog_sha256": "77a25e12af307fa3c094043713856089d0c7967cde4c88f3b18783efb3d4cb84",
+      "parent_cutoff": "2026-09-09",
+      "definition_as_of": "2026-09-12",
+      "temporal_role": "PROSPECTIVE",
+      "consumers": [
+        "M12AT_CONTEXT0_SCHEMA_V1",
+        "M12AT_CONTEXT0_MODEL_VIEW_V1"
+      ],
+      "purpose": "FROZEN_CONFIGURED_FUTURE_SEMANTICS",
+      "allowed_uses": [
+        "REEVALUATION",
+        "RISK",
+        "CONDITION"
+      ],
+      "configured_rows": [
+        {
+          "as_of": "2026-09-12",
+          "value": null,
+          "unit": null,
+          "numeric_prose_eligible": false,
+          "metric_refs": [
+            "OCF"
+          ],
+          "logical_condition": {
+            "contract": "source-owned-logical-condition-v1",
+            "subject": "FIC-FIN-04",
+            "generation_id": "m12at-deterministic-preflight",
+            "source_condition_ref": "logical-condition:da65aa188e16cde9e33a",
+            "severity": "STRENGTHENING",
+            "metric_refs": [
+              "OCF"
+            ],
+            "expression": {
+              "condition_id": "logical-condition:da65aa188e16cde9e33a",
+              "type": "LEAF",
+              "statement": "영업현금흐름과 영업이익률의 동반 개선이 확인"
+            }
+          },
+          "ref_id": "m12at:FIC-FIN-04:strengthen",
+          "category": "risks",
+          "label": "설정된 미래 논리 조건",
+          "statement": "영업현금흐름과 영업이익률의 동반 개선이 확인",
+          "source_ref": "stock.thesis.strengthen_signals"
+        },
+        {
+          "as_of": "2026-09-12",
+          "value": null,
+          "unit": null,
+          "numeric_prose_eligible": false,
+          "metric_refs": [
+            "FCF"
+          ],
+          "logical_condition": {
+            "contract": "source-owned-logical-condition-v1",
+            "subject": "FIC-FIN-04",
+            "generation_id": "m12at-deterministic-preflight",
+            "source_condition_ref": "logical-condition:71c53541a9ab9661007f",
+            "severity": "WEAKENING",
+            "metric_refs": [
+              "FCF"
+            ],
+            "expression": {
+              "condition_id": "logical-condition:71c53541a9ab9661007f",
+              "type": "LEAF",
+              "statement": "FCF 감소와 순부채 증가가 동반"
+            }
+          },
+          "ref_id": "m12at:FIC-FIN-04:weaken",
+          "category": "risks",
+          "label": "설정된 미래 논리 조건",
+          "statement": "FCF 감소와 순부채 증가가 동반",
+          "source_ref": "stock.thesis.weaken_signals"
+        },
+        {
+          "as_of": "2026-09-12",
+          "value": null,
+          "unit": null,
+          "numeric_prose_eligible": false,
+          "metric_refs": [
+            "OCF"
+          ],
+          "logical_condition": {
+            "contract": "source-owned-logical-condition-v1",
+            "subject": "FIC-FIN-04",
+            "generation_id": "m12at-deterministic-preflight",
+            "source_condition_ref": "logical-condition:6c99887b06f0849c3c02",
+            "severity": "INVALIDATION_CANDIDATE",
+            "metric_refs": [
+              "OCF"
+            ],
+            "expression": {
+              "condition_id": "logical-condition:6c99887b06f0849c3c02",
+              "type": "LEAF",
+              "statement": "지속적인 음의 영업현금흐름이 구조적으로 확인"
+            }
+          },
+          "ref_id": "m12at:FIC-FIN-04:invalidate",
+          "category": "risks",
+          "label": "설정된 미래 논리 조건",
+          "statement": "지속적인 음의 영업현금흐름이 구조적으로 확인",
+          "source_ref": "stock.thesis.invalidation_signals"
+        }
+      ]
+    }
+  ]
+}

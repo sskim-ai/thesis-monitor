@@ -9,6 +9,7 @@ import sys
 import uuid
 
 from app.services.official_codex_shadow_transport_service import OfficialCodexBinding, validate_binding
+from app.services.official_transport_input_preflight import PREFLIGHT_REJECT_EXIT
 from app.services.production_b2_execution import ModelTransportError
 from app.services.fixture_context_authority import reject_test_only_production
 from app.services.unified_run_artifacts import durable_bytes, durable_json, sha256_bytes
@@ -126,6 +127,8 @@ class OfficialProductionModelTransport:
         raw = raw_path.read_bytes() if raw_path.is_file() and not raw_path.is_symlink() else b""
         durable_json(path / "parent-exit.json", dict(status="WORKER_EXITED", child_reaped=True,
             returncode=process.returncode, raw_sha256=sha256_bytes(raw), raw_bytes=len(raw)), exclusive=True)
+        if process.returncode == PREFLIGHT_REJECT_EXIT:
+            raise ValueError("production_official_transport_boundary_reject")
         if process.returncode != 0:
             raise ModelTransportError("WORKER_NONZERO")
         receipt_path = path / "transport-receipt.json"

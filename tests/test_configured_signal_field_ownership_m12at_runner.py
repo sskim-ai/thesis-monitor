@@ -1,4 +1,5 @@
 from scripts import configured_signal_field_ownership_m12at as runner
+from scripts.reviewed_configured_semantic_adapter_v1 import m12at_schema_impact_v1
 
 
 def test_report_sequence_matches_work_instruction() -> None:
@@ -28,7 +29,7 @@ def test_fixture_audit_is_fail_closed() -> None:
 
 
 def test_model_schema_fences_only_current_directional_fields() -> None:
-    audit = runner._schema_impact_audit()
+    audit = m12at_schema_impact_v1()
     assert audit["status"] == "PASS"
     assert audit["configured_aliases"]
     configured = set(audit["configured_aliases"])
