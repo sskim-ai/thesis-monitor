@@ -101,6 +101,12 @@ class ScopedPriceCaptureSelection(ContractModel):
         return self
 
 
+class ScopedPriceCaptureSelectionV2(ScopedPriceCaptureSelection):
+    """KR adjusted completed-close input and US regular close; rights stay distinct."""
+    contract: Literal["scoped-price-capture-selection-v2"]
+    close_security_ids: tuple[str, ...] = Field(min_length=1, max_length=22)
+
+
 def selected_independent_closes(config):
     """Registered subjects only; legacy V1 still depends on its chart reads."""
     selection = config.capture_selection
@@ -117,7 +123,7 @@ class ScopedConfig(ContractModel):
     us_history: HistoryCounts
     kr_max_pages: int = Field(ge=1, le=20)
     market_dependencies: Literal["KR10_AND_FULL_US_MARKET_SET"] = "KR10_AND_FULL_US_MARKET_SET"
-    capture_selection: ScopedPriceCaptureSelection | ScopedCaptureSelectionV2 | ScopedCaptureSelection | None = None
+    capture_selection: ScopedPriceCaptureSelectionV2 | ScopedPriceCaptureSelection | ScopedCaptureSelectionV2 | ScopedCaptureSelection | None = None
 
     @model_validator(mode="after")
     def distinct(self):
@@ -131,7 +137,8 @@ class ScopedConfig(ContractModel):
             if not set(self.capture_selection.stock_security_ids) <= eligible:
                 raise ValueError("scoped_selected_security_outside_registration_or_market")
         if isinstance(self.capture_selection, ScopedPriceCaptureSelection):
-            eligible = {s.security_id for s in self.subjects if s.market == "us"}
+            eligible = {s.security_id for s in self.subjects if s.market == "us"
+                        or isinstance(self.capture_selection, ScopedPriceCaptureSelectionV2)}
             if not set(self.capture_selection.close_security_ids) <= eligible:
                 raise ValueError("scoped_close_security_outside_us_registration")
         return self
@@ -283,6 +290,14 @@ def compile_scoped_wire_contract(*, config, identities, generation_id, at,
                 continue
             reads.append(ScopedStockRead(**stock_read_fields(subject=s.ticker,
                 identity=identity, market=s.market, role=role, count=count, at=at, state=states[s.market])))
+    # A narrow price-only KR read does not claim D1000 coverage. It retains the
+    # original adjusted-daily parser/Owner, not unadjusted regular-close rights.
+    if isinstance(selection, ScopedPriceCaptureSelectionV2):
+        for s in selected_independent_closes(config):
+            if s.market == 'kr':
+                reads.append(ScopedStockRead(**stock_read_fields(subject=s.ticker,
+                    identity=identities[s.ticker], market='kr', role='adjusted_daily',
+                    count=2, at=at, state=states['kr'])))
     owners = {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest()
               for name in OWNER_FILES}
     descriptors = []
@@ -331,6 +346,8 @@ def compile_scoped_wire_contract(*, config, identities, generation_id, at,
     if close_subjects:
         existing_closes = {d.subject for d in descriptors if d.endpoint_operation == "usa20590"}
         for s in close_subjects:
+            if s.market != 'us':
+                continue
             if s.ticker not in existing_closes:
                 route = stock_read_fields(subject=s.ticker, identity=identities[s.ticker],
                     market="us", role="adjusted_daily", count=config.us_history.adjusted_daily,
