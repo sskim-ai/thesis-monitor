@@ -129,7 +129,7 @@ def test_live_owner_and_cold_prerequisites_cannot_be_resurrected(monkeypatch):
     data=dict(batch={},contract='registered-source-batch-cold-v1',batch_id='fictional',
         batch_sha256=digest({}),expected_reads=[dict(entry_id='fictional')],
         receipts=[dict(contract='current-scoped-role-source-receipt-v2-wm')],artifacts=[{}])
-    with pytest.raises(ValueError,match='cold_wm_v2_semantic_readback_not_qualified'):
+    with pytest.raises(ValueError,match='cold_required_fields'):
         batch.validate_cold_roles(data,lambda _:pytest.fail('no reads without accepted contract'))
 
 

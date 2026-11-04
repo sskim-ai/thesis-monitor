@@ -13,3 +13,5 @@ data/*
 dist/
 build/
 *.egg-info/
+/ops/manual-source-parent*.json
+/ops/source-parent-candidates/

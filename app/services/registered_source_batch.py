@@ -298,6 +298,20 @@ async def execute_chart_batch(*, batch, parent, wire, stock, manifest, configura
 
 def validate_cold_roles(data, read_rows, *, wm_context=None):
     """Byte readback only; no capability creation or current-use promotion."""
+    require(isinstance(data,dict) and {'batch','contract','batch_id','batch_sha256',
+        'expected_reads','receipts','artifacts','plan'} <= data.keys(),'cold_required_fields')
+    receipt_fields={'entry_id','receipt_sha256','security_id','target_session','generation_id',
+        'plan_sha256','parent_receipt_sha256','consumer','allowed_use','normalized_sha256',
+        'rows','requested_rows','technical_signal','completed_price_authority','financial_use',
+        'valuation_use','economic_use','D01_D02','native_use','full22_native','model_use'}
+    require(all(isinstance(data[k],list) for k in ('expected_reads','receipts','artifacts'))
+        and isinstance(data['plan'],dict)
+        and {'generation_id','parent_receipt_sha256'} <= data['plan'].keys()
+        and all(isinstance(r,dict) and receipt_fields <= r.keys() for r in data['receipts'])
+        and all(isinstance(r,dict) and {'entry_id','sha256'} <= r.keys() for r in data['artifacts'])
+        and all(isinstance(r,dict) and {'entry_id','role','canonical_security_id',
+            'latest_completed_session','market','count'} <= r.keys() for r in data['expected_reads']),
+        'cold_required_fields')
     batch=Batch.parse(data['batch'])
     require(data['contract']=='registered-source-batch-cold-v1' and data['batch_id']==batch.batch_id,'cold_batch')
     require(data['batch_sha256']==digest(batch.public()),'cold_batch_digest')
