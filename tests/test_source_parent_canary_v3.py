@@ -115,7 +115,10 @@ def test_v2_still_demands_effective_os_denial(case,monkeypatch):
 def test_v2_release_migration_does_not_silently_change_old_gates(monkeypatch):
     path=r.ROOT/'ops/manual-source-parent.json';m=json.loads(path.read_bytes())
     monkeypatch.setattr(cli.sys,'executable',m['interpreter'])
-    actual=cli.validate_manifest(path,cli.pin(path)['sha256'])
+    # A frozen v2 release must reject legitimately changed current source.
+    with pytest.raises(cli.AdmissionDenied,match='official_source_changed'):
+        cli.validate_manifest(path,cli.pin(path)['sha256'])
+    actual=json.loads(path.read_bytes())
     assert actual['contract']=='official-manual-scoped-source-parent-v2'
     assert actual['activation_digest']=='1b56b3c6b01135f9c8f7c46460f208f50c50119d8579a11bb38bf1ac90c59560'
     assert actual['limits']['US_bytes']==12*v3.GIB and not actual['owner_approved']
@@ -200,13 +203,16 @@ def test_source_plan_cannot_use_unapproved_us(v3case):
 
 
 def test_manifest_checks_core_once_but_other_code_on_import(monkeypatch):
-    path=r.ROOT/'ops/manual-source-parent-v3.json';m=json.loads(path.read_bytes())
+    path=r.ROOT/'ops/source-parent-candidates/gc3s-v3-v1.json';m=json.loads(path.read_bytes())
     monkeypatch.setattr(entry.sys,'executable',m['interpreter'])
     reads=[];original=entry.pin
     def track(p):reads.append(str(p));return original(p)
     monkeypatch.setattr(entry,'pin',track)
-    value,loader=entry.validate_manifest(path,cli.pin(path)['sha256'])
-    assert len(reads)==len(entry.CORE)+1 and len(value['source_pins'])>len(entry.CORE)
+    value,loader=entry.validate_manifest(path,cli.pin(path)['sha256'],candidate=True)
+    # Candidate validation adds one immutable historical-base read.
+    assert len(reads)==len(entry.CORE)+2 and len(value['source_pins'])>len(entry.CORE)
+    assert reads.count(str(r.ROOT/'ops/manual-source-parent-v3.json'))==1
+    assert all(reads.count(str(r.ROOT/name))==1 for name in entry.CORE)
     finder=loader.PinnedApplicationImports(value)
     finder.pins['app/services/market_session.py']={'bytes':0,'sha256':'0'*64}
     with pytest.raises(ValueError,match='import_pin_mismatch'):
@@ -226,9 +232,9 @@ def test_single_grant_cancellation_and_claim_do_not_reuse(v3case,monkeypatch,tmp
 
 
 def test_fresh_process_release_review_does_not_import_app_or_touch_host(tmp_path):
-    path=r.ROOT/'ops/manual-source-parent-v3.json';m=json.loads(path.read_bytes())
+    path=r.ROOT/'ops/source-parent-candidates/gc3s-v3-v1.json';m=json.loads(path.read_bytes())
     out=subprocess.run([m['interpreter'],'-I','-B',str(r.ROOT/'scripts/official_source_canary_v3.py'),
-        '--preflight','--dry-run','--manifest-sha256',cli.pin(path)['sha256'],
+        '--preflight','--dry-run','--candidate','--manifest',str(path),'--manifest-sha256',cli.pin(path)['sha256'],
         '--invocation-id','V3_SYNTHETIC_DRY_REVIEW'],capture_output=True,timeout=30,
         env={'PATH':'/usr/bin:/bin','LC_ALL':'C','PYTHONDONTWRITEBYTECODE':'1'},cwd=tmp_path)
     assert out.returncode==0 and not out.stderr

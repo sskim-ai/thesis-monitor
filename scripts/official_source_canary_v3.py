@@ -101,6 +101,7 @@ def execution_plan(path, expected, invocation):
 def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--manifest',type=Path,default=ROOT/'ops/manual-source-parent-v3.json')
+    p.add_argument('--candidate',action='store_true',help='Validate a new default-off release candidate without replacing historical installation metadata.')
     p.add_argument('--manifest-sha256',required=True)
     p.add_argument('--invocation-id',required=True)
     g=p.add_mutually_exclusive_group(required=True)
@@ -116,7 +117,8 @@ def main(argv=None):
     cli=guard=None
     try:
         require(re.fullmatch('[A-Za-z0-9][A-Za-z0-9_-]{7,79}',a.invocation_id) is not None, 'invocation')
-        m,cli=validate_manifest(a.manifest,a.manifest_sha256)
+        require(not (a.candidate and a.canary), 'candidate_not_installed_for_canary')
+        m,cli=validate_manifest(a.manifest,a.manifest_sha256,candidate=a.candidate)
         report.update(invocation_id=a.invocation_id,manifest_sha256=a.manifest_sha256,
             release_core_files=len(CORE),full_pins_checked_on_import=True,default_enabled=False)
         receipt=cli.receipt_destination(m,a.invocation_id,a.receipt)
