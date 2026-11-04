@@ -149,21 +149,7 @@ def prepare_fresh_subject(inputs, *, execution_generation_id):
     return dict(stock=stock, authority=authority, readiness=readiness, prepared=prepared)
 
 
-def fresh_authority_inputs(stock, inputs):
-    """Exact source replay arguments shared by single-subject and whole-cohort owners."""
-    from scripts.m12cn_policy_contract import build_subject_catalog
-    from scripts.m12dk_current_source_authority import freeze_current_source_binding
-    from app.services.direction_timing_ownership_service import OwnedEvidencePacket
-    owned = OwnedEvidencePacket.model_validate(stock['ownership'])
-    context = dict(evidence_packets=[stock['evidence_packet']], evidence_ownership=[dict(
-        ticker=stock['ticker'], core_ref_ids=sorted(owned.core_refs), timing_ref_ids=sorted(owned.timing_refs))])
-    catalog = build_subject_catalog(context=context, ticker=stock['ticker'], atomic_claims=[])
-    metadata = [r for r in stock['evidence_packet']['evidence'] if r['ref_id'] in catalog['all_evidence_refs']]
-    return dict(ticker=stock['ticker'], source_generation_id=stock['fresh_run_id'],
-        source_packet=stock['packet'], evidence_packet=stock['evidence_packet'], catalog=catalog,
-        source_metadata=metadata, frozen_binding=freeze_current_source_binding(
-            source_generation_id=stock['fresh_run_id'], source_packet=stock['packet'], evidence_packet=stock['evidence_packet']),
-        quality_bundles={}, issuer_bindings={}, fresh_business_inputs=inputs)
+from app.services.canonical_source_inputs import fresh_authority_inputs  # noqa: E402,F401
 
 
 def candidate_plan(stock_plan, identities, *, kr_max_pages, phase_a_inputs=None):

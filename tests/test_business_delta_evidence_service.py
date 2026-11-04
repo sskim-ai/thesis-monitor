@@ -242,8 +242,11 @@ def _view(kind: str, fixture_id: str = "DELTA-CAP"):
             OwnedEvidenceRef(ref=ref, domain=domain) for ref, domain in rows
         ),
     )
+    from app.services.reviewed_fixture_authority import issue_reviewed_owned_fixture
+
+    owned = issue_reviewed_owned_fixture(owned, recipe_id="delta:" + kind, delta_identity=fixture_id)
     catalog = build_evidence_alias_catalog(packet)
-    context = compact_alias_ai_context(packet, catalog)
+    context = compact_alias_ai_context(packet, catalog, reviewed_fixture=owned)
     return build_business_delta_evidence_view(
         owned,
         catalog,

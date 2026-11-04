@@ -8,7 +8,8 @@ from enum import StrEnum
 import hashlib
 import json
 
-from pydantic import Field, model_validator
+from pydantic import Field, model_serializer, model_validator
+from app.services.reviewed_fixture_authority import ReviewedFixtureSeal
 
 from app.services.cross_market_decision_engine_service import (
     EvidenceCategory,
@@ -19,6 +20,14 @@ from app.services.direction_timing_ownership_service import (
     OwnedEvidencePacket,
 )
 from app.services.structured_autonomy_alias_service import EvidenceAliasCatalog
+from app.services.fixture_context_authority import (
+    TestOnlyFixtureSeal,
+    VIEW_CONTRACT,
+    fixture_schema_metadata,
+    fixture_semantic_metadata,
+    verify_market_expectation_fixture,
+    verify_market_expectation_fixture_view,
+)
 
 
 CONTRACT_VERSION = "market-expectation-evidence-view-v1"
@@ -77,9 +86,18 @@ class MarketExpectationEvidenceView(FrozenModel):
     contract: str = CONTRACT_VERSION
     ticker: str
     items: tuple[MarketExpectationEvidenceItem, ...] = Field(min_length=1)
+    test_only_provenance: TestOnlyFixtureSeal | ReviewedFixtureSeal | None = None
+
+    @model_serializer(mode="wrap")
+    def serialize_legacy_compatible(self, handler):
+        value = handler(self)
+        if self.test_only_provenance is None:
+            value.pop("test_only_provenance", None)
+        return value
 
     @property
     def expectation_items(self) -> tuple[MarketExpectationEvidenceItem, ...]:
+        verify_market_expectation_fixture_view(self)
         return tuple(
             item
             for item in self.items
@@ -88,10 +106,12 @@ class MarketExpectationEvidenceView(FrozenModel):
 
     @property
     def material_anchor_eligible_aliases(self) -> tuple[str, ...]:
+        verify_market_expectation_fixture_view(self)
         return tuple(item.alias for item in self.items if item.material_anchor_eligible)
 
     @property
     def dominant_evidence_eligible_aliases(self) -> tuple[str, ...]:
+        verify_market_expectation_fixture_view(self)
         return tuple(item.alias for item in self.items if item.dominant_evidence_eligible)
 
     @property
@@ -105,7 +125,8 @@ class MarketExpectationEvidenceView(FrozenModel):
 
     def model_context(self) -> dict[str, object]:
         return {
-            "contract": CONTRACT_VERSION,
+            "contract": self.contract,
+            **fixture_semantic_metadata(self),
             "expectations": [
                 {
                     "ref": item.alias,
@@ -126,6 +147,7 @@ class MarketExpectationEvidenceView(FrozenModel):
 def market_expectation_evidence_view_sha256(
     view: MarketExpectationEvidenceView,
 ) -> str:
+    verify_market_expectation_fixture_view(view)
     payload = json.dumps(
         view.model_dump(mode="json"),
         ensure_ascii=False,
@@ -170,6 +192,15 @@ def build_market_expectation_evidence_view(
     *,
     structured_bases: Sequence[MarketExpectationStructuredBasis] = (),
 ) -> MarketExpectationEvidenceView:
+    from app.services.legacy_context_authority import verify_legacy_context
+
+    fixture_seal = None
+    if isinstance(owned.backend_seal, TestOnlyFixtureSeal):
+        fixture_seal = verify_market_expectation_fixture(owned, catalog, structured_bases)
+    else:
+        verify_legacy_context(owned, scope="OWNED_EVIDENCE", fixture_consumer="MARKET_EXPECTATION")
+        from app.services.reviewed_fixture_authority import verify_reviewed_expectation_basis
+        verify_reviewed_expectation_basis(owned, catalog, structured_bases)
     packet = owned.source_packet
     if (
         catalog.ticker != packet.ticker
@@ -243,7 +274,16 @@ def build_market_expectation_evidence_view(
                 ),
             )
         )
-    return MarketExpectationEvidenceView(ticker=packet.ticker, items=tuple(items))
+    if fixture_seal is not None:
+        view = MarketExpectationEvidenceView(contract=VIEW_CONTRACT, ticker=packet.ticker,
+            items=tuple(items), test_only_provenance=fixture_seal)
+        verify_market_expectation_fixture_view(view)
+        return view
+    return MarketExpectationEvidenceView(
+        contract=("test-only-reviewed-market-expectation-v1" if owned.contract == "test-only-reviewed-owned-evidence-v1" else CONTRACT_VERSION),
+        ticker=packet.ticker, items=tuple(items),
+        test_only_provenance=owned.backend_seal if isinstance(owned.backend_seal, ReviewedFixtureSeal) else None,
+    )
 
 
 def attach_market_expectation_evidence_view(
@@ -252,7 +292,8 @@ def attach_market_expectation_evidence_view(
 ) -> dict[str, object]:
     if str(context.get("ticker") or "") != view.ticker:
         raise ValueError("market_expectation_view_context_ticker_mismatch")
-    return {**context, "market_expectation_evidence_view": view.model_context()}
+    return {**context, **fixture_semantic_metadata(view),
+            "market_expectation_evidence_view": view.model_context()}
 
 
 def audit_market_expectation_view_projection(
@@ -275,6 +316,7 @@ def audit_market_expectation_view_projection(
                 mismatches.append(f"{item.alias}:independence_basis_refs")
     return {
         "contract": CONTRACT_VERSION,
+        **fixture_semantic_metadata(view),
         "ticker": view.ticker,
         "expectation_ref_count": len(view.expectation_items),
         "expectation_view_projection_mismatches": sorted(set(mismatches)),
@@ -397,6 +439,7 @@ def constrain_market_expectation_batch_schema(
         dominant["$ref"] = f"#/$defs/{dominant_claim_name}"
     if seen != set(views):
         raise ValueError("expectation_batch_view_scope_mismatch")
+    result.update(fixture_schema_metadata(views.values()))
     return result
 
 
@@ -514,6 +557,7 @@ def validate_market_expectation_candidate(
     deduplicated = list(dict.fromkeys(errors))
     return {
         "contract": POST_MODEL_VALIDATOR_CONTRACT,
+        **fixture_semantic_metadata(view),
         "ticker": view.ticker,
         "pre_model_expectation_view_sha256": expected_sha,
         "post_model_validator_expectation_view_sha256": current_sha,

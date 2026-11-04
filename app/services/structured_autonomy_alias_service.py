@@ -133,7 +133,29 @@ def build_evidence_alias_catalog(
 def compact_alias_ai_context(
     packet: DecisionEvidencePacket,
     catalog: EvidenceAliasCatalog,
+    *,
+    fixture_view=None,
+    reviewed_fixture=None,
 ) -> dict[str, object]:
+    from app.services.fixture_context_authority import (
+        contains_fixture_provenance, fixture_alias_metadata,
+    )
+    from app.services.reviewed_fixture_authority import is_reviewed_fixture_packet
+
+    fixture_metadata = {}
+    if reviewed_fixture is not None:
+        from app.services.reviewed_fixture_authority import fixture_metadata as reviewed_metadata
+        from app.services.reviewed_fixture_authority import verify_reviewed_catalog
+        from app.services.reviewed_fixture_authority import verify_reviewed_owned_fixture
+        verify_reviewed_owned_fixture(reviewed_fixture, consumer="ALIAS_CONTEXT")
+        if fixture_view is not None or reviewed_fixture.source_packet != packet:
+            raise ValueError("reviewed_fixture_alias_parent_mismatch")
+        fixture_metadata = reviewed_metadata(reviewed_fixture, consumer="ALIAS_CONTEXT")
+        verify_reviewed_catalog(reviewed_fixture, catalog, consumer="ALIAS_CONTEXT")
+    elif fixture_view is not None:
+        fixture_metadata = fixture_alias_metadata(packet, catalog, fixture_view)
+    elif contains_fixture_provenance(packet) or contains_fixture_provenance(catalog) or is_reviewed_fixture_packet(packet):
+        raise ValueError("fixture_context_verified_alias_path_required")
     _validate_catalog_owner(packet, catalog)
     by_ref = {ref.ref_id: ref for ref in packet.evidence}
     return {
@@ -176,6 +198,7 @@ def compact_alias_ai_context(
         "technical_context_status": packet.technical_context_status,
         "technical_context_quality": packet.technical_context_quality,
         "data_quality_cautions": packet.data_quality_cautions,
+        **fixture_metadata,
     }
 
 

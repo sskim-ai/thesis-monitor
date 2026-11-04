@@ -162,6 +162,7 @@ def _fundamental_packet(
 
 
 def _exact_ref_context():
+    from app.services.reviewed_fixture_authority import build_reviewed_core_fixture
     rxrx = _fundamental_packet(
         "RXRX",
         "decision-evidence:774e2e7f46d2025d7257",
@@ -169,7 +170,7 @@ def _exact_ref_context():
         logical_condition=True,
     )
     ibm = _fundamental_packet("IBM", "decision-evidence:ibm-owned")
-    context = build_accepted_v2_production_context(
+    context = build_reviewed_core_fixture(
         packet={
             "packet_id": rxrx.packet_id,
             "market": rxrx.market,
@@ -183,12 +184,13 @@ def _exact_ref_context():
 
 
 def _batch_identity_context():
+    from app.services.reviewed_fixture_authority import build_reviewed_core_fixture
     packets = tuple(
         _fundamental_packet(ticker, f"decision-evidence:{ticker.lower()}-owned")
         for ticker in ("GOOGL", "HUT", "IBM")
     )
     first = packets[0]
-    return build_accepted_v2_production_context(
+    return build_reviewed_core_fixture(
         packet={
             "packet_id": first.packet_id,
             "market": first.market,
@@ -201,6 +203,7 @@ def _batch_identity_context():
 
 
 def _stage2_exact_ref_context():
+    from app.services.reviewed_fixture_authority import build_reviewed_core_fixture
     corz_core_ref = "decision-evidence:36090e913951b40587f1"
     corz = DecisionEvidencePacket(
         packet_id="packet-stage2-exact-ref",
@@ -265,7 +268,7 @@ def _stage2_exact_ref_context():
         prohibited_claims=(),
         evidence_sha256="fixture-IBM",
     )
-    return build_accepted_v2_production_context(
+    return build_reviewed_core_fixture(
         packet={
             "packet_id": corz.packet_id,
             "market": corz.market,

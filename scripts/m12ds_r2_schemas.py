@@ -1,7 +1,7 @@
 """R2 shadow schemas project exact effect/axis eligibility, with no target labels."""
 from copy import deepcopy
 from scripts.m12cr_shadow_contract import _strict_object as obj, _enum as enum, _string as string
-from scripts.m12ds_r2_judgment_policy import Effect, observations
+from scripts.m12ds_r2_judgment_policy import Effect, observations, attribution_only_refs
 
 
 def refs(values, minimum=0, maximum=6):
@@ -16,6 +16,7 @@ def core_schema(inputs):
     subjects = {}
     for ticker, context in inputs.items():
         obs = observations(context['metadata'], context['authority'], context.get('frozen_fact_fields'))
+        attribution = attribution_only_refs(context['metadata'], context['authority'])
         branches = []
         for oid, observation in obs.items():
             material = ['CONTEXT_ONLY']
@@ -27,7 +28,9 @@ def core_schema(inputs):
                 'evidence_refs':refs([observation['source_ref']],1,1), 'observation_ids':refs([oid],1,1),
                 'materiality':enum(material)}))
         for effect in (Effect.CONFIDENCE, Effect.QUALITY, Effect.CONDITION):
-            eligible = [r['ref_id'] for r in context['metadata'] if bool(r.get('logical_condition')) == (effect == Effect.CONDITION)]
+            eligible = [r['ref_id'] for r in context['metadata']
+                        if r['ref_id'] not in attribution
+                        and bool(r.get('logical_condition')) == (effect == Effect.CONDITION)]
             if eligible:
                 branches.append(obj({'effect':enum([effect.value]), 'text':string(maximum=420),
                     'evidence_refs':refs(eligible,1,1), 'observation_ids':refs([]), 'materiality':enum(['CONTEXT_ONLY'])}))

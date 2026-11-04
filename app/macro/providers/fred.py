@@ -30,10 +30,14 @@ class FredProvider:
     name = "fred"
 
     def __init__(self, transport: httpx.AsyncBaseTransport | None = None, *,
-                 clock: Callable[[], datetime] | None = None) -> None:
+                 clock: Callable[[], datetime] | None = None,
+                 series: tuple[str, ...] | None = None) -> None:
         self.settings = get_settings()
         self.transport = transport
         self.clock = clock or (lambda: datetime.now(timezone.utc))
+        self.series = tuple(FRED_SERIES) if series is None else tuple(series)
+        if not self.series or len(set(self.series)) != len(self.series) or not set(self.series) <= set(FRED_SERIES):
+            raise ValueError('unregistered_fred_series')
 
     async def collect(self, as_of: datetime) -> MacroProviderResult:
         result = MacroProviderResult(provider=self.name)
@@ -46,7 +50,8 @@ class FredProvider:
             timeout=self.settings.macro_provider_timeout_seconds,
             transport=self.transport,
         ) as client:
-            for series_code, (category, unit, frequency) in FRED_SERIES.items():
+            for series_code in self.series:
+                category, unit, frequency = FRED_SERIES[series_code]
                 try:
                     response = await client.get(
                         "/fred/series/observations",

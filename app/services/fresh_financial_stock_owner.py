@@ -31,12 +31,19 @@ def fresh_stock_baseline(technical_inputs):
 
 
 def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs=None, event_inputs=None,
-                         source_window=None):
+                         source_window=None, reported_comparison_context=False, reported_comparison_business=False):
     """Rebuild all owners; never accept a caller's prebuilt stock or quality."""
+    if type(reported_comparison_business) is not bool:
+        raise ValueError('business_opt_in_requires_boolean')
     tech, fin = dict(technical_inputs), dict(financial_inputs)
-    if set(fin) - {'plan', 'acquisition', 'directory', 'receipts', 'field_semantics', 'issuer_business'}:
+    if set(fin) - {'plan', 'acquisition', 'directory', 'receipts', 'field_semantics', 'issuer_business',
+                   'statement_basis_policy', 'basis_execution_generation',
+                   'current_financial_parent', 'current_purpose_intake'}:
         raise ValueError('fresh_financial_input_owner_unrecognized')
     plan, fp = tech['plan'], fin['plan']
+    if (fin.get('statement_basis_policy') is not None
+            and fin.get('basis_execution_generation') != fp['run_id']):
+        raise ValueError('fresh_statement_basis_execution_generation_mismatch')
     window = None
     if source_window is not None or event_inputs is not None:
         from app.services.fresh_event_carrier import EventRunWindow
@@ -44,6 +51,8 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
         if (window.run_id != plan.run_id or window.collection_started_at != plan.frozen_at
                 or event_inputs is not None and window != EventRunWindow.model_validate(event_inputs['window'])):
             raise ValueError('fresh_business_window_generation_mismatch')
+    if reported_comparison_business and window is None:
+        raise ValueError('business_explicit_availability_window_required')
     validate_local_seed(tech['local_seed'])
     reject_current_carryin(fp)
     if (fp['run_id'] != plan.run_id or fp['cutoff'] != plan.frozen_at.isoformat()
@@ -91,7 +100,8 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
         projection, source_ticker = result['projection'], fp['ticker']
     from app.services.selected_financial_owner import validate as validate_selected_owner
     selected_owner = validate_selected_owner(result['selected_financial_owner'],
-        projection=projection, facts=facts, bridge=bridge)
+        projection=projection, facts=facts, bridge=bridge,
+        current_financial_parent=fin.get('current_financial_parent'), current_purpose_intake=fin.get('current_purpose_intake'))
     quality = derive_fresh(projection=projection, facts=facts, ticker=fp['ticker'],
         security_id=fp['security']['canonical_security_id'], run_id=plan.run_id,
         source_ticker=source_ticker, bridge=bridge)
@@ -168,6 +178,19 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
                 source_sha256=price_owner['supplement_source_sha256']))
     # Packet metadata participates in the evidence identity, so build it only
     # after all deterministic source owners have completed.
+    if reported_comparison_context:
+        from app.services.reported_comparison_context import _BUILDER_PERMIT, issue_context
+        stock['reported_comparison_context'] = issue_context(
+            stock=stock, packet=packet, facts=facts, plan=fp, projection=projection,
+            selected_owner=selected_owner, receipts=fin['receipts'], financial_inputs=fin,
+            _permit=_BUILDER_PERMIT)
+    if reported_comparison_business:
+        if missing:
+            raise ValueError('business_mandatory_source_incomplete:' + ','.join(sorted(set(missing))))
+        from app.services.reported_business_projection import _BUILDER_PERMIT, issue
+        stock['reported_business_projection'] = issue(stock=stock, packet=packet, facts=facts,
+            plan=fp, acquisition=fin['acquisition'], projection=projection, selected_owner=selected_owner,
+            quality=quality, bridge=bridge, financial_inputs=fin, _permit=_BUILDER_PERMIT)
     evidence = build_decision_evidence_packet(packet=packet, stock=stock,
         technical_context=PacketOwnedTechnicalContext.model_validate(stock['technical_context']))
     owned = build_owned_evidence_packet(evidence, stock=stock)
@@ -185,6 +208,7 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
             source='source_owned_event_context', event_receipt_sha256=event['receipt']['receipt_sha256'],
             acquisition_class=event['receipt']['acquisition_class'])
     input_hashes = {**result['input_hashes'], 'technical_owner': digest(baseline),
+                   'local': baseline['input_hashes']['local'],
                    'selected_financial_owner': selected_owner['envelope_sha256'],
                    'quality': digest(quality), 'valuation': digest(stock['current_valuation_view'])}
     if event:

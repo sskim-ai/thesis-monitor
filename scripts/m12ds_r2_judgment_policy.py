@@ -62,10 +62,21 @@ def frozen_fact_fields(packet, ticker, metadata):
     return result
 
 
+def attribution_only_refs(metadata, authority):
+    """Attribution-only history/issuer context cannot become an economic effect."""
+    records = {r['ref_id']: r for r in authority['authority_records']}
+    return {r['ref_id'] for r in metadata
+            if r.get('reported_comparison') is not None
+            or records.get(r['ref_id'], {}).get('source_family') in {
+                'HISTORICAL_REPORTED_CONTEXT', 'ISSUER_REPORTED_CONTEXT'}}
+
+
 def observations(metadata, authority, fact_fields=None):
     """Mechanical observed propositions, never confidence prose or configured conditions."""
     records = {r['ref_id']: r for r in authority['authority_records']}
+    attribution = attribution_only_refs(metadata, authority)
     permitted = {row['ref_id'] for row in metadata if row['ref_id'] in records
+                 and row['ref_id'] not in attribution
                  and direction_allowed(records[row['ref_id']], row, (fact_fields or {}).get(row['ref_id']))}
     result = {}
 
@@ -115,12 +126,15 @@ def materialize_core(ticker, raw, metadata, authority, fact_fields=None):
     """Keep the model response untouched; emit an explicitly derived atomic catalog."""
     obs = observations(metadata, authority, fact_fields)
     known = {r['ref_id']: r for r in metadata}
+    attribution = attribution_only_refs(metadata, authority)
     atomic, effects = [], {}
     for item in raw['claims']:
         effect = Effect(item['effect'])
         refs = item['evidence_refs']
         if not refs or len(set(refs)) != len(refs) or not set(refs) <= set(known):
             raise ValueError('core_unknown_duplicate_or_empty_source_refs')
+        if set(refs) & attribution:
+            raise ValueError('historical_attribution_not_economic_claim_authority')
         ids = item['observation_ids']
         if len(set(ids)) != len(ids) or not set(ids) <= set(obs):
             raise ValueError('core_unknown_or_duplicate_observation')
@@ -186,6 +200,10 @@ def axis_capability(core, chain, catalog, metadata):
         raise ValueError('axis_current_core_binding_invalid')
     if core['binding_sha256'] != canonical_sha256({'atomic': core['atomic_claims'], 'effects': core['effects']}):
         raise ValueError('core_effect_binding_drift')
+    attribution = attribution_only_refs(metadata, chain['authority'])
+    if (any(set(r['parent_source_refs']) & attribution for r in core['atomic_claims'])
+            or any(set(r['source_refs']) & attribution for r in core['effects'].values())):
+        raise ValueError('historical_attribution_not_axis_capability')
     out = {'positive': [], 'negative': [], 'confidence': [], 'condition': [], 'quality': [],
            'holder_support': [], 'holder_risk': [], 'holder_reduce': [], 'risk_triggers': {}}
     for ref, effect in core['effects'].items():

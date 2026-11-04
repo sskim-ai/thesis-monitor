@@ -5,6 +5,7 @@ from datetime import UTC, date, datetime
 from zoneinfo import ZoneInfo
 
 from sqlmodel import Session
+from app.services.runtime_maintenance import assert_operation_allowed
 
 from app.database import engine, init_db
 from app.services.ai_review_service import (
@@ -44,6 +45,7 @@ def _launch_terminal_canaries(values: list[dict[str, object]]) -> None:
 
 
 async def _main() -> None:
+    assert_operation_allowed()
     parser = argparse.ArgumentParser(description="Manage local Codex daily-review packets.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 

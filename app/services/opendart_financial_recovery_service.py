@@ -456,6 +456,8 @@ def promote_recovered_fields(
     *,
     blocked_fields: Iterable[str] = (),
     xbrl_facts: Iterable[XbrlFact] = (),
+    documentary_input=None,
+    documentary_context=None,
 ) -> dict[str, object]:
     blocked = set(blocked_fields)
     xbrl_values = tuple(xbrl_facts)
@@ -464,6 +466,7 @@ def promote_recovered_fields(
     xbrl_resolved = 0
     for name, spec in FIELD_SPECS.items():
         selection = select_field_occurrence(rows_by_basis, spec)
+        documentary_error = None
         lineage = (
             _lineage(selection.row, spec, filing, spec.source_column)
             if selection.status == "selected" and selection.row is not None
@@ -475,6 +478,14 @@ def promote_recovered_fields(
                 selection, spec, filing, xbrl_values
             )
             xbrl_resolved += lineage is not None
+        if (lineage is None and name == 'operating_cash_flow'
+                and documentary_input is not None):
+            from app.services.opendart_documentary_duration import reconcile_documentary_duration
+            try:
+                lineage = reconcile_documentary_duration(selection, spec, filing,
+                    documentary_input, **(documentary_context or {}))
+            except (ValueError, KeyError, TypeError) as exc:
+                documentary_error = 'documentary_duration_denied:' + str(exc)
         if lineage is not None and name in blocked:
             lineage = {
                 **lineage,
@@ -494,7 +505,7 @@ def promote_recovered_fields(
             "selection_basis": selection.basis,
             "candidate_count": len(selection.candidates),
             "reason": (
-                lineage.get("denial_reason") if lineage is not None else selection.reason
+                lineage.get("denial_reason") if lineage is not None else documentary_error or selection.reason
             ),
             "lineage": lineage,
             "value": lineage.get("amount") if lineage is not None else None,

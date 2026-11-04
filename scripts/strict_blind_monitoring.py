@@ -25,19 +25,15 @@ STAGES = {"MARKET": "market", "CORE": "core", "A": "pass-a", "B": "pass-b"}
 
 def from_sources(*, whole, local_seeds, valuation_contexts, generation, coverage, census):
     """Rebuild source-use inputs before models. Never load historical accepted state."""
-    from scripts.fresh_source_only_export import source_only_fresh_stock
-    from scripts.r2b_r2_preflight import preflight_subject
+    from app.services.canonical_monitoring_source import prepare_monitoring_source
     from scripts.r2b_r5_market_adapter import project_sealed_market_context
-    prepared, stocks, blind_inputs = {}, {}, {}
+    result = prepare_monitoring_source(whole=whole, local_seeds=local_seeds,
+        valuation_contexts=valuation_contexts, generation=generation, coverage=coverage,
+        census=census, market_projector=project_sealed_market_context)
+    blind_inputs = {}
     for market, packet in whole["packets"].items():
         for ticker, stock in packet["stocks"].items():
-            authority = whole["authority_graph"]["stocks"][ticker]
-            source_only_fresh_stock(stock, authority)
-            readiness, data = preflight_subject(stock, authority, local_seeds[ticker],
-                generation=generation, cutoff=stock["packet"]["generated_at"])
-            blind.require(readiness["status"] == "PASS" and data["mode"] == "EVIDENCE_BASED",
-                "STRICT_NATIVE_SOURCE_PREFLIGHT_GAP:" + ticker)
-            prepared[ticker], stocks[ticker] = data, deepcopy(stock)
+            data = result["prepared"][ticker]
             sub = data["subject"]
             blind_inputs[ticker] = dict(ticker=ticker, market=market.upper(),
                 security_id=valuation_contexts[ticker]["security_id"], source_generation_id=stock["fresh_run_id"],
@@ -47,11 +43,7 @@ def from_sources(*, whole, local_seeds, valuation_contexts, generation, coverage
                 valuation_context=deepcopy(valuation_contexts[ticker]), coverage=deepcopy(coverage), census=deepcopy(census),
                 current_price=deepcopy(shadow_request_context(sub, stock)["current_price"]),
                 tactical_candidates=deepcopy(sub["tactical_candidates"]))
-    markets = {market: project_sealed_market_context(packet, whole["seed"], whole["authority_graph"],
-        expected_authority_sha256=whole["authority_graph_sha256"]) for market, packet in whole["packets"].items()}
-    return dict(prepared=prepared, stocks=stocks, markets=markets, valuation_contexts=deepcopy(valuation_contexts),
-        source_generation_id=whole["seed"]["parent_run_id"], coverage=deepcopy(coverage), census=deepcopy(census),
-        whole_source_sha256=digest(whole)), blind_inputs
+    return result, blind_inputs
 
 
 def _valuation(self, ticker):

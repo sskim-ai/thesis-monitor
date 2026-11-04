@@ -16,7 +16,6 @@ from app.services.provider_native_valuation_snapshot import (
     KIWOOM_ROUTE,
     FINNHUB_BASE,
 )
-from app.services.sealed_fresh_dispatch import ProviderPlan, consume_bound_result
 from app.services.unified_live_source_transport import SourceSafetyStop
 from app.services.unified_run_artifacts import sha256_bytes
 from app.services.unified_snapshot_contract import digest
@@ -115,9 +114,9 @@ def add_slots(*, identities, market_types, add, kiwoom):
     return inventory
 
 
-async def collect_native(*, frozen, settings, sealed):
+async def collect_native(*, frozen, settings, sealed, client=None):
     inventory = frozen["valuation_slots"]
-    client = KiwoomRestClient(
+    client = client or KiwoomRestClient(
         app_key=settings.kiwoom_app_key,
         secret_key=settings.kiwoom_secret_key,
         base_url=settings.kiwoom_rest_base_url,
@@ -183,11 +182,14 @@ async def collect_native(*, frozen, settings, sealed):
 
 def replay_native(*, root, frozen, outcome, security, policy):
     """Project native-owner receipts only from exact dispatcher final records."""
+    # Scoped acquisition does not need the full sealed-run owner dependency graph.
+    from app.services.sealed_fresh_dispatch import decode_request_plan, consume_bound_result
+
     ticker = security["ticker"]
     inventory = frozen["valuation_slots"][ticker]
     if inventory["security_sha256"] != digest(security):
         raise ValueError("valuation_slot_security_drift")
-    plan = ProviderPlan.model_validate(frozen["plan"])
+    plan = decode_request_plan(frozen["plan"])
     if plan.generation_id != frozen["generation_id"]:
         raise ValueError("valuation_plan_generation_drift")
     bindings = []

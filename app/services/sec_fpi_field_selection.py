@@ -8,11 +8,29 @@ from app.services.sec_fpi_financial_purpose import FINANCIAL
 POLICY = 'EXACT_REPORTED_QUARTER_OR_HALF_YEAR_NO_SUBTRACTION'
 
 
-def select_fields(documents, rows, *, ticker, cutoff, uncaptured=(), allow_inline_annual=False):
+def select_fields(documents, rows, *, ticker, cutoff, uncaptured=(), allow_inline_annual=False, purpose_reconciliation=None, current_purpose_intake=None, source_documents=None, documentary_review=None):
+    documentary = None
+    if documentary_review is not None:
+        from app.services.sec_documentary_field_review import DocumentaryReviewRegistry
+        registry, handle = documentary_review
+        if type(registry) is not DocumentaryReviewRegistry:
+            raise ValueError('documentary_original_registry_required')
+        documentary = registry.resolve(handle, documents=documents, rows=rows, ticker=ticker, cutoff=cutoff)
+    review = None
+    if purpose_reconciliation is not None and current_purpose_intake is not None:
+        raise ValueError('purpose_diagnostic_and_current_routes_exclusive')
+    if purpose_reconciliation is not None:
+        from app.services.sec_fpi_purpose_reconciliation import resolve
+        review = resolve(purpose_reconciliation)
+    if current_purpose_intake is not None:
+        from app.services.current_financial_purpose_intake import resolve
+        review = resolve(current_purpose_intake)
+        if review['parent']['cutoff'] != cutoff:
+            raise ValueError('current_purpose_field_cutoff_mismatch')
     selected, audit = [], {}
     qualities = {i: foreign_comparison_quality(formal=r, candidates=rows, ticker=ticker,
         cutoff=date.fromisoformat(cutoff[:10]), allow_reported_half_year=True,
-        allow_inline_annual=allow_inline_annual) for i, r in enumerate(rows)}
+        allow_inline_annual=allow_inline_annual, source_documents=source_documents) for i, r in enumerate(rows)}
     for metric in FIELDS:
         candidates = [(i, r) for i, r in enumerate(rows) if getattr(r, metric) is not None]
         reasons = []
@@ -61,7 +79,18 @@ def select_fields(documents, rows, *, ticker, cutoff, uncaptured=(), allow_inlin
                 continue
             if (doc['purpose'] == 'UNKNOWN_PURPOSE' or doc['purpose'] in FINANCIAL) and doc['filing_date'] >= selected_date:
                 relevant_unknowns.append(doc['document_identity'])
-        relevant_unknowns.extend(f['accessionNumber'] for f in uncaptured if f['filingDate'] >= selected_date)
+        auxiliary_scope = []
+        for filing in uncaptured:
+            if review is not None:
+                from app.services.sec_fpi_purpose_reconciliation import matching_nonfinancial
+                cleared = matching_nonfinancial(review, filing)
+                auxiliary_scope.append(dict(accession=filing['accessionNumber'], filing_date=filing['filingDate'],
+                    selected_filing_date=selected_date, newer_or_same=filing['filingDate'] >= selected_date,
+                    verified_nonfinancial=cleared, original_uncaptured_record_preserved=True))
+            else:
+                cleared = False
+            if filing['filingDate'] >= selected_date and not cleared:
+                relevant_unknowns.append(filing['accessionNumber'])
         if relevant_unknowns:
             reasons.append('NEWER_DOCUMENT_PURPOSE_UNRESOLVED')
         # Known later field periods cannot silently disappear through a parser/quality failure.
@@ -83,6 +112,14 @@ def select_fields(documents, rows, *, ticker, cutoff, uncaptured=(), allow_inlin
             'source_url': chosen.source if chosen else None, 'unresolved_sources': relevant_unknowns,
             'later_unavailable_occurrence_ids': later, 'denial_reasons': sorted(set(reasons)),
             'selection': 'latest_economic_field_period_then_reviewed_statement_authority_not_value_or_filing_date'}
+        if review is not None and current_purpose_intake is None:
+            record['auxiliary_purpose_reconciliation'] = dict(receipt_sha256=review['receipt_sha256'],
+                original_uncaptured_scope=auxiliary_scope, current_owner_eligible=False,
+                limitation=review['temporal_authority'])
+        elif review is not None:
+            record['current_purpose_applicability'] = dict(receipt_sha256=review['receipt_sha256'],
+                original_uncaptured_scope=auxiliary_scope, scope=review['scope'],
+                financial_authority=False, source_history_exhausted=False)
         if not reasons:
             comparison = next(c for c in qualities[eligible[0][0]]['comparative_observations'] if c['metric'] == metric)
             record['prior_source_accession'] = comparison['comparison']['lineage']['receipt']
@@ -93,11 +130,15 @@ def select_fields(documents, rows, *, ticker, cutoff, uncaptured=(), allow_inlin
             selected.append(isolated)
             record['selected_metric'] = metric
         audit[metric] = record
-    return selected, {'contract': 'sec-fpi-field-economic-supersession-v1', 'fields': audit,
+    result = {'contract': 'sec-fpi-field-economic-supersession-v1', 'fields': audit,
         'status': 'PASS' if selected else 'BLOCKED',
         'period_end': max((r.financial_period_end.isoformat() for r in selected), default=None),
         'source_accessions': sorted({r.source_filing_id for r in selected}),
         'denial_reasons': sorted({reason for row in audit.values() for reason in row['denial_reasons']})}
+    if documentary is not None:
+        # Diagnostics are visible without removing any purpose/quality denial.
+        result['documentary_review'] = documentary
+    return selected, result
 
 
 def reconcile_historical_denials(reconciliation, documents, selection):

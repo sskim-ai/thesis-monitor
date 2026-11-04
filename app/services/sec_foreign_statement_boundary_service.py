@@ -3,9 +3,9 @@ from html.parser import HTMLParser
 import re
 
 CONTRACT = "foreign-statement-boundary-v1"
-TITLE = re.compile(r"(?:consolidated|separate) statements? of (?:profit or loss(?: and other comprehensive income)?|comprehensive income|income|operations)|consolidated results\s*:", re.I)
-ANY_STATEMENT = re.compile(r"(?:consolidated|separate) (?:statements?|balance sheets?|results)", re.I)
-UNITS = re.compile(r"(?:in |unit\s*:\s*)(thousands|millions|billions) of (new taiwan dollars|us dollars|renminbi|RMB|CNY)|unit\s*:\s*(NT\$|TWD|US\$|USD)\s*(thousand|million|billion)|\b(RMB|CNY) in (thousands|millions|billions)\b", re.I)
+TITLE = re.compile(r"(?:consolidated|separate) (?:interim )?statements? of (?:profit or loss(?: and other comprehensive income)?|comprehensive income|income|operations)|consolidated results\s*:", re.I)
+ANY_STATEMENT = re.compile(r"(?:consolidated|separate) (?:interim )?(?:statements?|balance sheets?|results)", re.I)
+UNITS = re.compile(r"(?:in |unit\s*:\s*)(thousands|millions|billions) of (new taiwan dollars|us dollars|korean won|renminbi|RMB|CNY)|unit\s*:\s*(NT\$|TWD|US\$|USD)\s*(thousand|million|billion)|\b(RMB|CNY) in (thousands|millions|billions)\b", re.I)
 VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
 
 
@@ -50,7 +50,7 @@ def unit_candidates(value):
         if re.match(r"\s*[,;:]?\s*(?:for )?per[- ]share\b", value[match.end():], re.I):
             continue
         name = (currency or symbol or rmb).lower()
-        canonical = "CNY" if name in {"renminbi", "rmb", "cny"} else "TWD" if name in {"new taiwan dollars", "nt$", "twd"} else "USD"
+        canonical = "KRW" if name == "korean won" else "CNY" if name in {"renminbi", "rmb", "cny"} else "TWD" if name in {"new taiwan dollars", "nt$", "twd"} else "USD"
         result.append((canonical,
                        {"thousand":1000,"million":1000000,"billion":1000000000}[(scale or suffix or rmb_scale).lower().rstrip("s")], match[0]))
     return result
@@ -68,6 +68,28 @@ def has_data_table(node):
 
 def explicit_section(node):
     return node["tag"] in {"section", "article"} or node["attrs"].get("role") == "region"
+
+
+def leading_unit_cells(table):
+    """Only this table's leading headers, ending before its first amount row."""
+    def rows(node):
+        for child in node["children"]:
+            if child["tag"] == "table":
+                return
+            if child["tag"] == "tr":
+                yield child
+            else:
+                yield from rows(child)
+    result = []
+    for row in rows(table):
+        cells = [c for c in row["children"] if c["tag"] in {"td", "th"}]
+        values = [text(c) for c in cells]
+        year_header = all(not v or re.fullmatch(r"20\d{2}", v) for v in values)
+        if not year_header and any(re.fullmatch(r"-?\d[\d,]*(?:\.\d+)?|\(\d[\d,]*(?:\.\d+)?\)",
+                v.replace('$', '').replace(' ', '')) for v in values):
+            break
+        result.extend(c for c in cells if unit_candidates(text(c)))
+    return result
 
 
 def boundary(table):
@@ -104,7 +126,8 @@ def boundary(table):
             branch = parent
     joined = " ".join(text(n) for n in fragments)
     titles = list(TITLE.finditer(joined))
-    units = unit_candidates(joined)
+    unit_cells = leading_unit_cells(table)
+    units = unit_candidates(joined) + [u for c in unit_cells for u in unit_candidates(text(c))]
     errors = []
     if len(titles) != 1:
         errors.append("statement_caption_ownership_unresolved")
@@ -112,12 +135,15 @@ def boundary(table):
         errors.append("statement_unit_ownership_unresolved")
     title = titles[0][0] if len(titles) == 1 else None
     currency, scale, unit = units[0] if units and len({u[:2] for u in units}) == 1 else (None,None,None)
-    return dict(contract=CONTRACT, table_index=table["table_index"], table_dom_path=table["path"],
+    result = dict(contract=CONTRACT, table_index=table["table_index"], table_dom_path=table["path"],
         table_html_id=table["attrs"].get("id"), section_dom_path=owner["path"] if owner else None,
         metadata_dom_paths=[n["path"] for n in fragments], method=method, caption=title,
         statement_basis=("consolidated" if title.lower().startswith("consolidated") else "separate") if title else None,
         currency=currency, unit_scale=scale, unit_evidence=unit,
         status="FAIL" if errors else "PASS", denial_reasons=errors)
+    if unit_cells:
+        result['unit_header_dom_paths'] = [n['path'] for n in unit_cells]
+    return result
 
 
 def statement_boundaries(html):

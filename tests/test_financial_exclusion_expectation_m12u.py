@@ -47,6 +47,9 @@ def test_exclusion_does_not_immunize_industrial_anchor():
 
 def test_scope_is_portable_and_only_approved_surfaces_changed():
     from scripts import business_delta_alias_balance_confidence_m12z as z
+    from tests.historical_scope_descendant_fixture import require_exact_calendar_descendant
+
+    require_exact_calendar_descendant()
 
     result = u.scope_audit()
     assert result["status"] == "FAIL"
@@ -83,6 +86,7 @@ def test_scope_is_portable_and_only_approved_surfaces_changed():
         "app/services/ohlcv_client.py",
         "app/services/ohlcv_feature_engine_service.py",
         "app/services/ohlcv_structure_service.py",
+        "app/services/price_structure_wave_fibonacci_v3_service.py",
         "app/services/structured_autonomy_alias_service.py",
         "app/services/us_exchange_breadth_service.py",
         "app/services/valuation_snapshot_service.py",

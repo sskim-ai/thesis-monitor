@@ -1,4 +1,5 @@
 """Receipt derived from raw-source and post-model replay, never a PASS flag."""
+from datetime import datetime
 from pathlib import Path
 import json
 
@@ -47,14 +48,27 @@ def root_gate(proof=None):
                 owner = us_market_aggregate_owner(role=role,
                     source_url=get_settings().ohlcv_base_url.rstrip('/') + '/ohlcv', policy=native['policy'])
             else:
+                from app.services.kiwoom_consumed_page_contract import CONTRACT as KR_CONSUMED_CONTRACT
+                from app.services.unified_aggregate_receipt import AggregateReceipt
                 from app.services.unified_kiwoom_observer import KiwoomRead
+                from app.services.unified_source_replay import read_bound_artifact
+                item = native['item']
+                aggregate = AggregateReceipt.model_validate_json(read_bound_artifact(
+                    native['root'], item.receipt_artifact, item.receipt_sha256))
                 reads = [KiwoomRead.model_validate(r) for r in json.loads(
-                    (native['root'] / 'plan.json').read_bytes())['reads']]
+                    read_bound_artifact(native['root'], aggregate.plan.path, aggregate.plan.sha256))['reads']]
                 retries = {r.max_requests_per_page for r in reads}
                 if len(retries) != 1:
                     raise ValueError('phase_a_kiwoom_plan_retry_mismatch')
-                owner = kiwoom_aggregate_owner(role=role, observed_at=native['item'].received_at,
-                    max_pages=max(r.max_pages for r in reads), max_requests_per_page=next(iter(retries)), policy=native['policy'])
+                consumer_complete = aggregate.validator_contract == KR_CONSUMED_CONTRACT
+                observed_at = item.received_at
+                if consumer_complete:
+                    # Match canonical market_inputs; receipt completion is not the query clock.
+                    observed_at = datetime.fromisoformat(json.loads(
+                        (native['root'].parent / 'kr-query.json').read_bytes())['observed_at'])
+                owner = kiwoom_aggregate_owner(role=role, observed_at=observed_at,
+                    max_pages=max(r.max_pages for r in reads), max_requests_per_page=next(iter(retries)),
+                    policy=native['policy'], consumer_complete=consumer_complete)
             source['native_aggregate'] = {**native, 'owners': {role.owner: owner}}
         try:
             whole = compose_full_source(**args)
@@ -97,7 +111,6 @@ def root_gate(proof=None):
             if len(scopes) != 1 or next(iter(scopes)) == digest(None):
                 states['aggregate_whole_source_gate'] = dict(status='BLOCKED', reasons=['COMMON_AVAILABILITY_WINDOW_NOT_PROVEN'])
             else:
-                from datetime import datetime
                 window = next(iter(stocks.values()))['packet']['source_time_domains']['business_window']
                 context = args['fresh_context_inputs']
                 if (context['publications']['as_of'] != datetime.fromisoformat(window['source_query_cutoff'])

@@ -593,6 +593,21 @@ class OpenDARTProvider(FilingProvider):
     convertible_bond_endpoint = "https://opendart.fss.or.kr/api/cvbdIsDecsn.json"
     dividend_endpoint = "https://opendart.fss.or.kr/api/alotMatter.json"
 
+    async def fetch_release_page(self, client, *, corp_code, begin, end, page=1, page_count=100):
+        """One caller-budgeted metadata page; no statement/document expansion."""
+        if (not isinstance(corp_code, str) or len(corp_code) != 8 or not corp_code.isdigit() or
+                begin > end or (end-begin).days > 31 or not 1 <= page <= 8 or not 1 <= page_count <= 100):
+            raise ValueError('bounded_opendart_discovery_scope')
+        settings = get_settings()
+        if not settings.opendart_api_key:
+            raise ValueError('opendart_credentials_unavailable')
+        response = await client.get(self.endpoint, params=dict(crtfc_key=settings.opendart_api_key,
+            corp_code=corp_code,bgn_de=_yyyymmdd(begin),end_de=_yyyymmdd(end),page_no=page,page_count=page_count))
+        response.raise_for_status()
+        if response.json().get('status') not in ('000','013'):
+            raise ValueError('opendart_discovery_status')
+        return response
+
     async def _fetch_preliminary_earnings(
         self,
         client: httpx.AsyncClient,

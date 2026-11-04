@@ -1,0 +1,1506 @@
+{
+  "contract": "reviewed-test-only-semantic-recipes-v1",
+  "provenance": "TEST_ONLY",
+  "production_eligible": false,
+  "recipes": {
+    "packet:direction": {
+      "scope": "OWNED_EVIDENCE",
+      "purpose": "FROZEN_CORE_TIMING_SEMANTICS",
+      "parameters": [],
+      "stock": {
+        "fact_catalog": [
+          {
+            "fact_id": "fundamental:TEST:business_current:abc",
+            "evidence_family": "BUSINESS_CURRENT"
+          },
+          {
+            "fact_id": "fundamental:TEST:earnings_financial_current:def",
+            "evidence_family": "EARNINGS_FINANCIAL_CURRENT"
+          },
+          {
+            "fact_id": "price:current",
+            "evidence_family": "PRICE_CONTEXT"
+          },
+          {
+            "fact_id": "chart:structure:state",
+            "evidence_family": "PRICE_CONTEXT"
+          }
+        ]
+      },
+      "payload": {
+        "contract": "direction-timing-ownership-v1",
+        "source_packet": {
+          "contract": "decision-evidence-packet-v1",
+          "packet_id": "packet-1",
+          "ticker": "TEST",
+          "company_name": "Test",
+          "market": "us",
+          "assessment_date": "2026-09-06",
+          "horizon": "12m",
+          "reasoning_grade": "VERY_HIGH",
+          "backend_reasoning_effort": "xhigh",
+          "evidence": [
+            {
+              "ref_id": "canonical:fundamental:TEST:business_current:abc",
+              "category": "earnings_quality",
+              "label": "canonical:fundamental:TEST:business_current:abc",
+              "statement": "canonical:fundamental:TEST:business_current:abc",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.fundamental:TEST:business_current:abc",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "canonical:fundamental:TEST:earnings_financial_current:def",
+              "category": "earnings",
+              "label": "canonical:fundamental:TEST:earnings_financial_current:def",
+              "statement": "canonical:fundamental:TEST:earnings_financial_current:def",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.fundamental:TEST:earnings_financial_current:def",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "canonical:price:current",
+              "category": "price_structure",
+              "label": "canonical:price:current",
+              "statement": "canonical:price:current",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.price:current",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "canonical:chart:structure:state",
+              "category": "price_structure",
+              "label": "canonical:chart:structure:state",
+              "statement": "canonical:chart:structure:state",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.chart:structure:state",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "technical-feature:rsi",
+              "category": "technical_feature",
+              "label": "technical-feature:rsi",
+              "statement": "technical-feature:rsi",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "technical_context.ctx.daily.rsi_14",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "technical-feature:macd",
+              "category": "technical_feature",
+              "label": "technical-feature:macd",
+              "statement": "technical-feature:macd",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "technical_context.ctx.weekly.macd_histogram",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "technical-feature:bollinger",
+              "category": "technical_feature",
+              "label": "technical-feature:bollinger",
+              "statement": "technical-feature:bollinger",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "technical_context.ctx.monthly.bollinger_20_2_state",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "technical-feature:volume",
+              "category": "technical_feature",
+              "label": "technical-feature:volume",
+              "statement": "technical-feature:volume",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "technical_context.ctx.daily.volume_ratio_20",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "decision-evidence:supply",
+              "category": "flows",
+              "label": "decision-evidence:supply",
+              "statement": "decision-evidence:supply",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.supply_context",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            }
+          ],
+          "prohibited_claims": [],
+          "data_quality_cautions": [],
+          "technical_context_id": null,
+          "technical_context_status": "LEGACY_UNSPECIFIED",
+          "technical_context_quality": {},
+          "evidence_sha256": "evidence-sha"
+        },
+        "evidence": [
+          {
+            "ref": {
+              "ref_id": "canonical:fundamental:TEST:business_current:abc",
+              "category": "earnings_quality",
+              "label": "canonical:fundamental:TEST:business_current:abc",
+              "statement": "canonical:fundamental:TEST:business_current:abc",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.fundamental:TEST:business_current:abc",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "BUSINESS_CURRENT",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "canonical:fundamental:TEST:earnings_financial_current:def",
+              "category": "earnings",
+              "label": "canonical:fundamental:TEST:earnings_financial_current:def",
+              "statement": "canonical:fundamental:TEST:earnings_financial_current:def",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.fundamental:TEST:earnings_financial_current:def",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "canonical:price:current",
+              "category": "price_structure",
+              "label": "canonical:price:current",
+              "statement": "canonical:price:current",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.price:current",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "PRICE_CONTEXT",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "canonical:chart:structure:state",
+              "category": "price_structure",
+              "label": "canonical:chart:structure:state",
+              "statement": "canonical:chart:structure:state",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.chart:structure:state",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "PRICE_CONTEXT",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "technical-feature:rsi",
+              "category": "technical_feature",
+              "label": "technical-feature:rsi",
+              "statement": "technical-feature:rsi",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "technical_context.ctx.daily.rsi_14",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "OHLCV_TECHNICAL",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "technical-feature:macd",
+              "category": "technical_feature",
+              "label": "technical-feature:macd",
+              "statement": "technical-feature:macd",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "technical_context.ctx.weekly.macd_histogram",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "OHLCV_TECHNICAL",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "technical-feature:bollinger",
+              "category": "technical_feature",
+              "label": "technical-feature:bollinger",
+              "statement": "technical-feature:bollinger",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "technical_context.ctx.monthly.bollinger_20_2_state",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "OHLCV_TECHNICAL",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "technical-feature:volume",
+              "category": "technical_feature",
+              "label": "technical-feature:volume",
+              "statement": "technical-feature:volume",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "technical_context.ctx.daily.volume_ratio_20",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "VOLUME_LIQUIDITY",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "decision-evidence:supply",
+              "category": "flows",
+              "label": "decision-evidence:supply",
+              "statement": "decision-evidence:supply",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.supply_context",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "SUPPLY_POSITIONING",
+            "source_owned_domain": true
+          }
+        ],
+        "sector_framework": "unspecified"
+      }
+    },
+    "packet:direction-leading": {
+      "scope": "OWNED_EVIDENCE",
+      "purpose": "FROZEN_CORE_TIMING_SEMANTICS",
+      "parameters": [],
+      "stock": {
+        "fact_catalog": [
+          {
+            "fact_id": "fundamental:TEST:business_current:abc",
+            "evidence_family": "BUSINESS_CURRENT"
+          },
+          {
+            "fact_id": "fundamental:TEST:earnings_financial_current:def",
+            "evidence_family": "EARNINGS_FINANCIAL_CURRENT"
+          },
+          {
+            "fact_id": "price:current",
+            "evidence_family": "PRICE_CONTEXT"
+          },
+          {
+            "fact_id": "chart:structure:state",
+            "evidence_family": "PRICE_CONTEXT"
+          }
+        ]
+      },
+      "payload": {
+        "contract": "direction-timing-ownership-v1",
+        "source_packet": {
+          "contract": "decision-evidence-packet-v1",
+          "packet_id": "packet-1",
+          "ticker": "TEST",
+          "company_name": "Test",
+          "market": "us",
+          "assessment_date": "2026-09-06",
+          "horizon": "12m",
+          "reasoning_grade": "VERY_HIGH",
+          "backend_reasoning_effort": "xhigh",
+          "evidence": [
+            {
+              "ref_id": "canonical:fundamental:TEST:business_current:abc",
+              "category": "earnings_quality",
+              "label": "canonical:fundamental:TEST:business_current:abc",
+              "statement": "canonical:fundamental:TEST:business_current:abc",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.fundamental:TEST:business_current:abc",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "canonical:fundamental:TEST:earnings_financial_current:def",
+              "category": "earnings",
+              "label": "canonical:fundamental:TEST:earnings_financial_current:def",
+              "statement": "canonical:fundamental:TEST:earnings_financial_current:def",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.fundamental:TEST:earnings_financial_current:def",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "canonical:price:current",
+              "category": "price_structure",
+              "label": "canonical:price:current",
+              "statement": "canonical:price:current",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.price:current",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "canonical:chart:structure:state",
+              "category": "price_structure",
+              "label": "canonical:chart:structure:state",
+              "statement": "canonical:chart:structure:state",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.chart:structure:state",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "technical-feature:rsi",
+              "category": "technical_feature",
+              "label": "technical-feature:rsi",
+              "statement": "technical-feature:rsi",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "technical_context.ctx.daily.rsi_14",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "technical-feature:macd",
+              "category": "technical_feature",
+              "label": "technical-feature:macd",
+              "statement": "technical-feature:macd",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "technical_context.ctx.weekly.macd_histogram",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "technical-feature:bollinger",
+              "category": "technical_feature",
+              "label": "technical-feature:bollinger",
+              "statement": "technical-feature:bollinger",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "technical_context.ctx.monthly.bollinger_20_2_state",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "technical-feature:volume",
+              "category": "technical_feature",
+              "label": "technical-feature:volume",
+              "statement": "technical-feature:volume",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "technical_context.ctx.daily.volume_ratio_20",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "decision-evidence:supply",
+              "category": "flows",
+              "label": "decision-evidence:supply",
+              "statement": "decision-evidence:supply",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.supply_context",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "leading-market:us:ES",
+              "category": "market",
+              "label": "S&P 500 futures",
+              "statement": "\ud604\uc7ac \uc120\ud589\uc2dc\uc7a5 \uc2e0\ud638\uc785\ub2c8\ub2e4.",
+              "as_of": "2026-09-15",
+              "value": null,
+              "unit": null,
+              "source_ref": "leading_market.timing_context",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            }
+          ],
+          "prohibited_claims": [],
+          "data_quality_cautions": [],
+          "technical_context_id": null,
+          "technical_context_status": "LEGACY_UNSPECIFIED",
+          "technical_context_quality": {},
+          "evidence_sha256": "evidence-sha"
+        },
+        "evidence": [
+          {
+            "ref": {
+              "ref_id": "canonical:fundamental:TEST:business_current:abc",
+              "category": "earnings_quality",
+              "label": "canonical:fundamental:TEST:business_current:abc",
+              "statement": "canonical:fundamental:TEST:business_current:abc",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.fundamental:TEST:business_current:abc",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "BUSINESS_CURRENT",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "canonical:fundamental:TEST:earnings_financial_current:def",
+              "category": "earnings",
+              "label": "canonical:fundamental:TEST:earnings_financial_current:def",
+              "statement": "canonical:fundamental:TEST:earnings_financial_current:def",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.fundamental:TEST:earnings_financial_current:def",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "canonical:price:current",
+              "category": "price_structure",
+              "label": "canonical:price:current",
+              "statement": "canonical:price:current",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.price:current",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "PRICE_CONTEXT",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "canonical:chart:structure:state",
+              "category": "price_structure",
+              "label": "canonical:chart:structure:state",
+              "statement": "canonical:chart:structure:state",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.chart:structure:state",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "PRICE_CONTEXT",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "technical-feature:rsi",
+              "category": "technical_feature",
+              "label": "technical-feature:rsi",
+              "statement": "technical-feature:rsi",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "technical_context.ctx.daily.rsi_14",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "OHLCV_TECHNICAL",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "technical-feature:macd",
+              "category": "technical_feature",
+              "label": "technical-feature:macd",
+              "statement": "technical-feature:macd",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "technical_context.ctx.weekly.macd_histogram",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "OHLCV_TECHNICAL",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "technical-feature:bollinger",
+              "category": "technical_feature",
+              "label": "technical-feature:bollinger",
+              "statement": "technical-feature:bollinger",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "technical_context.ctx.monthly.bollinger_20_2_state",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "OHLCV_TECHNICAL",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "technical-feature:volume",
+              "category": "technical_feature",
+              "label": "technical-feature:volume",
+              "statement": "technical-feature:volume",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "technical_context.ctx.daily.volume_ratio_20",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "VOLUME_LIQUIDITY",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "decision-evidence:supply",
+              "category": "flows",
+              "label": "decision-evidence:supply",
+              "statement": "decision-evidence:supply",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.supply_context",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "SUPPLY_POSITIONING",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "leading-market:us:ES",
+              "category": "market",
+              "label": "S&P 500 futures",
+              "statement": "\ud604\uc7ac \uc120\ud589\uc2dc\uc7a5 \uc2e0\ud638\uc785\ub2c8\ub2e4.",
+              "as_of": "2026-09-15",
+              "value": null,
+              "unit": null,
+              "source_ref": "leading_market.timing_context",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "TECHNICAL_STATE",
+            "source_owned_domain": true
+          }
+        ],
+        "sector_framework": "unspecified"
+      }
+    },
+    "packet:transition": {
+      "scope": "OWNED_EVIDENCE",
+      "purpose": "FROZEN_CORE_TIMING_SEMANTICS",
+      "parameters": [],
+      "stock": {
+        "fact_catalog": [
+          {
+            "fact_id": "monitoring:operating_transition",
+            "evidence_family": "BUSINESS_CURRENT"
+          },
+          {
+            "fact_id": "monitoring:supply_transition",
+            "evidence_family": "SUPPLY_POSITIONING"
+          }
+        ]
+      },
+      "payload": {
+        "contract": "direction-timing-ownership-v1",
+        "source_packet": {
+          "contract": "decision-evidence-packet-v1",
+          "packet_id": "m12ag-fixture",
+          "ticker": "M12AG",
+          "company_name": "M12AG Fixture",
+          "market": "us",
+          "assessment_date": "2026-09-11",
+          "horizon": "12m",
+          "reasoning_grade": "VERY_HIGH",
+          "backend_reasoning_effort": "xhigh",
+          "evidence": [
+            {
+              "ref_id": "canonical:monitoring:confirmation_transition",
+              "category": "earnings_quality",
+              "label": "monitoring_transition",
+              "statement": "{\"transition\":\"crossed_to_holding_above\"}",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:confirmation_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "canonical:monitoring:risk_reward_transition",
+              "category": "earnings_quality",
+              "label": "monitoring_metric_transition",
+              "statement": "{\"change_state\":\"deteriorated\"}",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:risk_reward_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "canonical:monitoring:operating_transition",
+              "category": "earnings",
+              "label": "monitoring_transition",
+              "statement": "Comparable-period operating performance improved.",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:operating_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "canonical:monitoring:supply_transition",
+              "category": "flows",
+              "label": "monitoring_transition",
+              "statement": "Investor flow strengthened.",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:supply_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "canonical:monitoring:unregistered_transition",
+              "category": "earnings_quality",
+              "label": "monitoring_transition",
+              "statement": "Unknown transition improved.",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:unregistered_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            }
+          ],
+          "prohibited_claims": [],
+          "data_quality_cautions": [],
+          "technical_context_id": null,
+          "technical_context_status": "LEGACY_UNSPECIFIED",
+          "technical_context_quality": {},
+          "evidence_sha256": "m12ag-fixture-sha"
+        },
+        "evidence": [
+          {
+            "ref": {
+              "ref_id": "canonical:monitoring:confirmation_transition",
+              "category": "earnings_quality",
+              "label": "monitoring_transition",
+              "statement": "{\"transition\":\"crossed_to_holding_above\"}",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:confirmation_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "TECHNICAL_STATE",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "canonical:monitoring:risk_reward_transition",
+              "category": "earnings_quality",
+              "label": "monitoring_metric_transition",
+              "statement": "{\"change_state\":\"deteriorated\"}",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:risk_reward_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "RISK_REWARD_PRICE",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "canonical:monitoring:operating_transition",
+              "category": "earnings",
+              "label": "monitoring_transition",
+              "statement": "Comparable-period operating performance improved.",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:operating_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "BUSINESS_CURRENT",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "canonical:monitoring:supply_transition",
+              "category": "flows",
+              "label": "monitoring_transition",
+              "statement": "Investor flow strengthened.",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:supply_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "SUPPLY_POSITIONING",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "canonical:monitoring:unregistered_transition",
+              "category": "earnings_quality",
+              "label": "monitoring_transition",
+              "statement": "Unknown transition improved.",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:unregistered_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "AUDIT_TELEMETRY",
+            "source_owned_domain": true
+          }
+        ],
+        "sector_framework": "unspecified"
+      }
+    },
+    "packet:transition-delta": {
+      "scope": "OWNED_EVIDENCE",
+      "purpose": "FROZEN_CORE_TIMING_SEMANTICS",
+      "parameters": [],
+      "stock": {
+        "fact_catalog": [
+          {
+            "fact_id": "monitoring:operating_transition",
+            "evidence_family": "BUSINESS_CURRENT"
+          },
+          {
+            "fact_id": "monitoring:supply_transition",
+            "evidence_family": "SUPPLY_POSITIONING"
+          },
+          {
+            "fact_id": "monitoring:margin-deterioration",
+            "evidence_family": "EARNINGS_FINANCIAL_CURRENT"
+          }
+        ]
+      },
+      "payload": {
+        "contract": "direction-timing-ownership-v1",
+        "source_packet": {
+          "contract": "decision-evidence-packet-v1",
+          "packet_id": "m12ag-fixture",
+          "ticker": "M12AG",
+          "company_name": "M12AG Fixture",
+          "market": "us",
+          "assessment_date": "2026-09-11",
+          "horizon": "12m",
+          "reasoning_grade": "VERY_HIGH",
+          "backend_reasoning_effort": "xhigh",
+          "evidence": [
+            {
+              "ref_id": "canonical:monitoring:confirmation_transition",
+              "category": "earnings_quality",
+              "label": "monitoring_transition",
+              "statement": "{\"transition\":\"crossed_to_holding_above\"}",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:confirmation_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "canonical:monitoring:risk_reward_transition",
+              "category": "earnings_quality",
+              "label": "monitoring_metric_transition",
+              "statement": "{\"change_state\":\"deteriorated\"}",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:risk_reward_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "canonical:monitoring:operating_transition",
+              "category": "earnings",
+              "label": "monitoring_transition",
+              "statement": "Comparable-period operating performance improved.",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:operating_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "canonical:monitoring:supply_transition",
+              "category": "flows",
+              "label": "monitoring_transition",
+              "statement": "Investor flow strengthened.",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:supply_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "canonical:monitoring:unregistered_transition",
+              "category": "earnings_quality",
+              "label": "monitoring_transition",
+              "statement": "Unknown transition improved.",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:unregistered_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "decision-evidence:current-thesis",
+              "category": "thesis",
+              "label": "\ud575\uc2ec \ud22c\uc790 \ub17c\ub9ac",
+              "statement": "The current thesis is favorable and operating quality improved.",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.thesis.core_thesis",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            {
+              "ref_id": "canonical:monitoring:margin-deterioration",
+              "category": "earnings",
+              "label": "monitoring_transition",
+              "statement": "Comparable-period operating margin deteriorated.",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:margin-deterioration",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            }
+          ],
+          "prohibited_claims": [],
+          "data_quality_cautions": [],
+          "technical_context_id": null,
+          "technical_context_status": "LEGACY_UNSPECIFIED",
+          "technical_context_quality": {},
+          "evidence_sha256": "m12ag-fixture-sha"
+        },
+        "evidence": [
+          {
+            "ref": {
+              "ref_id": "canonical:monitoring:confirmation_transition",
+              "category": "earnings_quality",
+              "label": "monitoring_transition",
+              "statement": "{\"transition\":\"crossed_to_holding_above\"}",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:confirmation_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "TECHNICAL_STATE",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "canonical:monitoring:risk_reward_transition",
+              "category": "earnings_quality",
+              "label": "monitoring_metric_transition",
+              "statement": "{\"change_state\":\"deteriorated\"}",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:risk_reward_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "RISK_REWARD_PRICE",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "canonical:monitoring:operating_transition",
+              "category": "earnings",
+              "label": "monitoring_transition",
+              "statement": "Comparable-period operating performance improved.",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:operating_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "BUSINESS_CURRENT",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "canonical:monitoring:supply_transition",
+              "category": "flows",
+              "label": "monitoring_transition",
+              "statement": "Investor flow strengthened.",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:supply_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "SUPPLY_POSITIONING",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "canonical:monitoring:unregistered_transition",
+              "category": "earnings_quality",
+              "label": "monitoring_transition",
+              "statement": "Unknown transition improved.",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:unregistered_transition",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "AUDIT_TELEMETRY",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "decision-evidence:current-thesis",
+              "category": "thesis",
+              "label": "\ud575\uc2ec \ud22c\uc790 \ub17c\ub9ac",
+              "statement": "The current thesis is favorable and operating quality improved.",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.thesis.core_thesis",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "BUSINESS_CURRENT",
+            "source_owned_domain": true
+          },
+          {
+            "ref": {
+              "ref_id": "canonical:monitoring:margin-deterioration",
+              "category": "earnings",
+              "label": "monitoring_transition",
+              "statement": "Comparable-period operating margin deteriorated.",
+              "as_of": null,
+              "value": null,
+              "unit": null,
+              "source_ref": "stock.fact_catalog.monitoring:margin-deterioration",
+              "numeric_prose_eligible": false,
+              "metric_refs": [],
+              "logical_condition": null
+            },
+            "domain": "EARNINGS_FINANCIAL_CURRENT",
+            "source_owned_domain": true
+          }
+        ],
+        "sector_framework": "unspecified"
+      }
+    },
+    "core:exact": {
+      "scope": "CORE_CONTEXT",
+      "purpose": "FROZEN_CORE_SCHEMA_SEMANTICS",
+      "parameters": [],
+      "arguments": {
+        "packet": {
+          "packet_id": "packet-exact-ref",
+          "market": "us",
+          "assessment_date": "2026-09-15",
+          "stocks": [
+            {
+              "ticker": "RXRX"
+            },
+            {
+              "ticker": "IBM"
+            }
+          ]
+        },
+        "claim_id": "claim-exact-ref",
+        "evidence_packets": [
+          {
+            "contract": "decision-evidence-packet-v1",
+            "packet_id": "packet-exact-ref",
+            "ticker": "RXRX",
+            "company_name": "RXRX Company",
+            "market": "us",
+            "assessment_date": "2026-09-15",
+            "horizon": "12-36 months",
+            "reasoning_grade": "VERY_HIGH",
+            "backend_reasoning_effort": "xhigh",
+            "evidence": [
+              {
+                "ref_id": "decision-evidence:774e2e7f46d2025d7257",
+                "category": "thesis",
+                "label": "RXRX thesis",
+                "statement": "RXRX canonical thesis evidence",
+                "as_of": "2026-09-15",
+                "value": null,
+                "unit": null,
+                "source_ref": "fixture",
+                "numeric_prose_eligible": false,
+                "metric_refs": [],
+                "logical_condition": {
+                  "contract": "source-owned-logical-condition-v1",
+                  "subject": "RXRX",
+                  "generation_id": "exact-ref-fixture",
+                  "source_condition_ref": "logical-condition:84e6acee1030a0ca7e05",
+                  "severity": "STRENGTHENING",
+                  "metric_refs": [],
+                  "expression": {
+                    "condition_id": "logical-condition:84e6acee1030a0ca7e05",
+                    "type": "ANY_OF",
+                    "children": [
+                      {
+                        "condition_id": "logical-condition:84e6acee1030a0ca7e05:677c4eed00d9089244d5",
+                        "type": "LEAF",
+                        "statement": "\ud604\uae08\uc804\ud658 \uac1c\uc120"
+                      },
+                      {
+                        "condition_id": "logical-condition:84e6acee1030a0ca7e05:6201e935dce970e4697f",
+                        "type": "LEAF",
+                        "statement": "\ub9e4\ucd9c \uc131\uc7a5"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "ref_id": "decision-evidence:rxrx-second",
+                "category": "thesis",
+                "label": "RXRX thesis",
+                "statement": "RXRX canonical thesis evidence",
+                "as_of": "2026-09-15",
+                "value": null,
+                "unit": null,
+                "source_ref": "fixture",
+                "numeric_prose_eligible": false,
+                "metric_refs": [],
+                "logical_condition": null
+              }
+            ],
+            "prohibited_claims": [],
+            "data_quality_cautions": [],
+            "technical_context_id": null,
+            "technical_context_status": "LEGACY_UNSPECIFIED",
+            "technical_context_quality": {},
+            "evidence_sha256": "fixture-RXRX"
+          },
+          {
+            "contract": "decision-evidence-packet-v1",
+            "packet_id": "packet-exact-ref",
+            "ticker": "IBM",
+            "company_name": "IBM Company",
+            "market": "us",
+            "assessment_date": "2026-09-15",
+            "horizon": "12-36 months",
+            "reasoning_grade": "VERY_HIGH",
+            "backend_reasoning_effort": "xhigh",
+            "evidence": [
+              {
+                "ref_id": "decision-evidence:ibm-owned",
+                "category": "thesis",
+                "label": "IBM thesis",
+                "statement": "IBM canonical thesis evidence",
+                "as_of": "2026-09-15",
+                "value": null,
+                "unit": null,
+                "source_ref": "fixture",
+                "numeric_prose_eligible": false,
+                "metric_refs": [],
+                "logical_condition": null
+              }
+            ],
+            "prohibited_claims": [],
+            "data_quality_cautions": [],
+            "technical_context_id": null,
+            "technical_context_status": "LEGACY_UNSPECIFIED",
+            "technical_context_quality": {},
+            "evidence_sha256": "fixture-IBM"
+          }
+        ]
+      }
+    },
+    "core:batch": {
+      "scope": "CORE_CONTEXT",
+      "purpose": "FROZEN_CORE_SCHEMA_SEMANTICS",
+      "parameters": [],
+      "arguments": {
+        "packet": {
+          "packet_id": "packet-exact-ref",
+          "market": "us",
+          "assessment_date": "2026-09-15",
+          "stocks": [
+            {
+              "ticker": "GOOGL"
+            },
+            {
+              "ticker": "HUT"
+            },
+            {
+              "ticker": "IBM"
+            }
+          ]
+        },
+        "claim_id": "claim-batch-identity",
+        "evidence_packets": [
+          {
+            "contract": "decision-evidence-packet-v1",
+            "packet_id": "packet-exact-ref",
+            "ticker": "GOOGL",
+            "company_name": "GOOGL Company",
+            "market": "us",
+            "assessment_date": "2026-09-15",
+            "horizon": "12-36 months",
+            "reasoning_grade": "VERY_HIGH",
+            "backend_reasoning_effort": "xhigh",
+            "evidence": [
+              {
+                "ref_id": "decision-evidence:googl-owned",
+                "category": "thesis",
+                "label": "GOOGL thesis",
+                "statement": "GOOGL canonical thesis evidence",
+                "as_of": "2026-09-15",
+                "value": null,
+                "unit": null,
+                "source_ref": "fixture",
+                "numeric_prose_eligible": false,
+                "metric_refs": [],
+                "logical_condition": null
+              }
+            ],
+            "prohibited_claims": [],
+            "data_quality_cautions": [],
+            "technical_context_id": null,
+            "technical_context_status": "LEGACY_UNSPECIFIED",
+            "technical_context_quality": {},
+            "evidence_sha256": "fixture-GOOGL"
+          },
+          {
+            "contract": "decision-evidence-packet-v1",
+            "packet_id": "packet-exact-ref",
+            "ticker": "HUT",
+            "company_name": "HUT Company",
+            "market": "us",
+            "assessment_date": "2026-09-15",
+            "horizon": "12-36 months",
+            "reasoning_grade": "VERY_HIGH",
+            "backend_reasoning_effort": "xhigh",
+            "evidence": [
+              {
+                "ref_id": "decision-evidence:hut-owned",
+                "category": "thesis",
+                "label": "HUT thesis",
+                "statement": "HUT canonical thesis evidence",
+                "as_of": "2026-09-15",
+                "value": null,
+                "unit": null,
+                "source_ref": "fixture",
+                "numeric_prose_eligible": false,
+                "metric_refs": [],
+                "logical_condition": null
+              }
+            ],
+            "prohibited_claims": [],
+            "data_quality_cautions": [],
+            "technical_context_id": null,
+            "technical_context_status": "LEGACY_UNSPECIFIED",
+            "technical_context_quality": {},
+            "evidence_sha256": "fixture-HUT"
+          },
+          {
+            "contract": "decision-evidence-packet-v1",
+            "packet_id": "packet-exact-ref",
+            "ticker": "IBM",
+            "company_name": "IBM Company",
+            "market": "us",
+            "assessment_date": "2026-09-15",
+            "horizon": "12-36 months",
+            "reasoning_grade": "VERY_HIGH",
+            "backend_reasoning_effort": "xhigh",
+            "evidence": [
+              {
+                "ref_id": "decision-evidence:ibm-owned",
+                "category": "thesis",
+                "label": "IBM thesis",
+                "statement": "IBM canonical thesis evidence",
+                "as_of": "2026-09-15",
+                "value": null,
+                "unit": null,
+                "source_ref": "fixture",
+                "numeric_prose_eligible": false,
+                "metric_refs": [],
+                "logical_condition": null
+              }
+            ],
+            "prohibited_claims": [],
+            "data_quality_cautions": [],
+            "technical_context_id": null,
+            "technical_context_status": "LEGACY_UNSPECIFIED",
+            "technical_context_quality": {},
+            "evidence_sha256": "fixture-IBM"
+          }
+        ]
+      }
+    },
+    "core:stage2": {
+      "scope": "CORE_CONTEXT",
+      "purpose": "FROZEN_CORE_SCHEMA_SEMANTICS",
+      "parameters": [],
+      "arguments": {
+        "packet": {
+          "packet_id": "packet-stage2-exact-ref",
+          "market": "us",
+          "assessment_date": "2026-09-15",
+          "stocks": [
+            {
+              "ticker": "CORZ"
+            },
+            {
+              "ticker": "IBM"
+            }
+          ]
+        },
+        "claim_id": "claim-stage2-exact-ref",
+        "evidence_packets": [
+          {
+            "contract": "decision-evidence-packet-v1",
+            "packet_id": "packet-stage2-exact-ref",
+            "ticker": "CORZ",
+            "company_name": "CORZ Company",
+            "market": "us",
+            "assessment_date": "2026-09-15",
+            "horizon": "12-36 months",
+            "reasoning_grade": "VERY_HIGH",
+            "backend_reasoning_effort": "xhigh",
+            "evidence": [
+              {
+                "ref_id": "decision-evidence:36090e913951b40587f1",
+                "category": "thesis",
+                "label": "CORZ thesis",
+                "statement": "CORZ canonical thesis evidence",
+                "as_of": "2026-09-15",
+                "value": null,
+                "unit": null,
+                "source_ref": "fixture",
+                "numeric_prose_eligible": false,
+                "metric_refs": [],
+                "logical_condition": {
+                  "contract": "source-owned-logical-condition-v1",
+                  "subject": "CORZ",
+                  "generation_id": "stage2-exact-ref-fixture",
+                  "source_condition_ref": "logical-condition:2e7b500e9694af4613fe",
+                  "severity": "STRENGTHENING",
+                  "metric_refs": [],
+                  "expression": {
+                    "condition_id": "logical-condition:2e7b500e9694af4613fe",
+                    "type": "ANY_OF",
+                    "children": [
+                      {
+                        "condition_id": "logical-condition:2e7b500e9694af4613fe:677c4eed00d9089244d5",
+                        "type": "LEAF",
+                        "statement": "\ud604\uae08\uc804\ud658 \uac1c\uc120"
+                      },
+                      {
+                        "condition_id": "logical-condition:2e7b500e9694af4613fe:6201e935dce970e4697f",
+                        "type": "LEAF",
+                        "statement": "\ub9e4\ucd9c \uc131\uc7a5"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "ref_id": "canonical:chart:corz-daily",
+                "category": "price_structure",
+                "label": "CORZ price timing",
+                "statement": "CORZ canonical price timing evidence",
+                "as_of": "2026-09-15",
+                "value": null,
+                "unit": null,
+                "source_ref": "fixture",
+                "numeric_prose_eligible": false,
+                "metric_refs": [],
+                "logical_condition": null
+              }
+            ],
+            "prohibited_claims": [],
+            "data_quality_cautions": [],
+            "technical_context_id": null,
+            "technical_context_status": "LEGACY_UNSPECIFIED",
+            "technical_context_quality": {},
+            "evidence_sha256": "fixture-CORZ"
+          },
+          {
+            "contract": "decision-evidence-packet-v1",
+            "packet_id": "packet-stage2-exact-ref",
+            "ticker": "IBM",
+            "company_name": "IBM Company",
+            "market": "us",
+            "assessment_date": "2026-09-15",
+            "horizon": "12-36 months",
+            "reasoning_grade": "VERY_HIGH",
+            "backend_reasoning_effort": "xhigh",
+            "evidence": [
+              {
+                "ref_id": "decision-evidence:ibm-stage2-owned",
+                "category": "thesis",
+                "label": "IBM thesis",
+                "statement": "IBM canonical thesis evidence",
+                "as_of": "2026-09-15",
+                "value": null,
+                "unit": null,
+                "source_ref": "fixture",
+                "numeric_prose_eligible": false,
+                "metric_refs": [],
+                "logical_condition": null
+              },
+              {
+                "ref_id": "canonical:chart:ibm-daily",
+                "category": "price_structure",
+                "label": "IBM price timing",
+                "statement": "IBM canonical price timing evidence",
+                "as_of": "2026-09-15",
+                "value": null,
+                "unit": null,
+                "source_ref": "fixture",
+                "numeric_prose_eligible": false,
+                "metric_refs": [],
+                "logical_condition": null
+              }
+            ],
+            "prohibited_claims": [],
+            "data_quality_cautions": [],
+            "technical_context_id": null,
+            "technical_context_status": "LEGACY_UNSPECIFIED",
+            "technical_context_quality": {},
+            "evidence_sha256": "fixture-IBM"
+          }
+        ]
+      }
+    }
+  }
+}

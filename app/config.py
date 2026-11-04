@@ -2,7 +2,7 @@ import os
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import model_validator
+from pydantic import SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -66,6 +66,19 @@ class Settings(BaseSettings):
     monitor_retry_base_seconds: float = 2.0
     unified_snapshot_enabled: bool = False
     unified_snapshot_debug_destination: str | None = None
+    unified_snapshot_adapter_version: Literal["disabled", "production-v1"] = "disabled"
+    unified_snapshot_runtime_contract: Literal[
+        "unified-query-time-snapshot-v1", "unified-query-time-snapshot-v2"
+    ] = "unified-query-time-snapshot-v1"
+    unified_snapshot_live_delivery_authorized: bool = False
+    unified_snapshot_source_configuration: str | None = None
+    unified_snapshot_source_configuration_sha256: str | None = None
+    unified_snapshot_model_binding: str | None = None
+    unified_snapshot_model_binding_sha256: str | None = None
+    unified_snapshot_model_runtime_root: str | None = None
+    kis_app_key: SecretStr | None = None
+    kis_app_secret: SecretStr | None = None
+    kis_secret_app_key: SecretStr | None = None
     onboarding_reconciler_enabled: bool = True
     onboarding_retry_base_minutes: int = 30
     onboarding_retry_max_minutes: int = 720

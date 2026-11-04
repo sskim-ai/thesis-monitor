@@ -296,6 +296,7 @@ def _identity(*, inputs, security, body, run_id, provider, metric_receipt):
     data = inputs["identity_inputs"]
     reasons, bindings = [], [digest(metric_receipt)]
     exchange, currency = None, None
+    alias = None
     returned = body.get("stk_cd" if provider == "kiwoom" else "symbol")
     kind = str(security.get("security_type", "")).lower()
     if security.get("issuer_type") == "adr" or "depositary" in kind or kind in {"adr", "ads"}:
@@ -345,12 +346,24 @@ def _identity(*, inputs, security, body, run_id, provider, metric_receipt):
         else:
             row = matched[0]
             exchange = row.get("marketName")
+            expected_name = security.get("company_name")
+            alias_owner = data.get("reviewed_alias_owner")
+            if alias_owner is not None:
+                from app.services.reviewed_security_alias import ReviewedSecurityAliases
+                if not isinstance(alias_owner, ReviewedSecurityAliases):
+                    raise ValueError("backend_alias_owner_required")
+                alias = alias_owner.translate(security=security, provider=provider,
+                    provider_code=row.get("code"), provider_name=row.get("name"),
+                    market=market, provider_class=row.get("kind"),
+                    observed_at=metric_receipt["received_at"])
+                expected_name = alias["provider_name"]
+                bindings.append(digest(alias))
             if (
                 row.get("marketCode") != market
                 or exchange not in MARKETS[market]
                 or security.get("exchange") not in {"KRX", MARKETS[market][0]}
                 or security.get("country") != "KR"
-                or _name(row.get("name")) != _name(security.get("company_name"))
+                or _name(row.get("name")) != _name(expected_name)
                 or _name(body.get("stk_nm")) != _name(row.get("name"))
             ):
                 reasons.append("UNAVAILABLE_SECURITY_IDENTITY")
@@ -417,6 +430,8 @@ def _identity(*, inputs, security, body, run_id, provider, metric_receipt):
         result.update(official_identity_role="OPTIONAL_SUPPORTING_EVIDENCE",
                       official_identity_present=bool(data.get("official_identity")),
                       allowed_fields=("peTTM", "pbQuarterly", "forwardPE"))
+    if alias is not None:
+        result['name_mapping_proof'] = alias
     return dict(**result, receipt_sha256=digest(result))
 
 

@@ -1,4 +1,5 @@
 import json
+import math
 import re
 from dataclasses import dataclass, field
 
@@ -37,6 +38,7 @@ class FinancialValidationResult:
     valid: bool = True
     hard_errors: list[str] = field(default_factory=list)
     soft_outliers: list[str] = field(default_factory=list)
+    revenue_denominator: dict = field(default_factory=dict)
 
     @property
     def warnings(self) -> list[str]:
@@ -193,13 +195,19 @@ def _raw_field_mapping_errors(event: Event) -> list[str]:
 def validate_event_financials(
     event: Event,
     operating_margin_upper_bound: float = 60.0,
+    *,
+    revenue_denominator_eligible: bool = True,
 ) -> FinancialValidationResult:
     facts = _list(event.confirmed_facts)
     financial_facts = [
         fact for fact in facts if fact.lower().startswith(FINANCIAL_FACT_PREFIXES)
     ]
     if not financial_facts:
-        return FinancialValidationResult()
+        return FinancialValidationResult(revenue_denominator=dict(
+            contract="revenue-denominator-quality-v2", state="UNAVAILABLE", value=None,
+            comparable=False, sector_ratio_applicable=not _is_financial_company(event),
+            ratio_status="NOT_EVALUABLE", reason="no_qualified_financial_facts",
+        ))
 
     result = FinancialValidationResult()
     if event.document_type == "preliminary_earnings" and event.reporting_period_end is None:
@@ -243,35 +251,53 @@ def validate_event_financials(
         if event.net_income is not None
         else _fact_amount(financial_facts, ("지배주주순이익", "당기순이익"))
     )
-    margin = event.operating_margin
-    if margin is None and revenue not in {None, 0} and operating_income is not None:
+    # Missing/invalid denominators cannot create profit-margin evidence. Keep the
+    # source number (including zero) in the diagnostic, independently of admission.
+    denominator_state = (
+        "UNAVAILABLE" if revenue is None else
+        "NON_FINITE" if not math.isfinite(revenue) else
+        "ZERO" if revenue == 0 else "NEGATIVE" if revenue < 0 else "POSITIVE"
+    )
+    comparable = revenue_denominator_eligible and not any(e in result.hard_errors for e in (
+        "inconsistent_statement_or_period_basis", "unsupported_financial_period_scope",
+        "reporting_period_unavailable", "unsupported_financial_amount_unit"))
+    financial_company = _is_financial_company(event)
+    ratio_eligible = denominator_state == "POSITIVE" and comparable and not financial_company
+    result.revenue_denominator = dict(
+        contract="revenue-denominator-quality-v2", state=denominator_state,
+        value=revenue if denominator_state != "NON_FINITE" else None,
+        comparable=comparable, sector_ratio_applicable=not financial_company,
+        ratio_status="EVALUABLE" if ratio_eligible else "NOT_EVALUABLE",
+    )
+    margin = event.operating_margin if ratio_eligible else None
+    if margin is None and ratio_eligible and operating_income is not None:
         margin = operating_income / revenue * 100
+    if denominator_state == "NON_FINITE":
+        result.hard_errors.append("non_finite_revenue")
     if revenue is not None and revenue <= 0:
         result.hard_errors.append("non_positive_revenue")
     if (
-        revenue not in {None, 0}
+        ratio_eligible
         and operating_income is not None
         and abs(operating_income) > abs(revenue)
-        and not _is_financial_company(event)
     ):
         result.soft_outliers.append("operating_income_exceeds_revenue")
     if (
-        revenue not in {None, 0}
+        ratio_eligible
         and net_income is not None
         and abs(net_income) > abs(revenue)
-        and not _is_financial_company(event)
     ):
         result.soft_outliers.append("net_income_exceeds_revenue")
-    if margin is not None and not _is_financial_company(event):
+    if margin is not None:
         if margin > operating_margin_upper_bound or margin < -100:
             result.soft_outliers.append("unusually_high_or_low_operating_margin")
-        if revenue not in {None, 0} and operating_income is not None:
+        if ratio_eligible and operating_income is not None:
             derived = operating_income / revenue * 100
             if event.operating_margin is not None and abs(derived - margin) > 1.0:
                 result.hard_errors.append("reported_and_derived_margin_mismatch")
 
     if (
-        revenue not in {None, 0}
+        ratio_eligible
         and net_income is not None
         and abs(net_income / revenue) > 1
         and "net_income_exceeds_revenue" not in result.soft_outliers

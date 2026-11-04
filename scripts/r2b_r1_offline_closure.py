@@ -12,8 +12,6 @@ import json
 from pathlib import Path
 import sys
 
-from app.services.canonical_evidence_time_service import validate_canonical_time
-from app.services.cross_market_decision_engine_service import build_decision_evidence_packet
 from app.services.structured_autonomy_shadow_service import ClaimSemanticMetadata
 from scripts import m12ds_r4_r4_schemas as schemas
 from scripts import r2b_sealed_blind_preflight as prior
@@ -33,53 +31,7 @@ SOURCE_HASHES = {
 }
 
 
-def reproject_time(stock):
-    """Use the repaired producer but preserve every non-time field of the seal."""
-    result = deepcopy(stock)
-    ticker = stock["ticker"]
-    sources = [s for s in stock["packet"]["stocks"] if s["ticker"] == ticker]
-    if len(sources) != 1:
-        raise ValueError("source_subject_identity_mismatch")
-    source = sources[0]
-    facts = {"canonical:" + f["fact_id"]: f for f in source["fact_catalog"]}
-    if len(facts) != len(source["fact_catalog"]):
-        raise ValueError("duplicate_canonical_fact_ref")
-    produced = build_decision_evidence_packet(packet=stock["packet"], stock=source)
-    projected = {r.ref_id: r.model_dump(mode="json") for r in produced.evidence}
-    core_refs = prior.OwnedEvidencePacket.model_validate(stock["ownership"]).core_refs
-    changes, matrix = [], []
-    for row in result["evidence_packet"]["evidence"]:
-        ref = row["ref_id"]
-        if not ref.startswith("canonical:"):
-            continue
-        fact, fresh = facts[ref], projected[ref]
-        before = deepcopy(row)
-        if row["statement"] != fresh["statement"] or row["source_ref"] != fresh["source_ref"]:
-            raise ValueError("non_time_canonical_projection_drift")
-        row["as_of"], row["source_time"] = fresh["as_of"], fresh["source_time"]
-        receipt = {"ticker": ticker, "ref_id": ref, "core_owned": ref in core_refs,
-            "canonical_as_of": fact.get("as_of_date"), "before_as_of": before["as_of"],
-            "after_as_of": row["as_of"], "source_time": row["source_time"],
-            "canonical_fact_sha256": prior.digest(fact),
-            "before_projection_sha256": prior.digest(before), "after_projection_sha256": prior.digest(row),
-            "statement_sha256": prior.sha(row["statement"].encode()), "statement_bytes_unchanged": True,
-            "non_time_fields_unchanged": {k: v for k, v in before.items() if k not in {"as_of", "source_time"}}
-                == {k: v for k, v in row.items() if k not in {"as_of", "source_time"}}}
-        try:
-            validate_canonical_time(fact, row, ticker=ticker)
-            receipt.update(status="PASS", error=None)
-        except ValueError as exc:
-            receipt.update(status="BLOCKED", error=str(exc))
-        matrix.append(receipt)
-        if before["as_of"] != row["as_of"]:
-            changes.append(receipt)
-    indexed = {r["ref_id"]: r for r in result["evidence_packet"]["evidence"]}
-    result["ownership"]["source_packet"] = deepcopy(result["evidence_packet"])
-    for item in result["ownership"]["evidence"]:
-        item["ref"] = deepcopy(indexed[item["ref"]["ref_id"]])
-    prior.OwnedEvidencePacket.model_validate(result["ownership"])
-    assert result["packet"] == stock["packet"]
-    return result, matrix, changes
+from app.services.canonical_monitoring_time import reproject_time  # noqa: E402,F401
 
 
 def neutral_limit_contract_audit():

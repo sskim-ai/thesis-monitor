@@ -56,7 +56,8 @@ FOREIGN = Limits(1, 128, 2, 2, 3, 2, 1, 1)
 DART = Limits(2, 200, 1, 1, 2, 0, 0, 0)
 
 
-def make_plan(security, *, market, cutoff, run_id, all_subjects_fresh=False, exact_financial_owner=False):
+def make_plan(security, *, market, cutoff, run_id, all_subjects_fresh=False, exact_financial_owner=False,
+              fpi_nomination=None):
     if type(all_subjects_fresh) is not bool:
         raise AcquisitionDenied('explicit_acquisition_mode_required')
     if type(exact_financial_owner) is not bool:
@@ -93,7 +94,7 @@ def make_plan(security, *, market, cutoff, run_id, all_subjects_fresh=False, exa
         'DART_MAX_SELECTED_CURRENT_FILINGS':limits.current, 'DART_MAX_SELECTED_PRIOR_FILINGS':limits.prior,
         'DART_MAX_STATEMENT_REQUESTS_PER_FILING':limits.documents_per_filing,
         'DART_MAX_TOTAL_LOGICAL_REQUESTS_PER_SUBJECT':limits.maximum_logical})
-    return {**({'financial_owner_policy': 'EXACT_FISCAL_ANNUAL_AND_CURRENT_FPI_V1'} if exact_financial_owner else {}),
+    plan = {**({'financial_owner_policy': 'EXACT_FISCAL_ANNUAL_AND_CURRENT_FPI_V1'} if exact_financial_owner else {}),
         "contract": CONTRACT, "run_id": run_id, "ticker": security["ticker"],
         "market": market, "provider": provider, "issuer": issuer,
         "security": security, "identity_sha256": digest(security),
@@ -106,6 +107,11 @@ def make_plan(security, *, market, cutoff, run_id, all_subjects_fresh=False, exa
         "planned_retry_attempts": 0, "redirects": False,
         "selection": "latest_period_current_and_prior_year_comparable_no_value_ranking",
         "scope": "reported_revenue_operating_income_net_income_only"}
+    if fpi_nomination is not None:
+        from app.services.sec_current_financial_candidates import NOMINATED_CONTRACT, validate_nomination
+        nomination = validate_nomination(fpi_nomination, plan)
+        plan.update(fpi_candidate_contract=NOMINATED_CONTRACT, fpi_nomination=nomination)
+    return plan
 
 
 def sec_selection(payload, plan):
@@ -235,6 +241,9 @@ class BoundedReader:
 
     def __init__(self, plan, output, *, api_key=None, user_agent=None, transport=None, guard=None):
         self.plan = json.loads(json.dumps(plan))
+        self.max_attempts = self.plan.get('maximum_attempts_per_request', 3)
+        if type(self.max_attempts) is not int or not 1 <= self.max_attempts <= 3:
+            raise SystemicStop('invalid_transport_attempt_limit')
         self.plan_sha = digest(plan)
         self.output = output
         self.api_key = api_key
@@ -320,7 +329,7 @@ class BoundedReader:
         request_sha = digest(frozen)
         wire_params = {**params, "crtfc_key": self.api_key} if self.plan["provider"] == "opendart" else params
         headers = {"User-Agent": self.user_agent, "Accept": "application/json"} if self.user_agent else {}
-        for attempt in range(1, 4):
+        for attempt in range(1, self.max_attempts + 1):
             if self.guard:
                 self.guard()
             self.attempts += 1
@@ -368,7 +377,7 @@ class BoundedReader:
                 raise SystemicStop(systemic)
             if not failure:
                 return raw, receipt
-            if not transient or attempt == 3:
+            if not transient or attempt == self.max_attempts:
                 raise AcquisitionDenied(failure)
             await asyncio.sleep(attempt)
         raise AssertionError("unreachable")

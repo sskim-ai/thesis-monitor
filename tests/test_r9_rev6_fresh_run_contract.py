@@ -68,10 +68,13 @@ def test_prior_mutable_carryin_rejected_even_in_json_string(key, encoded):
 
 
 def test_static_seed_only():
-    seed = dict(contract='unified-local-seed-projection-v1', denials=[], roles={
-        'thesis': {'records': [{'table': 'investmentthesis', 'record': {'logic': 'business'}}]}})
+    from test_unified_stock_owner import source
+    seed = source.__wrapped__()['local_seed']
     validate_local_seed(seed)
-    seed['roles']['thesis']['records'][0]['table'] = 'financialsnapshot'
+    role = seed['roles']['stored_thesis_and_business_metadata']
+    role['records'][0]['table'] = 'financialsnapshot'
+    from app.services.unified_snapshot_contract import digest
+    role['version'] = digest(role['records'])
     with pytest.raises(ValueError, match='mutable_table'):
         validate_local_seed(seed)
 

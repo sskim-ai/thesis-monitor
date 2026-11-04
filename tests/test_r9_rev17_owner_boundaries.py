@@ -1,7 +1,9 @@
 from copy import deepcopy
 from datetime import date, datetime, timezone
+import asyncio
 import re
 
+import httpx
 import pytest
 
 from app.services.fpi_filing_document_graph import declared_nonfinancial_exhibit
@@ -149,40 +151,67 @@ def test_cross_document_context_negatives(mutation):
         assert not value['occurrences'] and value['denials']
 
 
-def test_selected_owner_binds_projection_and_incomplete_state():
+def test_selected_owner_binds_projection_and_incomplete_state(tmp_path):
+    from app.services.bounded_financial_acquisition import BoundedReader, collect
+    from app.services.bounded_financial_projection import project
+    from app.services.bounded_financial_stock_owner import reported_comparisons
+    from test_bounded_financial_acquisition import submission
+
     p = plan()
-    projection = dict(financial_field_completeness=dict(partial_field_consumption_allowed=False))
-    envelope = select(plan=p,acquisition={},projection=projection,facts=[])
+    p['run_id'] = 'synthetic-ng42-legacy-incomplete'
+    f = filing('6-K')
+
+    def respond(request):
+        if '/submissions/' in str(request.url):
+            return httpx.Response(200, json=submission([f]))
+        if '/companyfacts/' in str(request.url):
+            return httpx.Response(200, json={'cik': 123})
+        if request.url.path.endswith('index.json'):
+            return httpx.Response(200, json={'directory': {'item': []}})
+        return httpx.Response(200, text='<html>Synthetic unclassified filing</html>')
+
+    reader = BoundedReader(p, tmp_path, transport=httpx.MockTransport(respond))
+    acquisition = asyncio.run(collect(reader))
+    projection = project(p, acquisition, tmp_path, reader.receipts, field_semantics=True)
+    facts, _ = reported_comparisons(p, projection)
+    assert facts == []
+    envelope = select(plan=p,acquisition=acquisition,projection=projection,facts=facts)
     assert envelope['field_completeness']['partial_field_consumption_allowed'] is False
-    assert validate(envelope,projection=projection,facts=[],bridge=None) == envelope
+    assert validate(envelope,projection=projection,facts=facts,bridge=None) == envelope
     with pytest.raises(ValueError,match='binding_mismatch'):
-        validate(envelope,projection={},facts=[],bridge=None)
+        validate(envelope,projection={},facts=facts,bridge=None)
 
 
-def bridge_fixture():
-    bridge = dict(status='PASS',legal_issuer_id='legal:test',ISSUER_BUSINESS_EVIDENCE_ELIGIBLE=True,
-        SECURITY_PER_SHARE_BRIDGE_ELIGIBLE=False,SECURITY_VALUATION_BRIDGE_ELIGIBLE=False,
-        security_valuation_transfer=False,scope='issuer_business_only')
-    bridge['receipt_sha256'] = digest(bridge)
-    origin = dict(status='PASS',projection={'native':'opendart'},input_hashes={'acquisition':'a'*64})
-    facts = [dict(fact_id='f1',issuer_business_bridge=dict(bridge_receipt_sha256=bridge['receipt_sha256'],
-        source_result_sha256=digest(origin),scope='issuer_business_only',security_valuation_transfer=False))]
-    return bridge,origin,facts
+def bridge_fixture(tmp_path):
+    """SYNTHETIC_NOT_REAL_CURRENT: replay original capture and issuer owners."""
+    from app.services.bounded_financial_projection import project
+    from app.services.bounded_financial_stock_owner import _issuer_business_facts
+    from tests.rev9_source_fixtures import bridge_inputs
+
+    inputs, _ = bridge_inputs(tmp_path)
+    financial = inputs['financial_inputs']
+    arguments = {k: v for k, v in financial.items() if k != 'issuer_business'}
+    projection = project(**arguments)
+    bridge, facts, origin = _issuer_business_facts(financial['plan'], financial['issuer_business'])
+    return dict(plan=financial['plan'], acquisition=financial['acquisition'], projection=projection,
+        facts=facts, bridge=bridge, origin=origin, legacy_issuer_inputs=financial['issuer_business'])
 
 
-def test_bridge_ignores_unselected_empty_sec():
-    bridge,origin,facts = bridge_fixture()
-    envelope = select(plan=plan(),acquisition={},projection={'empty_sec':True},
-        facts=facts,bridge=bridge,origin=origin)
+def test_bridge_ignores_unselected_empty_sec(tmp_path):
+    args = bridge_fixture(tmp_path)
+    envelope = select(**args)
     assert envelope['owner_type']=='issuer_business_bridge'
     assert envelope['field_completeness']['partial_field_consumption_allowed']
     assert envelope['unselected_owner_states'][0]['state']=='UNSELECTED'
-    validate(envelope,projection=origin['projection'],facts=facts,bridge=bridge)
+    validate(envelope,projection=args['origin']['projection'],facts=args['facts'],bridge=args['bridge'])
 
 
 @pytest.mark.parametrize('mutation',['invalid_bridge','legal','incomplete','valuation','per_share','fact_transfer'])
-def test_bridge_boundary_denials(mutation):
-    bridge,origin,facts = bridge_fixture()
+def test_bridge_boundary_denials(tmp_path, mutation):
+    args = bridge_fixture(tmp_path)
+    bridge,origin,facts = args['bridge'],args['origin'],args['facts']
+    envelope = select(**args)
+    assert validate(envelope,projection=origin['projection'],facts=facts,bridge=bridge) == envelope
     if mutation=='invalid_bridge':
         bridge['status']='FAIL'
     if mutation=='legal':
@@ -195,8 +224,10 @@ def test_bridge_boundary_denials(mutation):
         bridge['SECURITY_PER_SHARE_BRIDGE_ELIGIBLE']=True
     if mutation=='fact_transfer':
         facts[0]['issuer_business_bridge']['security_valuation_transfer']=True
-    with pytest.raises(ValueError):
-        select(plan=plan(),acquisition={},projection={},facts=facts,bridge=bridge,origin=origin)
+    expected = ('selected_financial_fact_bridge_mismatch' if mutation == 'fact_transfer'
+                else 'selected_financial_bridge_incomplete')
+    with pytest.raises(ValueError,match=expected):
+        select(**args)
 
 
 def technical_fixture():

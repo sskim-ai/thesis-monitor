@@ -68,31 +68,35 @@ def binding():
         qualification_path=QUALIFICATION, qualification_sha256="c31565c76cb9d7fc521d21343ccdd45c9515fd3988683f1dbcee1503107936ab")
 
 
-class BatchFailure(ValueError):
-    pass
+from app.services.canonical_monitoring_io import BatchFailure  # noqa: E402,F401
 
 
 class SystemicFailure(ValueError):
     pass
 
 
-def require(ok, code):
-    if not ok:
-        raise BatchFailure(code)
+from app.services.canonical_monitoring_io import require  # noqa: E402,F401
 
 
 def authority_core_schema(context, subjects, authorities):
     """Per-subject refs and narrower directional refs, before seeing any output."""
-    schema = core_owner.accepted_v2_fundamental_core_output_schema(context, subjects=subjects)
-    definitions = schema["$defs"]
-    branches, receipt = [], []
-    for index, ticker in enumerate(subjects):
+    identity = core_owner.accepted_v2_fundamental_core_batch_identity_manifest(
+        context, subjects=subjects,
+    )
+    selected = tuple(identity["expected_tickers"])
+    scopes = []
+    for ticker in selected:
         owned = next(r for r in context.evidence_ownership if r.ticker == ticker)
         refs = sorted(owned.core_ref_ids)
         direction = sorted(r["ref_id"] for r in authorities[ticker]["authority"]["authority_records"]
                            if r["ref_id"] in refs and r["authority_state"] == "RESOLVED"
                            and "OVERALL_DIRECTION" in r["allowed_uses"])
         require(bool(direction), "CORE_DIRECTIONAL_SOURCE_UNAVAILABLE:" + ticker)
+        scopes.append((ticker, refs, direction))
+    schema = core_owner.accepted_v2_fundamental_core_output_schema(context, subjects=selected)
+    definitions = schema["$defs"]
+    branches, receipt = [], []
+    for index, (ticker, refs, direction) in enumerate(scopes):
         claim_name, driver_name, core_name = (f"M12DR{name}{index}" for name in ("Claim", "Driver", "Core"))
         claim = deepcopy(definitions["EvidenceClaim"])
         claim["properties"]["evidence_refs"]["items"]["enum"] = refs

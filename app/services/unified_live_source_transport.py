@@ -51,8 +51,10 @@ class BoundedTransport:
             return [self.public_request(v) for v in value]
         if isinstance(value, str):
             from urllib.parse import quote
-            for secret in self.secrets:
-                value = value.replace(secret, '[REDACTED]').replace(quote(secret, safe=''), '[REDACTED]')
+            # Redact longer spellings first; one credential may prefix another.
+            spellings = {part for secret in self.secrets for part in (secret, quote(secret, safe=''))}
+            for secret in sorted(spellings, key=lambda part: (-len(part), part)):
+                value = value.replace(secret, '[REDACTED]')
         return value
 
     def record(self, row, attempt, response=None, error=None):

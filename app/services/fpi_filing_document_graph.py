@@ -452,7 +452,7 @@ def build_graph(*, documents, source_documents, indexes, plan):
                 or not child["financial_authority"]
                 or not child["economic_periods"]
                 or not re.search(
-                    r"(?i)financial\s+(?:statements?|results|report)|interim\s+report|earnings",
+                    r"(?i)financial\s+(?:statements?|results|report)|interim\s+report|earnings|\bpress\s+release\b",
                     label,
                 )
                 or re.search(r"(?i)unrelated|not\s+(?:part|included)|historical\s+only", label)

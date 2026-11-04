@@ -1,6 +1,7 @@
 from collections.abc import Generator
 from contextlib import suppress
 from pathlib import Path
+import os
 
 from sqlalchemy import event
 from sqlalchemy.pool import StaticPool
@@ -10,10 +11,15 @@ from app.config import get_settings
 
 
 settings = get_settings()
+_SCHEMA_ONLY = os.environ.get("SCHEMA_VERIFIED_NO_MIGRATION_STARTUP", "0")
+if _SCHEMA_ONLY not in ("0", "1"):
+    raise RuntimeError("invalid_schema_startup_mode")
+if os.environ.get("KIWOOM_MAINTENANCE_STARTUP") == "1" and _SCHEMA_ONLY != "1":
+    raise RuntimeError("maintenance_requires_schema_only_startup")
 
 
 def _ensure_data_directory() -> None:
-    if settings.database_url.startswith("sqlite:///./data/"):
+    if _SCHEMA_ONLY == "0" and settings.database_url.startswith("sqlite:///./data/"):
         Path(settings.data_dir).mkdir(parents=True, exist_ok=True)
 
 
@@ -26,11 +32,17 @@ def _sqlite_engine_kwargs() -> dict[str, object]:
 
 
 _ensure_data_directory()
-engine = create_engine(settings.database_url, **_sqlite_engine_kwargs())
+if _SCHEMA_ONLY == "1":
+    from app.services.readonly_schema_startup import readonly_connection
+    engine = create_engine("sqlite://", creator=lambda: readonly_connection(settings.database_url))
+else:
+    engine = create_engine(settings.database_url, **_sqlite_engine_kwargs())
 
 
 @event.listens_for(engine, "connect")
 def _configure_sqlite_connection(dbapi_connection, _connection_record) -> None:
+    if _SCHEMA_ONLY == "1":
+        return
     if not settings.database_url.startswith("sqlite"):
         return
     cursor = dbapi_connection.cursor()
@@ -40,11 +52,8 @@ def _configure_sqlite_connection(dbapi_connection, _connection_record) -> None:
     cursor.close()
 
 
-def _ensure_sqlite_columns() -> None:
-    if not settings.database_url.startswith("sqlite"):
-        return
-
-    table_columns = {
+def required_legacy_columns() -> dict[str, dict[str, str]]:
+    return {
         "watchlistitem": {
             "active": "BOOLEAN DEFAULT 1",
             "monitoring_requested": "BOOLEAN DEFAULT 1",
@@ -265,6 +274,10 @@ def _ensure_sqlite_columns() -> None:
             "iso_week": "INTEGER",
         },
     }
+def _ensure_sqlite_columns() -> None:
+    if not settings.database_url.startswith("sqlite"):
+        return
+    table_columns = required_legacy_columns()
     with engine.begin() as connection:
         for table_name, columns in table_columns.items():
             existing = {
@@ -283,6 +296,11 @@ def _ensure_sqlite_columns() -> None:
 def init_db() -> None:
     import app.models  # noqa: F401
 
+    if os.environ.get("SCHEMA_VERIFIED_NO_MIGRATION_STARTUP", "0") != _SCHEMA_ONLY:
+        raise RuntimeError("schema_startup_mode_changed")
+    if _SCHEMA_ONLY == "1":
+        from app.services.readonly_schema_startup import verify_schema
+        return verify_schema(settings.database_url, SQLModel.metadata, required_legacy_columns())
     SQLModel.metadata.create_all(engine)
     _ensure_sqlite_columns()
 

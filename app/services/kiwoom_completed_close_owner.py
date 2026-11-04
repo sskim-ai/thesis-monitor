@@ -50,6 +50,25 @@ def _wire_price(value):
     return float(number)
 
 
+def validate_completed_daily_row(raw, target):
+    """Original numeric/row checks; does not issue any ownership permission."""
+    body = json.loads(raw)
+    if (not isinstance(body, dict) or str(body.get('return_code')) != '0'
+            or not isinstance(body.get('result_list'), list)
+            or not all(isinstance(r, dict) for r in body['result_list'])):
+        raise ValueError('completed_close_api_failure')
+    rows = [r for r in body['result_list'] if r.get('dt') == target.strftime('%Y%m%d')]
+    if len(rows) != 1:
+        raise ValueError('completed_close_exact_target_missing_or_duplicate')
+    selected = rows[0]
+    row = dict(date=str(target), **{key: _wire_price(selected[field]) for key, field in
+        (('open', 'open_pric'), ('high', 'high_pric'), ('low', 'low_pric'), ('close', 'cur_prc'))})
+    integrity = inspect_normalized_ohlcv_rows([row], timeframe='daily', cutoff=target)
+    if not integrity.valid:
+        raise ValueError('completed_close_own_ohlc_integrity_failed')
+    return row, integrity
+
+
 def project(*, source, plan, read, security, artifact_reader):
     """Replay explicit request/capture/raw bindings, not a supplied PASS verdict."""
     def load(key):
@@ -90,19 +109,8 @@ def project(*, source, plan, read, security, artifact_reader):
     calendar_receipt = dict(calendar=name, exchange=read.exchange, frozen_at=plan.frozen_at.isoformat(),
         supplement_requested_at=at.isoformat(), latest_completed_session=str(target))
     calendar_receipt["sha256"] = digest(calendar_receipt)
-    body = json.loads(raw)
-    if str(body.get("return_code")) != "0" or not isinstance(body.get("result_list"), list):
-        raise ValueError("completed_close_api_failure")
-    rows = [r for r in body["result_list"] if r.get("dt") == target.strftime("%Y%m%d")]
-    if len(rows) != 1:
-        raise ValueError("completed_close_exact_target_missing_or_duplicate")
-    selected = rows[0]
-    row = dict(date=str(target), **{key: _wire_price(selected[field]) for key, field in
-        (("open", "open_pric"), ("high", "high_pric"), ("low", "low_pric"), ("close", "cur_prc"))})
     # Volume is not a prerequisite for close-only use and is not injected into charts.
-    integrity = inspect_normalized_ohlcv_rows([row], timeframe="daily", cutoff=target)
-    if not integrity.valid:
-        raise ValueError("completed_close_own_ohlc_integrity_failed")
+    row, integrity = validate_completed_daily_row(raw, target)
     compatibility = dict(status="UNPROVEN", technical_target_injection_allowed=False,
         reason=TECHNICAL_DENIAL, canonical_security_id=read.canonical_security_id,
         target_session=str(target), raw_price_display_allowed=True,

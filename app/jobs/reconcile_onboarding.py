@@ -6,6 +6,7 @@ import json
 from datetime import UTC, datetime
 
 from sqlmodel import Session
+from app.services.runtime_maintenance import assert_operation_allowed
 
 from app.database import engine, init_db
 from app.services.onboarding_reconciler_service import (
@@ -15,6 +16,7 @@ from app.services.onboarding_reconciler_service import (
 
 
 async def _run(args: argparse.Namespace) -> None:
+    assert_operation_allowed()
     init_db()
     with Session(engine) as session:
         result = await reconcile_pending_onboarding(
@@ -30,6 +32,7 @@ async def _run(args: argparse.Namespace) -> None:
 
 
 def main() -> None:
+    assert_operation_allowed()
     parser = argparse.ArgumentParser(
         description="Resume requested pending onboarding subjects without delivery side effects."
     )

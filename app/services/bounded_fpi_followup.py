@@ -30,15 +30,16 @@ def make_followup_plan(parent, discovery_raw, captured_documents):
         requests.extend([{'stage': stage, 'url': url, 'filing': filing, 'params': {}}
                          for stage, url in (('index', base + 'index.json'), ('document', primary))])
     value = deepcopy(parent)
+    cap = inventory['candidate_cap'] if parent.get('fpi_candidate_contract') else SEC_FPI_MAX_PURPOSE_CANDIDATES
     value.update(contract=CONTRACT, parent_plan_sha256=digest(parent),
         discovery_sha256=sha256_bytes(discovery_raw), captured_document_metadata_sha256=digest(captured_documents),
         run_id=parent['run_id'] + ':fpi-purpose', candidates=candidates,
         inspection_inventory=inventory, exact_requests=requests,
         selection='frozen_metadata_order_then_source_owned_purpose_and_economic_period',
         limits={**parent['limits'], 'discovery': 0, 'companyfacts': 0,
-                'current': SEC_FPI_MAX_PURPOSE_CANDIDATES, 'prior': 0,
+                'current': cap, 'prior': 0,
                 'documents_per_filing': 1, 'linked_exhibits': 0, 'indexes_per_filing': 1},
-        named_caps={'SEC_FPI_MAX_PURPOSE_CANDIDATES': SEC_FPI_MAX_PURPOSE_CANDIDATES,
+        named_caps={'SEC_FPI_MAX_PURPOSE_CANDIDATES': cap,
                     'inherited_document_cap': parent['limits']['documents_per_filing'],
                     'inherited_index_cap': parent['limits']['indexes_per_filing']},
         planned_logical_requests=len(requests), maximum_logical_requests=len(requests),

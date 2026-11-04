@@ -20,6 +20,8 @@ from app.services.unified_snapshot_contract import (
     CONTRACT, STAGES, Collection, SnapshotPolicy, StageResult, digest, encoded,
     validate_collection, validate_delivery, validate_render, validate_stage,
 )
+from app.services import unified_runtime_v2 as v2
+from app.services.production_source_execution import validate_production_collection
 
 
 KST = ZoneInfo("Asia/Seoul")
@@ -72,27 +74,34 @@ class RunConfiguration:
     collection_timeout_seconds: int = 1200
     notification_timeout_seconds: int = 30
     secrets: tuple[str, ...] = ()
+    runtime_contract: str = CONTRACT
 
     def public(self) -> dict:
-        return {"contract": CONTRACT, "repo_commit": self.repo_commit,
+        return {"contract": self.runtime_contract, "repo_commit": self.repo_commit,
                 "scheduler_identity": self.scheduler_identity,
                 "adapter_fingerprint": self.adapter_fingerprint,
                 "stage_timeout_seconds": self.stage_timeout_seconds,
                 "collection_timeout_seconds": self.collection_timeout_seconds,
                 "notification_timeout_seconds": self.notification_timeout_seconds,
                 "debug_destination_configured": self.debug_destination is not None,
-                "model_attempts_per_role": 1, "external_reference_calls_allowed": 0}
+                "model_attempts_per_role": 3 if self.runtime_contract == v2.CONTRACT else 1,
+                "external_reference_calls_allowed": 0}
 
 
 class UnifiedMarketRun:
     def __init__(self, config: RunConfiguration, ports: PipelinePorts, *, clock: Clock | None = None):
         self.config, self.ports, self.clock = config, ports, clock or Clock()
+        if config.runtime_contract not in {CONTRACT, v2.CONTRACT}:
+            raise ValueError("unknown_runtime_contract")
+        self.v2 = config.runtime_contract == v2.CONTRACT
+        if self.v2 and (config.collection_timeout_seconds != 600 or config.stage_timeout_seconds != 600):
+            raise ValueError("runtime_v2_600_second_contract_required")
         if min(config.stage_timeout_seconds, config.collection_timeout_seconds,
                config.notification_timeout_seconds) <= 0:
             raise ValueError("positive_timeout_required")
 
     async def run(self, market: str, day: date) -> dict:
-        slots = scheduled_slots(market, day)
+        slots = (v2.scheduled_slots if self.v2 else scheduled_slots)(market, day)
         # Durable cycle identity prevents retries, process restarts and duplicate schedulers
         # from generating a second normal delivery for the same market/date.
         run_id = f"snapshot-{market}-{day.isoformat()}"
@@ -140,11 +149,13 @@ class UnifiedMarketRun:
                 durable_json(directory / "policy.json", policy_value, exclusive=True)
                 policy_hash = digest(policy_value)
                 frozen = None
+                previous_completion = None
                 for index, slot in enumerate(slots):
                     end = slots[index + 1] if index + 1 < len(slots) else slot + timedelta(minutes=5)
                     # Missed windows are recorded, never replayed in a burst. An attempt
                     # started within its window may finish later under its own timeout.
-                    if self.clock.now() >= end:
+                    if (self.clock.now() >= end or self.v2 and previous_completion is not None
+                            and previous_completion > slot):
                         state["attempts"].append({"slot": slot.isoformat(), "status": "WINDOW_MISSED"})
                         transition("WINDOW_MISSED")
                         continue
@@ -158,7 +169,7 @@ class UnifiedMarketRun:
                     attempt_dir = directory / attempt_id
                     attempt_dir.mkdir(mode=0o700)
                     started = self.clock.now()
-                    request = {"contract": CONTRACT, "run_id": run_id, "attempt_id": attempt_id,
+                    request = {"contract": self.config.runtime_contract, "run_id": run_id, "attempt_id": attempt_id,
                                "market": market, "target_session": session.isoformat(),
                                "started_at": started.isoformat(), "policy": policy_value,
                                "policy_sha256": policy_hash, "finality_claim": "NOT_CLAIMED",
@@ -173,7 +184,8 @@ class UnifiedMarketRun:
                     try:
                         result = await asyncio.wait_for(self.ports.collect(request, attempt_dir),
                                                         self.config.collection_timeout_seconds)
-                        errors = validate_collection(result, policy=policy, run_id=run_id,
+                        validate_sources = validate_production_collection if self.v2 else validate_collection
+                        errors = validate_sources(result, policy=policy, run_id=run_id,
                                                      attempt_id=attempt_id, started_at=started,
                                                      now=self.clock.now())
                         receipt.update(errors=errors, source_receipts=[r.model_dump(mode="json")
@@ -183,7 +195,7 @@ class UnifiedMarketRun:
                                      exclusive=True)
                         if not errors:
                             receipt["status"] = "ELIGIBLE"
-                            frozen = {"contract": CONTRACT, "run_id": run_id, "policy_sha256": policy_hash,
+                            frozen = {"contract": self.config.runtime_contract, "run_id": run_id, "policy_sha256": policy_hash,
                                       "collection": result.model_dump(mode="json")}
                     except OSError:
                         raise
@@ -191,6 +203,7 @@ class UnifiedMarketRun:
                         receipt.update(errors=["collection_exception"], error_type=type(exc).__name__)
                         state["error_chain"].extend(self._error(exc))
                     receipt["completed_at"] = self.clock.now().isoformat()
+                    previous_completion = self.clock.now()
                     durable_json(attempt_dir / "receipt.json", sanitized(receipt, self.config.secrets))
                     durable_json(directory / "state.json", state)
                     if frozen is not None:
@@ -202,12 +215,12 @@ class UnifiedMarketRun:
                 state["snapshot_sha256"] = digest(frozen)
                 transition("SNAPSHOT_READY")
                 outputs = {}
-                for stage in STAGES:
+                for stage in (v2.STAGES if self.v2 else STAGES):
                     transition(stage)
                     if (digest(load_json(snapshot_path)) != state["snapshot_sha256"]
                             or digest(load_json(directory / "policy.json")) != policy_hash):
                         raise ValueError("frozen_snapshot_or_policy_changed")
-                    request = {"contract": CONTRACT, "run_id": run_id, "stage": stage,
+                    request = {"contract": self.config.runtime_contract, "run_id": run_id, "stage": stage,
                                "snapshot_sha256": state["snapshot_sha256"], "snapshot": frozen,
                                "inputs": outputs, "configuration_sha256": state["configuration_sha256"]}
                     stage_dir = directory / stage.lower()
@@ -223,13 +236,16 @@ class UnifiedMarketRun:
                         self.config.stage_timeout_seconds)
                     durable_json(stage_dir / "response.json", result.model_dump(mode="json"), exclusive=True)
                     state["stage_receipts"][-1].update(response_sha256=digest(result.model_dump(mode="json")),
-                                                       status=result.status, errors=result.errors)
-                    validate_stage(result, request)
+                                                       status=result.status, errors=list(result.errors) if self.v2 else result.errors)
+                    (v2.validate_stage_v2 if self.v2 else validate_stage)(result, request)
                     if stage == "RENDER":
                         validate_render(result.output, policy, state["snapshot_sha256"])
                     if stage == "DELIVER":
                         state["delivery_receipt"] = result.output
-                        validate_delivery(result.output, policy)
+                        if self.v2:
+                            v2.validate_delivery_v2(result.output, policy, request)
+                        else:
+                            validate_delivery(result.output, policy)
                     if digest(load_json(snapshot_path)) != state["snapshot_sha256"]:
                         raise ValueError("snapshot_changed_during_stage")
                     outputs[stage] = result.model_dump(mode="json")
@@ -298,6 +314,8 @@ class UnifiedMarketRun:
             if self.config.debug_destination is None:
                 raise ValueError("configured_debug_destination_unavailable")
             state["debug_upload"] = copy_verified(bundle, self.config.debug_destination)
+            if self.v2:
+                state["debug_upload"]["status"] = "LOCAL_ICLOUD_CONTAINER_VERIFIED"
             copy_verified(bundle.with_suffix(".zip.sha256"), self.config.debug_destination)
         except Exception as exc:
             state["debug_upload"] = {"status": "FAILED", "error_type": type(exc).__name__}

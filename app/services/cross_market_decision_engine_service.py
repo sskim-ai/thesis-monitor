@@ -19,6 +19,10 @@ from pydantic import (
     model_serializer,
     model_validator,
 )
+from pydantic.json_schema import SkipJsonSchema
+
+from app.services.reported_comparison_context import ReportedComparisonContext, context_for_fact
+from app.services.reported_business_projection import ReportedBusinessProjection, projection_for_fact, validate_packet_binding
 
 from app.services.ohlcv_feature_engine_service import MultiTimeframeFeaturePacket
 from app.services.packet_owned_technical_context_service import (
@@ -43,12 +47,19 @@ from app.services.logical_condition_service import (
 )
 from app.services.financial_context_adapter_service import (
     adapt_fact_catalog_financial_context,
+    canonical_identity_from_fact_catalog,
 )
 from app.services.financial_lineage_projection_service import adapter_projection_rows
 from app.services.canonical_evidence_time_service import (
     CanonicalEvidenceTime,
     project_canonical_time,
     source_as_of,
+)
+from app.services.fundamental_input_policy import (
+    price_availability,
+    PriceQualityLimit,
+    SourceUseBinding,
+    source_use,
 )
 
 
@@ -310,7 +321,11 @@ class DecisionEvidenceRef(FrozenModel):
     metric_refs: tuple[CheckpointMetric, ...] = ()
     logical_condition: SourceLogicalCondition | None = None
     financial_context: FinancialContext | None = None
+    financial_value: SkipJsonSchema[Decimal | None] = None
     source_time: CanonicalEvidenceTime | None = None
+    source_use: SkipJsonSchema[SourceUseBinding | None] = None
+    reported_comparison: SkipJsonSchema[ReportedComparisonContext | None] = None
+    reported_business: SkipJsonSchema[ReportedBusinessProjection | None] = None
 
     @model_serializer(mode="wrap")
     def serialize_legacy_compatible(
@@ -320,8 +335,16 @@ class DecisionEvidenceRef(FrozenModel):
         serialized = handler(self)
         if self.financial_context is None:
             serialized.pop("financial_context", None)
+        if self.financial_value is None:
+            serialized.pop("financial_value", None)
         if self.source_time is None:
             serialized.pop("source_time", None)
+        if self.source_use is None:
+            serialized.pop("source_use", None)
+        if self.reported_comparison is None:
+            serialized.pop("reported_comparison", None)
+        if self.reported_business is None:
+            serialized.pop("reported_business", None)
         return serialized
 
 
@@ -560,6 +583,7 @@ def build_decision_evidence_packet(
     market = str(packet.get("market") or "").lower()
     if market not in {"kr", "us"}:
         raise ValueError("unsupported_market")
+    validate_packet_binding(stock, packet)
     assessment_date = str(packet.get("assessment_date") or packet.get("generated_at") or "")[:10]
     thesis = stock.get("thesis") if isinstance(stock.get("thesis"), Mapping) else {}
     assert isinstance(thesis, Mapping)
@@ -653,24 +677,31 @@ def build_decision_evidence_packet(
     current_price_context = (
         current_price_context if isinstance(current_price_context, Mapping) else {}
     )
-    price_availability = str(current_price_context.get("availability") or "").lower()
     _add_text_refs(
         refs,
         ticker=ticker,
-        category=(
-            EvidenceCategory.QUALITY
-            if price_availability in {"unavailable", "price_only"}
-            else EvidenceCategory.PRICE_STRUCTURE
-        ),
-        label=(
-            "가격 컨텍스트 품질"
-            if price_availability in {"unavailable", "price_only"}
-            else "가격 구조"
-        ),
+        category=EvidenceCategory.PRICE_STRUCTURE,
+        label="가격 구조",
         values=current_price_context,
         source_ref="stock.current_price_context",
         as_of=assessment_date,
     )
+    if current_price_context:
+        availability = current_price_context.get("availability")
+        quality = PriceQualityLimit(
+            availability=price_availability(availability, contract=current_price_context.get("contract"))
+        )
+        refs.append(DecisionEvidenceRef(
+            ref_id="quality:current_price_context",
+            category=EvidenceCategory.QUALITY,
+            label="가격 자료 가용성",
+            statement=quality.model_dump_json(),
+            source_ref="stock.current_price_context.availability",
+            source_use=source_use(
+                source_ref="stock.current_price_context.availability",
+                security_id=ticker, price_quality=True,
+            ),
+        ))
 
     fact_catalog = stock.get("fact_catalog")
     if isinstance(fact_catalog, list):
@@ -692,6 +723,7 @@ def build_decision_evidence_packet(
                 row,
                 financial_adapter_facts,
             )
+            financial_identity, _ = canonical_identity_from_fact_catalog(row)
             refs.append(
                 DecisionEvidenceRef(
                     ref_id=f"canonical:{fact_id}",
@@ -710,6 +742,14 @@ def build_decision_evidence_packet(
                         if adapted_financial.context is not None
                         else None
                     ),
+                    financial_value=(
+                        financial_identity.value if financial_identity is not None
+                        and adapted_financial.context is not None else None
+                    ),
+                    reported_comparison=context_for_fact(stock, row, ticker=ticker,
+                        packet_id=packet_id, assessment_date=assessment_date),
+                    reported_business=projection_for_fact(stock, row, ticker=ticker,
+                        packet_id=packet_id, assessment_date=assessment_date, market=market),
                 )
             )
 
@@ -758,7 +798,26 @@ def build_decision_evidence_packet(
                     )
                 )
 
-    unique = {ref.ref_id: ref for ref in refs}
+    # The producer channel owns use classification. Caller category/family labels
+    # cannot turn saved hypotheses or timing inputs into current business facts.
+    bound_refs = []
+    for ref in refs:
+        if ref.source_use is None:
+            canonical = ref.source_ref.startswith("stock.fact_catalog.")
+            binding = source_use(
+                source_ref=ref.source_ref, security_id=ticker, canonical=canonical,
+                event=canonical and ref.ref_id.startswith("canonical:event:"),
+                typed_financial=ref.financial_context is not None,
+                reported_comparison=ref.reported_comparison is not None,
+                reported_business_kind=ref.reported_business.kind if ref.reported_business else None,
+                reported_business_contract=ref.reported_business.contract if ref.reported_business else None,
+                timing=ref.category in {EvidenceCategory.PRICE_STRUCTURE,
+                    EvidenceCategory.TECHNICAL_FEATURE, EvidenceCategory.FLOWS}
+                    or ref.source_ref == "stock.technical_context",
+            )
+            ref = ref.model_copy(update={"source_use": binding})
+        bound_refs.append(ref)
+    unique = {ref.ref_id: ref for ref in bound_refs}
     normalized = tuple(unique[key] for key in sorted(unique))
     cautions = [str(value) for value in stock.get("data_cautions") or ()]
     if technical_context is not None and technical_context.status != TechnicalContextStatus.FULL:

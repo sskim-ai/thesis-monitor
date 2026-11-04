@@ -1,7 +1,7 @@
 """Exact primary/issuer/context scope; never authorize a hidden KR stock run."""
 from app.services.auxiliary_issuer_financial_owner import AuxiliaryIssuerDependency
 from app.services.unified_stock_acquisition import StockPlan, UNIVERSE
-from app.services.sealed_fresh_dispatch import ProviderPlan
+from app.services.sealed_fresh_dispatch import decode_request_plan
 from app.services.unified_snapshot_contract import digest
 
 
@@ -31,7 +31,7 @@ def require_us14_plan(frozen):
             or dep.source_plan_sha256 != digest(candidate['financial_plans']['000660'])
             or candidate['plan_sha256'] != digest({k:v for k,v in candidate.items() if k!='plan_sha256'})):
         raise ValueError('us14_auxiliary_plan_binding_mismatch')
-    for descriptor in ProviderPlan.model_validate(frozen['plan']).descriptors:
+    for descriptor in decode_request_plan(frozen['plan']).descriptors:
         if descriptor.subject == '000660':
             if descriptor.consumer_role != 'financial:000660' or descriptor.provider != 'opendart':
                 raise ValueError('us14_auxiliary_security_role_forbidden')

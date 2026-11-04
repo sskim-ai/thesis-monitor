@@ -113,7 +113,7 @@ def reported_comparisons(plan, projection):
     return facts, denied
 
 
-def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, followup_directory=None, phase2=None, field_semantics=False, coverage_window=None, issuer_business=None):
+def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, followup_directory=None, phase2=None, field_semantics=False, coverage_window=None, issuer_business=None, statement_basis_policy=None, basis_execution_generation=None, current_financial_parent=None, current_purpose_intake=None):
     validate_frozen_baseline(baseline)
     if baseline['ticker'] != plan['ticker'] or baseline['market'] != plan['market']:
         raise ValueError('financial_stock_subject_mismatch')
@@ -124,8 +124,16 @@ def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, fo
     if not identities or any(any(r.get(k)!=plan['security'].get(k) for k in
             ('canonical_company_id','canonical_security_id','cik','corp_code')) for r in identities):
         raise ValueError('financial_security_identity_mismatch')
-    projection = project(plan, acquisition, directory, receipts, followup_directory=followup_directory, phase2=phase2,
-        field_semantics=field_semantics, coverage_window=coverage_window)
+    projection_options = dict(followup_directory=followup_directory, phase2=phase2,
+        field_semantics=field_semantics, coverage_window=coverage_window,
+        statement_basis_policy=statement_basis_policy,basis_execution_generation=basis_execution_generation,
+        current_purpose_intake=current_purpose_intake)
+    if current_financial_parent is not None:
+        from app.services.current_financial_purpose_intake import project_current
+        projection = project_current(current_financial_parent, plan=plan, acquisition=acquisition,
+            directory=directory, receipts=receipts, **projection_options)
+    else:
+        projection = project(plan, acquisition, directory, receipts, **projection_options)
     facts, denied = reported_comparisons(plan, projection)
     bridge, origin = None, None
     if issuer_business is not None:
@@ -134,7 +142,9 @@ def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, fo
         bridge, facts, origin = _issuer_business_facts(plan, issuer_business)
     from app.services.selected_financial_owner import select
     selected_owner = select(plan=plan, acquisition=acquisition, projection=projection,
-                            facts=facts, bridge=bridge, origin=origin)
+                            facts=facts, bridge=bridge, origin=origin,
+                            legacy_issuer_inputs=issuer_business,
+                            current_financial_parent=current_financial_parent, current_purpose_intake=current_purpose_intake)
     # Preserve the complete baseline artifact; enrich only a detached packet.
     packet = deepcopy(baseline['packet'])
     packet.update(packet_id=plan['run_id'] + ':' + plan['market'], generated_at=plan['cutoff'], assessment_date=plan['cutoff'][:10])
@@ -220,11 +230,14 @@ def _issuer_business_facts(plan, inputs):
         dart_rows=rows, dart_receipt=captures[0], cutoff=plan['cutoff'])
     if bridge['status'] != 'PASS':
         raise ValueError('issuer_business_identity_unproven:' + ','.join(bridge['errors']))
-    if source.get('contract') == 'auxiliary-issuer-financial-owner-v1':
+    if source.get('contract') in {
+            'auxiliary-issuer-financial-owner-v1', 'auxiliary-issuer-financial-owner-v2'}:
         selected = {f['fact_id']: f for f in source['comparative_facts']}
-    else:
+    elif source.get('contract') == 'bounded-financial-stock-owner-v1':
         selected = {f['fact_id']: f for f in source['packet']['stocks'][0]['fact_catalog']
                     if 'canonical:' + f['fact_id'] in source['comparative_fact_refs']}
+    else:
+        raise ValueError('issuer_source_result_contract_unsupported')
     facts = []
     for bundle in source['projection']['quality_bundles']:
         quality = source_quality(bundle)
@@ -241,10 +254,19 @@ def _issuer_business_facts(plan, inputs):
 
 
 def replay_issuer_source(inputs, *, target_plan):
-    if 'dependency' in inputs:
-        from app.services.auxiliary_issuer_financial_owner import assemble_issuer
-        return assemble_issuer(**inputs, target_plan=target_plan)
-    return assemble(**inputs)
+    if 'dependency' not in inputs:
+        return assemble(**inputs)
+    dependency = inputs['dependency']
+    if not isinstance(dependency, dict):
+        raise ValueError('issuer_source_dependency_shape')
+    version = dependency.get('contract', 'auxiliary-issuer-only-v1')
+    if version == 'auxiliary-issuer-only-v1':
+        from app.services.auxiliary_issuer_financial_owner import assemble_issuer as owner
+    elif version == 'auxiliary-issuer-only-v2':
+        from app.services.issuer_financial_source import assemble_generic_issuer as owner
+    else:
+        raise ValueError('issuer_source_dependency_contract_unsupported')
+    return owner(**inputs, target_plan=target_plan)
 
 
 def validate(result, **inputs):

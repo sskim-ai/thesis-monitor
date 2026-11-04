@@ -104,6 +104,22 @@ class StockPlan(ContractModel):
         return self
 
 
+def stock_read_fields(*, subject, identity, market, role, count, at, state):
+    """Canonical per-read construction, without granting cohort or source authority."""
+    exchange = identity["exchange"]
+    if market == "us":
+        exchange = {"NASDAQ": "ND", "NYSE": "NY", "AMEX": "NA"}.get(exchange)
+    period, adjusted = ROLES[role]
+    return dict(entry_id=f"{market}:{subject}:{role}", market=market,
+        subject=subject, canonical_security_id=identity["canonical_security_id"],
+        exchange=exchange, route="/api/us/chart" if market == "us" else "/api/dostk/chart",
+        api_id=API_IDS[market][period], role=role, timeframe=period, adjusted=adjusted,
+        count=count, max_pages=min(12, count // 100 + 2) if market == "us" else min(10, count // 200 + 2),
+        query_date=at.astimezone(ZoneInfo("Asia/Seoul")).strftime("%Y%m%d"),
+        latest_completed_session=state.latest_completed_regular_session_date.isoformat(),
+        market_state=state.session)
+
+
 def make_reads(universe: dict, identities: dict, *, at: datetime, counts: dict,
                kr_only: bool = False, us_only: bool = False) -> tuple[StockRead, ...]:
     if kr_only and us_only:
@@ -120,20 +136,11 @@ def make_reads(universe: dict, identities: dict, *, at: datetime, counts: dict,
     for market, tickers in selected.items():
         for subject in tickers:
             identity = identities[subject]
-            exchange = identity["exchange"]
-            if market == "us":
-                exchange = {"NASDAQ": "ND", "NYSE": "NY", "AMEX": "NA"}.get(exchange)
             state = market_session_for_ticker(subject, at)
-            for role, (period, adjusted) in ROLES.items():
+            for role in ROLES:
                 count = counts[market][role]
-                reads.append(StockRead(entry_id=f"{market}:{subject}:{role}", market=market,
-                    subject=subject, canonical_security_id=identity["canonical_security_id"],
-                    exchange=exchange, route="/api/us/chart" if market == "us" else "/api/dostk/chart",
-                    api_id=API_IDS[market][period], role=role, timeframe=period, adjusted=adjusted,
-                    count=count, max_pages=min(12, count // 100 + 2) if market == "us" else min(10, count // 200 + 2),
-                    query_date=at.astimezone(ZoneInfo("Asia/Seoul")).strftime("%Y%m%d"),
-                    latest_completed_session=state.latest_completed_regular_session_date.isoformat(),
-                    market_state=state.session))
+                reads.append(StockRead(**stock_read_fields(subject=subject, identity=identity,
+                    market=market, role=role, count=count, at=at, state=state)))
     return tuple(reads)
 
 

@@ -5,6 +5,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
+from app.services.runtime_maintenance import assert_operation_allowed
 
 from app.jobs.probe_krx_night_futures import expected_latest_completed_krx_session
 from app.macro.providers.base import MacroProvider
@@ -38,6 +39,7 @@ async def run_night_futures_publication_observer(
     telemetry_directory: Path | None = None,
 ) -> dict[str, object]:
     observed_at = as_of or datetime.now(timezone.utc)
+    assert_operation_allowed()
     if observed_at.tzinfo is None:
         return {
             "status": "SKIPPED",

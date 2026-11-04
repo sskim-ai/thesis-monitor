@@ -85,6 +85,27 @@ def replay(corpus, output, *, persisted_events=None):
                     event_inputs = {k: v for k, v in event_inputs.items() if k != 'policy_provider'}
                     event_inputs['policy'] = inputs['policy']
                     bound = bind_persisted_event(stock_inputs=inputs, event_inputs=event_inputs)
+                    from scripts.m12dr_context_authority_discovery import (
+                        build_context_discovery_v1, resolve_persisted_context_v1,
+                        validate_context_discovery_v1,
+                    )
+                    event_result = bound['result']
+                    event_packet, event_ep = event_result['packet'], event_result['evidence_packet']
+                    discovery_inputs = dict(ticker=ticker, source_generation_id=plan.run_id,
+                        execution_generation_id=acquisition['proof_run_id'], source_packet=event_packet,
+                        evidence_packet=event_ep, catalog=build_subject_catalog(
+                            context=context(event_packet, acquisition['proof_run_id']),
+                            ticker=ticker, atomic_claims=[]), frozen_binding=freeze_current_source_binding(
+                                source_generation_id=plan.run_id, source_packet=event_packet,
+                                evidence_packet=event_ep))
+                    replay_inputs = dict(event_inputs=event_inputs,
+                        observed_business_union=event_result['observed_business_union'],
+                        persisted_event_receipt=event_result['persisted_event_receipt'])
+                    discovery = resolve_persisted_context_v1(
+                        build_context_discovery_v1(**discovery_inputs), **replay_inputs, **discovery_inputs)
+                    verified_discovery = validate_context_discovery_v1(
+                        discovery, **replay_inputs, **discovery_inputs)
+                    save('context-authority/' + ticker + '.json', verified_discovery)
                 result = bound['result']
                 version_inputs = dict(ticker=ticker, versions=versions,
                     version_hashes=acquisition['class_c_versions'], local_seeds=list(locals_.values()),

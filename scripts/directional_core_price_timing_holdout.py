@@ -288,6 +288,11 @@ def _owned_context(
     owned: OwnedEvidencePacket,
     catalog: EvidenceAliasCatalog,
 ) -> dict[str, object]:
+    from app.services.legacy_context_authority import verify_legacy_context
+
+    verify_legacy_context(owned, scope="OWNED_EVIDENCE", fixture_consumer="OWNED_CONTEXT")
+    if catalog not in stage_alias_catalogs(owned):
+        raise ValueError("owned_context_stage_catalog_mismatch")
     by_ref = {row.ref.ref_id: row for row in owned.evidence}
     catalog_domains = {
         by_ref[entry.canonical_ref].domain for entry in catalog.entries
@@ -360,6 +365,8 @@ def _owned_context(
     )
     if compact_financial is not None:
         context["financial_decision_context"] = compact_financial
+    from app.services.reviewed_fixture_authority import fixture_metadata
+    context.update(fixture_metadata(owned, consumer="OWNED_CONTEXT", preserve_canary_wire=True))
     return context
 
 

@@ -9,7 +9,9 @@ import hashlib
 import json
 import re
 
-from pydantic import Field
+from pydantic import Field, model_serializer
+from pydantic.json_schema import SkipJsonSchema
+from app.services.reviewed_fixture_authority import ReviewedFixtureSeal, verify_reviewed_view, reviewed_public_projection, reviewed_schema_metadata
 
 from app.services.cross_market_decision_engine_service import (
     DecisionEvidenceRef,
@@ -101,9 +103,18 @@ class BusinessDeltaEvidenceView(FrozenModel):
     )
     ambiguous_change_refs: tuple[str, ...] = ()
     items: tuple[BusinessDeltaEvidenceItem, ...]
+    test_only_provenance: SkipJsonSchema[ReviewedFixtureSeal | None] = None
+
+    @model_serializer(mode="wrap")
+    def serialize_legacy_compatible(self, handler):
+        value = handler(self)
+        if self.test_only_provenance is None:
+            value.pop("test_only_provenance", None)
+        return value
 
     @property
     def allowed_business_thesis_changes(self) -> tuple[str, ...]:
+        verify_reviewed_view(self)
         if self.capability == BusinessDeltaCapability.UNCHANGED_ONLY:
             return ("UNCHANGED",)
         if self.capability == BusinessDeltaCapability.AI_JUDGMENT:
@@ -112,6 +123,7 @@ class BusinessDeltaEvidenceView(FrozenModel):
 
     @property
     def eligible_canonical_refs(self) -> frozenset[str]:
+        verify_reviewed_view(self)
         return frozenset(
             item.canonical_ref
             for item in self.items
@@ -120,6 +132,7 @@ class BusinessDeltaEvidenceView(FrozenModel):
 
     @property
     def direction_unspecified_eligible_refs(self) -> tuple[str, ...]:
+        verify_reviewed_view(self)
         return tuple(
             item.alias
             for item in self.items
@@ -129,6 +142,7 @@ class BusinessDeltaEvidenceView(FrozenModel):
 
     @property
     def excluded_change_refs(self) -> tuple[str, ...]:
+        verify_reviewed_view(self)
         return tuple(
             item.alias
             for item in self.items
@@ -140,6 +154,7 @@ class BusinessDeltaEvidenceView(FrozenModel):
         )
 
     def model_context(self, *, excluded_limit: int = 8) -> dict[str, object]:
+        verify_reviewed_view(self)
         excluded = [
             {"ref": item.alias, "reason": item.reason}
             for item in self.items
@@ -149,7 +164,7 @@ class BusinessDeltaEvidenceView(FrozenModel):
                 BusinessDeltaEvidenceRole.THESIS_BASELINE_CONTEXT,
             }
         ]
-        return {
+        return reviewed_public_projection(self, {
             "contract": MODEL_VIEW_CONTRACT,
             "capability": self.capability.value,
             "allowed_business_thesis_changes": list(
@@ -163,7 +178,7 @@ class BusinessDeltaEvidenceView(FrozenModel):
             },
             "excluded_change_refs": excluded[:excluded_limit],
             "excluded_change_ref_count": len(excluded),
-        }
+        })
 
 
 _FUNDAMENTAL_CHANGE_DOMAINS = frozenset(
@@ -647,6 +662,11 @@ def build_business_delta_evidence_view(
     *,
     context: Mapping[str, object] | None = None,
 ) -> BusinessDeltaEvidenceView:
+    from app.services.legacy_context_authority import verify_legacy_context
+
+    verify_legacy_context(owned, scope="OWNED_EVIDENCE", fixture_consumer="BUSINESS_DELTA")
+    from app.services.reviewed_fixture_authority import verify_reviewed_projection
+    verify_reviewed_projection(owned, catalog, context)
     ticker = owned.source_packet.ticker
     if catalog.ticker != ticker:
         raise ValueError("business_delta_catalog_ticker_mismatch")
@@ -705,6 +725,7 @@ def build_business_delta_evidence_view(
         else BusinessDeltaCapability.UNCHANGED_ONLY
     )
     return BusinessDeltaEvidenceView(
+        contract=("test-only-reviewed-business-delta-v1" if owned.contract == "test-only-reviewed-owned-evidence-v1" else CONTRACT_VERSION),
         ticker=ticker,
         capability=capability,
         baseline_context_refs=tuple(
@@ -721,12 +742,14 @@ def build_business_delta_evidence_view(
         },
         ambiguous_change_refs=ambiguous,
         items=tuple(items),
+        test_only_provenance=owned.backend_seal if isinstance(owned.backend_seal, ReviewedFixtureSeal) else None,
     )
 
 
 def business_delta_evidence_view_sha256(
     view: BusinessDeltaEvidenceView,
 ) -> str:
+    verify_reviewed_view(view)
     return hashlib.sha256(
         json.dumps(
             view.model_dump(mode="json"),
@@ -749,6 +772,7 @@ def attach_business_delta_evidence_view(
 def audit_business_delta_direction_projection(
     view: BusinessDeltaEvidenceView,
 ) -> dict[str, object]:
+    verify_reviewed_view(view)
     expected = {
         item.alias: item.supported_change_directions
         for item in view.items
@@ -774,6 +798,8 @@ def audit_business_delta_direction_projection(
 def business_delta_property_enums(
     views: Mapping[str, BusinessDeltaEvidenceView],
 ) -> dict[str, dict[str, tuple[str, ...]]]:
+    for view in views.values():
+        verify_reviewed_view(view)
     ambiguous = sorted(
         ticker
         for ticker, view in views.items()
@@ -842,13 +868,14 @@ def build_business_delta_constrained_batch_schema(
         ):
             raise ValueError("business_delta_candidate_enum_expansion_forbidden")
         delta_schema["enum"] = allowed
-    return schema
+    return {**schema, **reviewed_schema_metadata(views.values())}
 
 
 def validate_business_delta_candidate(
     candidate: Mapping[str, object],
     view: BusinessDeltaEvidenceView,
 ) -> dict[str, object]:
+    verify_reviewed_view(view)
     ticker = str(candidate.get("ticker") or "")
     errors: list[str] = []
     if ticker != view.ticker:

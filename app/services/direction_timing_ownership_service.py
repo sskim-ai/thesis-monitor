@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from collections.abc import Mapping, Sequence
+from datetime import date, datetime
 from enum import StrEnum
 from typing import Literal
 
@@ -25,6 +26,15 @@ from app.services.directional_financial_context_service import (
     build_financial_decision_context,
     normalize_sector_framework,
 )
+from app.services.legacy_context_authority import (
+    _OWNED_BUILDER_PERMIT,
+    LegacyContextSeal,
+    _seal_built_context,
+    verify_legacy_context,
+)
+from app.services.fixture_context_authority import TestOnlyFixtureSeal
+from app.services.reviewed_fixture_authority import ReviewedFixtureSeal
+from app.services.owned_evidence_derivative import OwnedEvidenceDerivativeSeal
 from app.services.structured_autonomy_alias_service import (
     EvidenceAliasCatalog,
     build_evidence_alias_catalog,
@@ -63,6 +73,7 @@ OWNERSHIP_EXECUTION_MODE = "TWO_STAGE_FENCED"
 
 class EvidenceDomain(StrEnum):
     IDENTITY_SECURITY = "IDENTITY_SECURITY"
+    HISTORICAL_REPORTED_CONTEXT = "HISTORICAL_REPORTED_CONTEXT"
     BUSINESS_CURRENT = "BUSINESS_CURRENT"
     EARNINGS_FINANCIAL_CURRENT = "EARNINGS_FINANCIAL_CURRENT"
     LIQUIDITY_CASHFLOW_CURRENT = "LIQUIDITY_CASHFLOW_CURRENT"
@@ -98,6 +109,7 @@ class MonitoringTransitionSourceClass(StrEnum):
 CORE_DOMAINS = frozenset(
     {
         EvidenceDomain.IDENTITY_SECURITY,
+        EvidenceDomain.HISTORICAL_REPORTED_CONTEXT,
         EvidenceDomain.BUSINESS_CURRENT,
         EvidenceDomain.EARNINGS_FINANCIAL_CURRENT,
         EvidenceDomain.LIQUIDITY_CASHFLOW_CURRENT,
@@ -174,22 +186,37 @@ class OwnedEvidencePacket(FrozenModel):
     source_packet: DecisionEvidencePacket
     evidence: tuple[OwnedEvidenceRef, ...]
     sector_framework: str = "unspecified"
+    backend_seal: LegacyContextSeal | TestOnlyFixtureSeal | ReviewedFixtureSeal | OwnedEvidenceDerivativeSeal | None = None
 
     @property
     def domain_by_ref(self) -> dict[str, EvidenceDomain]:
+        verify_legacy_context(self, scope="OWNED_EVIDENCE", fixture_consumer="REF_CATALOG")
         return {row.ref.ref_id: row.domain for row in self.evidence}
 
     @property
     def core_refs(self) -> frozenset[str]:
+        verify_legacy_context(self, scope="OWNED_EVIDENCE", fixture_consumer="REF_CATALOG")
         return frozenset(
             row.ref.ref_id for row in self.evidence if row.domain in CORE_DOMAINS
         )
 
     @property
     def timing_refs(self) -> frozenset[str]:
+        verify_legacy_context(self, scope="OWNED_EVIDENCE", fixture_consumer="REF_CATALOG")
         return frozenset(
             row.ref.ref_id for row in self.evidence if row.domain in TIMING_DOMAINS
         )
+
+
+def verified_owned_packet_view(view: Mapping[str, object]) -> OwnedEvidencePacket:
+    """Bind a canonical consumer's separate packet to its live owned projection."""
+    owned = OwnedEvidencePacket.model_validate(view["ownership"])
+    verify_legacy_context(owned, scope="OWNED_EVIDENCE")
+    packet = DecisionEvidencePacket.model_validate(view["evidence_packet"])
+    if (packet != owned.source_packet or view["ticker"] != packet.ticker
+            or ("market" in view and view["market"] != packet.market)):
+        raise ValueError("owned_evidence_consumer_packet_mismatch")
+    return owned
 
 
 class CoreNewBuyerView(FrozenModel):
@@ -469,6 +496,48 @@ def evidence_domain(
     *,
     fact_family_by_id: Mapping[str, str],
 ) -> EvidenceDomain:
+    from app.services.fundamental_input_policy import InputSourceClass
+
+    # Producer source/use precedes broad economic category and family labels.
+    if ref.source_ref.startswith("stock.thesis."):
+        return EvidenceDomain.AUDIT_TELEMETRY
+    if ref.source_ref == "stock.current_price_context":
+        return EvidenceDomain.PRICE_CONTEXT
+    if ref.source_ref == "leading_market.timing_context" or ref.ref_id.startswith("leading-market:"):
+        return EvidenceDomain.TECHNICAL_STATE
+    if ref.source_use is None and ref.category not in {
+        EvidenceCategory.PRICE_STRUCTURE,
+        EvidenceCategory.TECHNICAL_FEATURE,
+        EvidenceCategory.FLOWS,
+    }:
+        return EvidenceDomain.AUDIT_TELEMETRY
+    if ref.source_use is not None:
+        if ref.source_use.source_class == InputSourceClass.REPORTED_BUSINESS_COMPARISON:
+            return EvidenceDomain.EARNINGS_FINANCIAL_CURRENT
+        if ref.source_use.source_class == InputSourceClass.REPORTED_BUSINESS_QUALITY:
+            return EvidenceDomain.DATA_QUALITY_LIMIT
+        if ref.source_use.source_class in {InputSourceClass.REPORTED_COMPARISON_CONTEXT,
+                                          InputSourceClass.REPORTED_ISSUER_CONTEXT}:
+            return EvidenceDomain.HISTORICAL_REPORTED_CONTEXT
+        if ref.source_use.source_class in {
+            InputSourceClass.USER_HYPOTHESIS,
+            InputSourceClass.PROSPECTIVE_CONDITION,
+            InputSourceClass.EVENT_TRIAGE,
+            InputSourceClass.UNADMITTED,
+            InputSourceClass.CANONICAL_COMPATIBILITY,
+        }:
+            return EvidenceDomain.AUDIT_TELEMETRY
+        if ref.source_use.source_class == InputSourceClass.QUALITY_LIMIT:
+            return EvidenceDomain.DATA_QUALITY_LIMIT
+        if ref.source_use.source_class == InputSourceClass.PRICE_TIMING:
+            family = fact_family_by_id.get(ref.source_ref.removeprefix("stock.fact_catalog."))
+            if family in _FAMILY_DOMAINS and _FAMILY_DOMAINS[family] in TIMING_DOMAINS:
+                return _FAMILY_DOMAINS[family]
+            if ref.category == EvidenceCategory.FLOWS:
+                return EvidenceDomain.SUPPLY_POSITIONING
+            if ref.category == EvidenceCategory.TECHNICAL_FEATURE:
+                return EvidenceDomain.OHLCV_TECHNICAL
+            return EvidenceDomain.TECHNICAL_STATE
     prefix = "stock.fact_catalog."
     if ref.source_ref.startswith(prefix):
         fact_id = ref.source_ref.removeprefix(prefix)
@@ -549,10 +618,140 @@ def build_owned_evidence_packet(
     *,
     stock: Mapping[str, object],
 ) -> OwnedEvidencePacket:
+    from app.services.canonical_evidence_time_service import validate_canonical_time
+    from app.services.financial_context_adapter_service import (
+        adapt_fact_catalog_financial_context, canonical_identity_from_fact_catalog,
+    )
+    from app.services.fundamental_input_policy import (
+        InputSourceClass, PriceQualityLimit, SourceUseBinding,
+        fundamental_ref_projection, price_availability, source_use,
+    )
+    from app.services.fact_consumer_scope_service import (
+        FactConsumer, STOCK_CONTEXT_CONSUMER_SCOPES, project_fact_catalog_for_consumer,
+    )
+    from app.services.financial_lineage_projection_service import adapter_projection_rows
+
+    catalog = {
+        "canonical:" + str(row.get("fact_id")): row
+        for row in stock.get("fact_catalog", ())
+        if isinstance(row, Mapping) and row.get("fact_id")
+    }
+    catalog_rows = list(catalog.values())
+    scoped_rows = project_fact_catalog_for_consumer(
+        catalog_rows, FactConsumer.STOCK_V2,
+        default_scopes=STOCK_CONTEXT_CONSUMER_SCOPES,
+    )
+    known_scopes = {item.value for item in FactConsumer}
+    scoped_primary_refs = {
+        "canonical:" + str(row["fact_id"])
+        for row in scoped_rows if row.get("fact_id")
+        and ("consumer_scopes" not in row or (
+            isinstance(row["consumer_scopes"], (list, tuple))
+            and bool(row["consumer_scopes"])
+            and all(isinstance(value, str) and value in known_scopes
+                    for value in row["consumer_scopes"])
+        ))
+    }
+    financial_rows = adapter_projection_rows(catalog_rows, scoped_rows)
+    for ref in packet.evidence:
+        if ref.source_use is not None and (
+            ref.source_use.security_id != packet.ticker
+            or ref.source_use.source_ref != ref.source_ref
+        ):
+            raise ValueError("fundamental_source_use_identity_mismatch")
+        if ref.source_use is not None:
+            binding = SourceUseBinding.model_validate(ref.source_use.model_dump())
+            canonical = ref.source_ref.startswith("stock.fact_catalog.")
+            expected_binding = source_use(
+                source_ref=ref.source_ref, security_id=packet.ticker,
+                canonical=canonical,
+                event=canonical and ref.ref_id.startswith("canonical:event:"),
+                typed_financial=ref.financial_context is not None,
+                reported_comparison=ref.reported_comparison is not None,
+                reported_business_kind=ref.reported_business.kind if ref.reported_business else None,
+                reported_business_contract=ref.reported_business.contract if ref.reported_business else None,
+                price_quality=ref.source_ref == "stock.current_price_context.availability",
+                timing=ref.category in {EvidenceCategory.PRICE_STRUCTURE,
+                    EvidenceCategory.TECHNICAL_FEATURE, EvidenceCategory.FLOWS}
+                    or ref.source_ref == "stock.technical_context",
+            )
+            if binding != expected_binding:
+                raise ValueError("fundamental_source_use_producer_mismatch")
+            if binding.source_class in {InputSourceClass.REPORTED_BUSINESS_COMPARISON, InputSourceClass.REPORTED_BUSINESS_QUALITY,
+                                        InputSourceClass.REPORTED_ISSUER_CONTEXT}:
+                from app.services.reported_business_projection import projection_for_fact
+                from app.services.cross_market_decision_engine_service import _compact, _model_facing_label_for_fact, _category_for_fact
+                fact = catalog.get(ref.ref_id)
+                if fact is None or ref.ref_id not in scoped_primary_refs:
+                    raise ValueError("business_native_membership_required")
+                expected = projection_for_fact(stock, fact, ticker=packet.ticker,
+                    packet_id=packet.packet_id, assessment_date=packet.assessment_date, market=packet.market)
+                validate_canonical_time(fact, ref.model_dump(mode="json"), ticker=packet.ticker)
+                if (expected is None or expected != ref.reported_business
+                        or ref.reported_comparison is not None or ref.financial_context is not None
+                        or ref.financial_value is not None or ref.value is not None or ref.unit is not None
+                        or ref.numeric_prose_eligible or ref.logical_condition is not None
+                        or ref.source_ref != "stock.fact_catalog." + str(fact["fact_id"])
+                        or ref.statement != _compact(fact["fields"])
+                        or ref.label != _model_facing_label_for_fact(fact)
+                        or ref.category != _category_for_fact(fact)
+                        or ref.source_time is None or ref.source_time.projection_at != expected.projection_at):
+                    raise ValueError("business_native_projection_mismatch")
+            elif binding.source_class == InputSourceClass.REPORTED_COMPARISON_CONTEXT:
+                from app.services.reported_comparison_context import context_for_fact
+                from app.services.cross_market_decision_engine_service import _compact, _model_facing_label_for_fact
+                fact = catalog.get(ref.ref_id)
+                if (fact is None or ref.ref_id not in scoped_primary_refs
+                        or ref.source_ref != "stock.fact_catalog." + str(fact["fact_id"])
+                        or ref.financial_context is not None or ref.financial_value is not None):
+                    raise ValueError("comparison_native_membership_required")
+                expected = context_for_fact(stock, fact, ticker=packet.ticker,
+                    packet_id=packet.packet_id, assessment_date=packet.assessment_date)
+                validate_canonical_time(fact, ref.model_dump(mode="json"), ticker=packet.ticker)
+                if (expected is None or ref.reported_comparison != expected
+                        or ref.category != EvidenceCategory.EARNINGS
+                        or ref.statement != _compact(fact["fields"])
+                        or ref.label != _model_facing_label_for_fact(fact)
+                        or ref.value is not None or ref.unit is not None
+                        or ref.numeric_prose_eligible or ref.logical_condition is not None
+                        or ref.source_time is None or ref.source_time.projection_at is None
+                        or datetime.fromisoformat(ref.source_time.projection_at) !=
+                        expected.decision_projection_at):
+                    raise ValueError("comparison_native_projection_mismatch")
+            elif binding.source_class == InputSourceClass.QUALITY_LIMIT:
+                quality = PriceQualityLimit.model_validate_json(ref.statement)
+                price = stock.get("current_price_context")
+                availability = price.get("availability") if isinstance(price, Mapping) else None
+                expected = price_availability(availability,
+                    contract=price.get("contract") if isinstance(price, Mapping) else None)
+                if (ref.source_ref != "stock.current_price_context.availability"
+                        or ref.ref_id != "quality:current_price_context"
+                        or quality.availability != expected):
+                    raise ValueError("fundamental_quality_source_mismatch")
+            elif binding.source_class == InputSourceClass.CANONICAL_FINANCIAL:
+                # Archive-only support may validate lineage, never primary use.
+                if ref.ref_id not in scoped_primary_refs:
+                    raise ValueError("fundamental_financial_consumer_membership_required")
+                fact = catalog.get(ref.ref_id)
+                if (fact is None or ref.financial_context is None
+                        or ref.source_ref != "stock.fact_catalog." + str(fact["fact_id"])):
+                    raise ValueError("fundamental_financial_source_required")
+                validate_canonical_time(fact, ref.model_dump(mode="json"), ticker=packet.ticker)
+                adapted = adapt_fact_catalog_financial_context(fact, financial_rows)
+                financial_identity, _ = canonical_identity_from_fact_catalog(fact)
+                if (adapted.context is None or ref.financial_context !=
+                        type(ref.financial_context).model_validate(adapted.context)
+                        or financial_identity is None
+                        or ref.financial_value != financial_identity.value):
+                    raise ValueError("fundamental_financial_projection_mismatch")
+                if (ref.financial_context.period.end > date.fromisoformat(packet.assessment_date)
+                        or date.fromisoformat(str(ref.as_of)[:10]) >
+                        date.fromisoformat(packet.assessment_date)):
+                    raise ValueError("fundamental_future_financial_source")
     families = _fact_family_by_id(stock)
     rows = tuple(
         OwnedEvidenceRef(
-            ref=ref,
+            ref=fundamental_ref_projection(ref),
             domain=evidence_domain(ref, fact_family_by_id=families),
         )
         for ref in packet.evidence
@@ -568,16 +767,17 @@ def build_owned_evidence_packet(
         or stock.get("sector_framework")
         or source_sufficiency.get("framework")
     )
-    return OwnedEvidencePacket(
+    return _seal_built_context(OwnedEvidencePacket(
         source_packet=packet,
         evidence=rows,
         sector_framework=normalize_sector_framework(framework),
-    )
+    ), scope="OWNED_EVIDENCE", _permit=_OWNED_BUILDER_PERMIT)
 
 
 def financial_decision_context_for_owned(
     owned: OwnedEvidencePacket,
 ) -> FinancialDecisionContext | None:
+    verify_legacy_context(owned, scope="OWNED_EVIDENCE", fixture_consumer="FINANCIAL_CONTEXT")
     return build_financial_decision_context(
         tuple(row.ref for row in owned.evidence if row.domain in CORE_DOMAINS),
         sector_framework=owned.sector_framework,
@@ -587,6 +787,7 @@ def financial_decision_context_for_owned(
 def stage_alias_catalogs(
     owned: OwnedEvidencePacket,
 ) -> tuple[EvidenceAliasCatalog, EvidenceAliasCatalog]:
+    verify_legacy_context(owned, scope="OWNED_EVIDENCE", fixture_consumer="REF_CATALOG")
     packet = owned.source_packet
     financial_context = financial_decision_context_for_owned(owned)
     selected_financial_refs = (
@@ -791,6 +992,7 @@ def validate_ownership(
     timing: PriceTimingCandidate,
     composed: ComposedDecision | None = None,
 ) -> OwnershipValidation:
+    verify_legacy_context(owned, scope="OWNED_EVIDENCE", fixture_consumer="CORE_TIMING_SEMANTICS")
     errors: list[str] = []
     domains = owned.domain_by_ref
     core_refs = _claim_refs(core.model_dump(mode="json"))
@@ -814,6 +1016,8 @@ def validate_ownership(
         errors.append("directional_core_contains_supply_ref")
     if unsupported_core:
         errors.append("directional_core_ref_outside_domain_registry")
+    if any(domains.get(ref) == EvidenceDomain.HISTORICAL_REPORTED_CONTEXT for ref in core_refs):
+        errors.append("historical_attribution_not_economic_core_authority")
     if unsupported_timing:
         errors.append("price_timing_ref_outside_domain_registry")
     if timing.core_fingerprint != core_fingerprint(core):
@@ -888,10 +1092,11 @@ def validate_directional_core_ownership(
     *,
     allowed_core_ref_ids: Sequence[str] | None = None,
 ) -> DirectionalCoreOwnershipValidation:
+    verify_legacy_context(owned, scope="OWNED_EVIDENCE", fixture_consumer="CORE_TIMING_SEMANTICS")
     errors: list[str] = []
     domains = owned.domain_by_ref
     core_refs = _claim_refs(core.model_dump(mode="json"))
-    allowed = set(allowed_core_ref_ids or owned.core_refs)
+    allowed = set(owned.core_refs if allowed_core_ref_ids is None else allowed_core_ref_ids)
     price_refs = sorted(
         ref
         for ref in core_refs
@@ -913,6 +1118,9 @@ def validate_directional_core_ownership(
         errors.append("directional_core_ref_not_supplied_to_stage")
     if unsupported_core:
         errors.append("directional_core_ref_outside_domain_registry")
+
+    if any(domains.get(ref) == EvidenceDomain.HISTORICAL_REPORTED_CONTEXT for ref in core_refs):
+        errors.append("historical_attribution_not_economic_core_authority")
 
     material_anchors = {
         ref
@@ -937,6 +1145,7 @@ def validate_directional_core_ownership(
 
 
 def technical_feature_inventory(owned: OwnedEvidencePacket) -> dict[str, object]:
+    verify_legacy_context(owned, scope="OWNED_EVIDENCE", fixture_consumer="CORE_TIMING_SEMANTICS")
     rows = [row for row in owned.evidence if row.domain in TIMING_DOMAINS]
     names = sorted({_feature_name(row.ref) for row in rows if _feature_name(row.ref)})
     def available(*tokens: str) -> bool:

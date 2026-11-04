@@ -139,11 +139,10 @@ class FreshRequestDescriptor(ContractModel):
         return 1 + self.transient_retry_max
 
 
-class ProviderPlan(ContractModel):
+class RequestPlan(ContractModel):
     generation_id: str = Field(pattern=ID)
     code_sha: str = Field(pattern=r'^[a-f0-9]{40}$')
     policy_schema_sha256: str = Field(pattern=HASH)
-    rev10_receipt_sha256: str = Field(pattern=HASH)
     frozen_at: datetime
     descriptors: tuple[FreshRequestDescriptor, ...]
     mandatory_roles: tuple[str, ...]
@@ -206,6 +205,10 @@ class ProviderPlan(ContractModel):
     def plan_sha256(self):
         return digest(self.model_dump(mode='json'))
 
+class ProviderPlan(RequestPlan):
+    """Historical proof authorization remains explicit and unchanged."""
+    rev10_receipt_sha256: str = Field(pattern=HASH)
+
     def admission(self, *, rev10_receipt, owners, config_identities, credential_presence):
         # Root receipt identity is checked, never recomputed with altered policies.
         issues = list(self.unresolved_roles)
@@ -234,6 +237,18 @@ class ProviderPlan(ContractModel):
             total_theoretical_max=sum(v['maximum_transport_attempts'] for v in budget.values()))
 
 
+def decode_request_plan(value):
+    """Closed version dispatch; never treat an arbitrary slot set as authority."""
+    kind = value.get("contract") if isinstance(value, dict) else getattr(value, "contract", None)
+    if kind == "production-source-request-plan-v1":
+        from app.services.production_source_plan import ProductionRequestPlan
+        return ProductionRequestPlan.model_validate(value)
+    if kind == "current-scoped-source-request-plan-v1":
+        from app.services.current_scoped_source_dispatch import CurrentScopedRequestPlan
+        return CurrentScopedRequestPlan.model_validate(value)
+    return ProviderPlan.model_validate(value)
+
+
 def kr_request_budget(*, global_cap, row_count, verified_minimum_rows_per_page,
                       consumer_complete, single_response=False):
     """An estimate or global capability is not a guaranteed consumer page bound."""
@@ -257,12 +272,17 @@ class SealedDispatcher:
 The caller must provide the exact sealed request and a registered source owner.
 The live source controller has no route here until the *whole* plan is admitted.
 """
+    credential_body_hash_evidence = True
+
     def __init__(self, *, plan, root, rev10_receipt, owners, config_identities, credential_presence, secrets=()):
         self.plan = ProviderPlan.model_validate(plan)
         self.admission = self.plan.admission(rev10_receipt=rev10_receipt,
             owners=owners, config_identities=config_identities, credential_presence=credential_presence)
         if not self.admission['live_dispatch_allowed']:
             raise ValueError('whole_provider_plan_not_admitted')
+        self._initialize(root=root, secrets=secrets)
+
+    def _initialize(self, *, root, secrets):
         self.root = Path(root)
         if self.root.exists() or any(p.is_symlink() for p in self.root.parents):
             raise ValueError('new_nonsymlink_dispatch_root_required')
@@ -364,7 +384,8 @@ The live source controller has no route here until the *whole* plan is admitted.
                     if credential_exchange:
                         # The actual credential body stays in memory. Its hash
                         # and a minimal sanitized receipt are the only artifacts.
-                        row['credential_body_sha256'] = sha256_bytes(raw)
+                        if self.credential_body_hash_evidence:
+                            row['credential_body_sha256'] = sha256_bytes(raw)
                         row['credential_body_exported'] = False
                         payload = response.json() if response.status_code == 200 else {}
                         token = payload.get('token') if isinstance(payload, dict) else None
@@ -513,7 +534,7 @@ def _binding_parent(root, plan, key, receipt_sha256):
 
 def consume_bound_result(*, root, plan, logical_id, receipt_sha256):
     """Resolve generation + exact descriptor + final receipt, never loose JSON."""
-    plan = ProviderPlan.model_validate(plan)
+    plan = decode_request_plan(plan)
     descriptor = next((d for d in plan.descriptors if d.logical_request_id == logical_id), None)
     if descriptor is None:
         raise ValueError('unplanned_consumer_request')
