@@ -1,0 +1,116 @@
+{
+  "contract": "rebuild-identities-only-v1",
+  "registration_authority": false,
+  "subjects": [
+    {
+      "ticker": "000660",
+      "market": "KR",
+      "exchange": "KRX"
+    },
+    {
+      "ticker": "003690",
+      "market": "KR",
+      "exchange": "KRX"
+    },
+    {
+      "ticker": "005490",
+      "market": "KR",
+      "exchange": "KRX"
+    },
+    {
+      "ticker": "005930",
+      "market": "KR",
+      "exchange": "KRX"
+    },
+    {
+      "ticker": "010120",
+      "market": "KR",
+      "exchange": "KRX"
+    },
+    {
+      "ticker": "012450",
+      "market": "KR",
+      "exchange": "KRX"
+    },
+    {
+      "ticker": "047810",
+      "market": "KR",
+      "exchange": "KRX"
+    },
+    {
+      "ticker": "086280",
+      "market": "KR",
+      "exchange": "KRX"
+    },
+    {
+      "ticker": "CORZ",
+      "market": "US",
+      "exchange": "NASDAQ"
+    },
+    {
+      "ticker": "CPNG",
+      "market": "US",
+      "exchange": "NYSE"
+    },
+    {
+      "ticker": "CRCL",
+      "market": "US",
+      "exchange": "NYSE"
+    },
+    {
+      "ticker": "GOOGL",
+      "market": "US",
+      "exchange": "NASDAQ"
+    },
+    {
+      "ticker": "HUT",
+      "market": "US",
+      "exchange": "NASDAQ"
+    },
+    {
+      "ticker": "IBM",
+      "market": "US",
+      "exchange": "NYSE"
+    },
+    {
+      "ticker": "MU",
+      "market": "US",
+      "exchange": "NASDAQ"
+    },
+    {
+      "ticker": "RXRX",
+      "market": "US",
+      "exchange": "NASDAQ"
+    },
+    {
+      "ticker": "SKHY",
+      "market": "US",
+      "exchange": "NASDAQ"
+    },
+    {
+      "ticker": "SNDK",
+      "market": "US",
+      "exchange": "NASDAQ"
+    },
+    {
+      "ticker": "TSLA",
+      "market": "US",
+      "exchange": "NASDAQ"
+    },
+    {
+      "ticker": "TSM",
+      "market": "US",
+      "exchange": "NYSE"
+    },
+    {
+      "ticker": "WRD",
+      "market": "US",
+      "exchange": "NASDAQ"
+    },
+    {
+      "ticker": "WULF",
+      "market": "US",
+      "exchange": "NASDAQ"
+    }
+  ]
+}

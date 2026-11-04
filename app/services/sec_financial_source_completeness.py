@@ -79,7 +79,8 @@ def field_completeness(selection, documents, complete):
     value=dict(contract='fpi-metric-independent-completeness-v1', fields=rows,
         partial_field_consumption_allowed=(bool(states & {'QUALIFIED_CURRENT_PRIOR_PAIR'})
             and states <= {'QUALIFIED_CURRENT_PRIOR_PAIR','SOURCE_COMPLETE_NO_QUALIFIED_FIELD'}
-            and (len(states)==1 or complete['bounded_plan_complete'])),
+            and (len(states)==1 or complete['bounded_plan_complete'])
+            and complete.get('current_generation_eligible', True)),
         document_source_sha256=digest(documents))
     value['receipt_sha256']=digest(value)
     return value

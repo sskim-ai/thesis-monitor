@@ -19,7 +19,6 @@ from app.services.direction_timing_ownership_service import (
     TIMING_DOMAINS,
     EvidenceDomain,
     MonitoringTransitionSourceClass,
-    build_owned_evidence_packet,
     monitoring_transition_source_class,
     stage_alias_catalogs,
 )
@@ -33,6 +32,7 @@ from app.services.financial_framework_claim_service import (
 )
 from scripts import business_delta_alias_balance_confidence_m12z as delta
 from scripts import directional_core_price_timing_holdout as holdout
+from app.services.reviewed_fixture_authority import build_reviewed_packet_fixture as build_owned_evidence_packet
 
 
 def _ref(

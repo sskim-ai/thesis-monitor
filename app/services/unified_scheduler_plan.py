@@ -14,11 +14,13 @@ RETIRED_AGENTS = (
 )
 
 
-def migration_plan(operating: Path, python: Path, *, host_timezone: str) -> dict:
+def migration_plan(operating: Path, python: Path, *, host_timezone: str, runtime_version: int = 1) -> dict:
     if host_timezone != "Asia/Seoul":
         raise ValueError("launchd_schedule_requires_verified_kst_host")
+    if runtime_version not in {1, 2}:
+        raise ValueError("unsupported_scheduler_runtime_version")
     agents = []
-    for market, hour, minute in (("us", 8, 10), ("kr", 16, 0)):
+    for market, hour, minute in (("us", 8, 10), ("kr", 16, 10 if runtime_version == 2 else 0)):
         label = "com.seungsoo.thesis-monitor.unified-" + market
         agents.append({
             "Label": label, "Disabled": True,
@@ -28,7 +30,7 @@ def migration_plan(operating: Path, python: Path, *, host_timezone: str) -> dict
             "StandardOutPath": str(operating / "logs" / (label + ".out.log")),
             "StandardErrorPath": str(operating / "logs" / (label + ".err.log")),
         })
-    return {"contract": "unified-scheduler-migration-plan-v1", "status": "NOT_APPLIED",
+    return {"contract": f"unified-scheduler-migration-plan-v{runtime_version}", "status": "NOT_APPLIED",
             "activation_allowed": False, "disable_app_automations": list(RETIRED_AUTOMATIONS),
             "bootout_and_disable_launch_agents": list(RETIRED_AGENTS), "new_agents": agents,
             "preserve": ["api_service", "onboarding_reconciler", "krx_telemetry", "night_publication_observer"],

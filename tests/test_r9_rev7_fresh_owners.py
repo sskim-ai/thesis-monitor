@@ -126,6 +126,9 @@ def test_raw_current_financial_to_quality_valuation_and_existing_stock(tmp_path,
                   directory=tmp_path, receipts=receipts))
     result = assemble_fresh_stock(**inputs)
     assert result['status'] == 'PASS', result['mandatory_missing']
+    assert result['input_hashes']['local'] == digest(source['local_seed'])
+    assert all(row['input_hashes']['local'] == digest(source['local_seed'])
+               for row in result['evidence_reference_graph'].values())
     assert result == assemble_fresh_stock(**inputs)
     assert result['quality_view']['receipt']['source_generation_id'] == source['plan'].run_id
     assert result['quality_view']['receipt']['state'] == 'verified_usable'
@@ -134,6 +137,10 @@ def test_raw_current_financial_to_quality_valuation_and_existing_stock(tmp_path,
     assert len(result['comparative_fact_refs']) == 2
     assert result['packet']['source_time_domains']['scope'] == 'FRESH_CURRENT_RUN'
     assert result['complete_source_adapter_qualified'] is False
+    altered_technical = deepcopy(source)
+    altered_technical['expected_hashes']['local'] = '0' * 64
+    with pytest.raises(ValueError, match='frozen_input_hash_mismatch'):
+        assemble_fresh_stock(**{**inputs, 'technical_inputs': altered_technical})
     from app.services import bounded_financial_stock_owner as owner
     assemble = owner.assemble
     def denied(**kwargs):

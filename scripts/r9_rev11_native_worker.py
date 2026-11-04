@@ -20,7 +20,7 @@ from scripts import unified_stock_source_worker as stock_worker
 from app.services.native_completed_market import select_completed_daily_rows
 
 
-def main():
+def main(*, test_bootstrap=None):
     p = argparse.ArgumentParser()
     p.add_argument('--owner-root', type=Path, required=True)
     p.add_argument('--input', type=Path, required=True)
@@ -31,19 +31,39 @@ def main():
     if hashlib.sha256(raw).hexdigest() != args.sha256:
         raise ValueError('native_input_hash_mismatch')
     frozen = json.loads(raw)
+    owner_contract = frozen.get('native_owner', {})
+    if test_bootstrap is None and (
+        frozen.get('execution_scope') == 'TEST_ONLY'
+        or frozen.get('non_promotable') is True
+        or str(frozen.get('generation_id', '')).startswith('TEST_ONLY_SYNTHETIC-')
+        or owner_contract.get('contract') is not None
+        or owner_contract.get('execution_scope') == 'TEST_ONLY'
+        or owner_contract.get('non_promotable') is True
+    ):
+        raise ValueError('native_test_bootstrap_capability_required')
     def no_network(*args, **kwargs):
         raise ValueError('native_direct_network_denied')
     socket.socket.connect = socket.socket.connect_ex = socket.getaddrinfo = no_network
     for key in list(sys.modules):
         if key == 'app' or key.startswith('app.'):
             del sys.modules[key]
-    sys.path.insert(0, str(args.owner_root))
+    if test_bootstrap is None:
+        sys.path.insert(0, str(args.owner_root))
+    else:
+        # A live, test-controller capability installs the admitted import closure.
+        # There is deliberately no CLI/environment switch for this authority.
+        test_bootstrap.bind(args, frozen)
     from app.config import Settings
     from app.providers import kiwoom as owner
     from app.services.ohlcv_service import OhlcvService
     from app.services.symbol_resolver import SymbolResolver
-    settings = Settings(_env_file=args.owner_root / '.env')
-    if stock_worker.owner_configuration(args.owner_root, settings) != frozen['native_owner']:
+    if test_bootstrap is None:
+        settings = Settings(_env_file=args.owner_root / '.env')
+        configuration = stock_worker.owner_configuration(args.owner_root, settings)
+    else:
+        settings = test_bootstrap.settings(Settings)
+        configuration = test_bootstrap.owner_configuration(settings)
+    if configuration != frozen['native_owner']:
         raise ValueError('native_owner_configuration_drift')
     output = sys.stdout
     def emit(value):

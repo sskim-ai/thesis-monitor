@@ -29,12 +29,16 @@ class PlainText(HTMLParser):
         self.parts.append(data)
 
 
-def classify_document(raw, *, url, filing, plan, context_documents=()):
+def classify_document(raw, *, url, filing, plan, context_documents=(), quarter_period_policy=None):
     identity = sec_document_identity(url, plan, filing)
     html = raw.decode('utf-8', errors='replace')
     occurrences = parse_document(html, issuer_cik=plan['issuer'],
         accession=filing['accessionNumber'], document_type=filing['form'],
-        filing_date=filing['filingDate'], source_url=identity, raw_payload=raw)
+        filing_date=filing['filingDate'], source_url=identity, raw_payload=raw,
+        quarter_period_policy=quarter_period_policy)
+    from app.services.sec_reported_quarter_period import source_record
+    sources = source_record(raw, issuer_cik=plan['issuer'], accession=filing['accessionNumber'],
+        document_type=filing['form'], filing_date=filing['filingDate'], source_url=identity) if quarter_period_policy else None
     inline = None
     conflicts = []
     if plan.get('financial_owner_policy'):
@@ -67,7 +71,7 @@ def classify_document(raw, *, url, filing, plan, context_documents=()):
                 purpose, evidence = state, [match[0]]
                 break
     cutoff = date.fromisoformat(plan['cutoff'][:10])
-    valid = [o for o in occurrences if not occurrence_errors(o, cutoff)]
+    valid = [o for o in occurrences if not occurrence_errors(o, cutoff, source_documents=sources)]
     periods = sorted({(o['period_start'], o['period_end'], o['period_scope']) for o in valid})
     result = {'contract': CONTRACT, 'accession': filing['accessionNumber'],
         **({'filing_form': filing['form']} if plan.get('financial_owner_policy') else {}),
@@ -86,6 +90,12 @@ def classify_document(raw, *, url, filing, plan, context_documents=()):
                 r'|(?:consolidated|separate).*?statements? of|earnings release', text)))
         for period in result['economic_periods']:
             period['source'] = 'EXACT_INLINE_OR_STATEMENT_CONTEXT'
+    if any(o.get('period_source_proof') for o in valid):
+        for period in result['economic_periods']:
+            if any(o.get('period_source_proof') and o['period_start'] == period['start']
+                   and o['period_end'] == period['end'] for o in valid):
+                period['source'] = 'SOURCE_BOUND_CALENDAR_DERIVATION_NOT_EXPLICIT_REPORTED_START'
+        result['quarter_period_policy'] = quarter_period_policy
     result['receipt_sha256'] = digest(result)
     return result
 

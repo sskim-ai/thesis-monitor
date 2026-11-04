@@ -47,12 +47,53 @@ def reject_current_carryin(value):
 
 
 def validate_local_seed(seed):
-    if seed.get('contract') != 'unified-local-seed-projection-v1' or seed.get('denials'):
+    if seed.get('contract') != 'unified-local-seed-projection-v1':
         raise ValueError('fresh_run_static_seed_ineligible')
-    for role in seed['roles'].values():
+    if seed.get('denials'):
+        if any(d.get('reason') == 'first_eligible_cycle_to_session_authority_required'
+               for d in seed['denials'] if isinstance(d, dict)):
+            raise ValueError('first_eligible_cycle_to_session_authority_required')
+        raise ValueError('fresh_run_static_seed_ineligible')
+    from app.services.unified_class_c_owners import LOCAL_ROLES
+    roles = seed.get('roles')
+    if not isinstance(roles, dict) or set(roles) != set(LOCAL_ROLES):
+        raise ValueError('local_seed_required_roles_missing')
+    tables = {'universe': {'watchlistitem'}, 'security_identity': {'securitymaster'},
+              'stored_thesis_and_business_metadata': {'investmentthesis', 'company'}}
+    members, identities = {}, set()
+    for name, role in roles.items():
+        if (not isinstance(role, dict) or role.get('eligible') is not True
+                or role.get('provider') != 'canonical_local'
+                or not isinstance(role.get('records'), list) or not role['records']):
+            raise ValueError('local_seed_required_role_ineligible')
+        if role.get('version') != digest(role['records']):
+            raise ValueError('local_record_version_mismatch')
         for row in role['records']:
             if row['table'] not in STATIC_TABLES:
                 raise ValueError('mutable_table_in_static_seed')
+            if row['table'] not in tables[name]:
+                raise ValueError('local_seed_record_role_mismatch')
+            value = row['record']
+            key = (row['table'], row['record_id'])
+            ticker = value.get('ticker')
+            if (not ticker or not isinstance(ticker, str) or key in identities
+                    or str(value.get('id')) != row['record_id']):
+                raise ValueError('local_record_identity_mismatch')
+            identities.add(key)
+            selected = members.setdefault(row['table'], set())
+            if ticker in selected:
+                raise ValueError('local_seed_duplicate_subject_role')
+            selected.add(ticker)
+    universe = seed.get('universe', {})
+    subjects = universe.get('eligible_subjects', [])
+    selected = members.get('watchlistitem', set())
+    if (not subjects or len(subjects) != len(set(subjects)) or set(subjects) != selected
+            or members.get('securitymaster') != selected or members.get('investmentthesis') != selected
+            or not members.get('company', set()) <= selected
+            or universe.get('market') != seed.get('market')
+            or universe.get('session') != seed.get('session')
+            or datetime.fromisoformat(universe['cutoff']) != datetime.fromisoformat(seed['cutoff'])):
+        raise ValueError('local_seed_role_membership_mismatch')
     reject_current_carryin(seed)
 
 
@@ -118,7 +159,7 @@ def acquisition_plan(stock_plan, identities, *, kr_max_pages, exact_financial_ow
         macro_queries={'fred': {'series': list(FRED_SERIES), 'limit': 5, 'sort_order': 'desc',
                                'observation_end': stock.frozen_at.date().isoformat()},
                        'eia': {'series': list(EIA_SERIES), 'length': 1},
-                       'ecos': {'route': 'KeyStatisticList', 'start': 1, 'end': 100, 'period_field': 'TIME'}},
+                       'ecos': {'route': 'KeyStatisticList', 'start': 1, 'end': 100, 'period_field': 'CYCLE'}},
         optional_unavailable={name: {'status': 'OPTIONAL_UNAVAILABLE', 'value': None,
             'reason': 'NO_FRESH_QUALIFIED_OWNER_IN_THIS_PLAN'} for name in
             ('news_and_filing_events', 'earnings_calendar', 'us_exchange_breadth', 'forward_estimates')},

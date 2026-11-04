@@ -76,10 +76,10 @@ def _exact(document, expected):
     reject_downstream(document)
 
 
-def _local(document, *, market, session_key, cutoff, ticker, policy):
+def _local(document, *, market, session_key, cutoff, ticker, policy, cycle_owner=None, prospective_owner=None):
     for role in document["roles"]:
         projection = local_owner(role=role, market=market, session_key=session_key,
-            policy=policy).project_and_validate(json.dumps(document).encode(), cutoff)
+            policy=policy, cycle_owner=cycle_owner, prospective_owner=prospective_owner).project_and_validate(json.dumps(document).encode(), cutoff)
         if not projection.eligible:
             raise ValueError("mandatory_local_seed_ineligible:" + role)
     tables = {}
@@ -241,7 +241,8 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
                    financial_tuple_denial: bool = False,
                    fresh_financial_pending: bool = False,
                    completed_close_source: dict | None = None,
-                   completed_price_source: dict | None = None) -> dict:
+                   completed_price_source: dict | None = None, cycle_owner=None,
+                   prospective_owner=None, execution_purpose=None) -> dict:
     """No path lookup, providers, prior assessments or downstream model output."""
     for key, value in (("local", local_seed), ("financial", financial), ("components", components),
                        ("receipts", receipts), ("plan", plan.model_dump(mode="json"))):
@@ -273,8 +274,14 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     roles = {r.role: decode_owned_role(plan, r, receipts[r.role], artifact) for r in reads}
     cutoff = date.fromisoformat(session_key)
     params = dict(ticker=ticker, market=market, cutoff=cutoff, observed_at=plan.frozen_at.isoformat(), roles=roles)
+    if cycle_owner is not None:
+        from app.services.unified_cycle_owner import require_generation
+        require_generation(cycle_owner, plan.run_id)
+    if prospective_owner is not None:
+        from app.services.prospective_class_c_owner import require_generation
+        require_generation(prospective_owner, plan.run_id, purpose=execution_purpose)
     tables = _local(local_seed, market=market, session_key=session_key, cutoff=plan.frozen_at,
-        ticker=ticker, policy=policy)
+        ticker=ticker, policy=policy, cycle_owner=cycle_owner, prospective_owner=prospective_owner)
     security, watch, thesis = (tables[k] for k in ("securitymaster", "watchlistitem", "investmentthesis"))
     if security["canonical_security_id"] != reads[0].canonical_security_id:
         raise ValueError("stock_local_security_receipt_mismatch")

@@ -46,7 +46,7 @@ from app.services.direction_timing_ownership_service import (
     DirectionalCoreBatch,
     DirectionalCoreCandidate,
     OwnedEvidencePacket,
-    build_owned_evidence_packet,
+    build_owned_evidence_packet as build_owned_evidence_packet,
     canonical_sha256,
     financial_decision_context_for_owned,
     stage_alias_catalogs,
@@ -728,7 +728,7 @@ def fictional_inputs(
     catalogs: dict[str, EvidenceAliasCatalog] = {}
     contexts: dict[str, dict[str, object]] = {}
     for ticker in TICKERS:
-        refs, framework = _case_refs(ticker)
+        refs, _framework = _case_refs(ticker)
         packet = DecisionEvidencePacket(
             packet_id=generation_id,
             ticker=ticker,
@@ -747,18 +747,13 @@ def fictional_inputs(
                 [ref.model_dump(mode="json") for ref in refs]
             ),
         )
-        stock = {
-            "analysis_framework": framework,
-            "fact_catalog": [
-                {
-                    "fact_id": ref.source_ref.removeprefix("stock.fact_catalog."),
-                    "evidence_family": _family_for_ref(ref),
-                }
-                for ref in refs
-                if ref.source_ref.startswith("stock.fact_catalog.")
-            ],
-        }
-        item = build_owned_evidence_packet(packet, stock=stock)
+        from app.services.reviewed_fixture_authority import build_reviewed_owned_fixture
+        from app.services.directional_financial_context_service import normalize_sector_framework
+
+        item = build_reviewed_owned_fixture("financial:" + ticker, generation=generation_id)
+        # Decimal | str round-trips as str; compare the frozen wire contract.
+        if item.source_packet.model_dump(mode="json") != packet.model_dump(mode="json") or item.sector_framework != normalize_sector_framework(_framework):
+            raise ValueError("reviewed_fixture_original_producer_drift")
         core_catalog, _ = stage_alias_catalogs(item)
         packets[ticker] = packet
         owned[ticker] = item

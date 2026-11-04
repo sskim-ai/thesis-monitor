@@ -1,4 +1,5 @@
 import argparse
+from app.services.runtime_maintenance import assert_operation_allowed
 import asyncio
 import json
 from dataclasses import dataclass
@@ -204,6 +205,7 @@ async def _run_market_job(
     as_of: datetime | None = None,
 ) -> dict[str, object]:
     current_as_of = as_of
+    assert_operation_allowed()
     producer_target: XkrxRoleTarget | None = None
     if market_scope == "all":
         current_as_of = current_as_of or datetime.now(KST)
@@ -443,6 +445,7 @@ async def _run_market_job(
 
 
 async def main() -> None:
+    assert_operation_allowed()
     parser = argparse.ArgumentParser(description="Run market-scoped daily thesis monitoring.")
     parser.add_argument("--market", choices=("us", "kr", "all"), default="all")
     args = parser.parse_args()

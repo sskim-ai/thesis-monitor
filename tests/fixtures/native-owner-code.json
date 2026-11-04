@@ -1,0 +1,9 @@
+{
+  "contract": "exact-native-owner-code-fixture-v1",
+  "source_head": "f19c54b8299031caf473737e044f0a2b77db5671",
+  "source_tree": "ad8a06ea5a2b77a9786f0aa32c50cbeee99a5331",
+  "archive_sha256": "140eb04e7140ce4333f370bdc7714de569a83a81ac82a3e2a75edbd04a6b93e6",
+  "paths": ["app", "config/sector_map.csv", "pyproject.toml", ".gitignore"],
+  "purpose": "Exact tracked native implementation dependency; no raw source/model results or credentials.",
+  "temporary_git_identity": "Synthetic checkout metadata only; implementation bytes originate from source_head."
+}

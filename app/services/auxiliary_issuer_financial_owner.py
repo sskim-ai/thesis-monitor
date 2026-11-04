@@ -25,10 +25,17 @@ class AuxiliaryIssuerDependency(ContractModel):
 
 def assemble_issuer(*, plan, acquisition, directory, receipts, dependency,
                     target_plan, field_semantics=True):
+    dep = AuxiliaryIssuerDependency.model_validate(dependency)
+    return _assemble(plan=plan, acquisition=acquisition, directory=directory,
+        receipts=receipts, dep=dep, target_plan=target_plan,
+        field_semantics=field_semantics)
+
+
+def _assemble(*, plan, acquisition, directory, receipts, dep,
+              target_plan, field_semantics=True):
     from app.services.bounded_financial_projection import project
     from app.services.bounded_financial_stock_owner import reported_comparisons
 
-    dep = AuxiliaryIssuerDependency.model_validate(dependency)
     cutoff = dep.cutoff
     if (cutoff.utcoffset() is None or plan['ticker'] != dep.auxiliary_issuer_security
             or target_plan['ticker'] != dep.primary_subject or plan['market'] != 'kr'

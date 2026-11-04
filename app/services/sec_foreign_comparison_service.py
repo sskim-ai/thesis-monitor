@@ -98,8 +98,18 @@ def period_from_headers(headers):
         else:
             match = re.search(r"(?:for the )?(three|six|nine|twelve|3|6|9|12) months ended "
                               r"([A-Za-z]+) (\d{1,2})(?:,)? (20\d{2})(?!\d)", text, re.I)
-            if match:
-                count, month, day, year = match.groups()
+            split = None
+            if not match:
+                fragments = set(clean(h) for h in headers)
+                dates = [m.groups() for h in fragments if (m := re.fullmatch(
+                    r"(?:for the )?period ended ([A-Za-z]+) (\d{1,2}),?", h, re.I))]
+                years = [h for h in fragments if re.fullmatch(r"20\d{2}", h)]
+                durations = [m[1] for h in fragments if (m := re.fullmatch(
+                    r"(three|six|nine|twelve|3|6|9|12) months", h, re.I))]
+                if len(dates) == len(years) == len(durations) == 1:
+                    split = (durations[0], *dates[0], years[0])
+            if match or split:
+                count, month, day, year = match.groups() if match else split
                 months = {"three": 3, "six": 6, "nine": 9, "twelve": 12}.get(count.lower()) or int(count)
                 end = datetime.strptime(f"{month} {day} {year}", "%B %d %Y").date()
                 # A calendar-month header ending mid-month does not prove start day.
@@ -108,7 +118,8 @@ def period_from_headers(headers):
                 else:
                     offset = end.year * 12 + end.month - months
                     start = date(offset // 12, offset % 12 + 1, 1)
-                    method = "explicit_calendar_month_duration_ending_month_end"
+                    method = ("explicit_calendar_month_duration_ending_month_end" if match
+                              else "explicit_same_column_split_duration_ending_month_end")
     except (ValueError, TypeError):
         start = end = None
     days = (end - start).days + 1 if start and end and start < end else None
@@ -144,7 +155,15 @@ def amount(text):
         return None
 
 
-def extract_occurrences(html, *, issuer_cik, accession, document_type, filing_date, source_url, payload_sha256):
+def extract_occurrences(html, *, issuer_cik, accession, document_type, filing_date, source_url, payload_sha256,
+                        quarter_period_policy=None):
+    quarter_document = None
+    if quarter_period_policy is not None:
+        from app.services.sec_reported_quarter_period import POLICY, QuarterDocument
+        if quarter_period_policy != POLICY:
+            raise ValueError('unsupported_same_document_quarter_policy')
+        if sha256(html.encode('utf-8')).hexdigest() == payload_sha256:
+            quarter_document = QuarterDocument(html)
     parser = StatementTables()
     parser.feed(html)
     boundaries = statement_boundaries(html)
@@ -183,6 +202,12 @@ def extract_occurrences(html, *, issuer_cik, accession, document_type, filing_da
                 if any("%" in t or re.search(r"\b(yoy|qoq)\b", t, re.I) for t in texts):
                     continue
                 period = period_from_headers(texts)
+                if quarter_document is not None and not period['period_start']:
+                    column_headers = [' '.join(dict.fromkeys(h[j]['text'] for h in headers
+                        if j < len(h) and h[j] and h[j]['text'])) for j in range(len(row))]
+                    derived = quarter_document.resolve(ownership, texts, column_headers)
+                    if derived:
+                        period = derived
                 source_cell = dict(table=table["index"], row=ri, cell=cell["cell_index"], column=ci,
                                    html_id=cell["html_id"], row_label=label["text"], value_text=cell["text"],
                                    headers=[{k: c[k] for k in ("row_index", "column_index", "cell_index", "text")} for c in owners])
@@ -203,7 +228,7 @@ def extract_occurrences(html, *, issuer_cik, accession, document_type, filing_da
     return list({o["occurrence_id"]: o for o in result}.values())
 
 
-def occurrence_errors(o, cutoff):
+def occurrence_errors(o, cutoff, *, source_documents=None):
     if o.get('contract') == 'sec-primary-inline-financial-v1':
         from app.services.sec_primary_inline_financial import errors
         return errors(o, cutoff)
@@ -218,6 +243,20 @@ def occurrence_errors(o, cutoff):
                 or semantic(cell["row_label"]) != (o["field"], o["semantic"])):
             errors.append("foreign_cell_identity_mismatch")
         period = period_from_headers(list(dict.fromkeys(c["text"] for c in cell["headers"])))
+        if o.get('period_source_proof') or o.get('period_resolution_method') == 'source_bound_calendar_quarter_derivation_v1':
+            from app.services.sec_reported_quarter_period import POLICY
+            document = (source_documents or {}).get(payload)
+            replay = []
+            if isinstance(document, dict) and isinstance(document.get('raw_utf8'), str):
+                raw_text = document['raw_utf8']
+                if sha256(raw_text.encode('utf-8')).hexdigest() == payload:
+                    replay = extract_occurrences(raw_text, payload_sha256=payload, quarter_period_policy=POLICY,
+                        **{k: document[k] for k in ('issuer_cik','accession','document_type','filing_date','source_url')})
+            reproduced = next((r for r in replay if r == o), None)
+            if reproduced is None:
+                errors.append('source_bound_quarter_raw_replay_required')
+            else:
+                period = {k: reproduced[k] for k in period}
         if any(o.get(k) != v for k, v in period.items()) or not period["period_start"]:
             errors.append("exact_period_context_unresolved")
         start, end, filed = [date.fromisoformat(o[k]) for k in ("period_start", "period_end", "filing_date")]
@@ -322,7 +361,8 @@ def authoritative_prior(current, pool, cutoff):
                 denial_reasons=["ambiguous_prior_document_authority"] if invalid else [])
 
 
-def foreign_comparison_quality(*, formal, candidates, ticker, cutoff, allow_reported_half_year=False, allow_inline_annual=False):
+def foreign_comparison_quality(*, formal, candidates, ticker, cutoff, allow_reported_half_year=False, allow_inline_annual=False,
+                               source_documents=None):
     """Recompute exact comparisons, preferring same-document then latest comparable filing."""
     fields, comparisons, attempts, version_receipts = {}, [], [], []
     own = occurrences(formal)
@@ -343,7 +383,7 @@ def foreign_comparison_quality(*, formal, candidates, ticker, cutoff, allow_repo
         for a in current:
             authority = authoritative_prior(a, pool, cutoff)
             version_receipts.append(dict(metric=metric, current_occurrence_id=a["occurrence_id"], **authority))
-            current_errors = occurrence_errors(a, cutoff)
+            current_errors = occurrence_errors(a, cutoff, source_documents=source_documents)
             if (formal.ticker != ticker or formal.provider != PROVIDER or a["value"] != getattr(formal, metric)
                     or a["currency"] != formal.currency or a["filing_date"] != str(formal.filing_date)
                     or a["source_url"] != formal.source
@@ -357,7 +397,7 @@ def foreign_comparison_quality(*, formal, candidates, ticker, cutoff, allow_repo
             if _duplicate_conflict(same_document_prior):
                 current_errors.append("authoritative_prior_field_conflict")
             for b in prior_pool:
-                denials = errors + current_errors + occurrence_errors(b, cutoff)
+                denials = errors + current_errors + occurrence_errors(b, cutoff, source_documents=source_documents)
                 denials += authority["denial_reasons"]
                 if b["accession"] != authority["accession"]:
                     denials.append("non_authoritative_prior_document")
@@ -409,7 +449,7 @@ def foreign_comparison_quality(*, formal, candidates, ticker, cutoff, allow_repo
     result = dict(contract=CONTRACT, ticker=ticker, cutoff=cutoff.isoformat(), formal_receipt=formal.source_filing_id,
         fields=fields, comparative_observations=comparisons, comparison_attempts=attempts,
         prior_version_authority=version_receipts,
-        occurrence_validation=[dict(occurrence_id=o["occurrence_id"], denial_reasons=occurrence_errors(o, cutoff)) for o in pool],
+        occurrence_validation=[dict(occurrence_id=o["occurrence_id"], denial_reasons=occurrence_errors(o, cutoff, source_documents=source_documents)) for o in pool],
         all_occurrences=pool, status="PASS" if comparisons else "FAIL", quality_reason_codes=[],
         source_use_eligibility=["CONTEXT", "BUSINESS_CONTEXT", "PASS_A_ARCHETYPE", "OVERALL_DIRECTION"] if comparisons else [],
         limitations=["No recurring-profit, security valuation or per-share authority.",
@@ -422,12 +462,12 @@ def foreign_comparison_quality(*, formal, candidates, ticker, cutoff, allow_repo
     return result
 
 
-def current_projection(occurrence_list, *, required_role='single-quarter', inline_currency_pair=False):
+def current_projection(occurrence_list, *, required_role='single-quarter', inline_currency_pair=False, source_documents=None):
     """Select the latest explicitly reported discrete statement, never the largest amount."""
     if required_role not in {'single-quarter', 'half-year', 'annual'}:
         raise ValueError('unsupported_reported_period_role')
     exact = [o for o in occurrence_list if o["period_scope"] == required_role
-             and not occurrence_errors(o, date.max)]
+             and not occurrence_errors(o, date.max, source_documents=source_documents)]
     if inline_currency_pair:
         from app.services.sec_primary_inline_financial import comparable_calendar_period
         paired = [a for a in exact if any(comparable_calendar_period(a, b)
@@ -451,7 +491,8 @@ def current_projection(occurrence_list, *, required_role='single-quarter', inlin
                 foreign_business_occurrences=occurrence_list)
 
 
-def parse_document(html, *, issuer_cik, accession, document_type, filing_date, source_url, raw_payload):
+def parse_document(html, *, issuer_cik, accession, document_type, filing_date, source_url, raw_payload,
+                   quarter_period_policy=None):
     return extract_occurrences(html, issuer_cik=issuer_cik, accession=accession,
         document_type=document_type, filing_date=filing_date, source_url=source_url,
-        payload_sha256=sha256(raw_payload).hexdigest())
+        payload_sha256=sha256(raw_payload).hexdigest(), quarter_period_policy=quarter_period_policy)

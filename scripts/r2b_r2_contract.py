@@ -13,7 +13,8 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.services.canonical_evidence_time_service import validate_canonical_time
-from app.services.direction_timing_ownership_service import OwnedEvidencePacket
+from app.services.direction_timing_ownership_service import OwnedEvidencePacket, verified_owned_packet_view
+from app.services.owned_evidence_derivative import restrict_owned_evidence
 from app.services.unified_snapshot_contract import digest
 from scripts import m12ds_r4_r4_policy as policy
 from scripts import m12ds_r4_r4_schemas as schemas
@@ -23,7 +24,7 @@ from scripts.m12da_source_use_contract import (
     freeze_source_use_binding, freeze_source_use_input_expectation,
     validate_source_use_current_input,
 )
-from scripts.r2b_r1_offline_closure import reproject_time
+from app.services.canonical_monitoring_time import reproject_time
 from scripts.financial_direction_eligibility import DENIAL, is_financial, narrow_financial_authority
 
 CONTRACT = "r2b-whole-decision-limitation-v1"
@@ -117,6 +118,7 @@ def _filter_denied_rule_view(stock):
 
 def source_view(stock, authority, local, *, cutoff):
     view, times, changes = reproject_time(stock)
+    parent = verified_owned_packet_view(view)
     strategy = versioned_rule_binding(stock, local, cutoff=cutoff)
     denied = set()
     if strategy["status"] == "DENIED":
@@ -145,6 +147,14 @@ def source_view(stock, authority, local, *, cutoff):
             except ValueError as exc:
                 errors.append({"ref_id": ref, "error": str(exc)})
     _require(not errors, "unclassified_model_visible_time:" + json.dumps(errors))
+    # Filtering is a backend-issued restriction, never a rehash of caller rows.
+    if denied:
+        child = restrict_owned_evidence(parent,
+            retained_refs=tuple(row["ref_id"] for row in kept), purpose="DENIED_USE_FILTER")
+        _require(child.source_packet.model_dump(mode="json") == view["evidence_packet"],
+                 "source_filter_non_subset_mutation")
+        view["ownership"] = child.model_dump(mode="json")
+    verified_owned_packet_view(view)
     receipt = {"contract": CONTRACT, "ticker": stock["ticker"],
         "raw_source_sha256": digest(stock), "raw_authority_sha256": digest(authority),
         "derived_evidence_sha256": digest(view["evidence_packet"]),
@@ -234,6 +244,69 @@ def decision_mode(stock, authority, observations):
     return "UNKNOWN_LIMIT"
 
 
+def _unadmitted_financial_recovery(stock, authority):
+    """Describe a sealed admission gap, never qualify its financial contents."""
+    from app.services.direction_timing_ownership_service import (
+        EvidenceDomain, verified_owned_packet_view,
+    )
+    from app.services.fundamental_input_policy import InputSourceClass
+
+    if "ownership" not in stock or "evidence_packet" not in stock:
+        return {}
+    owned = verified_owned_packet_view(stock)
+    records = authority.get("authority_records") or []
+    _require(stock.get("contract") == "fresh-financial-stock-owner-v1"
+             and authority.get("status") == "PASS" and not authority.get("authority_errors")
+             and authority.get("ticker") == stock["ticker"]
+             and stock.get("fresh_run_id")
+             and authority.get("source_generation_id") == stock["fresh_run_id"]
+             and records and all(r.get("denial_reasons") for r in records)
+             and not any({"OVERALL_DIRECTION", "HOLDER_STANCE"}
+                         & (set(r["allowed_uses"]) - set(r["prohibited_uses"]))
+                         for r in records), "unknown_recovery_requires_denied_same_subject_source")
+    packet = stock["packet"]
+    _require(packet.get("packet_id") == owned.source_packet.packet_id
+             == stock["fresh_run_id"] + ":" + owned.source_packet.market
+             and packet.get("market") == owned.source_packet.market
+             and str(packet.get("assessment_date") or packet.get("generated_at") or "")[:10]
+             == owned.source_packet.assessment_date,
+             "unknown_recovery_source_packet_mismatch")
+    subjects = [row for row in packet["stocks"] if row["ticker"] == stock["ticker"]]
+    _require(len(subjects) == 1, "unknown_recovery_source_subject_mismatch")
+    result = {}
+    for row in owned.evidence:
+        ref, binding = row.ref, row.ref.source_use
+        if (row.domain != EvidenceDomain.AUDIT_TELEMETRY or binding is None
+                or binding.source_class != InputSourceClass.CANONICAL_COMPATIBILITY
+                or binding.core_current_fact or binding.prospective_only
+                or not ref.ref_id.startswith(("canonical:earnings:", "canonical:earnings_comparison:"))):
+            continue
+        facts = [fact for fact in subjects[0]["fact_catalog"]
+                 if "canonical:" + str(fact.get("fact_id")) == ref.ref_id]
+        _require(len(facts) == 1 and facts[0].get("fact_type") in {"earnings", "earnings_comparison"}
+                 and binding.security_id == stock["ticker"] and binding.source_ref == ref.source_ref
+                 and ref.source_time is not None, "unknown_recovery_exact_financial_source_required")
+        validate_canonical_time(facts[0], ref.model_dump(mode="json"), ticker=stock["ticker"])
+        _require(ref.source_time.projection_at == str(packet.get("generated_at")
+                 or owned.source_packet.assessment_date)
+                 and datetime.fromisoformat(ref.as_of).date()
+                 <= datetime.fromisoformat(owned.source_packet.assessment_date).date(),
+                 "unknown_recovery_source_time_mismatch")
+        # The live seal binds this denial to an exact projection, not an economic grant.
+        recovery = {"kind": "QUALIFIED_FINANCIAL_LINEAGE", "state": "DENIED",
+                    "source_ref": ref.ref_id, "canonical_source_ref": ref.source_ref,
+                    "source_denial": [binding.source_class.value],
+                    "recovery_primitive": "SOURCE_OWNER_FIELD_AND_CONSUMER_USE_RECEIPT",
+                    "source_fact_sha256": ref.source_time.canonical_fact_sha256,
+                    "source_metadata_sha256": digest(ref.model_dump(mode="json")),
+                    "owned_packet_sha256": digest(owned.model_dump(mode="json")),
+                    "source_generation_id": stock["fresh_run_id"],
+                    "authority_sha256": digest(authority),
+                    "allowed_uses": [], "directional_use_allowed": False}
+        result["source-recovery:" + digest({"ticker": stock["ticker"], **recovery})] = recovery
+    return result
+
+
 def limitation_catalog(stock, authority):
     denials = stock["financial_state"].get("denials") or []
     values = denials if isinstance(denials, list) else [{"field": k, "reason": v} for k, v in denials.items()]
@@ -251,6 +324,8 @@ def limitation_catalog(stock, authority):
             key = "source-recovery:" + digest({"ticker": stock["ticker"], "ref": row["ref_id"]})
             result[key] = {"kind": "VERIFIED_BUSINESS_EVENT", "source_ref": row["ref_id"],
                            "source_denial": row["denial_reasons"], "authority_sha256": digest(authority)}
+    if not result:
+        result = _unadmitted_financial_recovery(stock, authority)
     _require(result, "unknown_limit_source_recovery_missing")
     return result
 

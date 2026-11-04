@@ -8,7 +8,7 @@ metric lineage/consumption eligibility.
 from __future__ import annotations
 
 from dataclasses import asdict
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 import hashlib
 from pathlib import Path
 
@@ -21,9 +21,14 @@ from app.models.financial import FinancialSnapshot
 from app.models.security import SecurityMaster
 from app.models.thesis import InvestmentThesis
 from app.services.financial_freshness_service import evaluate_financial_freshness_records
+from app.services.market_session import (
+    KR_EXCHANGES, US_EXCHANGES, NEW_YORK, SEOUL, is_exchange_session_date,
+    _exchange_session_close,
+)
 from app.services.onboarding_readiness_service import (
     _security_readiness, production_universe_snapshot,
 )
+from app.services.security_identity_service import IDENTITY_CONFLICT, resolve_security_identity
 from app.services.unified_snapshot_contract import digest
 from app.services.unified_source_policy import UnifiedSourcePolicy
 
@@ -52,13 +57,18 @@ def _records(rows: list, *, fields: set[str] | None = None) -> list[dict]:
 
 
 def project_local_seed(session: Session, *, market: str, session_key: str,
-                       cutoff: datetime, policy: UnifiedSourcePolicy) -> dict:
+                       cutoff: datetime, policy: UnifiedSourcePolicy, cycle_owner=None) -> dict:
     """Canonical universe/security/thesis owner reads; no ensure/refresh/write."""
     if cutoff.utcoffset() is None or market not in {"us", "kr"}:
         raise ValueError("explicit_market_cutoff_required")
     if session.new or session.dirty or session.deleted:
         raise ValueError("clean_read_session_required")
     policy.require("canonical_local")
+    target = date.fromisoformat(session_key)
+    calendar = "XNYS" if market == "us" else "XKRX"
+    close = _exchange_session_close(calendar, target, NEW_YORK if market == "us" else SEOUL)
+    if not is_exchange_session_date(calendar, target) or close is None or close > cutoff:
+        raise ValueError("local_session_eligibility_unproven")
     with session.no_autoflush:
         universe = production_universe_snapshot(session, market, cutoff=cutoff,
                                                 session_key=session_key)
@@ -68,12 +78,29 @@ def project_local_seed(session: Session, *, market: str, session_key: str,
             "activated_at", "first_eligible_session", "created_at"})
         identity_rows, theses, companies, denials = [], [], [], []
         for item in items:
+            # Existing writers also use KST monitoring-cycle dates here. A
+            # source-owned cycle/session mapping is required before promotion.
+            if item.first_eligible_session is not None:
+                denials.append({"role": "universe", "ticker": item.ticker,
+                                "reason": "first_eligible_cycle_to_session_authority_required"})
             if not _at_or_before(item.created_at, cutoff):
                 denials.append({"role": "universe", "ticker": item.ticker,
                                 "reason": "universe_record_after_cutoff"})
             security = session.exec(select(SecurityMaster).where(
                 SecurityMaster.ticker == item.ticker)).first()
             valid, _safe, details = _security_readiness(item, security, market)
+            # Country semantics vary by producer; do not infer ADR domicile.
+            venues = US_EXCHANGES if market == "us" else KR_EXCHANGES
+            exchanges = [" ".join(str(v or "").upper().replace("_", " ").split())
+                         for v in (item.exchange, security.exchange if security else None)]
+            valid = valid and all(v in venues for v in exchanges)
+            aliases = {"NYSEARCA": "NYSE ARCA", "ARCA": "NYSE ARCA"}
+            canonical = {aliases.get(v, v) for v in exchanges}
+            compatible = len(canonical) == 1 or (market == "kr" and "KRX" in canonical)
+            valid = valid and compatible
+            identity = resolve_security_identity(company_name=item.company_name, security_master=security)
+            valid = valid and identity['identity_state'] != IDENTITY_CONFLICT
+            details['identity_conflict_reasons'] = identity['conflict_reasons']
             if security is None or not valid or not _at_or_before(security.updated_at, cutoff):
                 denials.append({"role": "security_identity", "ticker": item.ticker,
                                 "reason": "identity_ineligible_at_cutoff", "details": details})
@@ -98,7 +125,7 @@ def project_local_seed(session: Session, *, market: str, session_key: str,
                   "stored_thesis_and_business_metadata": _records([*theses, *companies])}
     owners = _fingerprints("app/services/onboarding_readiness_service.py",
                            "app/services/daily_monitor_service.py", "app/models/security.py")
-    return {"contract": "unified-local-seed-projection-v1", "market": market,
+    result = {"contract": "unified-local-seed-projection-v1", "market": market,
         "session": session_key, "cutoff": cutoff.isoformat(), "owner_fingerprints": owners,
         "universe": universe.to_dict(), "denials": denials,
         "roles": {role: {"records": records, "version": digest(records),
@@ -107,6 +134,10 @@ def project_local_seed(session: Session, *, market: str, session_key: str,
             "eligible": bool(items) and not any(d["role"] == role for d in denials)}
             for role, records in values.items()},
         "production_seed_qualified": False}
+    if cycle_owner is not None:
+        from app.services.unified_cycle_owner import apply_cycle_owner
+        return apply_cycle_owner(result, original=result, owner=cycle_owner)
+    return result
 
 
 def project_financial_freshness(session: Session, *, ticker: str, cutoff: datetime,

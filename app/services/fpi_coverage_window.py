@@ -14,6 +14,8 @@ CONTRACT = 'sec-fpi-second-final-coverage-window-v1'
 
 
 def make_window_plan(parent, discovery_raw, captured_documents, first, exhibits, *, window_number=2):
+    if parent.get('fpi_candidate_contract'):
+        raise ValueError('nominated_fpi_plan_has_no_additional_coverage_window')
     if window_number != SEC_FPI_MAX_COVERAGE_WINDOWS or parent['provider'] != 'sec_edgar' or '6-K' not in parent['forms']:
         raise ValueError('only_second_fpi_window_authorized')
     inventory = candidate_inventory(json.loads(discovery_raw), parent)

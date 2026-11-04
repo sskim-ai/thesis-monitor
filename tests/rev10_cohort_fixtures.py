@@ -65,6 +65,9 @@ def stocks(root):
                     policy=POLICY_ALL, current_only=t in {'RXRX', 'WULF'}, conflict=t == 'CPNG',
                     denied_quality=t == '047810', insurance=t == '003690', empty_financial=t == 'SKHY')
             inputs[t]['source_window'] = window
+            # The original owner must issue typed business use; raw facts alone
+            # remain compatibility context, not directional observations.
+            inputs[t]['reported_comparison_business'] = True
     for t, persisted in [('CORZ', False), ('WULF', True)]:
         event_inputs(root / (t + '-event'), inputs=inputs[t], persisted=persisted)
     from app.services.fresh_financial_stock_owner import fresh_stock_baseline

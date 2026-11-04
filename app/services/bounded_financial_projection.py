@@ -5,6 +5,7 @@ requires an independently eligible comparable pair, never only a current amount.
 """
 from __future__ import annotations
 
+from copy import deepcopy
 from datetime import date, datetime
 from dataclasses import asdict, replace
 import json
@@ -35,6 +36,9 @@ from app.services.bounded_fpi_followup import verify_followup
 
 METRICS = ("revenue", "operating_income", "net_income")
 CONTRACT = "bounded-official-financial-projection-v1"
+# Process-local producer provenance, rebuilt by original sealed-input replay.
+# A public projection/hash cannot populate this registry.
+_ORIGINAL_PROJECT_REPLAYS = {}
 # Exact standard concept extension on the opt-in reported-field route only.
 # Existing occurrence selection, lineage and quality owners remain unchanged.
 REPORTED_FIELD_SPECS = {**FIELD_SPECS, 'revenue': replace(FIELD_SPECS['revenue'],
@@ -62,7 +66,7 @@ def paired(current, prior):
         return False
 
 
-def field_record(plan, *, metric, value, lineage, quality, raw_sha, role):
+def field_record(plan, *, metric, value, lineage, quality, raw_sha, role, allow_instant=False):
     value_ok = isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
     required = ("source_document_id", "source_document_type", "filing_date", "occurrence_id",
                 "semantic", "period_start", "period_end", "period_role", "statement_basis", "currency", "unit", "unit_scale")
@@ -71,7 +75,8 @@ def field_record(plan, *, metric, value, lineage, quality, raw_sha, role):
         errors.append("LINEAGE_UNRESOLVED")
     try:
         start, end, filed = [date.fromisoformat(lineage[k]) for k in ("period_start", "period_end", "filing_date")]
-        if not start < end <= filed <= date.fromisoformat(plan["cutoff"][:10]):
+        period_ok = start < end or (allow_instant and start == end and lineage.get('period_role') == 'point_in_time')
+        if not period_ok or not end <= filed <= date.fromisoformat(plan["cutoff"][:10]):
             errors.append("PERIOD_NOT_COMPARABLE")
     except (KeyError, ValueError, TypeError):
         errors.append("PERIOD_NOT_COMPARABLE")
@@ -89,16 +94,189 @@ def field_record(plan, *, metric, value, lineage, quality, raw_sha, role):
     return result
 
 
+def reported_context_fields(plan, acquisition, directory, receipts, *, expected_projection,
+                            project_options=None, documentary_input=None, extended_sec_fields=False):
+    """Opt-in absolute CF/BS occurrences through the original capture boundary.
+
+    This does not add metrics to the comparative/Native owner. In particular,
+    Without an explicit admitted supplement, DART interim CF remains denied.
+    """
+    from pathlib import Path
+    directory = Path(directory)
+    if directory.is_symlink() or not directory.is_dir():
+        raise ValueError('reported_context_plain_source_directory_required')
+    for receipt in receipts:
+        names = [receipt['logical_id'].split(':')[-1]+'.plan.json']
+        if receipt.get('artifact'): names.append(receipt['artifact'])
+        for name in names:
+            path = directory/name
+            if Path(name).name != name or path.is_symlink() or not path.is_file() or path.stat().st_nlink != 1:
+                raise ValueError('reported_context_external_or_aliased_source')
+    actual = project(plan, acquisition, directory, receipts, **(project_options or {}))
+    if actual != expected_projection:
+        raise ValueError('original_financial_projection_drift')
+    fields, denied = [], []
+    current = [f for f in acquisition['selected_filings'] if f.get('role') == 'current']
+    if len(current) != 1:
+        return dict(fields=[], denied=[dict(metric='all', reason='UNIQUE_CURRENT_FILING_REQUIRED')])
+    filing = current[0]
+    if plan['provider'] == 'sec_edgar':
+        # Foreign statements keep their separate, existing basis/period owner.
+        if filing.get('form') not in ('10-Q', '10-K') or not acquisition.get('companyfacts_artifact'):
+            return dict(fields=[], denied=[dict(metric='all', reason='FOREIGN_CONTEXT_FIELD_SCOPE_NOT_QUALIFIED')])
+        raw = _raw(directory, acquisition['companyfacts_artifact'], receipts)
+        payload = json.loads(raw)
+        if str(payload.get('cik', '')).lstrip('0') != plan['issuer'].lstrip('0'):
+            raise ValueError('issuer_mismatch')
+        concepts = {
+            'NetCashProvidedByUsedInOperatingActivities': ('operating_cashflow', 'duration'),
+            'NetIncomeLoss': ('owners_parent_net_income', 'duration'),
+            'Assets': ('assets', 'instant'), 'Liabilities': ('liabilities', 'instant'),
+            'StockholdersEquity': ('stockholders_equity', 'instant'),
+            'LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities': ('debt_including_current', 'instant'),
+        }
+        if extended_sec_fields:
+            concepts.update({
+                'StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest': ('equity', 'instant'),
+                'MinorityInterest': ('noncontrolling_interest', 'instant'),
+                'CashAndCashEquivalentsAtCarryingValue': ('cash_and_cash_equivalents', 'instant'),
+            })
+        for concept, (metric, kind) in concepts.items():
+            groups = {}
+            units = payload.get('facts', {}).get('us-gaap', {}).get(concept, {}).get('units', {})
+            for unit, items in units.items():
+                for ordinal, item in enumerate(items):
+                    if item.get('accn') != filing['accessionNumber'] or item.get('end') != filing['reportDate']:
+                        continue
+                    key = (item.get('start'), item.get('end'), unit)
+                    groups.setdefault(key, []).append((ordinal, item))
+            if not groups:
+                denied.append(dict(metric=metric, reason='EXACT_CURRENT_OCCURRENCE_ABSENT'))
+            for (start, end, unit), candidates in groups.items():
+                errors = []
+                if len(candidates) != 1:
+                    denied.append(dict(metric=metric, reason='AMBIGUOUS_EXACT_OCCURRENCE', period=[start, end]))
+                    continue
+                ordinal, item = candidates[0]
+                if (item.get('form') != filing['form'] or item.get('filed') != filing['filingDate']
+                        or not isinstance(item.get('fy'), int) or isinstance(item.get('fy'), bool)
+                        or item.get('fp') not in ('Q1', 'Q2', 'Q3', 'FY')):
+                    errors.append('FILING_OR_FISCAL_METADATA_MISMATCH')
+                if unit != 'USD':
+                    errors.append('UNSUPPORTED_CONTEXT_CURRENCY')
+                if (kind == 'instant' and start is not None) or (kind == 'duration' and not start):
+                    errors.append('DURATION_INSTANT_MISMATCH')
+                role = 'point_in_time' if kind == 'instant' else 'reported_duration'
+                if kind == 'duration' and item.get('fp') in ('Q1', 'Q2', 'Q3', 'FY') and start == f"{item.get('fy')}-01-01":
+                    expected_end = {'Q1': '03-31', 'Q2': '06-30', 'Q3': '09-30', 'FY': '12-31'}[item['fp']]
+                    if end == f"{item['fy']}-{expected_end}":
+                        role = 'full_year' if item['fp'] == 'FY' else 'year_to_date_cumulative'
+                elif kind == 'duration':
+                    try:
+                        if (date.fromisoformat(end)-date.fromisoformat(start)).days in range(70, 101):
+                            role = 'reported_quarter_duration'
+                    except (ValueError, TypeError):
+                        errors.append('PERIOD_UNRESOLVED')
+                lineage = dict(source_document_id=item.get('accn'), source_document_type=item.get('form'),
+                    filing_date=item.get('filed'), occurrence_id=f'facts.us-gaap.{concept}.units.{unit}[{ordinal}]',
+                    semantic='us-gaap:'+concept, period_start=start if kind == 'duration' else end,
+                    period_end=end, period_role=role, period_kind=kind,
+                    statement_basis='sec_companyfacts_entity_wide', currency=unit, unit=unit, unit_scale=1,
+                    exact_source_occurrence=deepcopy(item), fiscal_year=item.get('fy'), fiscal_period=item.get('fp'),
+                    consolidation_explicitly_proven=False, accounting_standard='US-GAAP')
+                fields.append(field_record(plan, metric=metric, value=item.get('val'), lineage=lineage,
+                    quality=errors, raw_sha=sha256_bytes(raw), role='current', allow_instant=True))
+    elif plan['provider'] == 'opendart':
+        from app.services.opendart_financial_recovery_service import FieldSpec, select_basis_occurrence
+        docs = [d for d in acquisition['documents'] if d['filing'].get('receipt_no') == filing['receipt_no']
+                and d['filing'].get('basis') == 'CFS']
+        if len(docs) != 1:
+            return dict(fields=[], denied=[dict(metric='all', reason='EXACT_CONSOLIDATED_DOCUMENT_REQUIRED')])
+        raw = _raw(directory, docs[0]['artifact'], receipts)
+        payload = json.loads(raw); rows = payload.get('list', [])
+        if payload.get('status') != '000' or any(
+                str(r.get('rcept_no')) != filing['receipt_no'] or str(r.get('corp_code')) != plan['issuer']
+                or str(r.get('bsns_year')) != str(filing['business_year']) or r.get('reprt_code') != filing['report_code']
+                or r.get('fs_div') not in (None, '', 'CFS') for r in rows):
+            raise ValueError('STATEMENT_RESPONSE_FILING_IDENTITY_MISMATCH')
+        specs = {k: FIELD_SPECS[k] for k in ('assets', 'equity', 'operating_cash_flow')}
+        specs['liabilities'] = FieldSpec('liabilities', ('ifrs-full_liabilities',), (), ('BS',))
+        recovered = None
+        if documentary_input is not None:
+            from app.services.opendart_financial_recovery_service import promote_recovered_fields
+            original_filing = Filing(**{**{k:filing[k] for k in Filing.__dataclass_fields__},
+                'receipt_date':date.fromisoformat(filing['receipt_date'])})
+            recovered = promote_recovered_fields(original_filing, {'CFS':rows},
+                documentary_input=documentary_input, documentary_context=dict(security=plan['security'],
+                    original_raw=raw, source_generation=plan['run_id'], source_cutoff=plan['cutoff']))
+        for metric, spec in specs.items():
+            # Exact taxonomy only; no alias guess or separate-statement fallback.
+            spec = replace(spec, account_aliases=())
+            selection = select_basis_occurrence(rows, spec, basis='CFS')
+            documentary_lineage = (recovered['fields'][metric]['lineage']
+                if recovered and metric == 'operating_cash_flow' else None)
+            if selection.status != 'selected' and documentary_lineage is None:
+                reason = recovered['fields'][metric]['reason'] if recovered and metric == 'operating_cash_flow' else selection.reason
+                denied.append(dict(metric=metric, reason=reason, status=selection.status,
+                    raw_artifact_sha256=sha256_bytes(raw), candidates=list(selection.candidates)))
+                continue
+            row = selection.row or selection.candidates[0]
+            lineage = documentary_lineage or opendart_field_lineage(row, logical_field=metric, report_code=filing['report_code'],
+                source_column=spec.source_column, selected=True, requested_fs_div='CFS')
+            errors = [] if lineage['lineage_verified'] else [lineage['denial_reason']]
+            if row.get('account_detail') not in (None, '-'): errors.append('DIMENSIONAL_CONTEXT_NOT_TOTAL')
+            witness = dict(source_document_id=filing['receipt_no'], source_document_type=filing['report_code'],
+                filing_date=filing['receipt_date'], occurrence_id=lineage['source_row_identity'],
+                semantic=row['account_id'], period_start=lineage['amount_period_start'],
+                period_end=lineage['amount_period_end'], period_role=lineage['amount_period_type'],
+                period_kind='instant' if row['sj_div'] == 'BS' else 'duration',
+                statement_basis=lineage['statement_basis'], currency=lineage['currency'], unit=lineage['currency'], unit_scale=1,
+                exact_source_occurrence=deepcopy(row), original_lineage=lineage,
+                fiscal_year=filing['business_year'], fiscal_period=filing['report_code'],
+                consolidation_explicitly_proven=True, accounting_standard='IFRS')
+            if documentary_lineage:
+                witness['documentary_reconciliation'] = deepcopy(lineage['documentary_reconciliation'])
+            fields.append(field_record(plan, metric=metric, value=lineage['amount'], lineage=witness,
+                quality=errors, raw_sha=sha256_bytes(raw), role='current', allow_instant=True))
+    else:
+        denied.append(dict(metric='all', reason='UNSUPPORTED_ORIGINAL_PROVIDER'))
+    result = dict(fields=fields, denied=denied, original_projection_sha256=digest(actual),
+                  security=deepcopy(plan['security']), source_generation=plan['run_id'], source_cutoff=plan['cutoff'])
+    frozen = deepcopy((plan, acquisition, receipts, expected_projection, project_options))
+    def replay_context():
+        p, a, r, expected, options = deepcopy(frozen)
+        return reported_context_fields(p, a, directory, r, expected_projection=expected, project_options=options,
+            documentary_input=documentary_input, extended_sec_fields=extended_sec_fields)
+    _ORIGINAL_PROJECT_REPLAYS[('reported-context', digest(result))] = replay_context
+    return result
+
+
+def replay_original_context(projection_sha256):
+    replay = _ORIGINAL_PROJECT_REPLAYS.get(('reported-context', projection_sha256))
+    if replay is None:
+        raise ValueError('reported_context_original_replay_required')
+    result = replay()
+    if digest(result) != projection_sha256:
+        raise ValueError('reported_context_original_replay_changed')
+    return result
+
+
 def comparison_applicability(projection):
     """Grade comparison availability, not financial health, from replayed fields.
 
     Only an absent prior occurrence is currently qualified here. Incompatible
     or erroneous prior data stays blocked until its own absence owner exists.
     """
-    projection = {k: v for k, v in projection.items() if k != 'comparison_applicability'}
+    projection = {k: v for k, v in projection.items()
+                  if k not in {'comparison_applicability', 'statement_scope_audit'}}
     result = dict(contract='reported-comparison-applicability-v1',
         state='QUALITY_EXPECTED_OWNER_OUTPUT_MISSING', current_field_hashes=[],
         reasons=[], direction_eligible=False)
+    if projection.get('purpose_reconciliation') is not None:
+        result['reasons'] = ['AUXILIARY_PURPOSE_CURRENT_GENERATION_USE_NOT_AUTHORIZED']
+        result['projection_sha256'] = digest(projection)
+        result['receipt_sha256'] = digest(result)
+        return result
     if projection['comparisons']:
         result.update(state='QUALITY_RECORD_PRESENT')
     else:
@@ -242,13 +420,82 @@ def reconcile_fragment_denials(plan, acquisition, directory, receipts):
         'resolved_count': expected if expected and proven == expected else 0, 'diagnostics': diagnostics}
 
 
-def project(plan, acquisition, directory, receipts, *, followup_directory=None, phase2=None, field_semantics=False, coverage_window=None):
+def project(plan, acquisition, directory, receipts, *, followup_directory=None, phase2=None, field_semantics=False, coverage_window=None, statement_scope_audit=False, statement_basis_policy=None, basis_execution_generation=None, purpose_reconciliation=None, current_purpose_intake=None, quarter_period_policy=None):
+    plan, acquisition, receipts = deepcopy((plan, acquisition, receipts))
+    options = deepcopy(dict(followup_directory=followup_directory, phase2=phase2,
+        field_semantics=field_semantics, coverage_window=coverage_window,
+        statement_scope_audit=statement_scope_audit, statement_basis_policy=statement_basis_policy,
+        basis_execution_generation=basis_execution_generation, quarter_period_policy=quarter_period_policy))
+    # Live capabilities remain references; neither public JSON nor deepcopy
+    # may reconstruct their issuing owner.
+    capabilities = dict(purpose_reconciliation=purpose_reconciliation,
+                        current_purpose_intake=current_purpose_intake)
+
+    def replay():
+        return _project(deepcopy(plan), deepcopy(acquisition), directory, deepcopy(receipts),
+                        **deepcopy(options), **capabilities)
+
+    result = replay()
+    key = (digest(plan), digest(acquisition), digest(result))
+    _ORIGINAL_PROJECT_REPLAYS[key] = replay
+    return result
+
+
+def replay_original_projection(*, plan, acquisition, projection):
+    """Require original producer issuance and recheck raw bytes/comparisons.
+
+    Restarts require the caller to replay the sealed inputs through ``project``;
+    loading a stored projection or selected envelope is not an authority grant.
+    """
+    key = (digest(plan), digest(acquisition), digest(projection))
+    replay = _ORIGINAL_PROJECT_REPLAYS.get(key)
+    if replay is None:
+        raise ValueError('selected_financial_original_project_required')
+    rebuilt = replay()
+    if rebuilt != projection:
+        raise ValueError('selected_financial_original_project_changed')
+    from app.services.bounded_financial_stock_owner import reported_comparisons
+    facts, _ = reported_comparisons(plan, rebuilt)
+    return facts
+
+
+def _project(plan, acquisition, directory, receipts, *, followup_directory=None, phase2=None, field_semantics=False, coverage_window=None, statement_scope_audit=False, statement_basis_policy=None, basis_execution_generation=None, purpose_reconciliation=None, current_purpose_intake=None, quarter_period_policy=None):
     if plan.get('financial_owner_policy') not in {None, 'EXACT_FISCAL_ANNUAL_AND_CURRENT_FPI_V1'}:
         raise ValueError('unknown_exact_financial_owner_policy')
     if acquisition["plan_sha256"] != digest(plan):
         raise ValueError("financial_plan_binding_mismatch")
     verify_capture(plan,acquisition,directory,receipts)
+    if quarter_period_policy is not None:
+        from app.services.sec_reported_quarter_period import POLICY as QUARTER_POLICY
+        if (quarter_period_policy != QUARTER_POLICY or not field_semantics
+                or plan.get('financial_owner_policy') != 'EXACT_FISCAL_ANNUAL_AND_CURRENT_FPI_V1'
+                or plan['provider'] != 'sec_edgar' or '6-K' not in plan['forms']):
+            raise ValueError('source_bound_quarter_route_not_authorized')
+    quarter_sources = {}
+    purpose_review = None
+    current_review = None
+    if purpose_reconciliation is not None and current_purpose_intake is not None:
+        raise ValueError('purpose_diagnostic_and_current_routes_exclusive')
+    if current_purpose_intake is not None:
+        from app.services.current_financial_purpose_intake import resolve
+        if not field_semantics or plan.get('financial_owner_policy') != 'EXACT_FISCAL_ANNUAL_AND_CURRENT_FPI_V1' or '6-K' not in plan['forms']:
+            raise ValueError('current_purpose_wrong_financial_route')
+        current_review = resolve(current_purpose_intake, plan=plan, acquisition=acquisition, receipts=receipts)
+    if purpose_reconciliation is not None:
+        from app.services.sec_fpi_purpose_reconciliation import resolve
+        if not field_semantics or plan.get('financial_owner_policy') != 'EXACT_FISCAL_ANNUAL_AND_CURRENT_FPI_V1' or '6-K' not in plan['forms']:
+            raise ValueError('purpose_reconciliation_wrong_financial_route')
+        purpose_review = resolve(purpose_reconciliation, plan=plan, acquisition=acquisition, receipts=receipts)
     snapshots, witnesses, denied = [], {}, []
+    scope_audits, basis_receipts = [], []
+    if statement_basis_policy is not None:
+        from app.services.sec_fpi_statement_basis_owner import POLICY
+        if (statement_basis_policy != POLICY or not basis_execution_generation
+                or plan['provider'] != 'sec_edgar' or not field_semantics
+                or not plan.get('financial_owner_policy') or '6-K' not in plan['forms']):
+            raise ValueError('sec_fpi_basis_route_not_authorized')
+    elif basis_execution_generation is not None:
+        raise ValueError('sec_fpi_basis_execution_without_policy')
     filings = list(acquisition["selected_filings"])
     created = datetime.fromisoformat(plan["cutoff"])
     followup, inventory, uncaptured, second, window = None, None, [], None, None
@@ -290,6 +537,11 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
             captured = {d['url'] for d in source_documents}
             uncaptured = [f for f in inventory['inspection_window']
                           if sec_base(plan, f) + f['primaryDocument'] not in captured]
+            if plan.get('fpi_candidate_contract'):
+                # Excluding a source from the fetch budget does not prove that
+                # it is nonfinancial or irrelevant to a newer-period claim.
+                uncaptured.extend(r['filing'] for r in inventory['current_financial_plan']['outside_bound']
+                                  if sec_base(plan, r['filing']) + r['filing']['primaryDocument'] not in captured)
             if window:
                 uncaptured.extend(window['uncaptured'])
         artifact = acquisition.get("companyfacts_artifact")
@@ -321,25 +573,41 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
             if filing["form"].split('/')[0] not in {"6-K", "20-F"}:
                 continue
             raw = document['raw']
+            if quarter_period_policy:
+                from app.services.sec_reported_quarter_period import source_record
+                quarter_sources.update(source_record(raw,issuer_cik=plan['issuer'],accession=filing['accessionNumber'],
+                    document_type=filing['form'],filing_date=filing['filingDate'],source_url=document['url']))
             context_documents = []
             if exact_owner and document['url'] != sec_base(plan, filing) + filing['primaryDocument']:
                 context_documents = [d for d in source_documents if d['filing'] == filing
                     and d['url'] == sec_base(plan, filing) + filing['primaryDocument']]
             purpose = classify_document(raw, url=document['url'], filing=filing, plan=plan,
-                                        context_documents=context_documents)
+                                        context_documents=context_documents,quarter_period_policy=quarter_period_policy)
             purpose_documents.append(purpose)
+            if statement_scope_audit:
+                from app.services.sec_foreign_statement_scope import inspect_scopes
+                scope_audits.append(inspect_scopes(raw, issuer_cik=plan['issuer'],
+                    filing=filing, source_url=document['url'], cutoff=plan['cutoff'],quarter_period_policy=quarter_period_policy))
             occurrences = purpose['occurrences']
             for occurrence in occurrences:
                 foreign.append({"occurrence": occurrence,
-                    "errors": occurrence_errors(occurrence, date.fromisoformat(plan["cutoff"][:10])),
+                    "errors": occurrence_errors(occurrence, date.fromisoformat(plan["cutoff"][:10]),source_documents=quarter_sources),
                     "packet_consumption": "SEPARATE_FOREIGN_OWNER_NOT_COMPANYFACTS"})
+            if statement_basis_policy is not None:
+                from app.services.sec_fpi_statement_basis_owner import select_basis, selected_occurrences
+                basis=select_basis(raw,plan=plan,filing=filing,source_url=document['url'],
+                    policy=statement_basis_policy,execution_generation=basis_execution_generation,quarter_period_policy=quarter_period_policy)
+                basis_receipts.append(basis)
+                # Keep all original observations in the audit graph; only exact
+                # policy-qualified scope cells may enter the accepting projector.
+                occurrences=selected_occurrences(basis)
             role = 'single-quarter'
-            current = current_projection(occurrences, inline_currency_pair=exact_owner)
+            current = current_projection(occurrences, inline_currency_pair=exact_owner,source_documents=quarter_sources)
             if field_semantics and current is None:
                 role = 'half-year'
-                current = current_projection(occurrences, required_role=role, inline_currency_pair=exact_owner)
+                current = current_projection(occurrences, required_role=role, inline_currency_pair=exact_owner,source_documents=quarter_sources)
             if exact_owner:
-                choices = [(r, current_projection(occurrences, required_role=r, inline_currency_pair=True))
+                choices = [(r, current_projection(occurrences, required_role=r, inline_currency_pair=True,source_documents=quarter_sources))
                            for r in ('single-quarter', 'half-year', 'annual')]
                 choices = [(r, value) for r, value in choices if value]
                 if choices:
@@ -457,7 +725,8 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
         if field_semantics:
             from app.services.sec_fpi_field_selection import select_fields
             ordered, purpose_selection = select_fields(purpose_documents, foreign_rows, ticker=plan['ticker'], cutoff=plan['cutoff'],
-                uncaptured=uncaptured, allow_inline_annual=exact_owner)
+                uncaptured=uncaptured, allow_inline_annual=exact_owner, purpose_reconciliation=purpose_reconciliation,
+                current_purpose_intake=current_purpose_intake,source_documents=quarter_sources)
         else:
             purpose_selection = select_economic_period(purpose_documents, uncaptured=uncaptured)
         if purpose_selection['status'] != 'PASS' and inventory['exhaustion_reason']:
@@ -496,6 +765,11 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
         if field_semantics and foreign_purpose:
             from app.services.sec_fpi_field_selection import POLICY
             inputs['foreign_period_policy'] = POLICY
+            derived_hashes = {o['source_payload_sha256'] for r in foreign_rows
+                for record in json.loads(r.raw_financial_fields) for o in record.get('occurrences', [])
+                if o.get('period_source_proof')}
+            if derived_hashes:
+                inputs['foreign_source_documents'] = {h: quarter_sources[h] for h in sorted(derived_hashes)}
         bundle = {'source_inputs': inputs, 'source_inputs_sha256': quality_digest(inputs),
             'source_generation_id': plan['run_id']}
         quality_bundles.append({**bundle, 'quality': source_quality(bundle)})
@@ -617,8 +891,33 @@ def project(plan, acquisition, directory, receipts, *, followup_directory=None, 
                 acquisition_denials=result['acquisition_denial_reconciliation']['effective_denials'])
             result['financial_field_completeness'] = field_completeness(purpose_selection, purpose_documents,
                 result['source_completeness'])
+    if current_review is not None:
+        result['current_purpose_intake'] = current_review
+        result['source_completeness']['current_purpose_applicability_sha256'] = current_review['receipt_sha256']
+        result['source_completeness']['receipt_sha256'] = digest({k: v for k, v in result['source_completeness'].items() if k != 'receipt_sha256'})
+        result['financial_field_completeness'] = field_completeness(purpose_selection, purpose_documents, result['source_completeness'])
+    if purpose_review is not None:
+        result['purpose_reconciliation'] = purpose_review
+        result['direction_eligible'] = False
+        result['source_completeness']['auxiliary_purpose_reconciliation_sha256'] = purpose_review['receipt_sha256']
+        result['source_completeness']['current_generation_eligible'] = False
+        result['source_completeness']['receipt_sha256'] = digest({k: v for k, v in result['source_completeness'].items() if k != 'receipt_sha256'})
+        result['financial_field_completeness'] = field_completeness(purpose_selection, purpose_documents, result['source_completeness'])
     if exact_owner:
         result['issuer_fiscal_policies'] = fiscal_policies
     if field_semantics:
         result['comparison_applicability'] = comparison_applicability(result)
+    if statement_basis_policy is not None:
+        result['statement_basis_owner']=dict(contract='sec-fpi-statement-basis-replay-v1',
+            policy=statement_basis_policy,execution_generation=basis_execution_generation,
+            plan_sha256=digest(plan),acquisition_sha256=digest(acquisition),
+            original_receipts_sha256=digest(receipts),documents=basis_receipts,
+            source_use_eligible=False,valuation_eligible=False,direction_eligible=False)
+        result['comparison_applicability']=comparison_applicability(result)
+    if statement_scope_audit:
+        # Applicability ignores diagnostics; whole-projection owner hashes still bind them.
+        result['statement_scope_audit'] = dict(contract='foreign-statement-scope-replay-audit-v1',
+            plan_sha256=digest(plan), acquisition_sha256=digest(acquisition),
+            original_receipts_sha256=digest(receipts), documents=scope_audits,
+            selected_basis=None, source_use_eligible=False, direction_eligible=False)
     return result

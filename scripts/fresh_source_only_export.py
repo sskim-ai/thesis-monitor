@@ -43,6 +43,10 @@ def resolve_full_source_generation_identity(whole_source):
     if not isinstance(seed, dict) or 'parent_run_id' not in seed:
         raise ValueError('source_only_parent_generation_required')
     parent = _generation(seed['parent_run_id'])
+    if seed.get('contract') == 'production-source-run-binding-v1':
+        from app.services.production_source_binding import ProductionSourceRunBinding
+        current = ProductionSourceRunBinding.model_validate(seed)
+        return current.attempt_id
     if 'run_id' in seed and _generation(seed['run_id']) != parent:
         raise ValueError('source_only_seed_generation_conflict')
     return parent

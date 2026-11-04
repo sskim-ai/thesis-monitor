@@ -12,7 +12,7 @@ from scripts.r2b_r5_market_adapter import (
 from tests.night_owner_fixtures import night_fixture
 
 
-def fixture(market='us'):
+def fixture(market='us', *, run='test'):
     publications = {'class-c/' + role + '.json': dict(source_sha256='a'*64,
         projection=dict(contract='unified-class-c-owner-projection-v1', eligible=True, values=[]))
         for role in PUBLICATIONS}
@@ -32,11 +32,11 @@ def fixture(market='us'):
         session='2026-09-23' if market=='kr' else '2026-09-25', original_source_time='2026-09-27T08:01:00Z',
         eligibility=dict(contract='test-owner'), source=dict(role='kr_local_indices_sectors_breadth' if market=='kr' else 'us_market_prices',
             artifact_sha256='b'*64))
-    source = dict(component=component, run_id='test', attempt_id='test:'+market, cutoff='2026-09-27T08:02:00Z')
+    source = dict(component=component, run_id=run, attempt_id=run+':'+market, cutoff='2026-09-27T08:02:00Z')
     versions = {name:'a'*64 for name in publications}
     denials = dict(kr_market_investor_flows=dict(status='OPTIONAL_UNAVAILABLE', value=None))
-    night = night_fixture()
-    seed = dict(parent_run_id='test', attempts={market:'test:'+market}, attempt_hashes={market:digest(source)},
+    night = night_fixture(run=run)
+    seed = dict(parent_run_id=run, attempts={market:run+':'+market}, attempt_hashes={market:digest(source)},
         started_at='2026-09-27T08:00:00Z', optional_denial_set_sha256=digest(denials),
         class_c_version_set_sha256=digest(versions), run_acquisitions=dict(night=night['value_sha256']),
         proof_mode='AD_HOC_LIVE_SOURCE_PROOF')

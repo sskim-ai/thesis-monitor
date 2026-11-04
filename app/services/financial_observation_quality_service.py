@@ -194,19 +194,26 @@ def _corroboration(formal, preliminary, metric, occurrence, ticker, cutoff):
     }
 
 
-def _anomalies(row, occurrences):
-    # Reuse the unchanged validator, including its 60% margin threshold.
+def _anomaly_result(row, occurrences, *, revenue_denominator_eligible=True):
+    # Pass only exact reported amounts, never a sentinel to enable validation.
     amounts = {}
     for metric, occurrence in occurrences.items():
         try:
             amounts[metric] = float(_number(occurrence["amount"])) if occurrence else None
         except (ValueError, KeyError):
             amounts[metric] = None
+    labels = {"revenue": "매출액", "operating_income": "영업이익", "net_income": "당기순이익"}
+    facts = [f"OpenDART financial fact: {labels[m]}={_number(occurrences[m]['amount']):f} KRW"
+             for m in FIELDS if amounts.get(m) is not None]
     event = Event(ticker=row.ticker, date=row.filing_date, source="OpenDART", provider="opendart",
                   title="Exact reported occurrence quality", url="", event_type="financial",
-                  confirmed_facts=json.dumps(["OpenDART financial fact: 매출액=1 KRW"]),
+                  confirmed_facts=json.dumps(facts, ensure_ascii=False),
                   **amounts)
-    result = validate_event_financials(event)
+    return validate_event_financials(event, revenue_denominator_eligible=revenue_denominator_eligible)
+
+
+def _anomalies(row, occurrences):
+    result = _anomaly_result(row, occurrences)
     return result.soft_outliers, result.hard_errors
 
 
@@ -218,8 +225,12 @@ def build_reported_observation_quality(*, formal: FinancialSnapshot,
     for role, target in (("current", current), ("comparison", prior)):
         for metric in FIELDS:
             target[metric], errors[role, metric] = _occurrence(formal, metric, role, ticker, cutoff)
-    observed_soft, current_hard = _anomalies(formal, current)
-    prior_soft, prior_hard = _anomalies(formal, prior)
+    current_result = _anomaly_result(formal, current,
+        revenue_denominator_eligible=not errors["current", "revenue"])
+    prior_result = _anomaly_result(formal, prior,
+        revenue_denominator_eligible=not errors["comparison", "revenue"])
+    observed_soft, current_hard = current_result.soft_outliers, current_result.hard_errors
+    prior_soft, prior_hard = prior_result.soft_outliers, prior_result.hard_errors
     soft = sorted(set(observed_soft) | set(_values(formal.financial_soft_outliers)))
     fields = {}
     for role, occurrences, reasons, hard in (
@@ -296,5 +307,9 @@ def build_reported_observation_quality(*, formal: FinancialSnapshot,
                         "No EPS, TTM, forward, PE, PB or valuation eligibility is granted.",
                         "Absolute magnitude and anomaly context do not authorize direction."],
     }
+    denominators = {"current": current_result.revenue_denominator,
+                    "comparison": prior_result.revenue_denominator}
+    if any(d.get("ratio_status") != "EVALUABLE" for d in denominators.values()):
+        result["denominator_evaluation"] = denominators
     result["receipt_sha256"] = digest(result)
     return result

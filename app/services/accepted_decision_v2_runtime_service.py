@@ -69,6 +69,12 @@ from app.services.stage2_maturity_polarity_adapter_service import (
     stage2_maturity_atomic_claim_catalog,
 )
 from app.services.three_axis_decision_service import HolderDecisionAxis
+from app.services.legacy_context_authority import (
+    _CORE_BUILDER_PERMIT,
+    LegacyContextSeal,
+    _seal_built_context,
+    verify_legacy_context,
+)
 
 
 CONTRACT_VERSION = "v2-accepted-production-runtime-v1"
@@ -234,13 +240,22 @@ class AcceptedV2ProductionContext(FrozenModel):
     )
     prior_accepted: tuple[AcceptedV2ProductionBaseline, ...] = Field(default=(), max_length=20)
     prepared_at: str
+    backend_seal: LegacyContextSeal | None = None
 
 
 def accepted_v2_fundamental_core_batch_identity_manifest(
     context: AcceptedV2ProductionContext,
     *,
     subjects: Sequence[str] | None = None,
+    admission_registry=None,
 ) -> dict[str, object]:
+    from app.services.native_authority_core import AcceptedV2AuthorityContext, batch_identity, verify_context
+
+    if isinstance(context, AcceptedV2AuthorityContext):
+        if subjects is not None and tuple(subjects) != (context.ticker,):
+            raise ValueError("native_authority_subject_scope_mismatch")
+        return batch_identity(verify_context(context, admission_registry))
+    verify_legacy_context(context, fixture_consumer="CORE_SCHEMA")
     selected = tuple(subjects or context.selected_subjects)
     if (
         not selected
@@ -499,7 +514,22 @@ def build_accepted_v2_production_context(
     evidence_packets: Sequence[DecisionEvidencePacket],
     prepared_at: datetime | None = None,
     settings: Settings | None = None,
+    authority_native_v2: bool = False,
+    admission_input=None,
+    admission_registry=None,
 ) -> AcceptedV2ProductionContext:
+    if type(authority_native_v2) is not bool:
+        raise ValueError("native_authority_explicit_boolean_required")
+    if authority_native_v2:
+        from app.services.native_authority_core import build_context
+
+        if packet or evidence_packets:
+            raise ValueError("native_authority_unadmitted_legacy_packet")
+        if admission_input is None or admission_registry is None:
+            raise ValueError("native_authority_admission_required_no_legacy_fallback")
+        return build_context(admission_input=admission_input, registry=admission_registry, request_id=claim_id)
+    if admission_input is not None or admission_registry is not None:
+        raise ValueError("native_authority_feature_disabled")
     # This service is imported by onboarding initialization, while the ownership
     # service reaches back through AI review. Resolve it only when building a
     # context so module import order remains acyclic.
@@ -549,10 +579,15 @@ def build_accepted_v2_production_context(
                 ticker=ticker,
                 core_ref_ids=tuple(sorted(owned.core_refs)),
                 timing_ref_ids=tuple(sorted(owned.timing_refs)),
-                expectation_valuation=interaction_from_packet(by_ticker[ticker]),
+                expectation_valuation=interaction_from_packet(
+                    by_ticker[ticker].model_copy(update={"evidence": tuple(
+                        row.ref for row in owned.evidence
+                        if row.ref.ref_id in owned.core_refs
+                    )})
+                ),
             )
         )
-    return AcceptedV2ProductionContext(
+    return _seal_built_context(AcceptedV2ProductionContext(
         packet_id=packet_id,
         claim_id=claim_id,
         market=typed_market,
@@ -563,7 +598,7 @@ def build_accepted_v2_production_context(
         evidence_ownership=tuple(ownership),
         prior_accepted=prior,
         prepared_at=(prepared_at or datetime.now(UTC)).astimezone(UTC).isoformat(),
-    )
+    ), _permit=_CORE_BUILDER_PERMIT)
 
 
 def accepted_v2_fundamental_core_sha256(
@@ -599,7 +634,29 @@ def _claim_ref_set(claims: Sequence[EvidenceClaim]) -> set[str]:
 def validate_accepted_v2_fundamental_core(
     core: AcceptedV2FundamentalCoreCandidate,
     ownership: AcceptedV2EvidenceOwnership,
+    *,
+    request=None,
+    admission_registry=None,
+    expected_request_sha256=None,
+    backend_invocation=None,
 ) -> tuple[str, ...]:
+    from app.services.native_economic_core import EconomicRequest, accept_economic_candidate
+
+    if isinstance(request, EconomicRequest) or backend_invocation is not None:
+        try:
+            accept_economic_candidate(core, request, invocation=backend_invocation)
+        except (ValueError, TypeError) as exc:
+            return (str(exc),)
+        return ()
+    from app.services.native_authority_core import NativeCoreAuthorityOutput, accept_native_core_output
+
+    if isinstance(core, NativeCoreAuthorityOutput) or request is not None:
+        try:
+            accept_native_core_output(core, request, registry=admission_registry,
+                expected_request_sha256=expected_request_sha256)
+        except (ValueError, TypeError) as exc:
+            return (str(exc),)
+        return ("native_reference_admission_only_not_economic_core_candidate",)
     errors: list[str] = []
     if core.ticker != ownership.ticker:
         errors.append("fundamental_core_ticker_mismatch")
@@ -633,11 +690,58 @@ def validate_accepted_v2_fundamental_core(
     return tuple(dict.fromkeys(errors))
 
 
+def build_accepted_v2_economic_core_invocation(
+    *, context, admission_registry, invocation_spec, economic_policy=None,
+    authority_native_v2: bool = False,
+    reported_context_policy=None, reported_contexts=(), reported_context_scope=None,
+):
+    """Explicit offline native v3 path; no changes to legacy invocation or gate."""
+    if authority_native_v2 is not True:
+        raise ValueError("native_economic_authority_feature_disabled")
+    from app.services.native_authority_core import build_native_core_request
+    from app.services.native_economic_core import BackendInvocation
+
+    reference_request = build_native_core_request(context, registry=admission_registry)
+    return BackendInvocation(reference_request, registry=admission_registry,
+                             spec=invocation_spec, economic_policy=economic_policy,
+                             reported_context_policy=reported_context_policy,
+                             reported_contexts=reported_contexts,
+                             reported_context_scope=reported_context_scope)
+
+
 def validate_accepted_v2_candidate_ownership(
     candidate: PreconfirmationDecisionCandidate | PreconfirmationDecisionCandidateV2,
     core: AcceptedV2FundamentalCoreCandidate,
     ownership: AcceptedV2EvidenceOwnership,
+    *,
+    authority_native_v2: bool = False,
+    accepted_ownership=None,
+    ownership_registry=None,
+    backend_invocation=None,
+    offline_ownership_reproof: bool = False,
 ) -> tuple[str, ...]:
+    if type(authority_native_v2) is not bool:
+        return ("explicit_native_authority_gate_required",)
+    if authority_native_v2:
+        from app.services.native_accepted_ownership import BackendOwnershipRegistry
+
+        if not isinstance(ownership_registry, BackendOwnershipRegistry):
+            return ("backend_accepted_ownership_registry_required",)
+        try:
+            core = ownership_registry.resolve(
+                accepted_ownership, invocation=backend_invocation, candidate=core,
+                allow_offline_reproof=offline_ownership_reproof,
+            )
+            if ownership != backend_invocation._policy.bundle.ownership:
+                return ("downstream_evidence_ownership_mismatch",)
+        except (ValueError, TypeError, AttributeError) as exc:
+            return (str(exc),)
+    elif any(x is not None for x in (accepted_ownership, ownership_registry, backend_invocation)) or offline_ownership_reproof:
+        return ("native_ownership_requires_explicit_feature_gate",)
+    from app.services.native_economic_core import OfflineEconomicAcceptance, BoundEconomicCandidate
+
+    if isinstance(core, (OfflineEconomicAcceptance, BoundEconomicCandidate)):
+        return ("native_offline_candidate_not_accepted_model_handoff",)
     errors = list(validate_accepted_v2_fundamental_core(core, ownership))
     projected = accepted_v2_fundamental_core_from_candidate(candidate)
     expected_sha = accepted_v2_fundamental_core_sha256(core)
@@ -680,12 +784,38 @@ def validate_accepted_v2_stage2_candidate(
     candidate: PreconfirmationDecisionCandidate | PreconfirmationDecisionCandidateV2,
     core: AcceptedV2FundamentalCoreCandidate,
     ownership: AcceptedV2EvidenceOwnership,
+    *,
+    authority_native_v2: bool = False,
+    accepted_ownership=None,
+    ownership_registry=None,
+    backend_invocation=None,
+    offline_ownership_reproof: bool = False,
 ) -> PreconfirmationValidationResult:
     """Validate core identity first, then scope Stage-2 prose rules to Stage-2 claims."""
+    if authority_native_v2:
+        # Offline ownership checks never produce an ordinary accepted Stage-2 result.
+        if offline_ownership_reproof:
+            return PreconfirmationValidationResult(valid=False, errors=(
+                "TEST_CANDIDATE_NOT_ACCEPTED_MODEL_JUDGMENT",))
+        from app.services.native_accepted_ownership import BackendOwnershipRegistry
+
+        if not isinstance(ownership_registry, BackendOwnershipRegistry):
+            return PreconfirmationValidationResult(valid=False, errors=(
+                "backend_accepted_ownership_registry_required",))
+        try:
+            ownership_registry.verify_downstream_packet(
+                accepted_ownership, invocation=backend_invocation, candidate=core, packet=packet)
+        except (ValueError, TypeError, AttributeError) as exc:
+            return PreconfirmationValidationResult(valid=False, errors=(str(exc),))
     ownership_errors = validate_accepted_v2_candidate_ownership(
         candidate,
         core,
         ownership,
+        authority_native_v2=authority_native_v2,
+        accepted_ownership=accepted_ownership,
+        ownership_registry=ownership_registry,
+        backend_invocation=backend_invocation,
+        offline_ownership_reproof=offline_ownership_reproof,
     )
     semantic_validation = (
         validate_preconfirmation_candidate(packet, candidate)
@@ -712,13 +842,31 @@ def validate_accepted_v2_maturity_atomic_identity(
 def _compact_owned_evidence(
     packet: DecisionEvidencePacket,
     ref_ids: Sequence[str],
+    *,
+    fundamental_only: bool = False,
 ) -> dict[str, object]:
+    from app.services.fundamental_input_policy import fundamental_ref_projection
+
     allowed = {ref_id for ref_id in ref_ids if not ref_id.startswith("technical-feature:")}
-    return compact_ai_context(
+    compact = compact_ai_context(
         packet.model_copy(
-            update={"evidence": tuple(row for row in packet.evidence if row.ref_id in allowed)}
+            update={"evidence": tuple(fundamental_ref_projection(row)
+                    for row in packet.evidence if row.ref_id in allowed)}
         )
     )
+    if fundamental_only:
+        # These outer containers belong to saved user intent or price/timing,
+        # not to the selected Core evidence catalog. Typed limits stay in refs.
+        for key in ("horizon", "technical_context_id", "technical_context_status",
+                    "technical_context_quality", "data_quality_cautions"):
+            compact.pop(key, None)
+        compact["source_use_contract"] = "fundamental-source-use-v1"
+        refs = {row.ref_id: row for row in packet.evidence}
+        for row in compact["evidence"]:
+            original = refs[row["ref_id"]]
+            if original.source_use is not None:
+                row["source_use"] = original.source_use.model_dump(mode="json")
+    return compact
 
 
 def _compact_stage2_owned_evidence(
@@ -743,6 +891,7 @@ def accepted_v2_fundamental_core_ref_catalog(
     *,
     subjects: Sequence[str] | None = None,
 ) -> tuple[str, ...]:
+    verify_legacy_context(context, fixture_consumer="CORE_SCHEMA")
     selected = tuple(subjects or context.selected_subjects)
     packets = {row.ticker: row for row in context.evidence_packets}
     ownership = {row.ticker: row for row in context.evidence_ownership}
@@ -770,6 +919,8 @@ def accepted_v2_fundamental_core_ref_catalog_manifest(
     *,
     subjects: Sequence[str] | None = None,
 ) -> dict[str, object]:
+    from app.services.fundamental_input_policy import fundamental_ref_projection
+
     selected = tuple(subjects or context.selected_subjects)
     refs = accepted_v2_fundamental_core_ref_catalog(context, subjects=selected)
     packets = {row.ticker: row for row in context.evidence_packets}
@@ -790,6 +941,9 @@ def accepted_v2_fundamental_core_ref_catalog_manifest(
     for ticker in selected:
         owned_core_refs = set(ownership[ticker].core_ref_ids)
         for row in packets[ticker].evidence:
+            if row.ref_id not in owned_core_refs:
+                continue
+            row = fundamental_ref_projection(row)
             if (
                 row.ref_id not in owned_core_refs
                 or row.ref_id.startswith("technical-feature:")
@@ -862,6 +1016,15 @@ def _exact_ref_output_schema(
         raise ValueError(f"{error_prefix}_logical_ref_schema_path_missing") from exc
     if not isinstance(logical_condition, dict):
         raise ValueError(f"{error_prefix}_logical_condition_schema_invalid")
+    if (
+        not isinstance(source_condition_ref, dict)
+        or source_condition_ref.get("type") != "string"
+        or not isinstance(leaf_ref, dict)
+        or leaf_ref.get("type") != "string"
+    ):
+        raise ValueError(f"{error_prefix}_logical_ref_schema_not_string")
+    source_condition_ref["enum"] = list(source_condition_refs)
+    leaf_ref["enum"] = list(leaf_refs)
     if not source_condition_refs and not leaf_refs:
         schema["$defs"]["EvidenceClaim"]["properties"]["logical_condition"] = {
             "type": "null"
@@ -869,15 +1032,6 @@ def _exact_ref_output_schema(
     else:
         if not source_condition_refs or not leaf_refs:
             raise ValueError(f"{error_prefix}_logical_ref_catalog_incomplete")
-        if (
-            not isinstance(source_condition_ref, dict)
-            or source_condition_ref.get("type") != "string"
-            or not isinstance(leaf_ref, dict)
-            or leaf_ref.get("type") != "string"
-        ):
-            raise ValueError(f"{error_prefix}_logical_ref_schema_not_string")
-        source_condition_ref["enum"] = list(source_condition_refs)
-        leaf_ref["enum"] = list(leaf_refs)
     return schema
 
 
@@ -885,7 +1039,14 @@ def accepted_v2_fundamental_core_output_schema(
     context: AcceptedV2ProductionContext,
     *,
     subjects: Sequence[str] | None = None,
+    admission_registry=None,
 ) -> dict[str, object]:
+    from app.services.native_authority_core import AcceptedV2AuthorityContext, output_schema, verify_context
+
+    if isinstance(context, AcceptedV2AuthorityContext):
+        if subjects is not None and tuple(subjects) != (context.ticker,):
+            raise ValueError("native_authority_subject_scope_mismatch")
+        return output_schema(verify_context(context, admission_registry))
     identity_manifest = accepted_v2_fundamental_core_batch_identity_manifest(
         context,
         subjects=subjects,
@@ -936,6 +1097,8 @@ def accepted_v2_fundamental_core_output_schema(
     if not isinstance(ticker, dict) or ticker.get("type") != "string":
         raise ValueError("v2_fundamental_core_ticker_schema_invalid")
     ticker["enum"] = list(selected)
+    from app.services.reviewed_fixture_authority import fixture_metadata
+    schema.update(fixture_metadata(context, consumer="CORE_SCHEMA"))
     return schema
 
 
@@ -967,6 +1130,9 @@ def accepted_v2_stage2_ref_catalog_manifest(
     subjects: Sequence[str] | None = None,
     fundamental_cores: Sequence[AcceptedV2FundamentalCoreCandidate] | None = None,
 ) -> dict[str, object]:
+    from app.services.fundamental_input_policy import fundamental_ref_projection
+
+    verify_legacy_context(context, fixture_consumer="STAGE2_SCHEMA")
     selected = tuple(subjects or context.selected_subjects)
     packets = {row.ticker: row for row in context.evidence_packets}
     ownership = {row.ticker: row for row in context.evidence_ownership}
@@ -1000,6 +1166,7 @@ def accepted_v2_stage2_ref_catalog_manifest(
                 "technical-feature:"
             ):
                 continue
+            row = fundamental_ref_projection(row)
             visible_refs.add(row.ref_id)
             resolved_date = concrete_evidence_date(row.as_of)
             if resolved_date is not None:
@@ -1188,6 +1355,8 @@ def accepted_v2_stage2_output_schema(
             if not isinstance(items, dict) or items.get("type") != "string":
                 raise ValueError("v2_stage2_maturity_claim_schema_invalid")
             items["enum"] = list(claim_refs)
+    from app.services.reviewed_fixture_authority import fixture_metadata
+    schema.update(fixture_metadata(context, consumer="STAGE2_SCHEMA"))
     return schema
 
 
@@ -1235,6 +1404,22 @@ def materialize_accepted_v2_stage2_output(
     normalized_contract: str = STAGE2_MATURITY_PROVENANCE_MATERIALIZATION_CONTRACT,
 ) -> AcceptedV2ProductionBatchOutput | AcceptedV2ProductionBatchOutputV2:
     """Materialize runtime-owned source refs and provenance into a typed contract."""
+    verify_legacy_context(context)
+    return _materialize_v2_stage2_output(
+        context, raw_output, fundamental_cores=fundamental_cores,
+        subjects=subjects, normalized_contract=normalized_contract,
+    )
+
+
+def _materialize_v2_stage2_output(
+    context: AcceptedV2ProductionContext,
+    raw_output: Mapping[str, object],
+    *,
+    fundamental_cores: Sequence[AcceptedV2FundamentalCoreCandidate] | None = None,
+    subjects: Sequence[str] | None = None,
+    normalized_contract: str = STAGE2_MATURITY_PROVENANCE_MATERIALIZATION_CONTRACT,
+) -> AcceptedV2ProductionBatchOutput | AcceptedV2ProductionBatchOutputV2:
+    """Shared semantics; callers must validate their distinct ownership contract."""
     if normalized_contract not in {
         STAGE2_MATURITY_AS_OF_MATERIALIZATION_CONTRACT,
         STAGE2_MATURITY_PROVENANCE_MATERIALIZATION_CONTRACT,
@@ -1506,7 +1691,31 @@ def accepted_v2_fundamental_core_prompt(
     context: AcceptedV2ProductionContext,
     *,
     subjects: Sequence[str] | None = None,
+    admission_registry=None,
+    backend_invocation=None,
+    context_ownership=None,
+    ownership_registry=None,
 ) -> str:
+    from app.services.native_economic_core import ReportedEconomicRequest
+    from app.services.native_accepted_ownership import BackendOwnershipRegistry
+
+    if isinstance(context, ReportedEconomicRequest):
+        if subjects is not None and tuple(subjects) != (context.reference_request.context.ticker,):
+            raise ValueError("native_authority_subject_scope_mismatch")
+        if not isinstance(ownership_registry, BackendOwnershipRegistry):
+            raise ValueError("FACT_V2_CONTEXT_REGISTRY_REQUIRED")
+        return ownership_registry.consume_reported_context(context_ownership,
+            invocation=backend_invocation, request=context)
+    if any(v is not None for v in (backend_invocation, context_ownership, ownership_registry)):
+        raise ValueError("FACT_V2_CONTEXT_ROUTE_REQUIRED")
+    from app.services.native_authority_core import AcceptedV2AuthorityContext, core_prompt, verify_context
+
+    if isinstance(context, AcceptedV2AuthorityContext):
+        if subjects is not None and tuple(subjects) != (context.ticker,):
+            raise ValueError("native_authority_subject_scope_mismatch")
+        return core_prompt(verify_context(context, admission_registry))
+    verify_legacy_context(context, fixture_consumer="CORE_PROMPT")
+    from app.services.reviewed_fixture_authority import fixture_metadata
     selected = tuple(subjects or context.selected_subjects)
     packets = {row.ticker: row for row in context.evidence_packets}
     ownership = {row.ticker: row for row in context.evidence_ownership}
@@ -1531,8 +1740,9 @@ def accepted_v2_fundamental_core_prompt(
     payload = [
         {
             "fundamental_core_evidence": _compact_owned_evidence(
-                packets[ticker], ownership[ticker].core_ref_ids
+                packets[ticker], ownership[ticker].core_ref_ids, fundamental_only=True
             ),
+            **fixture_metadata(context, consumer="CORE_PROMPT"),
             "expectation_valuation_interaction": ownership[
                 ticker
             ].expectation_valuation.model_dump(mode="json"),
@@ -1572,6 +1782,8 @@ def accepted_v2_production_prompt(
     fundamental_cores: Sequence[AcceptedV2FundamentalCoreCandidate],
     subjects: Sequence[str] | None = None,
 ) -> str:
+    verify_legacy_context(context, fixture_consumer="STAGE2_PROMPT")
+    from app.services.reviewed_fixture_authority import fixture_metadata
     selected = tuple(subjects or context.selected_subjects)
     packets = {row.ticker: row for row in context.evidence_packets}
     ownership = {row.ticker: row for row in context.evidence_ownership}
@@ -1617,6 +1829,7 @@ def accepted_v2_production_prompt(
     payload = [
         {
             "frozen_fundamental_core": cores[ticker].model_dump(mode="json"),
+            **fixture_metadata(context, consumer="STAGE2_PROMPT"),
             "fundamental_core_sha256": accepted_v2_fundamental_core_sha256(cores[ticker]),
             "fundamental_core_evidence": _compact_stage2_owned_evidence(
                 packets[ticker], ownership[ticker].core_ref_ids
@@ -1834,6 +2047,10 @@ def validate_accepted_v2_production_output(
     trusted_fundamental_core_batch: AcceptedV2FundamentalCoreBatch | None = None,
     validated_at: datetime | None = None,
 ) -> AcceptedV2ProductionArtifact | AcceptedV2ProductionArtifactV2:
+    verify_legacy_context(context)
+    from app.services.fixture_context_authority import reject_test_only_production
+
+    reject_test_only_production(output)
     if (
         output.packet_id,
         output.claim_id,

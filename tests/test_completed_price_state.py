@@ -217,50 +217,39 @@ def test_unavailable_descriptor_preserves_source_and_rejects_hash_drift(tmp_path
 
 
 @pytest.mark.parametrize('native', [False, True])
-def test_unavailable_price_through_actual_core_a_b_and_frozen_b2_builder(tmp_path, native):
-    from types import SimpleNamespace
+def test_unavailable_price_without_directional_authority_replays_unknown_observe(tmp_path, native):
     from scripts.r2b_r9_full_fresh_requalification import prepare_fresh_subject
-    from scripts.r9_offline_stage_replay import replay_stages, core_inputs, a_inputs
-    from scripts import newbuyer_b2_shadow as v1
-    from scripts import newbuyer_b2_v2_shadow as v2
-    from scripts.newbuyer_b2_v2_coverage import SourceOwners
-    from tests.test_newbuyer_b2_v2_coverage import compose
+    from scripts.r9_offline_stage_replay import replay_stages
     from tests.rev10_stage_fixtures import synthetic_outputs
-    from tests.test_newbuyer_b2_contract import instantiate
-    from app.services.provider_valuation_calibration_context import calibration_context
-    from app.services.unavailable_price_valuation import shadow_request_context
     inputs = unavailable_inputs(tmp_path, 'IBM', native=native)
     result = prepare_fresh_subject(inputs, execution_generation_id='fictional-price-denial')
-    assert result['readiness']['status'] == 'PASS' and result['prepared']['mode'] == 'EVIDENCE_BASED'
+    assert result['readiness']['status'] == 'PASS'
+    assert result['prepared']['mode'] == 'UNKNOWN_LIMIT'
+    # Comparable fixture facts remain compatibility telemetry, not current
+    # directional grants. Native valuation does not supply that missing right.
+    records = result['prepared']['initial_chain']['authority']['authority_records']
+    assert records and all(r['denial_reasons'] for r in records)
+    assert not any({'OVERALL_DIRECTION', 'HOLDER_STANCE'} &
+        (set(r['allowed_uses']) - set(r['prohibited_uses'])) for r in records)
+    assert not result['prepared']['core_input']['observed_propositions']
+    assert result['prepared']['recovery']
     raw = synthetic_outputs(result, 'fictional-price-denial', inputs['technical_inputs']['local_seed'])
     proof = replay_stages(result, 'fictional-price-denial', raw)
     assert proof['status'] == 'PASS'
     assert '정식 종가 확인 불가' in proof['capture']['prepared_text']
-    state = a_inputs(result, core_inputs(result, 'fictional-price-denial', raw['core']), raw['a'])
-    state['b_context']['valuation_context'] = calibration_context(result['stock']['valuation_view'])
-    request = v1.build_request(settings=SimpleNamespace(newbuyer_qualified_valuation_shadow=True),
-        context=shadow_request_context(state['b_context'], result['stock']),
-        accepted=proof['accepted_outputs']['b'], core=state['core'],
-        pass_a=state['a'], source_generation_id=result['stock']['fresh_run_id'])
-    subject = request['subject']
-    assert subject['current_price']['value'] is None
-    owners = SourceOwners(generation=result['stock']['fresh_run_id'], stock=result['stock'],
-        security=inputs['financial_inputs']['plan']['security'], collection_receipt_sha256=digest('fixture'))
-    coverage = compose(owners)
-    records = [dict(ticker='IBM', claim_ref=r['claim_ref'], effect='CONFIDENCE_ONLY',
-        existing_materiality=r['claim']['materiality'], legacy_claim_sha256=digest(r))
-        for r in subject['frozen_business_claims'] if r['claim_ref'] in subject['capability']['confidence']]
-    req = v2.build_request(enabled=True, v1_request=request, coverage=coverage['coverage'],
-        census=coverage['census'], coverage_sha=coverage['coverage']['receipt_sha256'],
-        census_sha=coverage['census']['receipt_sha256'], legacy_records=records)
-    payload = v2.provider_payload(req, expected_request_sha256=req['request_sha256'])
-    assert req['provider_dialect_validation']['status'] == 'PASS'
-    assert payload['input']['valuation_evaluability']['evaluability_state'] == (
-        'EVALUABLE' if native else 'ALL_RELEVANT_METRICS_UNUSABLE')
-    assert payload['input']['timing_state'] == 'UNRESOLVED'
-    for branch in req['output_schema']['anyOf']:
-        output = {'new_buyer_shadow': instantiate(branch)}
-        assert v2.validate_result(output, req, expected_request_sha256=req['request_sha256'])['status'] == 'PASS'
+    assert proof['synthetic_only'] and proof['external_model_calls'] == 0
+    assert proof['capture']['production_sends'] == proof['capture']['network_requests'] == 0
+    assert not proof['schemas'] and not proof['stage_receipts']
+    for stage in ('core', 'a', 'b'):
+        output = proof['accepted_outputs'][stage]
+        assert output['decision_mode'] == 'UNKNOWN_LIMIT'
+        assert all(output[key] == 'OBSERVE' for key in ('overall_direction','new_buyer','holder'))
+        assert all(output[key] is None for key in ('directional_buy_score','directional_sell_score','confidence'))
+        assert output['required_next_evidence'] == list(result['prepared']['recovery'])
+    view = parse_view(result['stock']['valuation_view'])
+    assert view.price is None
+    assert any(m.status == 'QUALIFIED' for m in view.metrics) is native
+    # This negative is not a positive Core/A/B2 economic ownership proof.
 
 
 @pytest.mark.parametrize('mutation', ['security', 'time', 'horizon', 'source'])

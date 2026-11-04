@@ -9,6 +9,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import httpx
+from app.services.runtime_maintenance import assert_operation_allowed
 
 from app.providers.krx_publication_provider import (
     CORE_READINESS_ENDPOINTS,
@@ -88,6 +89,7 @@ async def run_exact_slot_capture(
     provider: KrxPublicationProvider | None = None,
 ) -> dict[str, object]:
     current = as_of or datetime.now(timezone.utc)
+    assert_operation_allowed()
     request, decision = exact_slot_capture_request(current)
     if request is None:
         return {

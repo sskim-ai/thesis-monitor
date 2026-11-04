@@ -13,7 +13,8 @@ from app.services.unified_snapshot_contract import digest, encoded
 
 
 class SealedNativeBridge(httpx.AsyncBaseTransport):
-    def __init__(self, *, owner_root, input_path, input_sha256, output, transport, market_reads):
+    def __init__(self, *, owner_root, input_path, input_sha256, output, transport, market_reads,
+                 test_worker=None):
         self.owner_root, self.input_path, self.input_sha256 = owner_root, input_path, input_sha256
         self.output, self.transport, self.market_reads = output, transport, tuple(market_reads)
         self.process = None
@@ -21,24 +22,47 @@ class SealedNativeBridge(httpx.AsyncBaseTransport):
         self.progress = []
         self.commands = []
         self.exit_receipt = None
+        self._test_worker = test_worker
+        self._terminal = False
+        self.cleanup_failure = None
+
+    def _validate_test_capability(self):
+        if self._test_worker is not None:
+            self._test_worker.validate_bridge(transport=self.transport, input_path=self.input_path,
+                input_sha256=self.input_sha256)
+
+    async def _bounded(self, operation, timeout=600):
+        if self._test_worker is not None:
+            timeout = min(timeout, self._test_worker.remaining_seconds())
+        return await asyncio.wait_for(operation(), timeout=timeout)
 
     async def command(self, command):
+        if self._terminal:
+            raise SourceSafetyStop('native_bridge_terminal')
         if self.busy:
             raise SourceSafetyStop('native_concurrent_command_denied')
         self.busy = True
         before = set(self.transport.dispatcher.results)
         try:
+            self._validate_test_capability()
             if self.process is None:
                 if sha256_bytes(Path(self.input_path).read_bytes()) != self.input_sha256:
                     raise SourceSafetyStop('native_input_drift')
-                self.process = await asyncio.create_subprocess_exec(sys.executable, '-m', 'scripts.r9_rev11_native_worker',
-                    '--owner-root', str(self.owner_root), '--input', str(self.input_path), '--sha256', self.input_sha256,
-                    '--output', str(self.output), stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE, limit=64 * 1024 * 1024)
+                if self._test_worker is None:
+                    self.process = await asyncio.create_subprocess_exec(sys.executable, '-m', 'scripts.r9_rev11_native_worker',
+                        '--owner-root', str(self.owner_root), '--input', str(self.input_path), '--sha256', self.input_sha256,
+                        '--output', str(self.output), stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE,
+                        stderr=asyncio.subprocess.PIPE, limit=64 * 1024 * 1024)
+                else:
+                    self.process = await self._test_worker.launch(
+                        owner_root=self.owner_root, input_path=self.input_path,
+                        input_sha256=self.input_sha256, output=self.output)
+            self._validate_test_capability()
             self.process.stdin.write(encoded(command) + b'\n')
-            await self.process.stdin.drain()
+            await self._bounded(self.process.stdin.drain)
             while True:
-                line = await asyncio.wait_for(self.process.stdout.readline(), timeout=600)
+                line = await self._bounded(self.process.stdout.readline)
+                self._validate_test_capability()
                 if not line:
                     raise SourceSafetyStop('native_worker_stopped')
                 item = json.loads(line)
@@ -47,14 +71,15 @@ class SealedNativeBridge(httpx.AsyncBaseTransport):
                     request = httpx.Request(r['method'], r['url'], headers=r['headers'],
                         content=base64.b64decode(r['body_b64'], validate=True))
                     try:
-                        response = await self.transport.handle_async_request(request)
-                        await response.aread()
+                        response = await self._bounded(lambda: self.transport.handle_async_request(request))
+                        await self._bounded(response.aread)
                         value = dict(status=response.status_code, headers=list(response.headers.multi_items()),
                                      body_b64=base64.b64encode(response.content).decode())
                     except httpx.TransportError:
                         value = {'error': 'TRANSPORT_ERROR'}
+                    self._validate_test_capability()
                     self.process.stdin.write(encoded({'response': value}) + b'\n')
-                    await self.process.stdin.drain()
+                    await self._bounded(self.process.stdin.drain)
                 elif set(item) == {'progress'}:
                     # Only the original role status is public; never retain RPC wire bytes.
                     self.progress.append(item['progress'])
@@ -69,6 +94,22 @@ class SealedNativeBridge(httpx.AsyncBaseTransport):
                     return item['result']
                 else:
                     raise SourceSafetyStop('native_protocol_unknown')
+        except BaseException as exc:
+            # A failed wire exchange cannot be reused as the next command's response.
+            self._terminal = True
+            if self._test_worker is not None:
+                self._test_worker.revoke()
+            try:
+                await self.shutdown()
+            except Exception as cleanup:
+                self.cleanup_failure = dict(original_error=type(exc).__name__,
+                    cleanup_error=type(cleanup).__name__, status='CHILD_CLEANUP_NOT_PROVEN')
+                if isinstance(exc, (asyncio.CancelledError, KeyboardInterrupt, SystemExit)):
+                    raise exc
+                raise SourceSafetyStop('native_cleanup_failed:' + type(exc).__name__ + ':' + type(cleanup).__name__) from None
+            if isinstance(exc, (SourceSafetyStop, asyncio.CancelledError, KeyboardInterrupt, SystemExit)):
+                raise
+            raise SourceSafetyStop('native_protocol_failed:' + type(exc).__name__) from None
         finally:
             self.busy = False
 
@@ -88,18 +129,29 @@ class SealedNativeBridge(httpx.AsyncBaseTransport):
         pass
 
     async def shutdown(self):
-        if self.process is None:
+        self._terminal = True
+        if self.process is None or self.exit_receipt is not None:
             return
+        async def graceful_close():
+            self.process.stdin.write(b'{"close":true}\n')
+            await self.process.stdin.drain()
+            return await self.process.communicate()
+
         if self.process.returncode is None:
             try:
-                self.process.stdin.write(b'{"close":true}\n')
-                await self.process.stdin.drain()
-                _, error = await asyncio.wait_for(self.process.communicate(), timeout=10)
+                _, error = await asyncio.wait_for(graceful_close(), timeout=10)
             except (TimeoutError, BrokenPipeError, ConnectionResetError):
-                self.process.terminate()
-                _, error = await self.process.communicate()
+                if self.process.returncode is None:
+                    self.process.terminate()
+                try:
+                    _, error = await asyncio.wait_for(self.process.communicate(), timeout=3)
+                except TimeoutError:
+                    if self.process.returncode is None:
+                        self.process.kill()
+                    await asyncio.wait_for(self.process.wait(), timeout=3)
+                    _, error = await asyncio.wait_for(self.process.communicate(), timeout=3)
         else:
-            _, error = await self.process.communicate()
+            _, error = await asyncio.wait_for(self.process.communicate(), timeout=3)
         self.exit_receipt = dict(returncode=self.process.returncode, stderr_bytes=len(error),
             stderr_sha256=sha256_bytes(error), private_protocol_exported=False)
 

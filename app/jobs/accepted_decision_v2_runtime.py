@@ -290,19 +290,33 @@ def _invoke_signed_in_codex(
     official_shadow=None,
 ) -> dict[str, object]:
     if official_shadow is not None:
-        from app.services.official_codex_shadow_transport_service import invoke_official_shadow
-
-        return invoke_official_shadow(
-            codex_bin=codex_bin,
-            prompt=prompt,
-            output=output,
-            log=log,
-            schema=schema,
-            cwd=cwd,
-            timeout=timeout,
-            state_namespace=state_namespace,
-            request=official_shadow,
+        from app.services.official_codex_shadow_transport_service import (
+            OfficialShadowError,
+            OfficialShadowRequest,
+            invoke_official_shadow,
         )
+
+        if isinstance(official_shadow, OfficialShadowRequest):
+            from app.services.official_transport_input_preflight import preflight_official_input
+
+            preflight_official_input(prompt=prompt, schema=schema, cwd=cwd, request=official_shadow)
+            return invoke_official_shadow(
+                codex_bin=codex_bin,
+                prompt=prompt,
+                output=output,
+                log=log,
+                schema=schema,
+                cwd=cwd,
+                timeout=timeout,
+                state_namespace=state_namespace,
+                request=official_shadow,
+            )
+    from app.services.fixture_context_authority import reject_test_only_production
+    checked_prompt, checked_schema = _repository_path(prompt), _repository_path(schema)
+    if checked_prompt.is_file() and checked_schema.is_file():
+        reject_test_only_production({"prompt": checked_prompt.read_text(), "response_schema": _read_json(checked_schema)})
+    if official_shadow is not None:
+        raise OfficialShadowError("REQUEST_CONTRACT_INVALID")
     invocation_paths = {
         "cwd": _repository_path(cwd),
         "prompt": _repository_path(prompt),
@@ -647,6 +661,8 @@ async def prepare_context(packet_id: str, claim_id: str) -> dict[str, object]:
         claim_id=claim_id,
         evidence_packets=evidence_packets,
     )
+    from app.services.legacy_context_authority import verify_legacy_context
+    verify_legacy_context(context)
     paths = _paths(claim, claim_id)
     _atomic_json(paths["context"], context.model_dump(mode="json"))
     _atomic_json(

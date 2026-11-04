@@ -29,7 +29,7 @@ POLICY = UnifiedSourcePolicy(frozenset({'kiwoom', 'local', 'canonical_local', 's
 
 def fresh_inputs(root, ticker, *, current_only=False, conflict=False, insurance=False,
                  verified_identity=False, policy=POLICY, security_overrides=None, empty_financial=False,
-                 denied_quality=False, plan=None, cohort_securities=None, completed_price=True):
+                 denied_quality=False, plan=None, cohort_securities=None, completed_price=True, financial_scale=1):
     plan = plan or stock_plan_fixture.__wrapped__()
     reads = [r for r in plan.reads if r.subject == ticker]
     market, session_key = reads[0].market, reads[0].latest_completed_session
@@ -101,6 +101,9 @@ def fresh_inputs(root, ticker, *, current_only=False, conflict=False, insurance=
     amount_rows = [row] if current_only else [row, dict(row, start='2025-04-01', end='2025-06-30', val=20)]
     concepts = {'Revenues': [dict(r, val=100 if r['start'].startswith('2026') else 80) for r in amount_rows],
                 'OperatingIncomeLoss': amount_rows}
+    if financial_scale != 1:
+        concepts = {key: [dict(r, val=r['val'] * financial_scale) for r in values]
+                    for key, values in concepts.items()}
     if conflict:
         concepts['RevenueFromContractWithCustomerExcludingAssessedTax'] = [dict(r, val=10) for r in amount_rows]
     companyfacts = _companyfacts_payload('us-gaap', concepts)

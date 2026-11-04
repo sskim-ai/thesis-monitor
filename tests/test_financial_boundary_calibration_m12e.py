@@ -16,6 +16,9 @@ from scripts import financial_exclusion_expectation_m12u as m12u
 
 def test_calibration_preserves_nonprompt_code_and_other_owners():
     from scripts import business_delta_alias_balance_confidence_m12z as z
+    from tests.historical_scope_descendant_fixture import require_exact_calendar_descendant
+
+    require_exact_calendar_descendant()
 
     # M12U adds one expectation paragraph and bounded exclusion predicates only.
     result = m12u.scope_audit()
@@ -53,6 +56,7 @@ def test_calibration_preserves_nonprompt_code_and_other_owners():
         "app/services/ohlcv_client.py",
         "app/services/ohlcv_feature_engine_service.py",
         "app/services/ohlcv_structure_service.py",
+        "app/services/price_structure_wave_fibonacci_v3_service.py",
         "app/services/structured_autonomy_alias_service.py",
         "app/services/us_exchange_breadth_service.py",
         "app/services/valuation_snapshot_service.py",

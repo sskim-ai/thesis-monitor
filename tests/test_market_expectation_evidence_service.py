@@ -59,6 +59,8 @@ def _fixture_view(
     *,
     basis_kind: str,
 ):
+    from app.services.fixture_context_authority import issue_market_expectation_fixture
+
     expectation = _ref(
         "fixture:expectation",
         category=EvidenceCategory.EXPECTATIONS,
@@ -122,13 +124,14 @@ def _fixture_view(
         bases = ()
     else:
         raise AssertionError(f"unknown basis kind: {basis_kind}")
+    owned = issue_market_expectation_fixture(owned, basis_kind=basis_kind)
     view = build_market_expectation_evidence_view(
         owned,
         catalog,
         structured_bases=bases,
     )
     aliases = {entry.canonical_ref: entry.alias for entry in catalog.entries}
-    context = compact_alias_ai_context(packet, catalog)
+    context = compact_alias_ai_context(packet, catalog, fixture_view=view)
     return view, catalog, context, aliases
 
 

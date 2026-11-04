@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import re
 import tempfile
+import uuid
 import zipfile
 
 from app.services.unified_snapshot_contract import encoded
@@ -17,7 +18,32 @@ def sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
-def durable_bytes(path: Path, content: bytes, *, exclusive: bool = False) -> None:
+def durable_bytes(path: Path, content: bytes, *, exclusive: bool = False,
+                  directory_fd: int | None = None) -> None:
+    if directory_fd is not None:
+        if Path(path).name != str(path) or str(path) in {"", ".", ".."}:
+            raise ValueError("anchored_artifact_basename_required")
+        pending = ".pending-" + uuid.uuid4().hex
+        fd = os.open(pending, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+            0o600, dir_fd=directory_fd)
+        try:
+            with os.fdopen(fd, "wb") as handle:
+                handle.write(content)
+                handle.flush()
+                os.fsync(handle.fileno())
+            if exclusive:
+                os.link(pending, str(path), src_dir_fd=directory_fd, dst_dir_fd=directory_fd,
+                    follow_symlinks=False)
+                os.unlink(pending, dir_fd=directory_fd)
+            else:
+                os.rename(pending, str(path), src_dir_fd=directory_fd, dst_dir_fd=directory_fd)
+            os.fsync(directory_fd)
+        finally:
+            try:
+                os.unlink(pending, dir_fd=directory_fd)
+            except FileNotFoundError:
+                pass
+        return
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     fd, name = tempfile.mkstemp(prefix=".pending-", dir=path.parent)
     temporary = Path(name)
