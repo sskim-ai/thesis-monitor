@@ -337,7 +337,7 @@ def validate_cold_roles(data, read_rows, *, wm_context=None):
             and digest(rows)==receipt['normalized_sha256']
             and len(rows)==receipt['rows']==receipt['requested_rows']==read['count'],'cold_rows')
         period=None
-        if receipt.get('contract')=='current-scoped-role-source-receipt-v2-wm':
+        if receipt.get('contract') in ('current-scoped-role-source-receipt-v2-wm','pending-scoped-role-source-receipt-v1-wm'):
             from app.services.wm_period_currentness import validate_period_readback
             from app.services.scoped_source_plan import ScopedStockRead
             require(wm_context is not None,'cold_wm_context_required')

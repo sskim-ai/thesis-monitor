@@ -192,11 +192,25 @@ class Progress:
 
 
 done=set()
+pending_handoff=frozen.get('pending_handoff')
+pending_ready=pending_handoff is None
 source_root = Path(frozen.get('historical_source_root', str(output/'stocks')))
 for line in sys.stdin:
     command=json.loads(line)
     if command == {'close':True}: break
     try:
+        if set(command)=={'pending_handoff'} and pending_handoff is not None and not pending_ready:
+            action=command['pending_handoff']
+            expected_keys=set(pending_handoff)|{'nonce'}
+            if (set(action)!=expected_keys or {k:v for k,v in action.items() if k!='nonce'}!=pending_handoff
+                    or pending_handoff.get('scope')!='SCOPED_SOURCE_ONLY_PENDING'
+                    or pending_handoff.get('generation_id')!=frozen['stock_plan']['run_id']
+                    or not isinstance(action['nonce'],str) or len(action['nonce'])!=64):
+                raise PermissionError('PENDING_WORKER_HANDOFF_DENIED')
+            emit({'pending_ack':dict(**pending_handoff,nonce_sha256=stock_worker.sha(stock_worker.encoded(action['nonce'])),worker_pid=os.getpid())})
+            pending_ready=True
+            continue
+        if not pending_ready:raise PermissionError('PENDING_WORKER_HANDOFF_REQUIRED')
         if (set(command) in ({'projection'}, {'short_reference'})
                 and (next(iter(command)),next(iter(command.values()))) not in done):
             kind=next(iter(command))

@@ -9,7 +9,7 @@ import time
 
 import httpx
 
-from app.services.current_scoped_source_owner import resolve_parent
+from app.services.source_dispatch_authority import resolve_parent
 from app.services.unified_live_source_transport import SourceSafetyStop
 from app.services.unified_run_artifacts import durable_json
 from app.services.unified_snapshot_contract import digest, encoded
@@ -49,6 +49,7 @@ class ScopedBridge(httpx.AsyncBaseTransport):
         self._stdout_sha=hashlib.sha256()
         self._shutdown_task=None
         self.launch=None
+        self._pending_ack=False
 
     async def _drain_stderr(self):
         try:
@@ -123,6 +124,11 @@ class ScopedBridge(httpx.AsyncBaseTransport):
                 worker_sha256=hashlib.sha256(Path(self.worker).read_bytes()).hexdigest()),exclusive=True)
             self.process.stdin.write(encoded(self.credentials)+b'\n')
             self.credentials=None
+            from app.services import pending_source_parent as pending
+            if type(self.parent) is pending.PendingSourceParent:
+                handoff=json.loads(Path(self.frozen).read_bytes()).get('pending_handoff')
+                challenge=pending.begin_worker(self.parent,worker_pid=self.process.pid,handoff=handoff,process=self.process)
+                self.process.stdin.write(encoded({'pending_handoff':challenge})+b'\n')
         self.source_session._check()
         self.process.stdin.write(encoded(command)+b'\n')
         await self.process.stdin.drain()
@@ -136,7 +142,14 @@ class ScopedBridge(httpx.AsyncBaseTransport):
             resolve_parent(self.parent,plan=self.plan)
             if not line: raise SourceSafetyStop('scoped_worker_stopped')
             value=json.loads(line)
+            from app.services import pending_source_parent as pending
+            if set(value)=={'pending_ack'} and type(self.parent) is pending.PendingSourceParent:
+                pending.accept_worker(self.parent,value['pending_ack'],worker_pid=self.process.pid)
+                self._pending_ack=True
+                continue
             if set(value)=={'wire'}:
+                if type(self.parent) is pending.PendingSourceParent:
+                    pending.require_worker(self.parent,self.process.pid)
                 r=value['wire']
                 request=httpx.Request(r['method'],r['url'],headers=r['headers'],
                     content=base64.b64decode(r['body_b64'],validate=True))
