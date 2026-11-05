@@ -178,6 +178,19 @@ class SessionPair(ContractModel):
         return self
 
 
+class ScopedMarketComponentConfig(ScopedConfig):
+    """New explicit Market-only profile; no fabricated registered security."""
+    subjects: tuple[()] = ()
+
+    @model_validator(mode='after')
+    def market_only_profile(self):
+        s=self.capture_selection
+        if (type(s) is not ScopedCaptureSelection or s.stock_markets or s.stock_roles
+                or s.us_completed_closes or len(s.market_contexts)!=1):
+            raise ValueError('scoped_market_component_only_profile_required')
+        return self
+
+
 class ScopedStockRead(ContractModel):
     """Same per-read wire semantics, independent from historical cohort membership."""
     entry_id: str
