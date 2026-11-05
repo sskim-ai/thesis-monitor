@@ -28,7 +28,8 @@ FILES=('app/services/pending_source_parent.py','app/services/pending_source_inta
  'app/services/query_time_monitoring_price.py','app/services/source_value_quality.py',
  'app/services/price_session_projection.py',
  'app/services/sealed_response_binding.py','app/services/market_worker_rpc.py',
- 'app/services/same_session_market_windows.py')
+ 'app/services/same_session_market_windows.py','app/services/market_component_execution.py',
+ 'app/services/market_component_handoff.py')
 
 class PendingSourceParent:
     __slots__=('__weakref__',)

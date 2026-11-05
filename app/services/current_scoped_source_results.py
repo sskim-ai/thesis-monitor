@@ -397,7 +397,7 @@ def _completed_close_inputs(spec, stock):
         raw['acquisition_id'], stock.frozen_at), tuple(reads)
 
 
-def _market(market, spec, plan, dispatcher, capture, commands):
+def _market(market, spec, plan, dispatcher, capture, commands, *, qualification_cutoff=None):
     """Original transitive component owner, not the Full22 source graph builder."""
     from app.services.canonical_source_replay import aggregate
     from app.services.unified_aggregate_owners import us_market_aggregate_owner, kiwoom_aggregate_owner
@@ -492,15 +492,19 @@ def _market(market, spec, plan, dispatcher, capture, commands):
         acquisition_class=A, requested_at=receipt.requested_at, received_at=receipt.received_at,
         artifact=receipt.artifact, artifact_sha256=receipt.artifact_sha256,
         receipt_artifact='aggregate.json', receipt_sha256=_sha(_read(root, 'aggregate.json')))
+    cutoff=qualification_cutoff or datetime.now(timezone.utc)
+    if cutoff.utcoffset() is None or not plan.frozen_at<=cutoff<=datetime.now(timezone.utc):
+        raise ValueError('scoped_market_qualification_cutoff_invalid')
     component = _resolve(item=item, role=role, root=root, run_id=plan.generation_id,
-        start=plan.frozen_at, cutoff=datetime.now(timezone.utc), attempt_id=receipt.attempt_id,
+        start=plan.frozen_at, cutoff=cutoff, attempt_id=receipt.attempt_id,
         policy=policy, owners={role.owner: owner})
     return dict(status='ORIGINAL_TRANSITIVE_MARKET_COMPONENT_REPLAY_PASS',
         role=role.key, aggregate_sha256=receipt.aggregate_sha256,
         component_sha256=digest(component), value_sha256=component['value_sha256'],
         original_owner_contract=component['eligibility']['contract'],
         children=len(responses), full_source_graph='NOT_RUN_SCOPED_COHORT_NOT_FULL22',
-        D01_D02=False, native_use=False, economic_use=False)
+        D01_D02=False, native_use=False, economic_use=False,
+        **({'qualification_cutoff':cutoff.isoformat()} if qualification_cutoff is not None else {}))
 
 
 def _eligible_role(parent, dispatcher, entry_id):
