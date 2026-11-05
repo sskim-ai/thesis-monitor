@@ -26,6 +26,7 @@ FILES=('app/services/pending_source_parent.py','app/services/pending_source_inta
  'scripts/current_scoped_source_worker.py','app/services/scoped_worker_launch.py',
  'app/services/scoped_source_plan.py','app/services/sealed_fresh_dispatch.py',
  'app/services/query_time_monitoring_price.py','app/services/source_value_quality.py',
+ 'app/services/price_session_projection.py',
  'app/services/sealed_response_binding.py')
 
 class PendingSourceParent:
