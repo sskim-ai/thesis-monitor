@@ -231,10 +231,14 @@ def evaluate_source_intake(item: WatchlistItem, security: SecurityMaster | None,
         from app.services.unified_source_policy import prohibited_provider
         # This is authenticated local registration intent, not approval of the
         # named upstream provider or of any financial fact it may have supplied.
-        if (not policy.permits('canonical_local')
-                or security.identity_quality not in {'verified', 'partial'}
-                or not security.identity_provider or prohibited_provider(security.identity_provider)):
-            denials.append('source_intake_identity_provenance_denied')
+        if not policy.permits('canonical_local'):
+            denials.append('POLICY_CANONICAL_LOCAL_NOT_PERMITTED')
+        if security.identity_quality not in {'verified', 'partial'}:
+            denials.append('IDENTITY_QUALITY_UNVERIFIED')
+        if not security.identity_provider or not security.identity_provider.strip():
+            denials.append('IDENTITY_PROVIDER_MISSING')
+        elif prohibited_provider(security.identity_provider):
+            denials.append('IDENTITY_PROVIDER_PROHIBITED')
         updated = security.updated_at
         if updated is None or updated.replace(tzinfo=updated.tzinfo or UTC) > cutoff:
             denials.append('source_intake_identity_after_cutoff')
@@ -246,8 +250,10 @@ def evaluate_source_intake(item: WatchlistItem, security: SecurityMaster | None,
                 denials.append('source_intake_issuer_basis_conflict')
     if thesis is None or thesis.status != 'active' or not thesis.core_thesis.strip():
         denials.append('source_intake_active_user_thesis_required')
-    return dict(contract='source-intake-eligibility-v1', ticker=item.ticker, market=market,
+    probe_only = bool(denials) and set(denials) <= {'IDENTITY_PROVIDER_MISSING', 'IDENTITY_QUALITY_UNVERIFIED'} and not safe
+    return dict(contract='source-intake-eligibility-v2', ticker=item.ticker, market=market,
         registered_source_intake_eligible=not denials, denials=sorted(set(denials)),
+        identity_probe_eligible=probe_only,
         restricted_uses=safe, research_analysis_eligible=False,
         current_production_ready=False, delivery_eligible=False,
         authority='REGISTRATION_INTENT_ONLY_NOT_SOURCE_OR_ECONOMIC_USE',

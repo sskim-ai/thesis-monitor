@@ -24,13 +24,18 @@ from app.services.vnext_research_store import digest
 CONTRACT = 'isolated-daily-research-bridge-v1'
 
 
-def cold_packet(config, *, registration, as_of, source_generation, reference_owners=None):
+def cold_packet(config, *, registration, as_of, source_generation, reference_owners=None,
+                registration_owner=None, registration_generation=None, registration_policy=None):
     """Use the same canonical Composite/price/catalog builders as manual Primary."""
     code = registration['security']['ticker']
     store = AppendResearchStore(config)
-    if current_identity(store, code) != registration:
+    intake=registration_owner is not None or registration_generation is not None
+    if not intake and current_identity(store, code) != registration:
         raise ValueError('daily_bridge_registration_drift')
-    view = CompositeView(store, as_of=as_of, tickers=[code])
+    view = CompositeView(store, as_of=as_of, tickers=[code],registration_owner=registration_owner,
+        registration_generation=registration_generation,registration_policy=registration_policy)
+    if intake and any(view.identities[code].get(k)!=registration['security'].get(k) for k in view.identities[code]):
+        raise ValueError('daily_bridge_intake_registration_drift')
     if source_generation not in view.runs:
         raise ValueError('daily_bridge_generation_not_in_store')
     base = view.packet(code)

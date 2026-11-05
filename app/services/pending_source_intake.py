@@ -190,6 +190,9 @@ def consume_intake(handle, *, generation_id, role, security_ids, session):
     _scope(s['scope'])
     raw, receipt = captured_private_snapshot(s['capture'])
     public = s['public']
+    if 'source_intake_owner' in s:
+        approval_owner.source_intake_snapshot(s['source_intake_owner'],generation_id=generation_id,
+            subjects=tuple(s['identities']),policy=s['identity_policy'])
     clock = approval_owner.completed_clock(public['market'], _now())
     if (digest(json.loads(raw)) != s['capture_hash'] or digest(receipt) != s['receipt_hash']
             or generation_id != public['generation_id'] or role not in ROLES
@@ -198,6 +201,42 @@ def consume_intake(handle, *, generation_id, role, security_ids, session):
             or session != public['calendar']['target'] or clock['target'] != session):
         raise ValueError('pending_intake_generation_role_or_session_mismatch')
     return json.loads(json.dumps(public))
+
+
+def adapt_registered_intake(*,scope,source_intake_owner,subjects,policy,enabled=False):
+    """C9: authenticated subset into the ORIGINAL pending Parent/Worker contract.
+
+    No ACTIVE projection, new provider, source fact or current use is issued.
+    Exact provider/account authorization remains at the original Parent boundary.
+    """
+    if enabled is not True:
+        raise ValueError('pending_intake_default_off')
+    s,decision=_scope(scope)
+    identities,receipt,capture,approval=approval_owner.source_intake_snapshot(source_intake_owner,
+        generation_id=s['generation'],subjects=subjects,policy=policy)
+    if approval is not s['approval'] or not set(subjects)<=set(decision.subjects):
+        raise ValueError('pending_intake_adapter_approval_mismatch')
+    market=receipt['market']
+    if market in _ISSUED_MARKETS.get(scope,set()):
+        raise ValueError('pending_intake_market_already_issued')
+    raw,captured=captured_private_snapshot(capture)
+    cutoff=datetime.fromisoformat(captured['cutoff'])
+    if not s['confirmed_at']<=cutoff<=_now():
+        raise ValueError('pending_intake_adapter_capture_time')
+    bindings={t:dict(security_id=r['canonical_security_id'],identity_hash=digest(r),
+        registration_hash=receipt['subjects'][t]['registration_sha256']) for t,r in identities.items()}
+    public=dict(contract='registered-source-intake-pending-adapter-v1',generation_id=s['generation'],
+        market=market,calendar=approval_owner.completed_clock(market,cutoff),
+        capture_sha256=captured['original_rows_sha256'],capture_receipt_sha256=digest(captured),
+        bindings=bindings,scope='SOURCE_ONLY_NO_NATIVE',ACTIVE=False,production_eligible=False,
+        first_eligible_session=None,current_production_Source=False,MarketParent=False,
+        valuation=False,native=False,judgment=False,send=False)
+    handle=PendingSourceIntake()
+    _INTAKES[handle]=dict(scope=scope,capture=capture,capture_hash=digest(json.loads(raw)),
+        receipt_hash=digest(captured),public=public,identities=identities,
+        source_intake_owner=source_intake_owner,identity_policy=policy)
+    _ISSUED_MARKETS.setdefault(scope,set()).add(market)
+    return handle,json.loads(json.dumps(public))
 
 
 def require_live_worker_adapter(handle, *, parent=None):
