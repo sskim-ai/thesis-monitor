@@ -1,6 +1,7 @@
 """Original component replay -> typed canonical-consumer handoff, not JSON consent."""
 from copy import deepcopy
 from dataclasses import dataclass
+from datetime import datetime,timezone
 import os
 from pathlib import Path
 from weakref import WeakKeyDictionary
@@ -41,10 +42,13 @@ def bind_original_component(*,dispatcher,market,worker_bridge=None,enabled=False
         commands=worker_bridge.commands
     # Original function verifies sealed child raw pages/wires, normalizes through
     # actual Provider owners and resolves the original transitive aggregate.
-    proof=_market(market,spec,dispatcher.plan,dispatcher,dispatcher.root,commands)
+    qualification_cutoff=(datetime.now(timezone.utc) if type(dispatcher._parent) is pending.PendingSourceParent
+        and pending.resolve_parent(dispatcher._parent)['scope']=='PENDING_MARKET_COMPONENT_SOURCE_ONLY' else None)
+    proof=_market(market,spec,dispatcher.plan,dispatcher,dispatcher.root,commands,qualification_cutoff=qualification_cutoff)
     handle=MarketComponentHandoff()
     _LIVE[handle]=dict(dispatcher=dispatcher,market=market,proof=proof,spec=spec,
-        commands=deepcopy(commands),pid=os.getpid(),code=digest(Path(__file__).read_bytes().hex()))
+        commands=deepcopy(commands),pid=os.getpid(),code=digest(Path(__file__).read_bytes().hex()),
+        qualification_cutoff=qualification_cutoff)
     return handle,dict(contract=CONTRACT,status='COMPONENT_SOURCE_OBSERVED',
         component_sha256=proof['component_sha256'],MarketParent='NOT_ISSUED')
 
@@ -56,11 +60,22 @@ def project_original_parent(handle,*,packet,binding,graph,expected_authority_sha
     if s['pid']!=os.getpid() or s['code']!=digest(Path(__file__).read_bytes().hex()):
         raise ValueError('market_handoff_process_or_code_changed')
     from app.services.current_scoped_source_results import _market
-    actual=_market(s['market'],s['spec'],run.plan,run,run.root,s['commands'])
+    actual=_market(s['market'],s['spec'],run.plan,run,run.root,s['commands'],
+        qualification_cutoff=s.get('qualification_cutoff'))
     if actual!=s['proof']:raise ValueError('market_handoff_original_component_changed')
     return _project_complete(packet=packet,binding=binding,graph=graph,market=s['market'],
         component_sha256=actual['component_sha256'],value_sha256=actual['value_sha256'],
         generation_id=run.plan.generation_id,expected_authority_sha256=expected_authority_sha256)
+
+
+def read_source_component(handle):
+    """Read the authenticated Source-only proof, never a canonical Parent."""
+    if type(handle) is not MarketComponentHandoff or handle not in _LIVE:
+        raise ValueError('market_handoff_unissued_component')
+    s=_LIVE[handle];s['dispatcher']._require_parent()
+    if s['pid']!=os.getpid() or s['code']!=digest(Path(__file__).read_bytes().hex()):
+        raise ValueError('market_handoff_process_or_code_changed')
+    return deepcopy(s['proof'])
 
 
 def required_original_parents(packet,binding,graph,market):
