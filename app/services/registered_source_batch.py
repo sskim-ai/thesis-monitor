@@ -337,7 +337,16 @@ def validate_cold_roles(data, read_rows, *, wm_context=None):
             and digest(rows)==receipt['normalized_sha256']
             and len(rows)==receipt['rows']==receipt['requested_rows']==read['count'],'cold_rows')
         period=None
-        if receipt.get('contract') in ('current-scoped-role-source-receipt-v2-wm','pending-scoped-role-source-receipt-v1-wm'):
+        if receipt.get('contract') == 'current-scoped-monitoring-role-source-receipt-v1':
+            from app.services.query_time_monitoring_price import validate_monitoring_readback
+            from app.services.scoped_source_plan import ScopedStockRead
+            value=receipt['monitoring_snapshot'];observation=value['observation']
+            require(receipt['current_source_authority'] is False and value['window_eligible'] is True,
+                'cold_monitoring_scope')
+            period=validate_monitoring_readback(value,rows=rows,read=ScopedStockRead.model_validate(read),
+                frozen_at=datetime.fromisoformat(observation['frozen_at']),
+                observed_at=datetime.fromisoformat(observation['observed_at']),source_pages=observation['source_pages'])
+        elif receipt.get('contract') in ('current-scoped-role-source-receipt-v2-wm','pending-scoped-role-source-receipt-v1-wm'):
             from app.services.wm_period_currentness import validate_period_readback
             from app.services.scoped_source_plan import ScopedStockRead
             require(wm_context is not None,'cold_wm_context_required')

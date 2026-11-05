@@ -233,6 +233,7 @@ class CurrentScopedDispatcher(SealedDispatcher):
         self._active = None
         self._busy = False
         self._http_stop = None
+        self.role_quality_denials = {}
         self.admission = dict(status="CURRENT_SCOPED_DISPATCH_ADMITTED_SOURCE_NOT_QUALIFIED",
             live_dispatch_allowed=True, scope=receipt.get('scope', "SCOPED_SOURCE_ONLY"),
             plan_sha256=public.plan_sha256, original_plan_sha256=original.plan_sha256,
@@ -312,14 +313,24 @@ class CurrentScopedDispatcher(SealedDispatcher):
                 raise SourceSafetyStop('scoped_paced_normalization_stop')
             if self._account_pacer is not None and descriptor.endpoint_operation == 'usa20590':
                 from datetime import date, datetime
-                from app.services.kiwoom_completed_close_owner import validate_completed_daily_row
+                from app.services.source_value_quality import strict_close_quality
                 from app.services.market_session import us_market_session
                 target = date.fromisoformat(descriptor.target_period)
                 when = datetime.fromisoformat(result['attempts'][-1]['started_at'])
                 if any(us_market_session(at).latest_completed_regular_session_date != target
                        for at in (self.plan.frozen_at, when)):
                     raise SourceSafetyStop('scoped_paced_completed_session_stop')
-                validate_completed_daily_row((self.root / descriptor.raw_path).read_bytes(), target)
+                from app.services.sealed_fresh_dispatch import consume_bound_result
+                consume_bound_result(root=self.root,plan=self.plan,logical_id=logical_id,
+                    receipt_sha256=result['receipt_sha256'])
+                denial=strict_close_quality((self.root / descriptor.raw_path).read_bytes(),target=target,
+                    logical_request_id=logical_id,observed_at=result['retrieval_time'])
+                if denial is not None:
+                    public=denial.model_dump(mode='json')
+                    self._save('source-quality/'+logical_id+'.json',public)
+                    self.role_quality_denials[logical_id]=denial
+                    # PASS here is sealed HTTP-fragment custody, not price use.
+                    result=dict(result,source_quality=public)
             return result
         except BaseException:
             self.halted = True
@@ -340,6 +351,13 @@ class CurrentScopedDispatcher(SealedDispatcher):
                 # has either passed or globally stopped this scoped route.
                 await context.__aexit__(None, None, None)
             self._active, self._busy = None, False
+
+    async def reject_unbound_wire(self):
+        """An identity violation before IO is not a benign source-value denial."""
+        self._require_parent()
+        self.halted=True
+        if self._account_pacer is not None and self._pacing_context is None:
+            await self._account_pacer.halt()
 
     def skip_unselected(self, logical_id):
         self._require_parent()

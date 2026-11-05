@@ -101,6 +101,20 @@ class ScopedPriceCaptureSelection(ContractModel):
         return self
 
 
+class ScopedMonitoringCaptureSelection(ScopedCaptureSelectionV2):
+    """Explicit opt-in; legacy V1/V2 defaults and strict plans stay unchanged."""
+    contract: Literal['scoped-monitoring-capture-selection-v1']
+    price_policy: Literal['query-time-monitoring-price-v1'] = 'query-time-monitoring-price-v1'
+    us_completed_closes: Literal[False] = False
+    strict_close_security_ids: tuple[str, ...] = ()
+
+    @model_validator(mode='after')
+    def strict_opt_in(self):
+        if len(set(self.strict_close_security_ids)) != len(self.strict_close_security_ids):
+            raise ValueError('monitoring_duplicate_strict_selection')
+        return self
+
+
 class ScopedPriceCaptureSelectionV2(ScopedPriceCaptureSelection):
     """KR adjusted completed-close input and US regular close; rights stay distinct."""
     contract: Literal["scoped-price-capture-selection-v2"]
@@ -110,6 +124,8 @@ class ScopedPriceCaptureSelectionV2(ScopedPriceCaptureSelection):
 def selected_independent_closes(config):
     """Registered subjects only; legacy V1 still depends on its chart reads."""
     selection = config.capture_selection
+    if isinstance(selection, ScopedMonitoringCaptureSelection):
+        return tuple(s for s in config.subjects if s.security_id in selection.strict_close_security_ids)
     if isinstance(selection, ScopedPriceCaptureSelection):
         return tuple(s for s in config.subjects if s.security_id in selection.close_security_ids)
     if isinstance(selection, ScopedCaptureSelectionV2) and selection.us_completed_closes:
@@ -123,7 +139,7 @@ class ScopedConfig(ContractModel):
     us_history: HistoryCounts
     kr_max_pages: int = Field(ge=1, le=20)
     market_dependencies: Literal["KR10_AND_FULL_US_MARKET_SET"] = "KR10_AND_FULL_US_MARKET_SET"
-    capture_selection: ScopedPriceCaptureSelectionV2 | ScopedPriceCaptureSelection | ScopedCaptureSelectionV2 | ScopedCaptureSelection | None = None
+    capture_selection: ScopedMonitoringCaptureSelection | ScopedPriceCaptureSelectionV2 | ScopedPriceCaptureSelection | ScopedCaptureSelectionV2 | ScopedCaptureSelection | None = None
 
     @model_validator(mode="after")
     def distinct(self):
@@ -141,6 +157,9 @@ class ScopedConfig(ContractModel):
                         or isinstance(self.capture_selection, ScopedPriceCaptureSelectionV2)}
             if not set(self.capture_selection.close_security_ids) <= eligible:
                 raise ValueError("scoped_close_security_outside_us_registration")
+        if isinstance(self.capture_selection, ScopedMonitoringCaptureSelection):
+            if not set(self.capture_selection.strict_close_security_ids) <= {s.security_id for s in self.subjects if s.market == 'us'}:
+                raise ValueError('monitoring_strict_selection_outside_registration')
         return self
 
 
@@ -354,7 +373,8 @@ def compile_scoped_wire_contract(*, config, identities, generation_id, at,
                     at=at, state=states["us"])
                 add("completed_close:" + s.ticker, "us", s.ticker, "usa20590", "/api/us/mrkcond",
                     dict(stex_tp=route["exchange"], stk_cd=s.ticker,
-                         base_dt=sessions["us"].target.strftime("%Y%m%d")))
+                         base_dt=sessions["us"].target.strftime("%Y%m%d")),
+                    mandatory=not isinstance(selection, ScopedMonitoringCaptureSelection))
 
     discovery = tuple(add("us_market:discovery:" + exchange, "us", "*", "usa10099", "/api/us/stkinfo",
         {"stex_tp": exchange}, role="us_market:exchange_discovery") for exchange in (("ND", "NY", "NA") if "us" in selection.market_contexts else ()))
