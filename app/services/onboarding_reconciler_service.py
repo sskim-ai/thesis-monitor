@@ -257,7 +257,13 @@ async def resume_onboarding_subject(
     decision_builder: DecisionBuilder = generate_onboarding_accepted_decision,
     profile_populator: ProfilePopulator = _populate_company_profile,
     baseline_builder: BaselineBuilder = ensure_initial_baseline,
+    source_intake_owner=None,
+    source_intake_generation: str | None = None,
 ) -> OnboardingAttemptResult:
+    if source_intake_owner is not None or source_intake_generation is not None:
+        from app.services.prospective_class_c_owner import require_source_intake
+        require_source_intake(source_intake_owner, generation_id=source_intake_generation,
+            ticker=item.ticker, registration=item)
     current = (as_of or datetime.now(UTC)).astimezone(UTC)
     market = _item_market(session, item)
     before = evaluate_onboarding_readiness(session, item, data_dir=data_dir, as_of=current)

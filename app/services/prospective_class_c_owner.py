@@ -49,6 +49,88 @@ _OWNERS: WeakKeyDictionary = WeakKeyDictionary()
 _ISSUED_RUNS: WeakKeyDictionary = WeakKeyDictionary()
 
 
+class SourceIntakeOwner:
+    """Live captured registration intent; not a Prospective/Production Owner."""
+    __slots__ = ('__weakref__',)
+
+
+_INTAKES: WeakKeyDictionary = WeakKeyDictionary()
+
+
+def issue_source_intake_owner(*, approval, capture, market, generation_id, policy):
+    from app.services.minimal_class_c_export import MODELS
+    from app.services.onboarding_readiness_service import evaluate_source_intake
+    decision = _approval(approval)
+    raw, receipt = captured_private_snapshot(capture)
+    cutoff = datetime.fromisoformat(receipt['cutoff'])
+    if (market not in {'kr', 'us'} or not generation_id
+            or not decision.effective_at <= cutoff <= _now()
+            or _now()-cutoff > timedelta(hours=1)):
+        raise ValueError('source_intake_current_authorized_capture_required')
+    rows = json.loads(raw)
+    indices = {}
+    for table, values in rows.items():
+        if len({r['ticker'] for r in values}) != len(values):
+            raise ValueError('source_intake_duplicate_identity')
+        indices[table] = {r['ticker']: MODELS[table].model_validate(r) for r in values}
+    from app.services.market_session import market_scope_for_security
+    results = {}
+    for ticker, item in indices['watchlistitem'].items():
+        if market_scope_for_security(ticker, item.exchange) != market:
+            continue
+        if ticker not in decision.subjects:
+            raise ValueError('source_intake_subject_not_authorized')
+        results[ticker] = evaluate_source_intake(item, indices['securitymaster'].get(ticker),
+            indices['company'].get(ticker), indices['investmentthesis'].get(ticker),
+            cutoff=cutoff, policy=policy)
+        results[ticker]['registration_sha256'] = digest(item.model_dump(mode='json'))
+    if not results:
+        raise ValueError('source_intake_empty_market')
+    from hashlib import sha256
+    from pathlib import Path
+    public = dict(contract='source-intake-eligibility-v1', generation_id=generation_id,
+        market=market, issued_at=_now().isoformat(), cutoff=cutoff.isoformat(),
+        expires_at=min(decision.expires_at,cutoff+timedelta(hours=1)).isoformat(),
+        approval_sha256=digest(decision.model_dump(mode='json')),
+        capture_sha256=digest(receipt), original_rows_sha256=receipt['original_rows_sha256'],
+        implementation_sha256=sha256(Path(__file__).read_bytes()).hexdigest(),
+        readiness_sha256=sha256((Path(__file__).parent/'onboarding_readiness_service.py').read_bytes()).hexdigest(),
+        identity_policy_sha256=digest(sorted(policy.allowed_providers)), subjects=results,
+        production_seed_qualified=False, source_or_economic_authority=False, send=False)
+    handle = SourceIntakeOwner()
+    _INTAKES[handle] = (approval, capture, json.dumps(public))
+    return handle, deepcopy(public)
+
+
+def require_source_intake(owner, *, generation_id, ticker, registration=None):
+    from hashlib import sha256
+    from pathlib import Path
+    if type(owner) is not SourceIntakeOwner or owner not in _INTAKES:
+        raise ValueError('source_intake_live_owner_required')
+    approval, capture, document = _INTAKES[owner]
+    _approval(approval)
+    receipt = json.loads(document)
+    _, captured = captured_private_snapshot(capture)
+    if (receipt['capture_sha256'] != digest(captured)
+            or receipt['generation_id'] != generation_id
+            or _now() >= datetime.fromisoformat(receipt['expires_at'])
+            or receipt['implementation_sha256'] != sha256(Path(__file__).read_bytes()).hexdigest()
+            or receipt['readiness_sha256'] != sha256((Path(__file__).parent/'onboarding_readiness_service.py').read_bytes()).hexdigest()):
+        raise ValueError('source_intake_binding_expired_or_changed')
+    subject = receipt['subjects'].get(ticker)
+    if not subject or not subject['registered_source_intake_eligible']:
+        raise ValueError('source_intake_subject_denied')
+    if registration is not None and subject['registration_sha256'] != digest(registration.model_dump(mode='json')):
+        raise ValueError('source_intake_registration_changed')
+    return deepcopy(subject)
+
+
+def revoke_source_intake(owner):
+    if type(owner) is not SourceIntakeOwner or owner not in _INTAKES:
+        raise ValueError('source_intake_live_owner_required')
+    del _INTAKES[owner]
+
+
 def record_backend_approval(decision: ApprovalDecision) -> OperatorApproval:
     """Trusted operator adapter only, never called with model/request payloads.
 
