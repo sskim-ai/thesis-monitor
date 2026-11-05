@@ -31,6 +31,7 @@ from scripts import unified_stock_source_worker as stock_worker
 from app.services.native_completed_market import select_completed_daily_rows
 from app.services.completed_session_projection import project_completed_rows
 from app.services.query_time_monitoring_price import project_monitoring_rows
+from app.services.price_session_projection import project_price_session
 from app.services.short_history_reference import review_rows as review_short_rows
 from app.services.scoped_source_plan import ScopedStockRead
 from app.services.scoped_external_code_manifest import validate_external_manifest, CONTRACT_V2
@@ -212,7 +213,7 @@ for line in sys.stdin:
             pending_ready=True
             continue
         if not pending_ready:raise PermissionError('PENDING_WORKER_HANDOFF_REQUIRED')
-        if (set(command) in ({'projection'}, {'short_reference'}, {'monitoring'})
+        if (set(command) in ({'projection'}, {'short_reference'}, {'monitoring'}, {'price_session'})
                 and (next(iter(command)),next(iter(command.values()))) not in done):
             kind=next(iter(command))
             entry = next(r for r in frozen['stock_plan']['reads'] if r['entry_id']==command[kind])
@@ -259,6 +260,13 @@ for line in sys.stdin:
                     cutoff=SourceDateTime.fromisoformat(frozen['stock_plan']['frozen_at']),source_pages=source_pages)
                 artifact=f'projection-{ordinal:03d}.json'
                 status='COMPLETED_PROJECTION_REPLAY_PASS'
+            elif kind=='price_session':
+                proof=project_price_session(all_rows,read=ScopedStockRead.model_validate(entry),
+                    frozen_at=SourceDateTime.fromisoformat(frozen['stock_plan']['frozen_at']),
+                    observed_at=SourceDateTime.fromisoformat(receipt['completed_at']),source_pages=source_pages)
+                selected=all_rows
+                artifact=f'price-session-{ordinal:03d}.json'
+                status='PRICE_SESSION_REPLAY_PASS'
             elif kind=='monitoring':
                 proof=project_monitoring_rows(all_rows,read=ScopedStockRead.model_validate(entry),
                     frozen_at=SourceDateTime.fromisoformat(frozen['stock_plan']['frozen_at']),
