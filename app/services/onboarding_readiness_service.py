@@ -200,6 +200,61 @@ def _security_readiness(
     }
 
 
+def evaluate_source_intake(item: WatchlistItem, security: SecurityMaster | None,
+                           company: Company | None, thesis: InvestmentThesis | None,
+                           *, cutoff: datetime, policy) -> dict[str, object]:
+    """Registration intent permits a source attempt, never activation or data use.
+
+    The existing onboarding reconciler already acquires initial evidence while
+    pending. Reuse its identity checks without requiring its completed baseline.
+    The caller must authenticate these rows through the four-table capture Owner.
+    """
+    if cutoff.utcoffset() is None:
+        raise ValueError('source_intake_aware_cutoff_required')
+    denials = []
+    if not item.monitoring_requested or item.onboarding_state == OnboardingState.INACTIVE:
+        denials.append('source_intake_user_disabled')
+    requested = item.registration_requested_at
+    if requested is None or requested.replace(tzinfo=requested.tzinfo or UTC) > cutoff:
+        denials.append('source_intake_current_registration_intent_required')
+    market = market_scope_for_security(item.ticker, item.exchange)
+    if item.ticker != normalize_ticker(item.ticker) or market not in {'kr', 'us'}:
+        denials.append('source_intake_normalized_market_identity_required')
+    ready, safe, _ = _security_readiness(item, security, market)
+    if not ready:
+        denials.append('source_intake_original_security_requirements')
+    if (security is None or company is None or thesis is None
+            or any(row.ticker != item.ticker for row in (security, company, thesis) if row is not None)
+            or company.exchange != item.exchange or security.exchange != item.exchange):
+        denials.append('source_intake_registration_identity_conflict')
+    if security is not None:
+        from app.services.unified_source_policy import prohibited_provider
+        # This is authenticated local registration intent, not approval of the
+        # named upstream provider or of any financial fact it may have supplied.
+        if (not policy.permits('canonical_local')
+                or security.identity_quality not in {'verified', 'partial'}
+                or not security.identity_provider or prohibited_provider(security.identity_provider)):
+            denials.append('source_intake_identity_provenance_denied')
+        updated = security.updated_at
+        if updated is None or updated.replace(tzinfo=updated.tzinfo or UTC) > cutoff:
+            denials.append('source_intake_identity_after_cutoff')
+        if security.country not in {'KR', 'US'} and security.issuer_type not in {'adr','foreign_private_issuer'}:
+            denials.append('source_intake_issuer_market_unresolved')
+        for key in ('issuer_type', 'ordinary_share_identifier', 'adr_ratio'):
+            watch_value, security_value = getattr(item, key), getattr(security, key)
+            if watch_value is not None and security_value is not None and watch_value != security_value:
+                denials.append('source_intake_issuer_basis_conflict')
+    if thesis is None or thesis.status != 'active' or not thesis.core_thesis.strip():
+        denials.append('source_intake_active_user_thesis_required')
+    return dict(contract='source-intake-eligibility-v1', ticker=item.ticker, market=market,
+        registered_source_intake_eligible=not denials, denials=sorted(set(denials)),
+        restricted_uses=safe, research_analysis_eligible=False,
+        current_production_ready=False, delivery_eligible=False,
+        authority='REGISTRATION_INTENT_ONLY_NOT_SOURCE_OR_ECONOMIC_USE',
+        source_collection_requires_separate_provider_authority=True,
+        send=False, database_modified=False)
+
+
 def evaluate_onboarding_readiness(
     session: Session,
     item: WatchlistItem,
