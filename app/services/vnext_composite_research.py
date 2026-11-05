@@ -154,11 +154,24 @@ def public_data(field, p):
 class CompositeView:
     """One bounded RuntimeStore snapshot, exact CAS verification, no writes."""
     def __init__(self, store, *, as_of, run_ids=None, tickers=None, kis_multisource_owner=None,
-                 reported_context=False):
+                 reported_context=False, registration_owner=None, registration_generation=None,
+                 registration_policy=None):
         self.store, self.cutoff = store, instant(as_of)
         self.reported_context = reported_context
         self.kis_multisource_owner = kis_multisource_owner
         self.as_of = self.cutoff.isoformat()
+        intake_identities=None
+        self.registration_admission=None
+        if registration_owner is not None or registration_generation is not None:
+            from app.services.prospective_class_c_owner import source_intake_snapshot
+            if not tickers or registration_policy is None:
+                raise ValueError('composite_intake_exact_subject_policy_required')
+            identities,receipt,_,_=source_intake_snapshot(registration_owner,
+                generation_id=registration_generation,subjects=tuple(tickers),policy=registration_policy)
+            intake_identities={t:{k:r.get(k) for k in PUBLIC_ID} for t,r in identities.items()}
+            self.registration_admission=dict(contract='composite-source-intake-reference-v1',
+                registration_sha256=digest(receipt),purpose='RESEARCH_NO_SEND',
+                current_production=False,send=False)
         self.raw, self.capture_proofs, self.visiting = {}, {}, set()
         with store.connect() as c:
             runs = c.execute('SELECT run_id,started_at,as_of,status FROM research_run ORDER BY started_at,run_id LIMIT 17').fetchall()
@@ -177,7 +190,7 @@ class CompositeView:
             if tickers is not None and (not tickers or len(tickers)>500 or len(set(tickers))!=len(tickers)):
                 raise ValueError('composite_subject_scope')
             subject_clause = '' if tickers is None else ' AND s.ticker IN ('+','.join('?' for _ in tickers)+')'
-            self.identities = {r[0]: dict(zip(PUBLIC_ID, r)) for r in c.execute(
+            self.identities = intake_identities if intake_identities is not None else {r[0]: dict(zip(PUBLIC_ID, r)) for r in c.execute(
                 'SELECT ' + cols + ' FROM securitymaster s JOIN watchlistitem w ON w.ticker=s.ticker WHERE w.active=1'+subject_clause+' ORDER BY s.ticker',tuple(tickers or []))}
             captures = c.execute('SELECT capture_id,run_id,provider,request_key,raw_sha,raw_path,captured_at,receipt_json FROM source_capture WHERE run_id IN ('+marks+') LIMIT 10001', tuple(self.runs)).fetchall()
             # Scoped stock views retain the macro fields already admitted by
@@ -191,6 +204,8 @@ class CompositeView:
         for row in captures:
             self.captures[(row[1], row[4])].append(row)
         self.snapshot_sha = digest(dict(runs=self.runs, identities=self.identities, captures=captures, observations=self.rows))
+        if self.registration_admission is not None:
+            self.snapshot_sha=digest(dict(source_snapshot=self.snapshot_sha,registration=self.registration_admission))
 
     def source(self, run, sha, capture_id=None):
         key = (run, sha, capture_id)

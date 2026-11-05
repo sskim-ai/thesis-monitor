@@ -131,6 +131,25 @@ def revoke_source_intake(owner):
     del _INTAKES[owner]
 
 
+def source_intake_snapshot(owner, *, generation_id, subjects, policy):
+    """Private typed adapter input. A receipt alone cannot recover this state."""
+    if type(owner) is not SourceIntakeOwner or owner not in _INTAKES:
+        raise ValueError('source_intake_live_owner_required')
+    approval,capture,document = _INTAKES[owner]
+    receipt=json.loads(document)
+    if (not subjects or len(set(subjects)) != len(subjects)
+            or receipt['identity_policy_sha256'] != digest(sorted(policy.allowed_providers))):
+        raise ValueError('source_intake_adapter_policy_or_subjects')
+    for ticker in subjects:
+        require_source_intake(owner,generation_id=generation_id,ticker=ticker)
+    raw,captured=captured_private_snapshot(capture)
+    rows=json.loads(raw)
+    identities={r['ticker']:r for r in rows['securitymaster'] if r['ticker'] in subjects}
+    if set(identities)!=set(subjects):
+        raise ValueError('source_intake_adapter_identity_coverage')
+    return identities,receipt,capture,approval
+
+
 def record_backend_approval(decision: ApprovalDecision) -> OperatorApproval:
     """Trusted operator adapter only, never called with model/request payloads.
 

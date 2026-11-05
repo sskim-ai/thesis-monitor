@@ -39,10 +39,48 @@ def _parsed(pages, market, timeframe, parser_root, parser_pins):
     return sorted(parsed['rows'], key=lambda r: r['date']), parsed['parser_sha256']
 
 
+class CapturedScopedStockPlan:
+    """Exact old Worker bytes for dated replay, NOT a current StockPlan grant."""
+    __slots__=('_raw',)
+
+    def __init__(self, value):
+        from app.services.scoped_source_plan import ScopedStockRead
+        required={'contract','run_id','acquisition_id','frozen_at','reads','owner_files'}
+        if (set(value)!=required or value['contract']!='current-scoped-stock-capture-v1'
+                or not value['owner_files'] or not value['reads']):
+            raise ValueError('history_exact_scoped_worker_plan_required')
+        if datetime.fromisoformat(value['frozen_at']).utcoffset() is None:
+            raise ValueError('history_original_scoped_plan_time')
+        reads=tuple(ScopedStockRead.model_validate(r) for r in value['reads'])
+        if len({r.entry_id for r in reads})!=len(reads):
+            raise ValueError('history_original_scoped_duplicate_role')
+        object.__setattr__(self,'_raw',json.dumps(value,sort_keys=True,allow_nan=False))
+
+    def __setattr__(self,name,value):
+        raise AttributeError('history_original_scoped_plan_immutable')
+
+    @property
+    def run_id(self):return self.model_dump()['run_id']
+
+    @property
+    def acquisition_id(self):return self.model_dump()['acquisition_id']
+
+    @property
+    def frozen_at(self):return datetime.fromisoformat(self.model_dump()['frozen_at'])
+
+    @property
+    def reads(self):
+        from app.services.scoped_source_plan import ScopedStockRead
+        return tuple(ScopedStockRead.model_validate(r) for r in self.model_dump()['reads'])
+
+    def model_dump(self, **kwargs):
+        return json.loads(self._raw)
+
+
 class LegacyChartReplay:
     """Backend byte capability; reuse the original stock receipt validator."""
     def __init__(self, *, plan, receipts, artifact_reader, parser_root, parser_pins):
-        if type(plan) is not StockPlan or not callable(artifact_reader):
+        if type(plan) not in (StockPlan,CapturedScopedStockPlan) or not callable(artifact_reader):
             raise ValueError('history_original_plan_reader_required')
         self.plan, self.receipts, self.read = plan, deepcopy(receipts), artifact_reader
         self.root, self.pins = parser_root, parser_pins
@@ -85,7 +123,8 @@ class LegacyChartReplay:
             page_sha256=[p['source_sha256'] for p in receipt['pages']],
             requested_source_session=r.latest_completed_session,
             captured_at=receipt['completed_at'], parser_sha256=parser_sha,
-            basis='adjusted_close', source_kind='NATIVE', source_exhausted=previous['cont_yn'] != 'Y')
+            basis='adjusted_close', source_kind='NATIVE_SCOPED_HISTORICAL_V1' if type(self.plan) is CapturedScopedStockPlan else 'NATIVE',
+            source_exhausted=previous['cont_yn'] != 'Y')
 
 
 def _public_replay(owner, security, timeframe, parser_root, parser_pins):
