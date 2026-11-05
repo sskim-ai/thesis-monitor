@@ -131,3 +131,67 @@ def capture_persisted_owner(session: Session, *, root: Path, run_id: str, role: 
         artifact_sha256=hashlib.sha256((root / artifact).read_bytes()).hexdigest(),
         denial=None if projected["values"] and projected["eligible"] else DENIAL)
     return item, persisted_owner(role=role, family=family, policy=policy)
+
+
+def project_retained_publications(publications, *, bodies, cutoff, policy):
+    """Map sealed provider rows to original Class-C owners, never a new run.
+
+    Only an isolated in-memory database is used. Its IDs identify derived
+    records, not records allegedly read from an operating database.
+    """
+    from pydantic import TypeAdapter
+    from app.macro.providers.base import CollectedObservation
+    from app.macro.storage import _dedupe_key, _freshness_status
+    if (publications.get('contract') != 'fresh-publication-replay-v1'
+            or digest(publications['providers']) != publications['value_sha256']
+            or set(publications['providers']) != {'fred','eia','ecos'} or cutoff.utcoffset() is None):
+        raise ValueError('retained_publication_envelope_invalid')
+    started,query,ended = (datetime.fromisoformat(publications[k]) for k in
+        ('run_started_at','query_as_of','acquisition_cutoff'))
+    if any(t.utcoffset() is None for t in (started,query,ended)) or not started <= query <= ended <= cutoff:
+        raise ValueError('retained_publication_clock_invalid')
+    engine=create_engine('sqlite://')
+    try:
+        MacroObservation.__table__.create(engine)
+        with Session(engine) as session:
+            for name,doc in sorted(publications['providers'].items()):
+                policy.require(name)
+                hashes=doc['source_hashes'];raw=bodies[name]
+                if (digest(doc['value']) != doc['value_sha256'] or set(hashes)!=set(raw)
+                        or any(hashlib.sha256(raw[k]).hexdigest()!=s for k,s in hashes.items())):
+                    raise ValueError('retained_publication_source_hash_invalid')
+                seen=set()
+                for r in doc['original_receipts']:
+                    a=r['artifact'];begin,finish=(datetime.fromisoformat(r[k]) for k in ('requested_at','received_at'))
+                    if (r['run_id']!=publications['run_id'] or r['provider']!=name or a in seen
+                            or r['outcome']!='HTTP_RESPONSE' or r['http_status']!=200
+                            or r['artifact_sha256']!=hashes.get(a)
+                            or not started<=query<=begin<=finish<=ended):
+                        raise ValueError('retained_publication_receipt_invalid')
+                    seen.add(a)
+                if seen!=set(raw):raise ValueError('retained_publication_unused_source')
+                for value in doc['value']['observations']:
+                    ob=TypeAdapter(CollectedObservation).validate_python(value)
+                    temporal=ob.raw_payload['publication_context']
+                    retrieved=datetime.fromisoformat(temporal['retrieved_at'])
+                    if (temporal['provider']!=name or temporal['series_code']!=ob.series_code
+                            or temporal['response_sha256'] not in hashes.values()
+                            or temporal['query_as_of']!=publications['query_as_of']
+                            or retrieved.utcoffset() is None or not query<=retrieved<=ended):
+                        raise ValueError('retained_publication_observation_unbound')
+                    session.add(MacroObservation(dedupe_key=_dedupe_key(name,ob),provider=name,
+                        **{k:getattr(ob,k) for k in ('series_code','category','observed_at','market_session',
+                            'value','unit','frequency','previous_value','change_value','change_pct','source_url',
+                            'is_preliminary','is_revised')},retrieved_at=retrieved,vintage_at=query,
+                        quality_status=ob.quality_status or _freshness_status(ob,query),
+                        raw_payload=json.dumps(ob.raw_payload,ensure_ascii=False)))
+            session.commit()
+            projections={role:project_macro_records(session,role=role,cutoff=cutoff,policy=policy)
+                for role in ('rates_credit_liquidity_risk','energy','korea_macro')}
+    finally:engine.dispose()
+    return dict(contract='retained-publication-class-c-projection-v1',
+        original_run_id=publications['run_id'],original_query_as_of=publications['query_as_of'],
+        original_acquisition_cutoff=publications['acquisition_cutoff'],evaluation_cutoff=cutoff.isoformat(),
+        source_replay_sha256=digest(publications),projections=projections,
+        record_identity='DERIVED_IN_MEMORY_NOT_OPERATING_DB',
+        qualification='HISTORICAL_SOURCE_REUSABLE_NOT_CURRENT_PARENT',production_seed_qualified=False)

@@ -49,14 +49,21 @@ def _period(d,timeframe):
     return d.replace(day=1).isoformat()
 
 @lru_cache(maxsize=128)
-def _calendar_periods(market,start,end,timeframe):
-    cal=exchange_calendar.get_calendar('XKRX' if market=='kr' else 'XNYS',
-        start=date.fromisoformat(start)-timedelta(days=40),end=date.fromisoformat(end)+timedelta(days=40))
+def _calendar_periods(market,start,end,timeframe,calendar_policy=None):
+    if calendar_policy is not None:
+        from app.services.vnext_dated_calendar import calendar_for_range, POLICY
+        if calendar_policy != POLICY or market != 'kr' or timeframe != 'daily':
+            raise ValueError('indicator_dated_calendar_daily_kr_only')
+        _,cal=calendar_for_range('KR',start=date.fromisoformat(start),
+            end=date.fromisoformat(end),policy=calendar_policy)
+    else:
+        cal=exchange_calendar.get_calendar('XKRX' if market=='kr' else 'XNYS',
+            start=date.fromisoformat(start)-timedelta(days=40),end=date.fromisoformat(end)+timedelta(days=40))
     sessions=cal.sessions_in_range(start,end)
     keys=list(dict.fromkeys(_period(s.date(),timeframe) for s in sessions))
     return {key:i for i,key in enumerate(keys)}
 
-def project_indicators(rows,*,read,observed_at,generation,raw_sha256,engine,algorithm_sha256):
+def project_indicators(rows,*,read,observed_at,generation,raw_sha256,engine,algorithm_sha256,calendar_policy=None):
     if (not rows or observed_at.utcoffset() is None or not raw_sha256
             or any(not re.fullmatch(r'[a-f0-9]{64}',s) for s in raw_sha256)
             or read.owner!='ohlcv_analyst.KiwoomProvider.get_bars'):
@@ -69,7 +76,7 @@ def project_indicators(rows,*,read,observed_at,generation,raw_sha256,engine,algo
         try:d=date.fromisoformat(str(row['date']))
         except (KeyError,ValueError):continue
         if d<=cutoff:parsed.append(d)
-    periods=_calendar_periods(read.market,min(parsed).replace(day=1).isoformat(),cutoff.isoformat(),read.timeframe) if parsed else {}
+    periods=_calendar_periods(read.market,min(parsed).replace(day=1).isoformat(),cutoff.isoformat(),read.timeframe,calendar_policy) if parsed else {}
     segments=[];current=[];previous=None;invalid=[];gaps=[]
     for row in ordered:
         quality=inspect_normalized_ohlcv_rows([row],timeframe=read.timeframe,cutoff=cutoff)
@@ -119,6 +126,10 @@ def project_indicators(rows,*,read,observed_at,generation,raw_sha256,engine,algo
         independent_evidence_group='UNADJUSTED_WEEKLY_SOURCE_ONLY_NOT_ADDITIONAL_ADJUSTED_TECHNICAL_VOTE' if not read.adjusted else read.role,
         investor_flows='NOT_FETCHED',indicator_requirements=descriptor,latest_availability=availability,
         bars=derived,pandas_version=pd.__version__)
+    if calendar_policy is not None:
+        from app.services.vnext_dated_calendar import SOURCE_URL,VISIBLE_TABLE_SHA256
+        payload.update(contract='historical-original-indicator-projection-v2',calendar_policy=calendar_policy,
+            calendar_evidence=dict(source=SOURCE_URL,visible_table_sha256=VISIBLE_TABLE_SHA256))
     return payload
 
 def cached_project(cache,rows,**kwargs):
@@ -126,6 +137,7 @@ def cached_project(cache,rows,**kwargs):
     identity=dict(rows=digest(rows),read=kwargs['read'].model_dump(mode='json'),observed_at=kwargs['observed_at'].isoformat(),
         generation=kwargs['generation'],raw_sha256=kwargs['raw_sha256'],algorithm_sha=kwargs['algorithm_sha256'],
         adapter_sha=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),pandas=pd.__version__)
+    if kwargs.get('calendar_policy') is not None:identity['calendar_policy']=kwargs['calendar_policy']
     key=digest(identity);path=cache/(key+'.json.gz')
     if path.exists():
         with gzip.open(path,'rb') as f:value=json.load(f)

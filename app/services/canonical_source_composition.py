@@ -68,6 +68,13 @@ def auxiliary_issuer_binding(stock_inputs):
         raise ValueError('us14_undeclared_auxiliary_dependency')
     return {'000660':source}
 
+def validate_fresh_context_generation(inputs, *, parent_run_id, started_at, source_policy_sha256):
+    """The original current-run guard, also callable before expensive replay."""
+    if (inputs['run_id'] != parent_run_id or inputs['run_started_at'] != started_at
+            or digest(sorted(inputs['policy'].allowed_providers)) != source_policy_sha256):
+        raise ValueError('fresh_context_generation_or_policy_mismatch')
+
+
 def compose_source_owners(*, seed: SourceRunBinding, market_inputs, stock_inputs,
                         authority_inputs, version_set, optional_denials, issuer_bridge,
                         publication_inputs=None, night_inputs=None, composition_metadata=None,
@@ -234,9 +241,8 @@ def compose_source_owners(*, seed: SourceRunBinding, market_inputs, stock_inputs
         from app.services.unified_sealed_context import replay_night
         pub, night_source = (fresh_context_inputs[k] for k in ('publications', 'night'))
         for inputs in (pub, night_source):
-            if (inputs['run_id'] != seed.parent_run_id or inputs['run_started_at'] != seed.started_at
-                    or digest(sorted(inputs['policy'].allowed_providers)) != seed.source_policy_sha256):
-                raise ValueError('fresh_context_generation_or_policy_mismatch')
+            validate_fresh_context_generation(inputs,parent_run_id=seed.parent_run_id,
+                started_at=seed.started_at,source_policy_sha256=seed.source_policy_sha256)
         publications = replay_fresh_publications(**pub)
         night = replay_night(**night_source)
         if (digest(publications) != seed.run_acquisitions.get('publications')
