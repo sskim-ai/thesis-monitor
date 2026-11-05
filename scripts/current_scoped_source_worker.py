@@ -150,7 +150,11 @@ emit({'attestation':dict(base_url=settings.kiwoom_base_url,environment=settings.
     original_settings_class=True,external_env_read=False)})
 
 
+market_records=[]
+last_auth_response=None
+
 def post(url, *, json, headers, timeout):
+    global last_auth_response
     request = httpx.Request('POST',url,json=json,headers=headers)
     emit({'wire':dict(method=request.method,url=str(request.url),headers=list(request.headers.multi_items()),
         body_b64=base64.b64encode(request.content).decode())})
@@ -163,8 +167,19 @@ def post(url, *, json, headers, timeout):
     response=data['response']
     if response.get('error'):
         raise httpx.TransportError('PARENT_SEALED_REQUEST_DENIED')
-    return httpx.Response(response['status'],content=base64.b64decode(response['body_b64'],validate=True),
+    result=httpx.Response(response['status'],content=base64.b64decode(response['body_b64'],validate=True),
         headers=response['headers'],request=request)
+    if str(url).endswith('/oauth2/token'):
+        last_auth_response=result
+    elif frozen.get('pending_handoff',{}).get('scope')=='PENDING_MARKET_COMPONENT_SOURCE_ONLY':
+        artifact=f'market-raw-{len(market_records)+1:03d}.body'
+        stock_worker.save(output/artifact,result.content)
+        market_records.append(dict(artifact=artifact,sha256=hashlib.sha256(result.content).hexdigest(),
+            api_id=headers.get('api-id'),status=result.status_code,
+            request_identity_sha256=stock_worker.sha(stock_worker.encoded(dict(method=request.method,url=str(request.url),
+                api_id=headers.get('api-id'),body=json,continuation=headers.get('cont-yn','N'),
+                next_key_sha256=hashlib.sha256(headers.get('next-key','').encode()).hexdigest())))))
+    return result
 
 
 owner.httpx = SimpleNamespace(post=post, HTTPError=httpx.HTTPError)
@@ -205,7 +220,7 @@ for line in sys.stdin:
             action=command['pending_handoff']
             expected_keys=set(pending_handoff)|{'nonce'}
             if (set(action)!=expected_keys or {k:v for k,v in action.items() if k!='nonce'}!=pending_handoff
-                    or pending_handoff.get('scope')!='SCOPED_SOURCE_ONLY_PENDING'
+                    or pending_handoff.get('scope') not in ('SCOPED_SOURCE_ONLY_PENDING','PENDING_MARKET_COMPONENT_SOURCE_ONLY')
                     or pending_handoff.get('generation_id')!=frozen['stock_plan']['run_id']
                     or not isinstance(action['nonce'],str) or len(action['nonce'])!=64):
                 raise PermissionError('PENDING_WORKER_HANDOFF_DENIED')
@@ -213,7 +228,44 @@ for line in sys.stdin:
             pending_ready=True
             continue
         if not pending_ready:raise PermissionError('PENDING_WORKER_HANDOFF_REQUIRED')
-        if (set(command) in ({'projection'}, {'short_reference'}, {'monitoring'}, {'price_session'})
+        market_only=pending_handoff is not None and pending_handoff['scope']=='PENDING_MARKET_COMPONENT_SOURCE_ONLY'
+        if market_only and (frozen['stock_plan']['reads'] or not set(command) in ({'market_wire'},{'market_replay'},{'discovery'},{'market'})):
+            raise PermissionError('PENDING_MARKET_COMPONENT_COMMAND_SCOPE')
+        if set(command)=={'market_wire'} and market_only:
+            action=command['market_wire'];key=action['logical_id']
+            template=frozen['market_wire_templates'][key]
+            if ('market_wire',key) in done:raise ValueError('MARKET_WIRE_ALREADY_CONSUMED')
+            wire=__import__('json').loads(action['request_json']);expected=__import__('json').loads(template['request_json'])
+            body=__import__('json').loads(wire['body']);original=__import__('json').loads(expected['body'])
+            if wire['method']!='POST' or wire['url']!=expected['url'] or set(body)!=set(original):
+                raise ValueError('MARKET_WIRE_FROZEN_IDENTITY')
+            dynamic={'stex_tp'} if template.get('response_binding') else set()
+            if any(body[k]!=original[k] for k in body if k not in dynamic):
+                raise ValueError('MARKET_WIRE_BODY_IDENTITY')
+            done.add(('market_wire',key))
+            client=service.provider.client
+            if template['endpoint_operation']=='credential_exchange':
+                client.auth.get_access_token()
+                reply=last_auth_response
+                if reply is None:raise ValueError('MARKET_ORIGINAL_AUTH_RESPONSE_REQUIRED')
+            else:
+                headers=dict(wire['headers']);headers['authorization']='Bearer '+client.auth.get_access_token()
+                reply=client._post_with_retry(wire['url'].split('https://api.kiwoom.com',1)[1],template['endpoint_operation'],headers,body)
+            result=dict(status=reply.status_code,headers=list(reply.headers.multi_items()),body_b64=base64.b64encode(reply.content).decode())
+        elif set(command)=={'market_replay'} and market_only and command['market_replay'] in (1,2) and ('market_replay',command['market_replay']) not in done:
+            if not market_records:raise ValueError('MARKET_REPLAY_NONEMPTY_CAPTURE_REQUIRED')
+            checked=[]
+            for record in market_records:
+                raw=(output/record['artifact']).read_bytes()
+                if hashlib.sha256(raw).hexdigest()!=record['sha256']:raise ValueError('MARKET_REPLAY_RAW_HASH_CHANGED')
+                payload=json.loads(raw)
+                if record['status']!=200 or not isinstance(payload,dict) or str(payload.get('return_code','0')) not in ('0',''):
+                    raise ValueError('MARKET_REPLAY_ENVELOPE_DENIED')
+                checked.append(dict(record,network_calls=0))
+            artifact=f'market-replay-{command["market_replay"]}.json';raw=stock_worker.encoded(checked)
+            stock_worker.save(output/artifact,raw);done.add(('market_replay',command['market_replay']))
+            result=dict(status='MARKET_COMPONENT_RAW_REPLAY_PASS',artifact=artifact,sha256=hashlib.sha256(raw).hexdigest(),components=len(checked))
+        elif (set(command) in ({'projection'}, {'short_reference'}, {'monitoring'}, {'price_session'})
                 and (next(iter(command)),next(iter(command.values()))) not in done):
             kind=next(iter(command))
             entry = next(r for r in frozen['stock_plan']['reads'] if r['entry_id']==command[kind])

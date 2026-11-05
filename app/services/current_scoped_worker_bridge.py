@@ -26,7 +26,7 @@ class ScopedBridge(httpx.AsyncBaseTransport):
     KILL_SECONDS = 5
 
     def __init__(self, *, parent, original_plan, transport, worker, frozen, sha, output, credentials, market_reads,
-                 source_session=None, custody_policy=None):
+                 source_session=None, custody_policy=None, physical_windows=None):
         expected_worker = Path(__file__).resolve().parents[2] / "scripts/current_scoped_source_worker.py"
         if Path(worker).resolve() != expected_worker or Path(worker).is_symlink():
             raise ValueError("scoped_original_worker_required")
@@ -36,6 +36,11 @@ class ScopedBridge(httpx.AsyncBaseTransport):
         self.worker,self.frozen,self.sha,self.output=worker,frozen,sha,output
         self.credentials,self.market_reads=credentials,market_reads
         self.source_session,self.custody_policy=source_session,custody_policy
+        self.physical_windows=physical_windows
+        if physical_windows is not None:
+            from app.services.same_session_market_windows import SameSessionWindows
+            if type(physical_windows) is not SameSessionWindows or physical_windows.transport is not transport:
+                raise ValueError('scoped_market_original_windows_binding_required')
         self.process=None
         self.commands=[]
         self.busy=False
@@ -154,7 +159,7 @@ class ScopedBridge(httpx.AsyncBaseTransport):
                 request=httpx.Request(r['method'],r['url'],headers=r['headers'],
                     content=base64.b64decode(r['body_b64'],validate=True))
                 try:
-                    response=await self.transport.handle_async_request(request)
+                    response=await (self.physical_windows or self.transport).handle_async_request(request)
                     try:
                         await response.aread()
                         answer=dict(status=response.status_code,headers=list(response.headers.multi_items()),

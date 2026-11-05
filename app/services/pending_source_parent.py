@@ -27,7 +27,8 @@ FILES=('app/services/pending_source_parent.py','app/services/pending_source_inta
  'app/services/scoped_source_plan.py','app/services/sealed_fresh_dispatch.py',
  'app/services/query_time_monitoring_price.py','app/services/source_value_quality.py',
  'app/services/price_session_projection.py',
- 'app/services/sealed_response_binding.py')
+ 'app/services/sealed_response_binding.py','app/services/market_worker_rpc.py',
+ 'app/services/same_session_market_windows.py')
 
 class PendingSourceParent:
     __slots__=('__weakref__',)
@@ -97,6 +98,14 @@ def state(parent):
     if s['pid']!=os.getpid() or s['pins']!=pins():
         raise ValueError('pending_parent_process_or_code_changed')
     s['session'].attestation()
+    if 'market_approval' in s:
+        from app.services.prospective_class_c_owner import _approval
+        decision=_approval(s['market_approval'])
+        if ('market:'+s['market'] not in decision.subjects
+                or datetime.now(timezone.utc)>=s['market_expires']
+                or s['receipt']['scope']!='PENDING_MARKET_COMPONENT_SOURCE_ONLY'):
+            raise ValueError('pending_market_component_approval_expired_or_changed')
+        return s
     for read in s['wire']['stock_reads']:
         intake.consume_intake(s['intake'],generation_id=s['receipt']['generation_id'],role=read.role,
             security_ids=(read.canonical_security_id,),session=read.latest_completed_session)
@@ -120,7 +129,7 @@ def revoke_parent(parent):
 
 def public_handoff(parent):
     r=resolve_parent(parent)
-    return dict(contract=CONTRACT,scope=PURPOSE,generation_id=r['generation_id'],
+    return dict(contract=r['contract'],scope=r['scope'],generation_id=r['generation_id'],
         plan_sha256=r['plan_sha256'],parent_receipt_sha256=digest(r))
 
 def begin_worker(parent,*,worker_pid,handoff,process):
@@ -151,7 +160,56 @@ def require_worker(parent,worker_pid,*,physical=False):
 def replay_context(parent):
     from app.services.current_scoped_source_owner import ScopedSourceSpec
     s=state(parent);r=s['receipt'];plan=s['wire']['request_plan']
+    if 'market_approval' in s:
+        from types import SimpleNamespace
+        return deepcopy(r),SimpleNamespace(config=s['config'],cutoff=plan.frozen_at),{}
     spec=ScopedSourceSpec(config=s['config'],generation_id=plan.generation_id,cutoff=plan.frozen_at,
         code_sha=plan.code_sha,provider_config_sha256=plan.descriptors[0].config_identity_sha256,
         maximum_attempts=r['maximum_attempts'])
     return deepcopy(r),spec,deepcopy(s['identities'])
+
+
+_MARKET_ALLOCATIONS=WeakKeyDictionary()
+
+def issue_market_component_parent(*,approval,config,session,generation_id,cutoff,code_sha,
+        provider_config_sha256,maximum_attempts,enabled=False):
+    """Distinct opt-in Market component authority, not Class-C/ACTIVE ownership."""
+    from datetime import timedelta
+    from app.services.prospective_class_c_owner import _approval
+    from app.services.kiwoom_participant_session import ParticipatingSession
+    from app.services.kiwoom_global_lane import GlobalKiwoomLane
+    from app.services.scoped_source_plan import ScopedMarketComponentConfig
+    decision=_approval(approval);now=datetime.now(timezone.utc)
+    if (enabled is not True or type(config) is not ScopedMarketComponentConfig
+            or type(session) is not ParticipatingSession or type(session._lane) is not GlobalKiwoomLane
+            or session.kind!='CLI' or type(maximum_attempts) is not int or not 1<=maximum_attempts<=56
+            or not decision.effective_at<=cutoff<=now or not generation_id):
+        raise ValueError('pending_market_component_explicit_scope_required')
+    market=config.capture_selection.market_contexts[0]
+    if 'market:'+market not in decision.subjects:raise ValueError('pending_market_operator_scope_mismatch')
+    session.attestation()
+    wire=compile_scoped_wire_contract(config=config,identities={},generation_id=generation_id,
+        at=cutoff,code_sha=code_sha,provider_config_sha256=provider_config_sha256,retries=0)
+    plan=wire['request_plan'];attempts=sum(d.max_transport_attempts for d in plan.descriptors)
+    if wire['stock_reads'] or not 0<attempts<=maximum_attempts:
+        raise ValueError('pending_market_component_plan_or_budget_mismatch')
+    if any(not d.logical_request_id.startswith((market+'_market:','kiwoom:auth')) for d in plan.descriptors):
+        raise ValueError('pending_market_component_no_stock_or_other_provider')
+    with _LOCK:
+        allocated=_MARKET_ALLOCATIONS.setdefault(approval,{})
+        if market in allocated or sum(allocated.values())+maximum_attempts>150:
+            raise ValueError('pending_market_component_one_use_or_total_budget')
+        expiry=min(decision.expires_at,now+timedelta(minutes=15))
+        receipt=dict(contract='pending-market-component-parent-v1',scope='PENDING_MARKET_COMPONENT_SOURCE_ONLY',
+            generation_id=generation_id,market=market,plan_sha256=plan.plan_sha256,cutoff=cutoff.isoformat(),
+            expires_at=expiry.isoformat(),maximum_attempts=maximum_attempts,planned_attempts=attempts,
+            code_pins_sha256=digest(pins()),operator_approval_sha256=digest(decision.model_dump(mode='json')),
+            ClassC='NOT_ISSUED_NOT_REQUIRED_FOR_MARKET_COMPONENTS',MarketParent=False,
+            full22_native=False,D01_D02=False,financial_use=False,model_use=False,
+            source_evidence_state='MARKET_COMPONENT_PENDING_NOT_YET_CAPTURED')
+        parent=PendingSourceParent()
+        _LIVE[parent]=dict(pid=os.getpid(),pins=pins(),session=session,config=config,wire=wire,identities={},
+            receipt=receipt,claimed=False,worker_pid=None,challenge=None,ack=False,
+            market_approval=approval,market=market,market_expires=expiry)
+        allocated[market]=maximum_attempts
+        return parent,deepcopy(wire)
