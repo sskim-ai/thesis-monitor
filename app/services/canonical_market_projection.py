@@ -208,6 +208,15 @@ def _publication_facts(packet, assessed):
         require(doc['source_sha256'] == packet['class_c_versions'][name], 'publication_version_mismatch')
         projection = doc['projection']
         require(projection['contract'] == 'unified-class-c-owner-projection-v1', 'publication_owner_missing')
+        if not projection['values']:
+            require(projection.get('role') == role and projection.get('eligible') is False
+                and projection.get('version') == digest(projection['records'])
+                and projection.get('projection_sha256') == digest({k:v for k,v in projection.items()
+                    if k != 'projection_sha256'}), 'publication_empty_denial_not_owner_bound')
+            denials.append(dict(path=f'publication_context/{name}/projection',
+                reason='no_eligible_consumed_persisted_value',source_sha256=doc['source_sha256'],
+                owner_denials=deepcopy(projection['denials']),version=projection['version']))
+            continue
         for i, value in enumerate(projection['values']):
             observation = value.get('observation')
             path = f'publication_context/{name}/projection/values/{i}'
