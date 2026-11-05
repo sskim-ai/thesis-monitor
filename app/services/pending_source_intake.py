@@ -77,7 +77,45 @@ def _scope(scope):
     decision = approval_owner._approval(s['approval'])
     if s['pid'] != os.getpid() or s['code'] != _code() or _now() >= s['expires']:
         raise ValueError('pending_intake_scope_expired_or_changed')
+    if 'local_session' in s:
+        s['local_session'].attestation()
     return s, decision
+
+
+def record_backend_local_scope(*, approval, session, generation_id,
+                               source_generation_id, enabled=False):
+    """Trusted backend: explicit read-only approval plus original local lane.
+
+    This distinct policy does NOT attest remote account exclusivity. Original
+    per-request lane serialization, STOP, Worker custody and consumers remain.
+    The caller must bind the actual user instruction through ApprovalDecision.
+    """
+    from app.services.kiwoom_participant_session import ParticipatingSession
+    from app.services.kiwoom_global_lane import GlobalKiwoomLane
+    decision = approval_owner._approval(approval)
+    now = _now()
+    if (enabled is not True or type(session) is not ParticipatingSession
+            or type(session._lane) is not GlobalKiwoomLane or session.kind != 'CLI'
+            or not generation_id or generation_id != source_generation_id
+            or approval in _RUNS):
+        raise ValueError('pending_intake_original_local_session_required')
+    session.attestation()
+    fd = session._lane._open()
+    try:
+        if not session._lane._try_lock(fd):
+            raise ValueError('pending_intake_local_lane_busy')
+        session._lane._state()
+    finally:
+        os.close(fd)
+    scope = IntakeScope()
+    _SCOPES[scope] = dict(approval=approval, generation=generation_id,
+        confirmed_at=now, confirmation_sha256=decision.user_message_sha256,
+        expires=min(decision.expires_at, now+timedelta(minutes=15)),
+        pid=os.getpid(), code=_code(), local_session=session,
+        policy='PENDING_READ_ONLY_LOCAL_SERIALIZATION_V1',
+        remote_account_exclusivity='NOT_OBSERVABLE')
+    _RUNS[approval] = generation_id
+    return scope
 
 
 def issue_intake(*, scope, capture, market, expected_capture_sha256, enabled=False):

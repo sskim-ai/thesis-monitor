@@ -50,8 +50,10 @@ def issue_parent(*,intake_owner,config,session,generation_id,cutoff,code_sha,
     if {s.market for s in config.subjects}!={market}:
         raise ValueError('pending_parent_exact_market')
     identities=deepcopy(state['identities'])
-    if set(identities)!={s.ticker for s in config.subjects}:
+    selected={s.ticker for s in config.subjects}
+    if not selected or not selected <= set(identities):
         raise ValueError('pending_parent_exact_subjects')
+    identities={ticker:identities[ticker] for ticker in selected}
     for s in config.subjects:
         original=identities[s.ticker]
         if (s.security_id,s.venue,s.issuer_id)!=(original['canonical_security_id'],original['exchange'],
