@@ -344,6 +344,14 @@ def _close(stock, read, spec, plan, dispatcher, capture, document):
         raise ValueError('scoped_replay_close_live_final_mismatch')
     if final['status'] == 'PASS':
         _sealed(dispatcher, capture, plan, d.logical_request_id)
+    if d.logical_request_id in dispatcher.role_quality_denials:
+        from datetime import date
+        from app.services.source_value_quality import strict_close_quality
+        actual=strict_close_quality(_read(capture,d.raw_path),target=date.fromisoformat(d.target_period),
+            logical_request_id=d.logical_request_id,observed_at=final['retrieval_time'])
+        if actual != dispatcher.role_quality_denials[d.logical_request_id] or actual.model_dump(mode='json') != _json(capture,'source-quality/'+d.logical_request_id+'.json'):
+            raise ValueError('scoped_close_quality_custody_mismatch')
+        return actual.model_dump(mode='json')
     if not document or document.get('sha256') != OFFICIAL_SPEC_SHA256:
         raise ValueError('scoped_replay_original_close_documentation_required')
     # Documentation is an explicitly copied public artifact inside capture_root.
@@ -375,7 +383,7 @@ def _completed_close_inputs(spec, stock):
     if not isinstance(selection, (ScopedCaptureSelectionV2, ScopedPriceCaptureSelection)):
         return stock, tuple(r for r in stock.reads if r.market == 'us' and r.role == 'adjusted_daily')
     reads = []
-    if selection.us_completed_closes:
+    if selected_independent_closes(spec.config):
         states, _ = _sessions(spec.cutoff)
         for subject in selected_independent_closes(spec.config):
             reads.append(ScopedStockRead(**stock_read_fields(subject=subject.ticker,
@@ -499,7 +507,7 @@ def _eligible_role(parent, dispatcher, entry_id):
     binding = _CAPTURES.get(dispatcher)
     if not binding or binding['parent'] is not parent:
         raise ValueError('scoped_role_live_capture_required')
-    receipt, _, plan, stock, capture, worker = _context(parent, binding['wire'],
+    receipt, spec, plan, stock, capture, worker = _context(parent, binding['wire'],
         binding['stock_plan'], dispatcher, binding['capture'], binding['worker'])
     _, rows = _worker_custody(parent, dispatcher, plan, stock, capture, worker)
     reads = [(i, r) for i, r in enumerate(stock.reads, 1) if r.entry_id == entry_id]
@@ -510,8 +518,31 @@ def _eligible_role(parent, dispatcher, entry_id):
     proof = _stock_role(stock, read, original, worker / 'stocks', dispatcher, capture,
                         plan, rows.get(entry_id))
     projection = None
+    monitoring = None
     normalized_sha = original['normalized_sha256']
-    if read.timeframe == 'daily':
+    from app.services.scoped_source_plan import ScopedMonitoringCaptureSelection
+    if read.timeframe == 'daily' and isinstance(spec.config.capture_selection, ScopedMonitoringCaptureSelection):
+        from app.services.query_time_monitoring_price import project_monitoring_rows
+        value = _json(worker, f'monitoring-{ordinal:03d}.json')
+        if value['receipt']['observation'] is None:
+            raise ValueError('scoped_monitoring_source_quality_denied')
+        frozen = json.loads(Path(binding['bridge'].frozen).read_bytes())
+        result = dict(status='QUERY_TIME_SNAPSHOT_REPLAY_PASS',entry_id=entry_id,
+            artifact=f'monitoring-{ordinal:03d}.json',sha256=_sha(_read(worker,f'monitoring-{ordinal:03d}.json')))
+        matches = [c for c in binding['bridge'].commands if c['command']=={'monitoring':entry_id}
+            and c['result_sha256']==_digest(result) and not c['sealed_receipts']]
+        if (len(matches)!=1 or value['parser_pins']!=frozen['external_pins']
+                or [p['sha256'] for p in value['receipt']['observation']['source_pages']] != [p['source_sha256'] for p in original['pages']]
+                or proof['two_original_owner_replays']!='PASS'
+                or proof['original_window_validation']['status']!='PASS'):
+            raise ValueError('scoped_monitoring_original_worker_replay_required')
+        monitoring=project_monitoring_rows(value['all_rows'],read=read,frozen_at=stock.frozen_at,
+            observed_at=datetime.fromisoformat(original['completed_at']),
+            source_pages=value['receipt']['observation']['source_pages'])
+        if monitoring!=value['receipt'] or monitoring['rows']!=value['rows'] or not monitoring['window_eligible']:
+            raise ValueError('scoped_monitoring_quality_or_replay_denied')
+        normalized_sha=monitoring['rows_sha256']
+    elif read.timeframe == 'daily':
         from app.services.completed_session_projection import project_completed_rows
         path = f'projection-{ordinal:03d}.json'
         raw = _read(worker, path)
@@ -542,7 +573,7 @@ def _eligible_role(parent, dispatcher, entry_id):
         bars = json.loads(_read(worker / 'stocks', original['normalized_artifact'], original['normalized_sha256']))
         period_proof = capture_period_proof(bars, read=read, receipt=original,
             original_proof=proof, cutoff=stock.frozen_at, parser_pins=frozen['external_pins'])
-    elif projection is None and proof['original_role_validation']['current_session_aligned'] is not True:
+    elif projection is None and monitoring is None and proof['original_role_validation']['current_session_aligned'] is not True:
         raise ValueError('scoped_role_current_session_alignment_unproven')
     value = dict(contract='current-scoped-role-source-receipt-v1',
         consumer='SCOPED_SOURCE_ONLY', generation_id=plan.generation_id,
@@ -570,6 +601,11 @@ def _eligible_role(parent, dispatcher, entry_id):
         value.update(contract='pending-scoped-role-source-receipt-v1-wm' if period_proof is not None else 'pending-scoped-role-source-receipt-v1',
             source_evidence_state=period_proof['state'] if period_proof is not None else 'SOURCE_OBSERVED_PENDING',current_source_authority=False,
             production_eligible=False,registration_scope='PENDING_ONBOARDING')
+    if monitoring is not None:
+        value.update(contract='current-scoped-monitoring-role-source-receipt-v1',
+            monitoring_snapshot=monitoring,current_source_authority=False,
+            source_evidence_state='QUERY_TIME_SNAPSHOT_SOURCE_ONLY_NOT_FINAL',
+            rows=len(monitoring['rows']))
     return value
 
 
@@ -622,7 +658,9 @@ def read_source_rows(parent, capability, *, dispatcher, entry_id, consumer='SCOP
         entry_id=entry_id, consumer=consumer)
     binding = _CAPTURES[dispatcher]
     ordinal = next(i for i,r in enumerate(binding['stock_plan']['reads'],1) if r['entry_id']==entry_id)
-    if receipt['projection']:
+    if receipt.get('monitoring_snapshot'):
+        rows = _json(binding['worker'], f'monitoring-{ordinal:03d}.json')['rows']
+    elif receipt['projection']:
         rows = _json(binding['worker'], f'projection-{ordinal:03d}.json')['rows']
     else:
         original = _json(binding['worker']/'stocks', f'role-{ordinal:03d}.receipt.json')

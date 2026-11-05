@@ -67,6 +67,9 @@ class SealedSourceTransport(httpx.AsyncBaseTransport):
             if resolved == public:
                 matches.append(d)
         if len(matches) != 1:
+            reject=getattr(run,'reject_unbound_wire',None)
+            if reject is not None:
+                await reject()
             raise SourceSafetyStop('native_request_not_unique_sealed_slot')
         d = matches[0]
         final = await run.execute(d.logical_request_id, request, transport=self.inner, normalize=CapturedFragment(d))

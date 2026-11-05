@@ -31,6 +31,8 @@ OWNER_FILES = tuple(sorted(set(WIRE_OWNER_FILES) | {
     "app/services/current_scoped_source_owner.py",
     "app/services/current_scoped_source_results.py",
     "app/services/current_scoped_source_dispatch.py",
+    "app/services/query_time_monitoring_price.py",
+    "app/services/source_value_quality.py",
     "app/services/scoped_external_code_manifest.py",
     "app/services/kiwoom_account_pacing.py",
     "app/services/short_history_reference.py",
