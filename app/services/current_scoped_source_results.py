@@ -568,7 +568,7 @@ def _eligible_role(parent, dispatcher, entry_id):
         from app.services import pending_source_parent as pending
         pending.require_worker(parent,binding['bridge'].process.pid)
         value.update(contract='pending-scoped-role-source-receipt-v1-wm' if period_proof is not None else 'pending-scoped-role-source-receipt-v1',
-            source_evidence_state='SOURCE_OBSERVED_PENDING',current_source_authority=False,
+            source_evidence_state=period_proof['state'] if period_proof is not None else 'SOURCE_OBSERVED_PENDING',current_source_authority=False,
             production_eligible=False,registration_scope='PENDING_ONBOARDING')
     return value
 
