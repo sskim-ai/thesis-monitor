@@ -57,7 +57,9 @@ DART = Limits(2, 200, 1, 1, 2, 0, 0, 0)
 
 
 def make_plan(security, *, market, cutoff, run_id, all_subjects_fresh=False, exact_financial_owner=False,
-              fpi_nomination=None):
+              fpi_nomination=None, maximum_retries_per_request=2):
+    if type(maximum_retries_per_request) is not int or not 0 <= maximum_retries_per_request <= 2:
+        raise AcquisitionDenied('finite_transient_retry_policy_required')
     if type(all_subjects_fresh) is not bool:
         raise AcquisitionDenied('explicit_acquisition_mode_required')
     if type(exact_financial_owner) is not bool:
@@ -100,10 +102,10 @@ def make_plan(security, *, market, cutoff, run_id, all_subjects_fresh=False, exa
         "security": security, "identity_sha256": digest(security),
         "cutoff": cutoff.isoformat(), "begin": (cutoff.date() - timedelta(days=550)).isoformat(),
         "forms": forms, "limits": asdict(limits), "named_caps": names, "timeout_seconds": 600,
-        "maximum_retries_per_request": 2, "maximum_attempts_per_request": 3,
+        "maximum_retries_per_request": maximum_retries_per_request, "maximum_attempts_per_request": maximum_retries_per_request+1,
         "planned_logical_requests": limits.discovery + limits.companyfacts,
         "maximum_logical_requests": limits.maximum_logical,
-        "maximum_HTTP_attempts": limits.maximum_logical * 3,
+        "maximum_HTTP_attempts": limits.maximum_logical * (maximum_retries_per_request+1),
         "planned_retry_attempts": 0, "redirects": False,
         "selection": "latest_period_current_and_prior_year_comparable_no_value_ranking",
         "scope": "reported_revenue_operating_income_net_income_only"}
