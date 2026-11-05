@@ -131,13 +131,18 @@ def _context(parent, wire, stock_plan, dispatcher, capture_root, worker_root):
     from app.services.current_scoped_source_dispatch import CurrentScopedDispatcher
 
     plan = wire['request_plan']
-    receipt = owners.resolve_parent(parent, plan=plan)
+    from app.services import pending_source_parent as pending
+    from app.services.source_dispatch_authority import resolve_parent
+    receipt = resolve_parent(parent, plan=plan)
     # Only the public configuration in the live capability is used here, never
     # the private registration documents retained by the original parent.
-    with owners._LOCK:
-        spec = owners.ScopedSourceSpec.model_validate_json(owners._PARENTS[parent].spec_json)
-    identities = {s.ticker: dict(canonical_security_id=s.security_id, exchange=s.venue)
-                  for s in spec.config.subjects}
+    if type(parent) is pending.PendingSourceParent:
+        _,spec,identities=pending.replay_context(parent)
+    else:
+        with owners._LOCK:
+            spec = owners.ScopedSourceSpec.model_validate_json(owners._PARENTS[parent].spec_json)
+        identities = {s.ticker: dict(canonical_security_id=s.security_id, exchange=s.venue)
+                      for s in spec.config.subjects}
     rebuilt = compile_scoped_wire_contract(config=spec.config, identities=identities,
         generation_id=spec.generation_id, at=spec.cutoff, code_sha=spec.code_sha,
         provider_config_sha256=spec.provider_config_sha256, retries=spec.retries)
@@ -559,6 +564,12 @@ def _eligible_role(parent, dispatcher, entry_id):
             period_evidence=dict(source_receipt=original,stock_plan=stock.model_dump(),
                 original_proof=proof,cutoff=stock.frozen_at.isoformat(),parser_pins=frozen['external_pins'],
                 replays=[_json(worker,f'raw-owner-replay-{n}.json') for n in (1,2)]))
+    if receipt.get('scope')=='SCOPED_SOURCE_ONLY_PENDING':
+        from app.services import pending_source_parent as pending
+        pending.require_worker(parent,binding['bridge'].process.pid)
+        value.update(contract='pending-scoped-role-source-receipt-v1-wm' if period_proof is not None else 'pending-scoped-role-source-receipt-v1',
+            source_evidence_state='SOURCE_OBSERVED_PENDING',current_source_authority=False,
+            production_eligible=False,registration_scope='PENDING_ONBOARDING')
     return value
 
 
@@ -671,7 +682,7 @@ def examine(parent, wire, stock_plan, dispatcher, capture_root, worker_root, mar
             result['markets'][market] = _market(market, spec, plan, dispatcher, capture, commands)
         except (ValueError, KeyError, TypeError, OSError, StopIteration) as exc:
             result['markets'][market] = _failure(exc, 'original_transitive_market_owner')
-    from app.services.current_scoped_source_owner import resolve_parent
+    from app.services.source_dispatch_authority import resolve_parent
     if resolve_parent(parent, plan=plan.original_plan()) != receipt:
         raise ValueError('scoped_replay_parent_changed_during_validation')
     result['source_only_roles_issued'] = sum(r['status'] == 'ISSUED_AND_CONSUMED_SOURCE_ONLY'

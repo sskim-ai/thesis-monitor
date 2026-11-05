@@ -14,7 +14,7 @@ from weakref import WeakKeyDictionary
 import httpx
 from pydantic import Field, model_validator
 
-from app.services import current_scoped_source_owner as parent_owner
+from app.services import source_dispatch_authority as parent_owner
 from app.services.sealed_fresh_dispatch import (
     RequestPlan, SealedDispatcher, binding_owner_hash, stamp, wire_identity,
 )
@@ -234,7 +234,7 @@ class CurrentScopedDispatcher(SealedDispatcher):
         self._busy = False
         self._http_stop = None
         self.admission = dict(status="CURRENT_SCOPED_DISPATCH_ADMITTED_SOURCE_NOT_QUALIFIED",
-            live_dispatch_allowed=True, scope="SCOPED_SOURCE_ONLY",
+            live_dispatch_allowed=True, scope=receipt.get('scope', "SCOPED_SOURCE_ONLY"),
             plan_sha256=public.plan_sha256, original_plan_sha256=original.plan_sha256,
             parent_receipt_sha256=public.parent_receipt_sha256, descriptor_count=len(public.descriptors),
             total_theoretical_max=planned, maximum_attempts=maximum, retries=0,
@@ -267,6 +267,7 @@ class CurrentScopedDispatcher(SealedDispatcher):
         if self.halted or self._active is None:
             raise SourceSafetyStop("scoped_physical_call_outside_execution")
         self._require_parent()
+        parent_owner.require_worker_dispatch(self._parent)
         descriptor, expected = self._active
         parent_owner.authorize_descriptor(self._parent, descriptor, plan=self._original)
         if len(request.content) > 16384 or wire_identity(request, self.secrets) != expected:

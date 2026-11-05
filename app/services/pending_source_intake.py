@@ -30,6 +30,7 @@ class PendingSourceIntake:
 _SCOPES = WeakKeyDictionary()
 _INTAKES = WeakKeyDictionary()
 _RUNS = WeakKeyDictionary()
+_ISSUED_MARKETS = WeakKeyDictionary()
 
 
 def _now():
@@ -83,6 +84,8 @@ def issue_intake(*, scope, capture, market, expected_capture_sha256, enabled=Fal
     if enabled is not True:
         raise ValueError('pending_intake_default_off')
     s, decision = _scope(scope)
+    if market in _ISSUED_MARKETS.get(scope,set()):
+        raise ValueError('pending_intake_market_already_issued')
     raw, receipt = captured_private_snapshot(capture)
     rows = json.loads(raw)
     cutoff = datetime.fromisoformat(receipt['cutoff'])
@@ -138,6 +141,7 @@ def issue_intake(*, scope, capture, market, expected_capture_sha256, enabled=Fal
     handle = PendingSourceIntake()
     _INTAKES[handle] = dict(scope=scope,capture=capture,capture_hash=digest(rows),
         receipt_hash=digest(receipt),public=public,identities=identities)
+    _ISSUED_MARKETS.setdefault(scope,set()).add(market)
     return handle, json.loads(json.dumps(public))
 
 
@@ -158,12 +162,15 @@ def consume_intake(handle, *, generation_id, role, security_ids, session):
     return json.loads(json.dumps(public))
 
 
-def require_live_worker_adapter(handle):
+def require_live_worker_adapter(handle, *, parent=None):
     """Never impersonate the ACTIVE-only original Parent or issue live HTTP."""
     if type(handle) is not PendingSourceIntake or handle not in _INTAKES:
         raise ValueError('pending_intake_live_owner_required')
     _scope(_INTAKES[handle]['scope'])
-    raise ValueError('SOURCE_INTAKE_ADAPTER_NOT_PROVEN')
+    from app.services import pending_source_parent as adapter
+    if type(parent) is not adapter.PendingSourceParent or adapter.state(parent)['intake'] is not handle:
+        raise ValueError('SOURCE_INTAKE_ADAPTER_NOT_PROVEN')
+    return adapter.resolve_parent(parent)
 
 
 def revoke_intake(handle):
