@@ -97,16 +97,19 @@ def validate_local_seed(seed):
     reject_current_carryin(seed)
 
 
-def _budget(count):
+def _budget(count, retries=2):
     if type(count) is not int or count < 1:
         raise ValueError('finite_positive_budget_required')
-    return dict(maximum_logical=count, maximum_HTTP_attempts=count * 3,
-        timeout_seconds=600, transient_retries=2, semantic_retries=0)
+    return dict(maximum_logical=count, maximum_HTTP_attempts=count * (retries+1),
+        timeout_seconds=600, transient_retries=retries, semantic_retries=0)
 
 
 def acquisition_plan(stock_plan, identities, *, kr_max_pages, exact_financial_owner=False,
-                     auxiliary_security=None, auxiliary_identity_sha256=None):
+                     auxiliary_security=None, auxiliary_identity_sha256=None, transient_retry_max=None):
     """Freeze every source class before network. No retained-subject exemption."""
+    if transient_retry_max is not None and (type(transient_retry_max) is not int or not 0 <= transient_retry_max <= 2):
+        raise ValueError('finite_transient_retry_policy_required')
+    retries=2 if transient_retry_max is None else transient_retry_max
     stock = StockPlan.model_validate(stock_plan)
     if type(kr_max_pages) is not int or not 1 <= kr_max_pages <= MAX_KR_REQUEST_PAGES:
         raise ValueError('finite_kr_page_cap_required')
@@ -117,7 +120,7 @@ def acquisition_plan(stock_plan, identities, *, kr_max_pages, exact_financial_ow
     if set(identities) != expected:
         raise ValueError('exact_22_current_security_identities_required')
     financial = {t: make_plan(identities[t], market=m, cutoff=stock.frozen_at,
-        run_id=stock.run_id, all_subjects_fresh=True, exact_financial_owner=exact_financial_owner)
+        run_id=stock.run_id, all_subjects_fresh=True, exact_financial_owner=exact_financial_owner,maximum_retries_per_request=retries)
         for m, subjects in universe.items() for t in subjects}
     auxiliary = {}
     if us_only:
@@ -125,7 +128,7 @@ def acquisition_plan(stock_plan, identities, *, kr_max_pages, exact_financial_ow
         if not auxiliary_security or auxiliary_security.get('ticker') != '000660':
             raise ValueError('us14_declared_auxiliary_issuer_required')
         financial['000660'] = make_plan(auxiliary_security, market='kr', cutoff=stock.frozen_at,
-            run_id=stock.run_id, all_subjects_fresh=True, exact_financial_owner=exact_financial_owner)
+            run_id=stock.run_id, all_subjects_fresh=True, exact_financial_owner=exact_financial_owner,maximum_retries_per_request=retries)
         auxiliary['000660'] = AuxiliaryIssuerDependency(run_id=stock.run_id,cutoff=stock.frozen_at,
             source_plan_sha256=digest(financial['000660']),
             official_identity_sha256=auxiliary_identity_sha256).model_dump(mode='json')
@@ -147,9 +150,9 @@ def acquisition_plan(stock_plan, identities, *, kr_max_pages, exact_financial_ow
             del maxima[name]
     if us_only:
         del maxima['kr_market_wire']
-    budgets = {name: _budget(count) for name, count in maxima.items()}
+    budgets = {name: _budget(count,retries) for name, count in maxima.items()}
     for ticker, plan in financial.items():
-        budgets['financial:'+ticker] = _budget(plan['maximum_logical_requests'])
+        budgets['financial:'+ticker] = _budget(plan['maximum_logical_requests'],retries)
     result = dict(contract=CONTRACT, run_id=stock.run_id, started_at=stock.frozen_at.isoformat(),
         plan_stage='OFFLINE_CANDIDATE_NOT_QUALIFIED', dispatch_allowed=False,
         stock_plan=stock.model_dump(mode='json'), financial_plans=financial,

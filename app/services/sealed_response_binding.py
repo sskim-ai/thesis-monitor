@@ -59,7 +59,8 @@ class ResponseBinding(ContractModel):
             rebuilt = make_plan(policy['security'], market=policy['market'],
                 cutoff=datetime.fromisoformat(policy['cutoff']), run_id=policy['run_id'], all_subjects_fresh=True,
                 exact_financial_owner=bool(policy.get('financial_owner_policy')),
-                fpi_nomination=policy.get('fpi_nomination'))
+                fpi_nomination=policy.get('fpi_nomination'),
+                maximum_retries_per_request=policy.get('maximum_retries_per_request', 2))
             if rebuilt != policy:
                 raise ValueError('binding_not_existing_financial_policy')
             market = 'us' if self.kind.startswith('SEC_') else 'kr'
