@@ -127,6 +127,10 @@ async def run_registered_valuation_source(*, preflight, base, external_root,
         raise ValueError('valuation_runner_exact_preflight_required')
     context={}
     def backend():
+        if (not callable(acquire_current_context) or not callable(load_credentials)
+                or inner is None or not callable(getattr(inner,'handle_async_request',None))
+                or not Path(external_root).is_dir() or Path(external_root).is_symlink()):
+            raise ValueError('valuation_runner_authorized_credentials_transport_required')
         for path,sha in pins.items():
             if digest(Path(path).read_bytes())!=sha:
                 raise ValueError('valuation_runner_code_changed')
@@ -189,6 +193,88 @@ async def run_registered_valuation_source(*, preflight, base, external_root,
     return dict(status='ORIGINAL_SOURCE_CAPTURE_AND_SEPARATE_COLD',preflight=prepared['receipt'],
         physical_attempts=run.physical_attempts,worker_returncode=worker.process.returncode,
         replay_sha256=digest(raw),cold=cold,source_only=True,send=False,current_economic_owner=False)
+
+
+def _mac_valuation_session():
+    from app.services.kiwoom_participant_session import ParticipatingSession
+    from app.services import (kiwoom_global_lane,kiwoom_participant_session,
+        current_scoped_worker_bridge,current_scoped_source_dispatch,
+        scoped_worker_launch,sealed_source_transport)
+    return ParticipatingSession(modules=(kiwoom_global_lane,kiwoom_participant_session,
+        current_scoped_worker_bridge,current_scoped_source_dispatch,
+        scoped_worker_launch,sealed_source_transport),caller_kind='CLI')
+
+
+async def run_mac_registered_valuation(*, decision, database, preflight, base,
+        external_root, settings_env_file, attempt_marker, enabled=False):
+    """One trusted operator call, current four-table capture, original live lane.
+
+    No public JSON/CLI grant or recurring approval. The exclusive marker prevents
+    a second campaign after partial failure; it cannot reconstruct capabilities.
+    """
+    import os
+    from pathlib import Path
+    from app.services import prospective_class_c_owner as registration
+    from app.services import registered_valuation_source_intent as intents
+    from app.services.minimal_class_c_export import ExportPermission,capture_authorized_class_c
+    from app.services.production_source_context import POLICY
+    from app.services.scoped_external_code_manifest import REQUIRED_V2
+    from app.services.vnext_research_store import digest
+    from app.config import Settings
+    import httpx
+    if enabled is not True or type(decision) is not registration.ApprovalDecision:
+        raise ValueError('mac_valuation_trusted_operator_explicit_enable_required')
+    if (set(decision.subjects)!=set(preflight['identities']) or not 1<=len(decision.subjects)<=8
+            or not decision.approved):
+        raise ValueError('mac_valuation_exact_approved_subjects')
+    if not Path(settings_env_file).is_file() or not Path(external_root).is_dir():
+        raise ValueError('mac_valuation_configuration_missing')
+    for name in REQUIRED_V2:
+        p=Path(external_root)/name
+        if p.is_symlink() or not p.is_file():raise ValueError('mac_valuation_external_code_missing')
+        p.read_bytes()
+    # Static plan, host code/boot and persistent STOP checks precede any SQL.
+    from app.services.valuation_research_preflight import prepare_registered_valuation
+    prepared=prepare_registered_valuation(**preflight,enabled=True)
+    session=_mac_valuation_session()
+    session.attestation();session._lane._state()
+    if prepared['receipt']['planned_attempts']>19:raise ValueError('mac_valuation_budget')
+    path=Path(database);s=path.stat()
+    permission=ExportPermission(decision.event_id,True,path,s.st_dev,s.st_ino,decision.subjects)
+    permission.require()
+    marker=Path(attempt_marker)
+    fd=os.open(marker,os.O_CREAT|os.O_EXCL|os.O_WRONLY|os.O_NOFOLLOW,0o600)
+    with os.fdopen(fd,'w') as f:
+        json.dump(dict(event=decision.event_id,approval_sha256=digest(decision.model_dump(mode='json')),
+            plan_sha256=prepared['receipt']['plan_sha256'],max_HTTP=19,retries=0),f)
+        f.flush();os.fsync(f.fileno())
+    approval=intent=None;capture_receipt={}
+    def context():
+        nonlocal approval,intent
+        approval=registration.record_backend_approval(decision)
+        capture=capture_authorized_class_c(permission)
+        from app.services.minimal_class_c_export import captured_private_snapshot
+        _,r=captured_private_snapshot(capture)
+        capture_receipt.update(sessions=1,SELECTs=len(r['statement_templates']),
+            total_changes=r['total_changes'],cutoff=r['cutoff'],receipt_sha256=digest(r))
+        intent,_=intents.issue_intent(approval=approval,capture=capture,
+            generation_id=preflight['generation_id']+':intent',policy=POLICY,enabled=True)
+        return dict(intent=intent,intent_generation=preflight['generation_id']+':intent',session=session)
+    def credentials():
+        settings=Settings(_env_file=settings_env_file)
+        if settings.kiwoom_rest_base_url!='https://api.kiwoom.com':
+            raise ValueError('mac_valuation_official_endpoint_required')
+        return dict(app_key=settings.kiwoom_app_key,secret_key=settings.kiwoom_secret_key)
+    try:
+        async with httpx.AsyncHTTPTransport(retries=0,verify=True,trust_env=False) as inner:
+            with session.operation():
+                result=await run_registered_valuation_source(preflight=preflight,base=base,
+                    external_root=external_root,acquire_current_context=context,
+                    load_credentials=credentials,inner=inner,enabled=True)
+                return dict(result,registration_capture=capture_receipt)
+    finally:
+        if intent is not None:intents.revoke_intent(intent)
+        if approval is not None:registration.revoke_approval(approval)
 
 
 def run_manual_source_canary(config, *, source_owner_factory, registry, identity, **kwargs):

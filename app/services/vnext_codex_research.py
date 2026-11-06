@@ -61,7 +61,10 @@ def numeric_catalog(packet):
             row=d.get('row',{});key='close' if 'close' in row else 'close_price'
             add(e,'/data/row/'+key,row.get(key),d.get('currency'),d.get('adjustment') or 'REPORTED_COMPLETED_CLOSE_REFERENCE',d.get('calendar',{}).get('session'))
         elif field.startswith('valuation.') and d.get('display_eligible'):
-            add(e,'/data/value',d.get('value'),'multiple',d['metric_semantic']+'; '+str(d.get('horizon_authority') or 'PROVIDER_NATIVE'),d['retrieval_timestamp'])
+            analysis=d.get('contract')=='VALUATION_ANALYSIS_FACT_V1'
+            add(e,'/data/value',d.get('value'),d['unit'] if analysis else 'multiple',
+                d['metric_semantic']+'; '+str(d.get('horizon_authority') or d.get('forecast_fiscal_period') or 'PROVIDER_NATIVE'),
+                d['retrieval_timestamp'])
         elif field.startswith('macro.'):
             ob=d.get('observation',{});temporal=ob.get('raw_payload',{}).get('publication_context',{})
             if temporal.get('display_eligible'):
