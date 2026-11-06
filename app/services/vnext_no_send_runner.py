@@ -19,6 +19,7 @@ import uuid
 from app.services.vnext_no_send_controller import NoSendController, calendar_gate, MODEL
 from app.services.vnext_research_store import digest, encoded, plain
 from app.services.vnext_public_capture import target_session
+from app.services.vnext_execution_profile import ASTRA_XHIGH_V1, require_profile
 
 CONTRACT = 'isolated-no-send-host-runner-v1'
 MAX_SECONDS = 600
@@ -252,7 +253,7 @@ def run_slot(config, *, market, at, watermark, identity, operation=None,
 
 def run_manual_research(config, *, scope, identity, approval=None, operation=None,
                         enabled=False, timeout_seconds=MAX_SECONDS, initialization_recovery=None,
-                        daily_cycle=False, captured_source_recovery=None):
+                        daily_cycle=False, captured_source_recovery=None, execution_profile=ASTRA_XHIGH_V1):
     """Explicit backend-only canary, not a simulated scheduled slot.
 
     `approval` is a trusted operator capability returning the exact approved
@@ -262,6 +263,9 @@ def run_manual_research(config, *, scope, identity, approval=None, operation=Non
     automatically re-enters transport after a failure or unknown outcome.
     """
     at = datetime.now(timezone.utc)
+    execution_profile=require_profile(execution_profile)
+    if execution_profile!=ASTRA_XHIGH_V1 and (initialization_recovery is not None or captured_source_recovery is not None):
+        raise ValueError('legacy_recovery_profile_cannot_be_relabelled')
     if captured_source_recovery is not None and (not daily_cycle or initialization_recovery is not None or
             type(captured_source_recovery) is not CapturedSourceRecovery):
         raise ValueError('captured_recovery_daily_cycle_required')
@@ -312,12 +316,14 @@ def run_manual_research(config, *, scope, identity, approval=None, operation=Non
         identity=identity, operation=operation, timeout_seconds=timeout_seconds,
         remaining=remaining, one_shot=digest({k:v for k,v in scope.items() if k!='expires_at'}),
         approval=approval, approval_digest=digest(scope), recovery=initialization_recovery, scope=scope,
-        daily_cycle=daily_cycle, captured_source_recovery=captured_source_recovery)
+        daily_cycle=daily_cycle, captured_source_recovery=captured_source_recovery,
+        execution_profile=execution_profile)
 
 
 def _supervise(config, *, market, at, gate, base, identity, operation,
                timeout_seconds, remaining, one_shot=None, approval=None, approval_digest=None,
-               recovery=None, scope=None, daily_cycle=False, captured_source_recovery=None):
+               recovery=None, scope=None, daily_cycle=False, captured_source_recovery=None,
+               execution_profile=ASTRA_XHIGH_V1):
     if operation is None:
         return dict(base, state='BACKEND_CAPABILITY_REQUIRED')
     if (not callable(operation) or threading.active_count() != 1 or
@@ -333,7 +339,8 @@ def _supervise(config, *, market, at, gate, base, identity, operation,
             len(identity['frozen_input_sha256']) != 64 or
             any(c not in '0123456789abcdef' for c in identity['frozen_input_sha256'])):
         raise ValueError('host_input_scope_required')
-    controller = NoSendController(config, enabled=True)
+    execution_profile=require_profile(execution_profile)
+    controller = NoSendController(config, enabled=True,execution_profile=execution_profile)
     lock = plain(str(controller.store.path) + '.no-send-runner.lock')
     fd = os.open(lock, os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
     pid = None
@@ -383,6 +390,9 @@ def _supervise(config, *, market, at, gate, base, identity, operation,
             signal.setitimer(signal.ITIMER_REAL, max(.001,absolute_deadline-time.monotonic()))
         request = dict(contract=CONTRACT, identity=identity, market=market,
                        session=gate['session'])
+        if execution_profile!=ASTRA_XHIGH_V1:
+            request['execution_profile']=execution_profile.contract
+            base['execution_profile']=execution_profile.contract
         if daily_cycle:
             if controller.account_stopped(identity['account_scope']):
                 return dict(base, state='ACCOUNT_STOPPED', automatic_retry=False)
@@ -484,7 +494,7 @@ def _supervise(config, *, market, at, gate, base, identity, operation,
                     os.close(start_write)
                     signal.signal(signal.SIGALRM,lambda *_: os.killpg(os.getpgrp(),signal.SIGKILL))
                     signal.setitimer(signal.ITIMER_REAL,deadline_seconds)
-                child = NoSendController(config, enabled=True)
+                child = NoSendController(config, enabled=True,execution_profile=execution_profile)
                 if daily_cycle:
                     def check_slot():
                         if child.account_stopped(identity['account_scope']):
@@ -521,7 +531,7 @@ def _supervise(config, *, market, at, gate, base, identity, operation,
                 try:
                     code = str(exc)
                     code = code if len(code) <= 150 and code.replace('_', '').isalnum() else 'DETAILS_WITHHELD'
-                    NoSendController(config, enabled=True)._append(attempt + '-failure', request,
+                    NoSendController(config, enabled=True,execution_profile=execution_profile)._append(attempt + '-failure', request,
                         dict(state='CALLBACK_FAILED', error_type=type(exc).__name__, error_code=code))
                 finally:
                     os._exit(1)

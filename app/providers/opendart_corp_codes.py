@@ -49,12 +49,13 @@ def _parse_corp_code_zip(content: bytes) -> list[OpenDARTCompany]:
     return companies
 
 
-async def load_opendart_companies(api_key: str, force_refresh: bool = False) -> list[OpenDARTCompany]:
+async def load_opendart_companies(api_key: str, force_refresh: bool = False,
+                                *, transport: httpx.AsyncBaseTransport | None = None) -> list[OpenDARTCompany]:
     global _cached_companies
     if _cached_companies is not None and not force_refresh:
         return _cached_companies
 
-    async with httpx.AsyncClient(timeout=15.0) as client:
+    async with httpx.AsyncClient(timeout=15.0, transport=transport) as client:
         response = await client.get(
             "https://opendart.fss.or.kr/api/corpCode.xml",
             params={"crtfc_key": api_key},
@@ -76,11 +77,12 @@ def _name_score(company: OpenDARTCompany, query_compact: str) -> int:
     return 0
 
 
-async def resolve_opendart_company(api_key: str, query: str) -> OpenDARTCompany | None:
+async def resolve_opendart_company(api_key: str, query: str, *,
+                                  transport: httpx.AsyncBaseTransport | None = None) -> OpenDARTCompany | None:
     normalized = normalize_equity_input(query)
     normalized_upper = normalized.upper()
     query_compact = _compact(normalized)
-    companies = await load_opendart_companies(api_key)
+    companies = await load_opendart_companies(api_key, transport=transport)
 
     if re.fullmatch(r"\d{6}", normalized):
         for company in companies:

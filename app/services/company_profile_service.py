@@ -230,19 +230,21 @@ def normalize_official_industry(profile: OfficialProfile) -> NormalizedProfile:
 class OpenDartCompanyProfileSource:
     name = "opendart_company"
 
-    def __init__(self, api_key: str, *, timeout_seconds: float = 15.0) -> None:
+    def __init__(self, api_key: str, *, timeout_seconds: float = 15.0,
+                 transport: httpx.AsyncBaseTransport | None = None) -> None:
         self.api_key = api_key
         self.timeout_seconds = timeout_seconds
+        self.transport = transport
 
     async def fetch(
         self,
         item: WatchlistItem,
         security: SecurityMaster | None,
     ) -> OfficialProfile | None:
-        company = await resolve_opendart_company(self.api_key, item.ticker)
+        company = await resolve_opendart_company(self.api_key, item.ticker, transport=self.transport)
         if company is None or company.stock_code != item.ticker:
             return None
-        async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
+        async with httpx.AsyncClient(timeout=self.timeout_seconds, transport=self.transport) as client:
             response = await client.get(
                 "https://opendart.fss.or.kr/api/company.json",
                 params={"crtfc_key": self.api_key, "corp_code": company.corp_code},
@@ -277,9 +279,11 @@ class OpenDartCompanyProfileSource:
 class SecCompanyProfileSource:
     name = "sec_submissions"
 
-    def __init__(self, user_agent: str, *, timeout_seconds: float = 15.0) -> None:
+    def __init__(self, user_agent: str, *, timeout_seconds: float = 15.0,
+                 transport: httpx.AsyncBaseTransport | None = None) -> None:
         self.user_agent = user_agent
         self.timeout_seconds = timeout_seconds
+        self.transport = transport
         self._ticker_ciks: dict[str, str] | None = None
 
     async def _cik_map(self, client: httpx.AsyncClient) -> dict[str, str]:
@@ -303,6 +307,7 @@ class SecCompanyProfileSource:
         async with httpx.AsyncClient(
             timeout=self.timeout_seconds,
             headers=headers,
+            transport=self.transport,
         ) as client:
             ciks = await self._cik_map(client)
             cik = ciks.get(item.ticker.upper())

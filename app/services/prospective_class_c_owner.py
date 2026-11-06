@@ -55,9 +55,80 @@ class SourceIntakeOwner:
 
 
 _INTAKES: WeakKeyDictionary = WeakKeyDictionary()
+_FRESH_INTAKE_IDENTITIES: WeakKeyDictionary = WeakKeyDictionary()
 
 
-def issue_source_intake_owner(*, approval, capture, market, generation_id, policy):
+class IdentityDiscoveryOwner:
+    """Captured intent permits official identity reads only, never financial use."""
+    __slots__ = ('__weakref__',)
+
+
+_DISCOVERY: WeakKeyDictionary = WeakKeyDictionary()
+
+
+def issue_identity_discovery_owner(*, approval, capture, generation_id, policy):
+    import os
+    from pathlib import Path
+    from app.services.minimal_class_c_export import MODELS
+    from app.services.onboarding_readiness_service import evaluate_identity_discovery
+    decision = _approval(approval)
+    raw, captured = captured_private_snapshot(capture)
+    cutoff = datetime.fromisoformat(captured['cutoff'])
+    rows = json.loads(raw)
+    if (not generation_id or not decision.effective_at <= cutoff <= _now()
+            or _now()-cutoff > timedelta(hours=1)
+            or captured['permission_event'] != decision.event_id):
+        raise ValueError('identity_discovery_current_authorized_capture_required')
+    indices = {}
+    for table, values in rows.items():
+        if len({r['ticker'] for r in values}) != len(values):
+            raise ValueError('identity_discovery_duplicate_registration')
+        indices[table] = {r['ticker']: MODELS[table].model_validate(r) for r in values}
+    if set(indices['watchlistitem']) != set(decision.subjects):
+        raise ValueError('identity_discovery_exact_approved_subjects')
+    results = {ticker: evaluate_identity_discovery(item, indices['securitymaster'].get(ticker),
+        indices['company'].get(ticker), indices['investmentthesis'].get(ticker),
+        cutoff=cutoff, policy=policy) for ticker, item in indices['watchlistitem'].items()}
+    code_paths = (Path(__file__), Path(__file__).parent/'onboarding_readiness_service.py')
+    pins = {str(p): digest(p.read_bytes().hex()) for p in code_paths}
+    public = dict(contract='identity-discovery-owner-v1', generation_id=generation_id,
+        capture_sha256=digest(captured), subjects=results, source_use=False,
+        financial_use=False, current_production_ready=False, send=False)
+    handle = IdentityDiscoveryOwner()
+    _DISCOVERY[handle] = dict(approval=approval, capture=capture, public=deepcopy(public),
+        pid=os.getpid(), pins=pins, cutoff=cutoff)
+    return handle, public
+
+
+def require_identity_discovery(handle, *, generation_id, ticker):
+    import os
+    from pathlib import Path
+    if type(handle) is not IdentityDiscoveryOwner or handle not in _DISCOVERY:
+        raise ValueError('identity_discovery_live_owner_required')
+    state = _DISCOVERY[handle]
+    _approval(state['approval'])
+    raw, receipt = captured_private_snapshot(state['capture'])
+    if (state['pid'] != os.getpid() or generation_id != state['public']['generation_id']
+            or _now()-state['cutoff'] > timedelta(hours=1)
+            or state['public']['capture_sha256'] != digest(receipt)
+            or any(digest(Path(p).read_bytes().hex()) != s for p, s in state['pins'].items())):
+        raise ValueError('identity_discovery_expired_or_changed')
+    subject = state['public']['subjects'].get(ticker)
+    if not subject or not subject['identity_discovery_eligible']:
+        raise ValueError('identity_discovery_subject_denied')
+    # This private input remains unverified registration metadata; no quality
+    # field is changed and no SourceIntake/Production capability is issued.
+    rows = json.loads(raw)
+    return deepcopy(next(r for r in rows['securitymaster'] if r['ticker'] == ticker))
+
+
+def revoke_identity_discovery(handle):
+    if type(handle) is not IdentityDiscoveryOwner or handle not in _DISCOVERY:
+        raise ValueError('identity_discovery_live_owner_required')
+    del _DISCOVERY[handle]
+
+
+def issue_source_intake_owner(*, approval, capture, market, generation_id, policy, fresh_identity_reader=None):
     from app.services.minimal_class_c_export import MODELS
     from app.services.onboarding_readiness_service import evaluate_source_intake
     decision = _approval(approval)
@@ -74,21 +145,40 @@ def issue_source_intake_owner(*, approval, capture, market, generation_id, polic
             raise ValueError('source_intake_duplicate_identity')
         indices[table] = {r['ticker']: MODELS[table].model_validate(r) for r in values}
     from app.services.market_session import market_scope_for_security
-    results = {}
+    results = {};fresh_identities={};fresh_proofs={}
     for ticker, item in indices['watchlistitem'].items():
         if market_scope_for_security(ticker, item.exchange) != market:
             continue
         if ticker not in decision.subjects:
             raise ValueError('source_intake_subject_not_authorized')
-        results[ticker] = evaluate_source_intake(item, indices['securitymaster'].get(ticker),
+        security=indices['securitymaster'].get(ticker);fresh_denial=None
+        if fresh_identity_reader is not None:
+            from app.services.fresh_registered_identity import resolve,FreshIdentityUnavailable
+            if security is None:raise ValueError('fresh_intake_original_registration_identity_required')
+            try:
+                security,proof=resolve(fresh_identity_reader,security,not_before=decision.effective_at)
+            except FreshIdentityUnavailable as exc:fresh_denial=str(exc)
+            else:
+                fresh_identities[ticker]=security.model_dump(mode='json');fresh_proofs[ticker]=proof
+        results[ticker] = evaluate_source_intake(item, security,
             indices['company'].get(ticker), indices['investmentthesis'].get(ticker),
             cutoff=cutoff, policy=policy)
+        if fresh_denial:
+            results[ticker]['denials'].append('fresh_identity:'+fresh_denial)
+            results[ticker]['registered_source_intake_eligible']=False
+        elif fresh_identity_reader is not None:
+            # Authenticated fresh field-Owner evidence supplies provenance; the
+            # stored registration-quality flags themselves remain unchanged.
+            results[ticker]['denials']=[d for d in results[ticker]['denials']
+                if d not in {'IDENTITY_QUALITY_UNVERIFIED','IDENTITY_PROVIDER_MISSING'}]
+            results[ticker]['registered_source_intake_eligible']=not results[ticker]['denials']
+            results[ticker]['fresh_source_identity']=deepcopy(fresh_proofs[ticker])
         results[ticker]['registration_sha256'] = digest(item.model_dump(mode='json'))
     if not results:
         raise ValueError('source_intake_empty_market')
     from hashlib import sha256
     from pathlib import Path
-    public = dict(contract='source-intake-eligibility-v1', generation_id=generation_id,
+    public = dict(contract='source-intake-fresh-official-eligibility-v2' if fresh_identity_reader is not None else 'source-intake-eligibility-v1', generation_id=generation_id,
         market=market, issued_at=_now().isoformat(), cutoff=cutoff.isoformat(),
         expires_at=min(decision.expires_at,cutoff+timedelta(hours=1)).isoformat(),
         approval_sha256=digest(decision.model_dump(mode='json')),
@@ -99,6 +189,8 @@ def issue_source_intake_owner(*, approval, capture, market, generation_id, polic
         production_seed_qualified=False, source_or_economic_authority=False, send=False)
     handle = SourceIntakeOwner()
     _INTAKES[handle] = (approval, capture, json.dumps(public))
+    if fresh_identity_reader is not None:
+        _FRESH_INTAKE_IDENTITIES[handle]=dict(reader=fresh_identity_reader,identities=fresh_identities,proofs=fresh_proofs)
     return handle, deepcopy(public)
 
 
@@ -120,6 +212,16 @@ def require_source_intake(owner, *, generation_id, ticker, registration=None):
     subject = receipt['subjects'].get(ticker)
     if not subject or not subject['registered_source_intake_eligible']:
         raise ValueError('source_intake_subject_denied')
+    if owner in _FRESH_INTAKE_IDENTITIES:
+        from app.services.fresh_registered_identity import resolve
+        from app.services.minimal_class_c_export import MODELS
+        raw,_=captured_private_snapshot(capture)
+        original=next(r for r in json.loads(raw)['securitymaster'] if r['ticker']==ticker)
+        fresh=_FRESH_INTAKE_IDENTITIES[owner]
+        current,proof=resolve(fresh['reader'],MODELS['securitymaster'].model_validate(original),
+            not_before=_approval(approval).effective_at)
+        if current.model_dump(mode='json')!=fresh['identities'][ticker] or proof!=fresh['proofs'][ticker]:
+            raise ValueError('fresh_source_intake_identity_changed')
     if registration is not None and subject['registration_sha256'] != digest(registration.model_dump(mode='json')):
         raise ValueError('source_intake_registration_changed')
     return deepcopy(subject)
@@ -129,6 +231,7 @@ def revoke_source_intake(owner):
     if type(owner) is not SourceIntakeOwner or owner not in _INTAKES:
         raise ValueError('source_intake_live_owner_required')
     del _INTAKES[owner]
+    _FRESH_INTAKE_IDENTITIES.pop(owner,None)
 
 
 def source_intake_snapshot(owner, *, generation_id, subjects, policy):
@@ -145,6 +248,8 @@ def source_intake_snapshot(owner, *, generation_id, subjects, policy):
     raw,captured=captured_private_snapshot(capture)
     rows=json.loads(raw)
     identities={r['ticker']:r for r in rows['securitymaster'] if r['ticker'] in subjects}
+    if owner in _FRESH_INTAKE_IDENTITIES:
+        identities={t:deepcopy(_FRESH_INTAKE_IDENTITIES[owner]['identities'][t]) for t in subjects}
     if set(identities)!=set(subjects):
         raise ValueError('source_intake_adapter_identity_coverage')
     return identities,receipt,capture,approval

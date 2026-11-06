@@ -2,7 +2,7 @@
 from copy import deepcopy
 
 from app.services import vnext_unified_judgment as engine
-from app.services.vnext_balanced_stage_review import StageReviewOwner, UNIFIED, UNIFIED_AI_VERSIONS, output_contract
+from app.services.vnext_balanced_stage_review import StageReviewOwner, UNIFIED, UNIFIED_AI_VERSIONS, output_contract, UNIFIED_AI_V3_SOL_HIGH
 from app.services.vnext_no_send_controller import NoSendController
 from app.services.vnext_research_store import digest
 
@@ -28,7 +28,7 @@ def consume(controller, *, packet, owner, mode, output_context, enabled=False):
         # An unissued schema-valid candidate cannot self-declare ASTRA_ADJ.
         # Only the original live two-stage Owner reaches this issuance boundary.
         checked = deepcopy(checked)
-        checked['decision'].update(decision_source='ASTRA_ADJ',model_receipt=dict(
+        checked['decision'].update(decision_source='SOL_HIGH_ADJ' if owner.blind.version==UNIFIED_AI_V3_SOL_HIGH else 'ASTRA_ADJ',model_receipt=dict(
             stage_owner=deepcopy(receipt), adjudication_execution=deepcopy(model_record['stages']['ADJUDICATION']['execution']),
             model_output_sha256=digest(model_record['stages']['ADJUDICATION']['output'])))
         checked['decision_sha256'] = digest(checked['decision'])
