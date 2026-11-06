@@ -97,7 +97,7 @@ def preserve_plan(plan):
         raise ValueError('market_current_scoped_plan_roundtrip')
     return value
 
-def prepare_capture(*,parent,wire,session,base,credentials,inner,external_root,identity_only=False,completed_close_only=False):
+def prepare_capture(*,parent,wire,session,base,credentials,inner,external_root,identity_only=False,completed_close_only=False,valuation_only=False):
     """Freeze the original launch closure and exact Worker/transport objects."""
     import ast
     from app.services import pending_source_parent as pending
@@ -108,6 +108,8 @@ def prepare_capture(*,parent,wire,session,base,credentials,inner,external_root,i
     from app.services.scoped_external_code_manifest import REQUIRED_V2,CONTRACT_V2
     from app.services.same_session_market_windows import SameSessionWindows
     root=Path(__file__).resolve().parents[2];base=Path(base);external=Path(external_root)
+    if sum(bool(v) for v in (identity_only,completed_close_only,valuation_only))>1:
+        raise ValueError('capture_modes_mutually_exclusive')
     if base.exists() or base.is_symlink():raise ValueError('market_new_private_capture_root_required')
     base.mkdir(mode=0o700,parents=True);out=base/'worker';out.mkdir(mode=0o700)
     plan=wire['request_plan']
@@ -127,8 +129,15 @@ def prepare_capture(*,parent,wire,session,base,credentials,inner,external_root,i
         if (identity_only or receipt['scope']!=PURPOSE or receipt['maximum_attempts']>20
                 or len(plan.descriptors)!=15 or any(d.transient_retry_max for d in plan.descriptors)):
             raise ValueError('close_capture_original_typed_parent_and_fifteen_cap_required')
+    if valuation_only:
+        from app.services.registered_valuation_source_intent import PURPOSE
+        receipt=pending.resolve_parent(parent,plan=plan)
+        if (receipt['scope']!=PURPOSE or receipt['maximum_attempts']!=19
+                or any(d.transient_retry_max or d.endpoint_operation not in
+                    ('credential_exchange','ka10099','ka10001') for d in plan.descriptors)):
+            raise ValueError('valuation_capture_original_parent_and_nineteen_cap_required')
     transport=SealedSourceTransport(run,inner,providers={'kiwoom'})
-    windows=None if identity_only or completed_close_only else SameSessionWindows(transport)
+    windows=None if identity_only or completed_close_only or valuation_only else SameSessionWindows(transport)
     pins={}
     for n in REQUIRED_V2:
         p=external/n

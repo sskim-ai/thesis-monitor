@@ -114,8 +114,8 @@ class PublicTransport(httpx.AsyncBaseTransport):
         elif request.method!='GET':raise SystemicStop('official_GET_required')
         key=digest(descriptor)
         if not auth:
-            with self.store.connect() as c:
-                old=c.execute('SELECT raw_path,receipt_json FROM source_capture WHERE run_id=? AND provider=? AND request_key=?',(self.run_id,provider,key)).fetchone()
+            from app.services.public_capture_storage import find_capture
+            old=find_capture(self.store,self.run_id,provider,key)
             if old:
                 receipt=json.loads(old[1]);raw=Path(old[0]).read_bytes()
                 if digest(raw)!=receipt['raw_sha256']:raise SystemicStop('cached_source_corruption')

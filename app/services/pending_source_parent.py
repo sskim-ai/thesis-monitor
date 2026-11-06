@@ -130,6 +130,14 @@ def state(parent):
     if s['pid']!=os.getpid() or s['pins']!=pins():
         raise ValueError('pending_parent_process_or_code_changed')
     s['session'].attestation()
+    if 'valuation_intent' in s:
+        from app.services.registered_valuation_source_intent import PURPOSE,require_intent
+        if (s['receipt']['scope']!=PURPOSE or datetime.now(timezone.utc)>=datetime.fromisoformat(s['receipt']['expires_at'])):
+            raise ValueError('valuation_parent_scope_expired')
+        if require_intent(s['valuation_intent'],generation_id=s['intent_generation'],provider='kiwoom',
+                subjects=tuple(s['identities']))!=s['identities']:
+            raise ValueError('valuation_parent_registration_changed')
+        return s
     if 'identity_discovery' in s:
         from app.services.registered_identity_source_parent import PURPOSE
         from app.services.prospective_class_c_owner import require_identity_discovery

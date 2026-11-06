@@ -261,7 +261,7 @@ class CurrentScopedDispatcher(SealedDispatcher):
     def _category(descriptor):
         if descriptor.endpoint_operation == "credential_exchange":
             return "auth"
-        for prefix in ("stock", "completed_close", "us_market", "kr_market", "identity"):
+        for prefix in ("stock", "completed_close", "us_market", "kr_market", "identity", "valuation"):
             if descriptor.consumer_role.startswith(prefix + ":"):
                 return prefix
         raise SourceSafetyStop("scoped_request_category_unclassified")
