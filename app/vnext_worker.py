@@ -69,6 +69,128 @@ def run_daily_no_send(config, **kwargs):
     return run_daily(config, **kwargs)
 
 
+def cold_registered_valuation_source(root, *, expected_replay_sha256):
+    """Original source replay only; no live Owner reconstruction or DB open."""
+    from app.services.vnext_research_store import plain,digest
+    from app.services.provider_native_valuation_acquisition import replay_native
+    from app.services.provider_native_valuation_snapshot import derive_provider_snapshots
+    from app.services.unified_source_policy import UnifiedSourcePolicy
+    root=plain(root);raw=plain(root/'original-replay.json').read_bytes()
+    if digest(raw)!=expected_replay_sha256:
+        raise ValueError('valuation_runner_replay_hash_changed')
+    data=json.loads(raw);rows=[]
+    from app.services.sealed_fresh_dispatch import decode_request_plan,_binding_parent
+    plan=decode_request_plan(data['frozen']['plan'])
+    outcome=dict(data['outcome'],logical_results=dict(data['outcome']['logical_results']))
+    no_io=[]
+    for key,result in data['outcome']['logical_results'].items():
+        if result.get('status')!='NOT_SELECTED':continue
+        # Original atomic replay expects only attempted pages. Verify every
+        # original no-I/O binding before projecting it out, without editing the
+        # persisted dispatcher outcome or turning a selected failure into absence.
+        decision=_binding_parent(root/'dispatch',plan,key,result['receipt_sha256'])
+        if decision.get('status')!='NOT_SELECTED':
+            raise ValueError('valuation_runner_no_io_binding_required')
+        no_io.append(dict(logical_id=key,receipt_sha256=result['receipt_sha256']))
+        del outcome['logical_results'][key]
+    for security in data['securities']:
+        inputs=replay_native(root=root,frozen=data['frozen'],outcome=outcome,security=security,
+            policy=UnifiedSourcePolicy(frozenset({'kiwoom_rest','finnhub'})))
+        if inputs.get('contract')=='provider-native-valuation-unavailable-v1':
+            rows.append(dict(ticker=security['ticker'],status='UNAVAILABLE',reason=inputs['reason'],metrics=[]))
+        else:
+            metrics=derive_provider_snapshots(inputs,security=security,run_id=data['frozen']['generation_id'])
+            rows.append(dict(ticker=security['ticker'],status='ORIGINAL_ATOMIC_REPLAY',
+                metrics=[m.model_dump(mode='json') for m in metrics]))
+    return dict(contract='registered-valuation-source-cold-v1',rows=rows,verified_no_io=no_io,
+        current_economic_owner=False,strict_ready=False,send=False)
+
+
+async def run_registered_valuation_source(*, preflight, base, external_root,
+        acquire_current_context=None, load_credentials=None, inner=None, enabled=False):
+    """Existing worker entry -> C18 prewire -> original private capture -> Cold.
+
+    Backend callbacks are not CLI/JSON grants. Static inputs are checked before
+    any callback, credentials, Parent or Worker. Source ratios grant no economy.
+    """
+    import asyncio,os,sys
+    from datetime import datetime,timezone
+    from pathlib import Path
+    from app.services.valuation_research_preflight import prepare_registered_valuation
+    from app.services.vnext_research_store import digest,encoded,plain
+    if enabled is not True:
+        raise ValueError('valuation_runner_explicit_enable_required')
+    pins={str(p):digest(p.read_bytes()) for p in (Path(__file__),
+        Path(__file__).parent/'services/valuation_research_preflight.py',
+        Path(__file__).parent/'services/retained_identity_routing.py')}
+    if set(preflight)!={'routing_root','identities','generation_id','cutoff','code_sha','provider_config_sha256'}:
+        raise ValueError('valuation_runner_exact_preflight_required')
+    context={}
+    def backend():
+        for path,sha in pins.items():
+            if digest(Path(path).read_bytes())!=sha:
+                raise ValueError('valuation_runner_code_changed')
+        context.update(acquire_current_context())
+        return context
+    prepared=prepare_registered_valuation(**preflight,enabled=True,
+        acquire_current_context=backend if acquire_current_context is not None else None)
+    if prepared['parent'] is None:
+        return dict(status='NO_LIVE_NEW_OWNER',preflight=prepared['receipt'],
+            physical_HTTP=0,models=0,send=False)
+    if not callable(load_credentials) or inner is None:
+        raise ValueError('valuation_runner_authorized_credentials_transport_required')
+    for path,sha in pins.items():
+        if digest(Path(path).read_bytes())!=sha:
+            raise ValueError('valuation_runner_code_changed')
+    from app.services.market_component_execution import prepare_capture
+    from app.services.market_worker_rpc import MarketWorkerRPC
+    from app.providers.kiwoom_rest_client import KiwoomRestClient
+    from app.services.provider_native_valuation_acquisition import collect_native
+    from app.services.sealed_response_binding import SlotNotSelected
+    credentials=load_credentials()
+    if set(credentials)!={'app_key','secret_key'} or not all(isinstance(v,str) and v for v in credentials.values()):
+        raise ValueError('valuation_runner_original_settings_credentials_required')
+    wire=prepared['wire'];run=transport=worker=None;base=plain(base)
+    try:
+        run,transport,worker,_=prepare_capture(parent=prepared['parent'],wire=wire,
+            session=context['session'],base=base,credentials=credentials,inner=inner,
+            external_root=external_root,valuation_only=True)
+        client=KiwoomRestClient(**credentials,max_retries=0,request_interval_seconds=1.5,
+            transport=MarketWorkerRPC(worker))
+        await asyncio.wait_for(collect_native(frozen={'valuation_slots':wire['valuation_slots']},
+            settings=None,sealed=None,client=client),timeout=240)
+        for descriptor in run.plan.descriptors:
+            key=descriptor.logical_request_id
+            if key in run.used:continue
+            try:request,_,_=run.resolve(key)
+            except SlotNotSelected:run.skip_unselected(key);continue
+            reply=await worker.command({'market_wire':dict(logical_id=key,request_json=request)})
+            if reply.get('status')!=200:
+                raise ValueError('valuation_runner_selected_page_denied')
+        data=dict(securities=list(preflight['identities'].values()),frozen=dict(
+            plan=run.plan.model_dump(mode='json'),generation_id=run.plan.generation_id,
+            frozen_at=run.plan.frozen_at.isoformat(),valuation_slots=wire['valuation_slots']),
+            outcome=dict(logical_results=run.results,completed_at=datetime.now(timezone.utc).isoformat()))
+        raw=encoded(data)
+        fd=os.open(base/'original-replay.json',os.O_CREAT|os.O_EXCL|os.O_WRONLY|os.O_NOFOLLOW,0o600)
+        with os.fdopen(fd,'wb') as f:f.write(raw);f.flush();os.fsync(f.fileno())
+    finally:
+        if worker is not None:await worker.shutdown()
+        if transport is not None:await transport.shutdown()
+    process=await asyncio.create_subprocess_exec(sys.executable,'-B','-m','app.vnext_worker',
+        'valuation-source-cold','--source-root',str(base),'--replay-sha256',digest(raw),
+        stdout=asyncio.subprocess.PIPE,stderr=asyncio.subprocess.PIPE,cwd=Path(__file__).resolve().parents[1])
+    stdout,stderr=await asyncio.wait_for(process.communicate(),timeout=60)
+    if process.returncode:
+        raise ValueError('valuation_runner_separate_cold_failed:'+digest(stderr))
+    cold=json.loads(stdout)
+    if cold!=cold_registered_valuation_source(base,expected_replay_sha256=digest(raw)):
+        raise ValueError('valuation_runner_separate_cold_changed')
+    return dict(status='ORIGINAL_SOURCE_CAPTURE_AND_SEPARATE_COLD',preflight=prepared['receipt'],
+        physical_attempts=run.physical_attempts,worker_returncode=worker.process.returncode,
+        replay_sha256=digest(raw),cold=cold,source_only=True,send=False,current_economic_owner=False)
+
+
 def run_manual_source_canary(config, *, source_owner_factory, registry, identity, **kwargs):
     """Trusted producer -> original daily Owner -> original isolated controller.
 
@@ -106,7 +228,9 @@ def run_manual_source_canary(config, *, source_owner_factory, registry, identity
 
 def main(argv=None):
     p = argparse.ArgumentParser(description='Opt-in no-send vNext research worker')
-    p.add_argument('action', choices=('health', 'schema', 'registration', 'coverage', 'sources', 'shadow', 'draft', 'valuation', 'composite', 'composite-draft', 'no-send-observe'))
+    p.add_argument('action', choices=('health', 'schema', 'registration', 'coverage', 'sources', 'shadow', 'draft', 'valuation', 'composite', 'composite-draft', 'no-send-observe', 'valuation-source-cold'))
+    p.add_argument('--source-root')
+    p.add_argument('--replay-sha256')
     p.add_argument('--market', choices=('kr', 'us'))
     p.add_argument('--watermark')
     p.add_argument('--run')
@@ -120,6 +244,12 @@ def main(argv=None):
     p.add_argument('--component-reference',nargs=2,metavar=('MANIFEST','SHA256'),
                    help='Pinned original accounting replay; research only, no Owner issuance')
     args = p.parse_args(argv)
+    if args.action=='valuation-source-cold':
+        if not args.source_root or not args.replay_sha256:
+            p.error('valuation-source-cold requires --source-root and --replay-sha256')
+        print(json.dumps(cold_registered_valuation_source(args.source_root,
+            expected_replay_sha256=args.replay_sha256),sort_keys=True,allow_nan=False))
+        return
     if args.action == 'no-send-observe':
         if not args.market or not args.watermark:
             p.error('no-send-observe requires --market and --watermark')

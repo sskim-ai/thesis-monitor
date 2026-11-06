@@ -125,14 +125,15 @@ def test_original_pending_denials_and_active_packet_unchanged(tmp_path):
     assert store.packet('SYNTHETIC','NEWUS')['live_authority'] is False
 
 
-def test_no_unrequested_continuation_issued(tmp_path,monkeypatch):
+def test_absent_page_without_selection_proof_denied(tmp_path,monkeypatch):
     from types import SimpleNamespace
     from app.services import retained_identity_routing as routing
     root=tmp_path/'routing';root.mkdir();(root/'plan.json').write_text('{}')
-    descriptor=SimpleNamespace(endpoint_operation='ka10099',logical_request_id='unrequested',raw_path='absent')
+    descriptor=SimpleNamespace(endpoint_operation='ka10099',logical_request_id='unrequested',raw_path='absent',response_binding=None)
     monkeypatch.setattr(routing,'decode_request_plan',lambda _:SimpleNamespace(descriptors=(descriptor,)))
     monkeypatch.setattr(routing,'consume_bound_result',lambda **kw:pytest.fail('unrequested receipt consumed'))
-    assert routing.retained_listing_rows(root)==[]
+    with pytest.raises(ValueError,match='selected_receipt_missing'):
+        routing.retained_listing_rows(root)
 
 
 def test_projection_mutation_and_missing_registry_denied(prepared):
