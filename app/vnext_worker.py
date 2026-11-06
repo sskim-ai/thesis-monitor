@@ -195,6 +195,16 @@ async def run_registered_valuation_source(*, preflight, base, external_root,
         replay_sha256=digest(raw),cold=cold,source_only=True,send=False,current_economic_owner=False)
 
 
+def _mac_valuation_session():
+    from app.services.kiwoom_participant_session import ParticipatingSession
+    from app.services import (kiwoom_global_lane,kiwoom_participant_session,
+        current_scoped_worker_bridge,current_scoped_source_dispatch,
+        scoped_worker_launch,sealed_source_transport)
+    return ParticipatingSession(modules=(kiwoom_global_lane,kiwoom_participant_session,
+        current_scoped_worker_bridge,current_scoped_source_dispatch,
+        scoped_worker_launch,sealed_source_transport),caller_kind='CLI')
+
+
 async def run_mac_registered_valuation(*, decision, database, preflight, base,
         external_root, settings_env_file, attempt_marker, enabled=False):
     """One trusted operator call, current four-table capture, original live lane.
@@ -208,8 +218,6 @@ async def run_mac_registered_valuation(*, decision, database, preflight, base,
     from app.services import registered_valuation_source_intent as intents
     from app.services.minimal_class_c_export import ExportPermission,capture_authorized_class_c
     from app.services.production_source_context import POLICY
-    from app.services.kiwoom_participant_session import ParticipatingSession
-    from app.services import kiwoom_global_lane,kiwoom_participant_session
     from app.services.scoped_external_code_manifest import REQUIRED_V2
     from app.services.vnext_research_store import digest
     from app.config import Settings
@@ -228,7 +236,7 @@ async def run_mac_registered_valuation(*, decision, database, preflight, base,
     # Static plan, host code/boot and persistent STOP checks precede any SQL.
     from app.services.valuation_research_preflight import prepare_registered_valuation
     prepared=prepare_registered_valuation(**preflight,enabled=True)
-    session=ParticipatingSession(modules=(kiwoom_global_lane,kiwoom_participant_session),caller_kind='CLI')
+    session=_mac_valuation_session()
     session.attestation();session._lane._state()
     if prepared['receipt']['planned_attempts']>19:raise ValueError('mac_valuation_budget')
     path=Path(database);s=path.stat()

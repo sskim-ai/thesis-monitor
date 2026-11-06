@@ -59,6 +59,15 @@ def test_KR_Composite_catalog_optional_Unified_prompt_and_gates(retained):
     assert packet['admissibility'][0]['analytic_opinion_use']['eligible']
     assert not ctx['standalone_direction'] and not ctx['formal_native'] and not packet['strict_ready']
     assert 'VALUATION_ANALYSIS_FACT_V1' in prompt(packet,'BLIND',knowledge='',registry=registry,version=AI_OWNED_V3)
+    from app.services.vnext_unified_judgment import _resolve_axis_evidence
+    ref=packet['admissibility'][0]['ref']
+    candidate=dict(business='INSUFFICIENT',technical_review=None,
+        security_id=packet['base']['public_security']['canonical_security_id'],as_of=packet['base']['as_of'],
+        **{name:dict(stance='NOT_ISSUED',refs=[],counterevidence_refs=[])
+           for name in ('overall','newbuyer','holder_virtual','valuation','timing')})
+    candidate['overall']=dict(stance='BUY',refs=[ref],counterevidence_refs=[])
+    with pytest.raises(ValueError,match='economic_anchor_missing'):
+        _resolve_axis_evidence(candidate,packet,{ref},None)
 
 def test_US_native_ratios_to_same_Unified_without_EPS():
     from app.services.dated_capture_research import bind_dated_archive
@@ -87,6 +96,14 @@ def test_FPER_missing_price_zero_EPS_and_wrong_original_preserve_EPS(retained):
 
 def test_live_composition_default_off_and_pre_parent_config_check(tmp_path,monkeypatch):
     from app import vnext_worker as entry
+    from app.services import kiwoom_participant_session
+    observed={}
+    def session(**kwargs):observed.update(kwargs);return object()
+    with monkeypatch.context() as mp:
+        mp.setattr(kiwoom_participant_session,'ParticipatingSession',session)
+        entry._mac_valuation_session()
+    assert {'app.services.current_scoped_worker_bridge','app.services.current_scoped_source_dispatch',
+        'app.services.scoped_worker_launch','app.services.sealed_source_transport'} <= {m.__name__ for m in observed['modules']}
     with pytest.raises(ValueError):asyncio.run(entry.run_mac_registered_valuation(decision=None,database=None,
         preflight=None,base=None,external_root=None,settings_env_file=None,attempt_marker=None))
     from test_c19_runner import configure

@@ -155,7 +155,7 @@ def _native_fact(data,security,generation):
         ticker=security['ticker'],canonical_security_id=security['canonical_security_id'],
         provider=data['provider'],value=data['value'],exact_value=str(data['value']),
         unit=data.get('unit','multiple'),metric_semantic=data['metric_semantic'],source_generation=generation,
-        raw_sha256=data['raw_sha256'],source_receipt_sha256=data['snapshot_sha256'],
+        raw_sha256=data['raw_sha256'],source_receipt_sha256=data['source_receipt_sha256'],
         retrieval_timestamp=data['retrieval_timestamp'],basis=data.get('basis') or data['metric_semantic'],
         caution='Provider-native ratio with original as-of/denominator limitations; no standalone direction or current-price grant.')
 
