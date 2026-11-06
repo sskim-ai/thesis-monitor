@@ -161,7 +161,7 @@ def prose(text, *, policy=LEGACY_PROSE_POLICY):
 
 def build_bundle(economic_packet, *, registry, timing_owner=None, cutoff=None,
                  dated_numeric_context=False, numeric_owner=None, historical_owner=None,
-                 factual_properties=False, contract=CONTRACT):
+                 factual_properties=False, contract=CONTRACT, valuation_analysis_owner=None):
     """Project original field qualification, never caller-authored use grants."""
     from app.services.vnext_composite_research import CONTEXT_FIELDS
     from app.services.vnext_financial_reuse import verify_reported_context
@@ -243,6 +243,17 @@ def build_bundle(economic_packet, *, registry, timing_owner=None, cutoff=None,
             numbers=deepcopy(verified['numeric_reference_catalog']),
             original_owner_projection_sha256=digest({k:verified[k] for k in keys}),
             allowed_use='DATED_DISPLAY_CONTEXT_ONLY', economic_refs=[], current_qualified=False)
+    if valuation_analysis_owner is not None:
+        from app.services.valuation_analysis import AnalysisView,CONTRACT as FACT
+        if type(valuation_analysis_owner) is not AnalysisView:
+            raise ValueError('unified_valuation_analysis_live_source_required')
+        context=valuation_analysis_owner.context(result['base']['public_security'])
+        supplied=[e['data'] for e in result['base']['evidence'] if e['data'].get('contract')==FACT]
+        if sorted(map(digest,supplied))!=sorted(map(digest,context['facts'])):
+            raise ValueError('unified_valuation_analysis_source_binding')
+        result['investment_valuation_context']=context
+    elif any(e['data'].get('contract')=='VALUATION_ANALYSIS_FACT_V1' for e in result['base']['evidence']):
+        raise ValueError('unified_valuation_analysis_owner_required')
     if contract in AI_OWNED_CONTRACTS:
         return _opinion_bundle(result, contract)
     if contract != CONTRACT:
@@ -262,12 +273,12 @@ def _axis(axis, *, issued):
 
 def validate_and_render(value, packet, *, registry, economic_loader, timing_owner=None,
                         dated_numeric_context=False, numeric_owner=None, historical_owner=None,
-                        factual_properties=False, **unused):
+                        factual_properties=False, valuation_analysis_owner=None, **unused):
     if packet.get('contract') in AI_OWNED_CONTRACTS:
         return _validate_opinion(value, packet, registry=registry, economic_loader=economic_loader,
             timing_owner=timing_owner, dated_numeric_context=dated_numeric_context,
             numeric_owner=numeric_owner, historical_owner=historical_owner,
-            factual_properties=factual_properties)
+            factual_properties=factual_properties,valuation_analysis_owner=valuation_analysis_owner)
     parsed = UnifiedOutput.model_validate(value).model_dump(mode='json')
     if parsed != value or value['security_id'] != packet['base']['public_security']['canonical_security_id']:
         raise ValueError('unified_exact_identity_or_types')
@@ -277,7 +288,8 @@ def validate_and_render(value, packet, *, registry, economic_loader, timing_owne
     cutoff = packet['technical']['technical']['cutoff'] if packet['technical'] else None
     if build_bundle(original, registry=registry, timing_owner=timing_owner, cutoff=cutoff,
             dated_numeric_context=dated_numeric_context, numeric_owner=numeric_owner,
-            historical_owner=historical_owner, factual_properties=factual_properties) != packet:
+            historical_owner=historical_owner, factual_properties=factual_properties,
+            valuation_analysis_owner=valuation_analysis_owner) != packet:
         raise ValueError('unified_live_source_binding')
     rows = {r['ref']:r for r in packet['admissibility']}
     economic = {r for r,e in rows.items() if 'BUSINESS' in e['candidate_decision_axis']}
@@ -474,6 +486,8 @@ Backend supplies operational notices. Do not copy old model labels as evidence.
     text += 'All nonempty reasoning/limitations/change text must remain digit-free; exact values belong only in source-bound structured citations. '
     text += 'Overall independent_support_reason and missing_required also retain the original research prose restrictions.\n'
     text += directional_balance_ordinal_calibration_prompt()
+    if 'investment_valuation_context' in packet:
+        text += '\n'+_valuation_analysis_guidance()
     if 'dated_numeric_context' in packet:
         text += ('\nUNIFIED_DATED_NUMERIC_CONTEXT_V1: Optional h-prefixed numbers are '
             'dated display context only, not evidence refs for any decision axis. '
@@ -693,7 +707,7 @@ def _opinion_observations(row):
     source = fields.get('original_raw_sha256') or data.get('raw_sha256') or row['source_sha']
     period = (fields.get('period_start'), fields.get('period_end') or data.get('metric_asof'))
     basis = fields.get('statement_basis')
-    unit = fields.get('unit') or fields.get('currency') or ('ratio' if row['layer']=='VALUATION_CONTEXT' else data.get('currency'))
+    unit = fields.get('unit') or fields.get('currency') or data.get('unit') or ('ratio' if row['layer']=='VALUATION_CONTEXT' else data.get('currency'))
     result = []
     def add(path, value, start, end, unit_value=unit, scope=basis):
         if value is not None and not isinstance(value, (dict, list, bool)):
@@ -707,7 +721,8 @@ def _opinion_observations(row):
     if comparison:
         p = comparison['period']
         add('fields.qualified_comparison.value', comparison['value'], p.get('start'), p.get('end'))
-    add('value', data.get('value'), None, data.get('metric_asof'))
+    add('value', data.get('value'), None, data.get('metric_asof') or
+        (data.get('forecast_fiscal_period') or data.get('retrieval_timestamp') if data.get('contract')=='VALUATION_ANALYSIS_FACT_V1' else None))
     if row['layer']=='PRICE_TIMING' and data.get('row'):
         for key in ('open', 'high', 'low', 'close'):
             add('row.'+key, data['row'].get(key), data['row'].get('date'), data['row'].get('date'))
@@ -727,6 +742,9 @@ def _opinion_bundle(bundle, contract=AI_OWNED):
         valuation = (data.get('contract') == OPINION_POLICY['internal_valuation_contract']
                      and row['layer']=='VALUATION_CONTEXT' and data.get('display_eligible') is True
                      and data.get('new_buyer_valuation_context_eligible') is True)
+        if data.get('contract')=='VALUATION_ANALYSIS_FACT_V1':
+            valuation=(data in bundle.get('investment_valuation_context',{}).get('facts',[])
+                and row['layer']=='VALUATION_CONTEXT' and data.get('display_eligible') is True)
         explicit = data.get('direction_allowed') is False or fields.get('direction_allowed') is False or data.get('overall_direction_use') is False
         known = context or amount or valuation or (not explicit and (data.get('interpretation_eligible') is True
                     or 'NEWBUYER_VALUATION' in row['candidate_decision_axis']))
@@ -954,6 +972,8 @@ ADJ alone finalizes the judgment. Code checks evidence and format, not the
 economic correctness of BUY/HOLD/SELL. No orders, sending or current eligibility.
 '''
     text += '\nPOLICY RULES:\n'+json.dumps(OPINION_RULES,ensure_ascii=False,sort_keys=True)
+    if 'investment_valuation_context' in packet:
+        text += '\n'+_valuation_analysis_guidance()
     if version == AI_OWNED_V3:
         text += '\nAXIS EVIDENCE ROLES:\n'+'\n'.join(_axis_role_guidance(name) for name in AXIS_EVIDENCE_ROLE_POLICY['axes'])
     text += '\nINPUT_DIGEST: '+digest(packet)+'\nSTAGE: '+stage
@@ -963,3 +983,19 @@ economic correctness of BUY/HOLD/SELL. No orders, sending or current eligibility
     if len(text.encode()) > 384*1024:
         raise ValueError('unified_input_limit')
     return text
+
+
+def _valuation_analysis_guidance():
+    return '''VALUATION_ANALYSIS_FACT_V1: The source-bound investment_valuation_context
+contains usable factual valuation inputs, not merely display-only notes. Consider
+PER, PBR and FY1 fPER together with business/growth/quality/risk/price and market
+evidence in Overall, NewBuyer and virtual Holder valuation discussions. These
+facts alone cannot issue direction or fill missing business/counterevidence.
+Existing original direction/Strict/Source/Market/send gates are unchanged. Preserve
+source capture, forecast fiscal period and estimate vintage separately. KIS FY1
+EPS is an analyst estimate, not actual earnings or issuer guidance. A dated
+estimate is not a new same-session forecast. No denominator backsolving, price
+substitution or guessed scaling. Unknown fPER is not zero and does not erase EPS,
+PER or PBR. Exact numbers use source-bound structured citations, not free prose.
+Use labels PER, PBR, KIS FY1 EPS 추정치 and FY1 fPER (KIS 증권사 애널리스트 추정 EPS 기반).
+'''

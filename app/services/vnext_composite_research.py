@@ -370,7 +370,12 @@ class CompositeView:
                     raise ValueError('reported_context_documentary_parent_binding')
         if f and (f.get('source_ticker') != ticker or field != 'financial.' + f.get('metric', '')):
             raise ValueError('financial_security_or_field_binding')
-        if field.startswith('valuation.') and data.get('contract') == 'kis-reviewed-multisource-research-v1':
+        if field.startswith('valuation.') and data.get('contract') == 'VALUATION_ANALYSIS_FACT_V1':
+            from app.services.valuation_analysis import AnalysisView
+            if type(getattr(self,'valuation_analysis_owner',None)) is not AnalysisView:
+                raise ValueError('valuation_analysis_original_source_view_required')
+            self.valuation_analysis_owner.verify_snapshot(self.identities[ticker],data)
+        elif field.startswith('valuation.') and data.get('contract') == 'kis-reviewed-multisource-research-v1':
             from app.services.vnext_kis_multisource_ingestion import verify_stored
             verify_stored(self.store,self.kis_multisource_owner,row=row,payload=p,
                 capsule=json.loads(self.raw[sha]),security=self.identities[ticker],cutoff=self.as_of)
