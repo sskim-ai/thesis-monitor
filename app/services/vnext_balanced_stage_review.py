@@ -12,6 +12,7 @@ from app.services import vnext_balanced_research as balanced
 from app.services.vnext_optional_fy1_research import ReviewOwner
 from app.services.vnext_no_send_controller import NoSendController
 from app.services.vnext_research_store import digest
+from app.services.vnext_execution_profile import ASTRA_XHIGH_V1, SOL_HIGH_V1
 
 CONTRACT='BALANCED_STAGE_SCOPED_REVIEW_V1'
 ORIGINAL='BALANCED_ORIGINAL_PROMPT_V1'
@@ -24,7 +25,8 @@ UNIFIED='UNIFIED_JUDGMENT_V1'
 UNIFIED_AI='UNIFIED_JUDGMENT_V2_AI_OWNED'
 UNIFIED_AI_V3='UNIFIED_JUDGMENT_V3_AI_OWNED'
 UNIFIED_AI_V3_CITATION='UNIFIED_JUDGMENT_V3_AI_OWNED_CITATION_PROMPT_V1'
-UNIFIED_AI_VERSIONS=(UNIFIED_AI, UNIFIED_AI_V3, UNIFIED_AI_V3_CITATION)
+UNIFIED_AI_V3_SOL_HIGH='UNIFIED_JUDGMENT_V3_AI_OWNED_SOL_HIGH_PROMPT_V1'
+UNIFIED_AI_VERSIONS=(UNIFIED_AI, UNIFIED_AI_V3, UNIFIED_AI_V3_CITATION, UNIFIED_AI_V3_SOL_HIGH)
 TIMING_V3_EXECUTION_CONTRACT='DATED_TECHNICAL_STAGE_REVIEW_V3'
 INPUT_LIMIT=384*1024
 OUTPUT_LIMIT=128*1024
@@ -50,11 +52,17 @@ def _engine(version):
 
 
 def output_contract(version):
-    return UNIFIED_AI_V3 if version == UNIFIED_AI_V3_CITATION else version
+    return UNIFIED_AI_V3 if version in (UNIFIED_AI_V3_CITATION,UNIFIED_AI_V3_SOL_HIGH) else version
+
+
+def execution_profile(version):
+    return SOL_HIGH_V1 if version == UNIFIED_AI_V3_SOL_HIGH else ASTRA_XHIGH_V1
 
 
 def execution_contract(version):
-    if version == UNIFIED_AI_V3_CITATION:
+    if version == UNIFIED_AI_V3_SOL_HIGH:
+        return 'UNIFIED_STAGE_REVIEW_V3_SOL_61_HIGH_V1'
+    if version in (UNIFIED_AI_V3_CITATION,UNIFIED_AI_V3_SOL_HIGH):
         return 'UNIFIED_STAGE_REVIEW_V3_AI_OWNED_CITATION_V1'
     if version == UNIFIED_AI_V3:
         return 'UNIFIED_STAGE_REVIEW_V3_AI_OWNED'
@@ -92,6 +100,8 @@ For a SCOPED_PERIODS Technical Owner, review exactly the supplied role keys,
 not absent periods. Do not claim a complete daily/weekly/monthly review from a
 partial scope. Two distinct cited metrics are still required for TechnicalReview.
 '''
+    if version==UNIFIED_AI_V3_SOL_HIGH:
+        text+='\nEXECUTION PROFILE: SOL_61_HIGH_EXECUTION_V1; gpt-6.1-sol/high.\nThe unchanged economic-policy ASTRA_ADJ tag is a legacy schema tag, not a runtime identity or an accepted-model receipt. Only the backend two-stage Sol execution Owner can issue SOL_HIGH_ADJ provenance. No source rights are extended.\n'
     if version==EXPLICIT:
         text+='''
 PROMPT CONTRACT: BALANCED_UNISSUED_CONFIDENCE_PROMPT_V2.
@@ -134,8 +144,11 @@ def _stage_request(*,invocation_id,account,packet,stage,version,knowledge,regist
     request=dict(contract=execution_contract(version),invocation_id=invocation_id,account=account,stage=stage,
         security=packet['base']['public_security'],source_sha=digest(packet),source_as_of=packet['base']['as_of'],
         prompt_version=version,prompt_sha=digest(text.encode()),schema_sha=digest(output_schema(packet,version)),
-        prior_stage_sha=digest(prior_data) if prior_data else None,model='gpt-6-astra',effort='xhigh',
+        prior_stage_sha=digest(prior_data) if prior_data else None,
+        model=execution_profile(version).model,effort=execution_profile(version).effort,
         timeout_seconds=SECONDS,input_bytes=INPUT_LIMIT,output_bytes=OUTPUT_LIMIT,retries=0,send=False)
+    if version==UNIFIED_AI_V3_SOL_HIGH:
+        request['execution_profile']=SOL_HIGH_V1.contract
     return request,text
 
 
@@ -177,11 +190,14 @@ class AcceptedStage:
                     prior=previous,version=self.version)
         if (e.get('stage')!=self.stage or e.get('status')!='VALIDATED' or e.get('exit')!=0
                 or not e.get('runtime',{}).get('verified') or not e['runtime'].get('session')
-                or e.get('model')!='gpt-6-astra' or e.get('effort')!='xhigh'
+                or e.get('model')!=execution_profile(self.version).model
+                or e.get('effort')!=execution_profile(self.version).effort
                 or e.get('attempt')!=1 or e.get('retry')!=0 or e.get('packet_sha')!=digest(self.packet)
                 or e.get('prompt_sha')!=digest(text.encode()) or e.get('schema_sha')!=digest(output_schema(self.packet,self.version))
                 or e.get('output_sha')!=digest(data['output'])):
             raise ValueError('stage_exact_execution_binding')
+        if self.version==UNIFIED_AI_V3_SOL_HIGH and e.get('execution_profile')!=SOL_HIGH_V1.contract:
+            raise ValueError('stage_exact_profile_binding')
         if len(json.dumps(data['output'],ensure_ascii=False).encode())>OUTPUT_LIMIT:
             raise ValueError('stage_output_limit')
         if not self.legacy_blind:
@@ -223,6 +239,8 @@ class StageReviewOwner(ReviewOwner):
                 record_sha256=self._pin,packet_sha256=digest(record['packet']),
                 source_label='DATE_LABELED_EXISTING_CAPTURE',original_shared_deadline_claimed=False,
                 strict_Core=False,strict_B2=False,send=False)
+            if self.blind.version==UNIFIED_AI_V3_SOL_HIGH:
+                self._receipt.update(execution_profile=SOL_HIGH_V1.contract,model=SOL_HIGH_V1.model,effort=SOL_HIGH_V1.effort)
         return self._receipt
 
 
@@ -241,6 +259,7 @@ class StageController(NoSendController):
             raise ValueError('stage_backend_authority_required')
         request,_=_stage_request(invocation_id=invocation_id,account=account,packet=packet,
             stage=stage,version=version,knowledge=knowledge,registry=registry,prior=prior)
+        if getattr(self,'execution_profile',ASTRA_XHIGH_V1)!=execution_profile(version):raise ValueError('stage_controller_profile_mismatch')
         identity=dict(account_scope=account,security=packet['base']['public_security']['canonical_security_id'],
                       frozen_input_sha256=digest(packet))
         required={'mode','market','session','prior_session','kind','identity','plan_sha256','expires_at'}
@@ -253,6 +272,8 @@ class StageController(NoSendController):
         one_shot=digest({k:v for k,v in host_scope.items() if k!='expires_at'})
         host_request=dict(contract=HOST_CONTRACT,identity=identity,market=host_scope['market'],
                           session=host_scope['session'],manual_scope_sha256=one_shot)
+        if version==UNIFIED_AI_V3_SOL_HIGH:
+            host_request['execution_profile']=SOL_HIGH_V1.contract
         grant=dict(contract='ACCEPTED_STAGE_PARENT_RECONSUMPTION_V1',stage_request=deepcopy(request),
                    host_request_sha256=digest(host_request),host_attempt=host_attempt,
                    original_scope_sha256=digest(host_scope),new_model_calls=0,send=False)
@@ -303,6 +324,7 @@ class StageController(NoSendController):
             raise ValueError('stage_backend_authority_required')
         request,text=_stage_request(invocation_id=invocation_id,account=account,packet=packet,
             stage=stage,version=version,knowledge=knowledge,registry=registry,prior=prior)
+        if getattr(self,'execution_profile',ASTRA_XHIGH_V1)!=execution_profile(version):raise ValueError('stage_controller_profile_mismatch')
         if approval(deepcopy(request)) is not True:raise ValueError('explicit_new_stage_grant_required')
         name=_stage_name(request)
         with account_lease():

@@ -82,6 +82,44 @@ def _scope(scope):
     return s, decision
 
 
+def record_backend_campaign_scope(*,approval,session,generation_id,source_generation_id,
+                                  campaign_plan_sha256,maximum_physical_attempts,
+                                  expires_at,enabled=False):
+    """Explicit finite multi-batch IO scope; legacy 15-minute scopes unchanged.
+
+    This is a trusted manual composition-root API, not a JSON renewal method.
+    Every original Parent keeps its 20-request cap and every Worker keeps its
+    deadline. The captured registration, original session clock, code identity,
+    account lane, and approval are still checked on every consumption.
+    """
+    from app.services.kiwoom_participant_session import ParticipatingSession
+    from app.services.kiwoom_global_lane import GlobalKiwoomLane
+    decision=approval_owner._approval(approval);now=_now()
+    if (enabled is not True or type(session) is not ParticipatingSession
+            or type(session._lane) is not GlobalKiwoomLane or session.kind!='CLI'
+            or not generation_id or generation_id!=source_generation_id or approval in _RUNS
+            or not isinstance(campaign_plan_sha256,str) or len(campaign_plan_sha256)!=64
+            or any(c not in '0123456789abcdef' for c in campaign_plan_sha256)
+            or type(maximum_physical_attempts) is not int or not 1<=maximum_physical_attempts<=20
+            or not isinstance(expires_at,datetime) or expires_at.utcoffset() is None
+            or not now<expires_at<=min(decision.expires_at,now+timedelta(minutes=45))):
+        raise ValueError('campaign_scope_finite_explicit_manual_authority_required')
+    session.attestation()
+    fd=session._lane._open()
+    try:
+        if not session._lane._try_lock(fd):raise ValueError('campaign_scope_lane_busy')
+        session._lane._state()
+    finally:os.close(fd)
+    scope=IntakeScope()
+    _SCOPES[scope]=dict(approval=approval,generation=generation_id,confirmed_at=now,
+        confirmation_sha256=decision.user_message_sha256,expires=expires_at,pid=os.getpid(),
+        code=_code(),local_session=session,policy='FINITE_MANUAL_SOURCE_CAMPAIGN_V2',
+        campaign_plan_sha256=campaign_plan_sha256,maximum_physical_attempts=maximum_physical_attempts,
+        remote_account_exclusivity='USER_CONFIRMATION_NOT_LOCALLY_OBSERVABLE')
+    _RUNS[approval]=generation_id
+    return scope
+
+
 def record_backend_local_scope(*, approval, session, generation_id,
                                source_generation_id, enabled=False):
     """Trusted backend: explicit read-only approval plus original local lane.

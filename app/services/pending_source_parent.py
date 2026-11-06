@@ -29,7 +29,7 @@ FILES=('app/services/pending_source_parent.py','app/services/pending_source_inta
  'app/services/price_session_projection.py',
  'app/services/sealed_response_binding.py','app/services/market_worker_rpc.py',
  'app/services/same_session_market_windows.py','app/services/market_component_execution.py',
- 'app/services/market_component_handoff.py')
+ 'app/services/market_component_handoff.py','app/services/registered_identity_source_parent.py')
 
 class PendingSourceParent:
     __slots__=('__weakref__',)
@@ -75,6 +75,9 @@ def issue_parent(*,intake_owner,config,session,generation_id,cutoff,code_sha,
     if attempts>maximum_attempts:raise ValueError('pending_parent_physical_cap')
     now=datetime.now(timezone.utc)
     captured=intake._scope(state['scope'])[0]
+    if ('maximum_physical_attempts' in captured
+            and maximum_attempts>captured['maximum_physical_attempts']):
+        raise ValueError('pending_parent_campaign_allocation_cap')
     if not captured['confirmed_at']<=cutoff<=now:
         raise ValueError('pending_parent_current_cutoff')
     with _LOCK:
@@ -99,6 +102,15 @@ def state(parent):
     if s['pid']!=os.getpid() or s['pins']!=pins():
         raise ValueError('pending_parent_process_or_code_changed')
     s['session'].attestation()
+    if 'identity_discovery' in s:
+        from app.services.registered_identity_source_parent import PURPOSE
+        from app.services.prospective_class_c_owner import require_identity_discovery
+        if (s['receipt']['scope']!=PURPOSE or datetime.now(timezone.utc)>=datetime.fromisoformat(s['receipt']['expires_at'])):
+            raise ValueError('identity_parent_scope_expired')
+        for ticker,identity in s['identities'].items():
+            if require_identity_discovery(s['identity_discovery'],generation_id=s['identity_generation'],ticker=ticker)!=identity:
+                raise ValueError('identity_parent_registration_changed')
+        return s
     if 'market_approval' in s:
         from app.services.prospective_class_c_owner import _approval
         decision=_approval(s['market_approval'])

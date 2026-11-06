@@ -200,6 +200,41 @@ def _security_readiness(
     }
 
 
+def evaluate_identity_discovery(item: WatchlistItem, security: SecurityMaster | None,
+                                company: Company | None, thesis: InvestmentThesis | None,
+                                *, cutoff: datetime, policy) -> dict[str, object]:
+    """Authenticate registration intent, not an as-yet unverified provider fact.
+
+    Per-share classification and economic rights are outputs of discovery; they
+    must not be prerequisites for reading official issuer/listing evidence.
+    """
+    if cutoff.utcoffset() is None:
+        raise ValueError('identity_discovery_aware_cutoff_required')
+    denials = []
+    market = market_scope_for_security(item.ticker, item.exchange)
+    if (not item.monitoring_requested or item.onboarding_state == OnboardingState.INACTIVE
+            or item.registration_requested_at is None
+            or item.registration_requested_at.replace(
+                tzinfo=item.registration_requested_at.tzinfo or UTC) > cutoff):
+        denials.append('identity_discovery_current_registration_intent_required')
+    if item.ticker != normalize_ticker(item.ticker) or market not in {'kr', 'us'}:
+        denials.append('identity_discovery_normalized_market_required')
+    if (security is None or company is None or thesis is None
+            or any(row.ticker != item.ticker for row in (security, company, thesis) if row is not None)
+            or security.exchange != item.exchange or company.exchange != item.exchange
+            or not security.canonical_security_id or not security.canonical_company_id):
+        denials.append('identity_discovery_registration_identity_conflict')
+    if thesis is None or thesis.status != 'active' or not thesis.core_thesis.strip():
+        denials.append('identity_discovery_active_user_thesis_required')
+    if not policy.permits('canonical_local'):
+        denials.append('identity_discovery_local_registration_policy_required')
+    return dict(contract='registered-identity-discovery-v1', ticker=item.ticker, market=market,
+        identity_discovery_eligible=not denials, denials=sorted(set(denials)),
+        permitted_role='IDENTITY_DISCOVERY_ONLY', source_use=False, financial_use=False,
+        research_analysis_eligible=False, current_production_ready=False, send=False,
+        database_modified=False)
+
+
 def evaluate_source_intake(item: WatchlistItem, security: SecurityMaster | None,
                            company: Company | None, thesis: InvestmentThesis | None,
                            *, cutoff: datetime, policy) -> dict[str, object]:

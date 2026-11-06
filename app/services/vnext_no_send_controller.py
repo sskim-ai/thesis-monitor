@@ -16,6 +16,7 @@ from app.services.vnext_daily_research import UseRegistry, _persistent_registry,
 from app.services.vnext_daily_delta import completed_session
 from app.services.vnext_public_capture import target_session
 from app.services.unified_runtime_v2 import scheduled_slots
+from app.services.vnext_execution_profile import ASTRA_XHIGH_V1, require_profile
 
 CONTRACT = 'isolated-no-send-daily-controller-v1'
 MODEL = dict(model='gpt-6-astra', effort='xhigh', timeout_seconds=600, retries=0)
@@ -70,12 +71,13 @@ def cycle_from_packet(*, registration, packet, correction_epoch):
 
 
 class NoSendController:
-    def __init__(self, config, *, enabled=False):
+    def __init__(self, config, *, enabled=False, execution_profile=ASTRA_XHIGH_V1):
         if config.environment != 'test' or config.mode != 'write':
             raise ValueError('isolated_public_controller_only')
         self.store = AppendResearchStore(config)
         self.config = config
         self.enabled = enabled
+        self.execution_profile = require_profile(execution_profile)
         self._initialization_recoveries = {}
         self._host_initialization_recovery = None
         self._host_recovery_guard = None
@@ -106,6 +108,8 @@ class NoSendController:
         before any model context. The original ambiguous journal stays immutable.
         One explicit authorization can add one invocation, never automatic retries.
         """
+        if self.execution_profile!=ASTRA_XHIGH_V1:
+            raise ValueError('legacy_primary_recovery_profile_required')
         request = dict(account=account, security=security,
                        input=digest(dict(packet=packet, context=frozen_context)), **MODEL)
         key = digest(request)[:40]
@@ -212,6 +216,8 @@ class NoSendController:
         Stored responses are transport evidence, not accepted model judgments.
         No PID timeout or expired lease authorizes repeating an ambiguous call.
         """
+        if self.execution_profile!=ASTRA_XHIGH_V1:
+            raise ValueError('sol_profile_requires_versioned_stage_controller')
         frozen = dict(packet=packet, context=frozen_context)
         request = dict(account=account, security=security, input=digest(frozen), **MODEL)
         if not account or not security:

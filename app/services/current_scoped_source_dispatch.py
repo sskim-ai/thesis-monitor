@@ -28,6 +28,8 @@ _EXTRA_FIELDS = {"contract", "parent_receipt_sha256"}
 _STOP_STATUSES = {401, 403, 429}
 MAX_RESPONSE_BYTES = 4 * 1024 * 1024
 _ROUTES = {
+    "ka10099": ("/api/dostk/stkinfo", {"mrkt_tp"}),
+    "ka10001": ("/api/dostk/stkinfo", {"stk_cd"}),
     "usa06012": ("/api/us/chart", {"stex_tp", "stk_cd", "strt_dt", "upd_stkpc_tp", "exrt_appl_tp"}),
     "usa06013": ("/api/us/chart", {"stex_tp", "stk_cd", "strt_dt", "upd_stkpc_tp", "exrt_appl_tp"}),
     "usa06014": ("/api/us/chart", {"stex_tp", "stk_cd", "strt_dt", "upd_stkpc_tp", "exrt_appl_tp"}),
@@ -259,7 +261,7 @@ class CurrentScopedDispatcher(SealedDispatcher):
     def _category(descriptor):
         if descriptor.endpoint_operation == "credential_exchange":
             return "auth"
-        for prefix in ("stock", "completed_close", "us_market", "kr_market"):
+        for prefix in ("stock", "completed_close", "us_market", "kr_market", "identity"):
             if descriptor.consumer_role.startswith(prefix + ":"):
                 return prefix
         raise SourceSafetyStop("scoped_request_category_unclassified")

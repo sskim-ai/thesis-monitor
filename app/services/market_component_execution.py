@@ -50,7 +50,11 @@ async def drain_selected_market_slots(worker,run):
         if not key.startswith(('kr_market:','us_market:')):
             raise ValueError('market_unconsumed_non_market_slot')
         try:wire,_,_=run.resolve(key)
-        except SlotNotSelected:continue
+        except SlotNotSelected:
+            # Later unselected pages still bind the preceding no-I/O decision.
+            # Persist it through the original resolver, not an invented response.
+            run.skip_unselected(key)
+            continue
         reply=await worker.command({'market_wire':dict(logical_id=key,request_json=wire)})
         if reply.get('status')!=200:raise ValueError('market_selected_continuation_rejected')
 
@@ -93,7 +97,7 @@ def preserve_plan(plan):
         raise ValueError('market_current_scoped_plan_roundtrip')
     return value
 
-def prepare_capture(*,parent,wire,session,base,credentials,inner,external_root):
+def prepare_capture(*,parent,wire,session,base,credentials,inner,external_root,identity_only=False):
     """Freeze the original launch closure and exact Worker/transport objects."""
     import ast
     from app.services import pending_source_parent as pending
@@ -111,7 +115,14 @@ def prepare_capture(*,parent,wire,session,base,credentials,inner,external_root):
         owners={d.normalizer:d.owner_sha256 for d in plan.descriptors},
         config_identities={'kiwoom':plan.descriptors[0].config_identity_sha256},
         credential_presence={'kiwoom':True},secrets=tuple(credentials.values()),account_pacer=session._lane)
-    transport=SealedSourceTransport(run,inner,providers={'kiwoom'});windows=SameSessionWindows(transport)
+    if identity_only:
+        from app.services.registered_identity_source_parent import PURPOSE
+        receipt=pending.resolve_parent(parent,plan=plan)
+        if (receipt['scope']!=PURPOSE or receipt['maximum_attempts']>20
+                or any(d.endpoint_operation not in ('credential_exchange','ka10099','ka10001') for d in plan.descriptors)):
+            raise ValueError('identity_capture_original_parent_and_twenty_cap_required')
+    transport=SealedSourceTransport(run,inner,providers={'kiwoom'})
+    windows=None if identity_only else SameSessionWindows(transport)
     pins={}
     for n in REQUIRED_V2:
         p=external/n

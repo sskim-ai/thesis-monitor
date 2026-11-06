@@ -194,14 +194,24 @@ class ResearchStore:
             c.execute('INSERT OR IGNORE INTO source_capture VALUES (?,?,?,?,?,?,?,?)',(ident,run_id,provider,key,sha,str(path),receipt['captured_at'],encoded(receipt).decode()))
         return sha
 
-    def observation(self, run_id, ticker, field, status, source_sha, payload):
+    def observation(self, run_id, ticker, field, status, source_sha, payload, *,
+                    registration_owner=None, registration_generation=None, registration_policy=None):
         if status not in STATES or any(k in payload for k in ('accepted_Core','accepted_receipt','field','status','source_sha')):
             raise ValueError('research_status_not_ownership')
         if not source_sha or payload.get('strict_native') is not False:
             raise ValueError('explicit_source_and_strict_denial_required')
+        captured_membership=registration_owner is not None or registration_generation is not None or registration_policy is not None
+        if captured_membership:
+            from app.services.prospective_class_c_owner import source_intake_snapshot
+            if registration_owner is None or not registration_generation or registration_policy is None:
+                raise ValueError('research_observation_exact_intake_binding_required')
+            # Same typed membership as CompositeView, never synthetic ACTIVE
+            # rows. Source and field-use validation remain consumer-owned.
+            source_intake_snapshot(registration_owner,generation_id=registration_generation,
+                subjects=(ticker,),policy=registration_policy)
         key=digest([run_id,ticker,field,source_sha])
         with self.connect() as c:
-            if not c.execute('SELECT 1 FROM watchlistitem WHERE ticker=? AND active=1',(ticker,)).fetchone():
+            if not captured_membership and not c.execute('SELECT 1 FROM watchlistitem WHERE ticker=? AND active=1',(ticker,)).fetchone():
                 raise ValueError('not_registered')
             if not c.execute('SELECT 1 FROM research_run WHERE run_id=?',(run_id,)).fetchone():
                 raise ValueError('unknown_run')
