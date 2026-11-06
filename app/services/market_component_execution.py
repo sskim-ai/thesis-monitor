@@ -97,7 +97,7 @@ def preserve_plan(plan):
         raise ValueError('market_current_scoped_plan_roundtrip')
     return value
 
-def prepare_capture(*,parent,wire,session,base,credentials,inner,external_root,identity_only=False):
+def prepare_capture(*,parent,wire,session,base,credentials,inner,external_root,identity_only=False,completed_close_only=False):
     """Freeze the original launch closure and exact Worker/transport objects."""
     import ast
     from app.services import pending_source_parent as pending
@@ -121,8 +121,14 @@ def prepare_capture(*,parent,wire,session,base,credentials,inner,external_root,i
         if (receipt['scope']!=PURPOSE or receipt['maximum_attempts']>20
                 or any(d.endpoint_operation not in ('credential_exchange','ka10099','ka10001') for d in plan.descriptors)):
             raise ValueError('identity_capture_original_parent_and_twenty_cap_required')
+    if completed_close_only:
+        from app.services.pending_completed_close_contract import PURPOSE
+        receipt=pending.resolve_parent(parent,plan=plan)
+        if (identity_only or receipt['scope']!=PURPOSE or receipt['maximum_attempts']>20
+                or len(plan.descriptors)!=15 or any(d.transient_retry_max for d in plan.descriptors)):
+            raise ValueError('close_capture_original_typed_parent_and_fifteen_cap_required')
     transport=SealedSourceTransport(run,inner,providers={'kiwoom'})
-    windows=None if identity_only else SameSessionWindows(transport)
+    windows=None if identity_only or completed_close_only else SameSessionWindows(transport)
     pins={}
     for n in REQUIRED_V2:
         p=external/n

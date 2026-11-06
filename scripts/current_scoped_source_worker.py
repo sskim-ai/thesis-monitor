@@ -35,6 +35,7 @@ from app.services.price_session_projection import project_price_session
 from app.services.short_history_reference import review_rows as review_short_rows
 from app.services.scoped_source_plan import ScopedStockRead
 from app.services.scoped_external_code_manifest import validate_external_manifest, CONTRACT_V2
+from app.services.pending_completed_close_contract import validate_worker_command as validate_pending_close_command
 from datetime import datetime as SourceDateTime
 import httpx
 
@@ -220,7 +221,7 @@ for line in sys.stdin:
             action=command['pending_handoff']
             expected_keys=set(pending_handoff)|{'nonce'}
             if (set(action)!=expected_keys or {k:v for k,v in action.items() if k!='nonce'}!=pending_handoff
-                    or pending_handoff.get('scope') not in ('SCOPED_SOURCE_ONLY_PENDING','PENDING_MARKET_COMPONENT_SOURCE_ONLY','REGISTERED_IDENTITY_DISCOVERY_ONLY_V1')
+                    or pending_handoff.get('scope') not in ('SCOPED_SOURCE_ONLY_PENDING','SCOPED_COMPLETED_CLOSE_ONLY_PENDING','PENDING_MARKET_COMPONENT_SOURCE_ONLY','REGISTERED_IDENTITY_DISCOVERY_ONLY_V1')
                     or pending_handoff.get('generation_id')!=frozen['stock_plan']['run_id']
                     or not isinstance(action['nonce'],str) or len(action['nonce'])!=64):
                 raise PermissionError('PENDING_WORKER_HANDOFF_DENIED')
@@ -236,6 +237,9 @@ for line in sys.stdin:
             if template['endpoint_operation'] not in ('credential_exchange','ka10099','ka10001'):
                 raise PermissionError('IDENTITY_ONLY_OFFICIAL_READ_SCOPE')
         market_only=pending_handoff is not None and pending_handoff['scope']=='PENDING_MARKET_COMPONENT_SOURCE_ONLY'
+        close_only=pending_handoff is not None and pending_handoff['scope']=='SCOPED_COMPLETED_CLOSE_ONLY_PENDING'
+        if close_only:
+            validate_pending_close_command(pending_handoff,frozen['stock_plan'],frozen['market_wire_templates'],command)
         stock_close=(pending_handoff is not None and pending_handoff['scope']=='SCOPED_SOURCE_ONLY_PENDING'
             and set(command)=={'market_wire'})
         if stock_close:
@@ -247,7 +251,7 @@ for line in sys.stdin:
                 raise PermissionError('PENDING_STOCK_CLOSE_EXACT_READ_SCOPE')
         if market_only and (frozen['stock_plan']['reads'] or not set(command) in ({'market_wire'},{'market_replay'},{'discovery'},{'market'})):
             raise PermissionError('PENDING_MARKET_COMPONENT_COMMAND_SCOPE')
-        if set(command)=={'market_wire'} and (market_only or identity_only or stock_close):
+        if set(command)=={'market_wire'} and (market_only or identity_only or stock_close or close_only):
             action=command['market_wire'];key=action['logical_id']
             template=frozen['market_wire_templates'][key]
             if ('market_wire',key) in done:raise ValueError('MARKET_WIRE_ALREADY_CONSUMED')
