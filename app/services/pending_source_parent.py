@@ -29,7 +29,8 @@ FILES=('app/services/pending_source_parent.py','app/services/pending_source_inta
  'app/services/price_session_projection.py',
  'app/services/sealed_response_binding.py','app/services/market_worker_rpc.py',
  'app/services/same_session_market_windows.py','app/services/market_component_execution.py',
- 'app/services/market_component_handoff.py','app/services/registered_identity_source_parent.py')
+ 'app/services/market_component_handoff.py','app/services/registered_identity_source_parent.py',
+ 'app/services/pending_completed_close_contract.py')
 
 class PendingSourceParent:
     __slots__=('__weakref__',)
@@ -38,6 +39,20 @@ def pins():return {n:digest((ROOT/n).read_bytes().hex()) for n in FILES}
 
 def issue_parent(*,intake_owner,config,session,generation_id,cutoff,code_sha,
                  provider_config_sha256,maximum_attempts=20,enabled=False):
+    return _issue_parent(intake_owner=intake_owner,config=config,session=session,
+        generation_id=generation_id,cutoff=cutoff,code_sha=code_sha,
+        provider_config_sha256=provider_config_sha256,maximum_attempts=maximum_attempts,
+        enabled=enabled,close_only=False)
+
+def issue_completed_close_parent(*,intake_owner,config,session,generation_id,cutoff,code_sha,
+                                 provider_config_sha256,maximum_attempts=15,enabled=False):
+    return _issue_parent(intake_owner=intake_owner,config=config,session=session,
+        generation_id=generation_id,cutoff=cutoff,code_sha=code_sha,
+        provider_config_sha256=provider_config_sha256,maximum_attempts=maximum_attempts,
+        enabled=enabled,close_only=True)
+
+def _issue_parent(*,intake_owner,config,session,generation_id,cutoff,code_sha,
+                  provider_config_sha256,maximum_attempts,enabled,close_only):
     from app.services.kiwoom_participant_session import ParticipatingSession
     from app.services.kiwoom_global_lane import GlobalKiwoomLane
     if (enabled is not True or type(session) is not ParticipatingSession
@@ -45,6 +60,8 @@ def issue_parent(*,intake_owner,config,session,generation_id,cutoff,code_sha,
             or type(maximum_attempts) is not int or not 1<=maximum_attempts<=20):
         raise ValueError('pending_parent_original_session_and_bound_required')
     session.attestation()
+    if close_only:
+        session._lane._state()
     config=ScopedConfig.model_validate(config)
     if config.capture_selection is None or config.capture_selection.market_contexts:
         raise ValueError('pending_parent_chart_price_only')
@@ -65,7 +82,14 @@ def issue_parent(*,intake_owner,config,session,generation_id,cutoff,code_sha,
             raise ValueError('pending_parent_identity_changed')
     wire=compile_scoped_wire_contract(config=config,identities=identities,generation_id=generation_id,
         at=cutoff,code_sha=code_sha,provider_config_sha256=provider_config_sha256,retries=0)
-    if not wire['stock_reads']:
+    close_requirements=()
+    if close_only:
+        from app.services.pending_completed_close_contract import requirements
+        close_requirements=requirements(config,wire)
+        for row in close_requirements:
+            intake.consume_intake(intake_owner,generation_id=generation_id,role='completed_close',
+                security_ids=(row['security_id'],),session=row['session'])
+    elif not wire['stock_reads']:
         raise ValueError('pending_parent_original_chart_reads_required')
     for read in wire['stock_reads']:
         intake.consume_intake(intake_owner,generation_id=generation_id,role=read.role,
@@ -89,9 +113,13 @@ def issue_parent(*,intake_owner,config,session,generation_id,cutoff,code_sha,
             code_pins_sha256=digest(pins()),registration_sha256=digest(state['public']),
             full22_native=False,D01_D02=False,financial_use=False,model_use=False,
             source_evidence_state='SOURCE_OBSERVED_PENDING_NOT_YET_CAPTURED')
+        if close_only:
+            from app.services.pending_completed_close_contract import CONTRACT as CLOSE_CONTRACT,PURPOSE as CLOSE_PURPOSE
+            receipt.update(contract=CLOSE_CONTRACT,scope=CLOSE_PURPOSE,
+                chart_coverage=False,current_authority=False,valuation_use=False,economic_use=False)
         _LIVE[parent]=dict(pid=os.getpid(),pins=pins(),intake=intake_owner,session=session,
             config=config,wire=wire,identities=identities,receipt=receipt,claimed=False,
-            worker_pid=None,challenge=None,ack=False)
+            worker_pid=None,challenge=None,ack=False,close_only=close_only)
         _CLAIMED[intake_owner]=True
     return parent,deepcopy(wire)
 
@@ -119,6 +147,17 @@ def state(parent):
                 or s['receipt']['scope']!='PENDING_MARKET_COMPONENT_SOURCE_ONLY'):
             raise ValueError('pending_market_component_approval_expired_or_changed')
         return s
+    if s.get('close_only'):
+        from app.services.pending_completed_close_contract import requirements
+        from app.services.kiwoom_global_lane import _read
+        lane_state=_read(s['session']._lane.root/'state.json')
+        if (lane_state.get('halted') is not False
+                or type(lane_state.get('in_flight')) is not bool
+                or lane_state['in_flight'] and lane_state.get('pid')!=os.getpid()):
+            raise ValueError('pending_close_original_lane_stopped_or_foreign_flight')
+        for row in requirements(s['config'],s['wire']):
+            intake.consume_intake(s['intake'],generation_id=s['receipt']['generation_id'],role='completed_close',
+                security_ids=(row['security_id'],),session=row['session'])
     for read in s['wire']['stock_reads']:
         intake.consume_intake(s['intake'],generation_id=s['receipt']['generation_id'],role=read.role,
             security_ids=(read.canonical_security_id,),session=read.latest_completed_session)
