@@ -153,6 +153,12 @@ def public_data(field, p):
 
 class CompositeView:
     """One bounded RuntimeStore snapshot, exact CAS verification, no writes."""
+    @classmethod
+    def from_dated_archive(cls, bundle, *, enabled=False):
+        """Separate opt-in reference edge; it does not admit current registration."""
+        from app.services.dated_capture_research import dated_archive_view
+        return dated_archive_view(bundle, enabled=enabled)
+
     def __init__(self, store, *, as_of, run_ids=None, tickers=None, kis_multisource_owner=None,
                  reported_context=False, registration_owner=None, registration_generation=None,
                  registration_policy=None):
