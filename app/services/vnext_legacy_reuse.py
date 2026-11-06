@@ -58,8 +58,8 @@ def descriptor(request):
 
 def captured_inputs(store, run_id, provider, security, request):
     """Replay the actual HTTP receipt, never reconstruct authority from values."""
-    with store.connect() as c:
-        rows=c.execute('SELECT raw_path,receipt_json FROM source_capture WHERE run_id=? AND provider=?',(run_id,provider)).fetchall()
+    from app.services.public_capture_storage import list_captures
+    rows=list_captures(store,run_id,provider)
     matched=[]
     for path,text in rows:
         r=json.loads(text);d=r.get('request',{})
@@ -84,8 +84,9 @@ def captured_inputs(store, run_id, provider, security, request):
 
 def native_valuation_inputs(store, run_id, security, provider, *, market_type=None, cutoff=None):
     """Shared receipt-to-validator builder for current collection and offline replay."""
-    with store.connect() as c:
-        start=c.execute('SELECT started_at FROM research_run WHERE run_id=?',(run_id,)).fetchone()
+    from app.services.public_capture_storage import run_started_at
+    started=run_started_at(store,run_id)
+    start=(started,) if started else None
     if not start:raise ValueError('original_run_required')
     ticker=security['ticker']
     if provider=='finnhub':
