@@ -6,10 +6,13 @@ import fcntl,hashlib,json,os,stat,subprocess,sys,time,traceback,uuid
 from pathlib import Path
 H=Path(os.environ['TM_C21G_TASK_ROOT']).resolve();R=H.parents[1];W=R/'work/thesis-monitor-vnext-balanced-20261029';sys.path.insert(0,str(W));sys.dont_write_bytecode=True
 JOURNAL=Path('/private/tmp/c21g-sol-stage-journal-20261107')
+def allowed_journal(value):
+    from maintenance.guarded_sol_canary import same_journal_target
+    return same_journal_target(value,JOURNAL/'research.sqlite3')
 def boundary(event,args):
     if event.startswith('socket.') and event in ('socket.connect','socket.getaddrinfo','socket.gethostbyname'):
         raise PermissionError('C21G_PARENT_PYTHON_NETWORK_DENIED')
-    if event=='sqlite3.connect' and Path(args[0])!=JOURNAL/'research.sqlite3':
+    if event=='sqlite3.connect' and not allowed_journal(args[0]):
         raise PermissionError('C21G_ONLY_NEW_TASK_JOURNAL_DB_ALLOWED')
     if event=='open' and isinstance(args[0],(str,bytes)):
         p=Path(os.fsdecode(args[0]))
@@ -35,19 +38,34 @@ from app.services.vnext_public_capture import target_session
 from app.services.vnext_unified_dispatch import consume
 
 PACKET_SHA='3cc32a9e6abe78e404496172bcb9f16e21d5de09fe566dccb8673773f45cb4b9'
-OUT=H/'private/live'
+CONTINUE_INITIALIZATION=sys.argv[1:]==['continue-unstarted-journal-uri']
+SUFFIX='-journal-uri-continuation' if CONTINUE_INITIALIZATION else ''
+OUT=H/'private'/('live'+SUFFIX)
+AUTH_PATH=H/('USER_AUTHORIZATION'+SUFFIX+'.json')
 
 def git(*args):return subprocess.check_output(['git',*args],cwd=W,text=True).strip()
 def current_disk():
     data=subprocess.check_output(['/bin/df','-k',str(H)],text=True);return int(data.splitlines()[-1].split()[3])*1024
 
 def run():
-    assert not (H/'LIVE_RESULT.json').exists() and not OUT.exists() and not JOURNAL.exists(),'FRESH_ONCE_ONLY'
+    assert not (H/('LIVE_RESULT'+SUFFIX+'.json')).exists() and not OUT.exists(),'FRESH_ONCE_ONLY'
+    if CONTINUE_INITIALIZATION:
+        previous=json.loads((H/'LIVE_RESULT.json').read_bytes())
+        assert previous['reason']=='C21G_ONLY_NEW_TASK_JOURNAL_DB_ALLOWED' and previous['stage_host_attempts']==0
+        assert not list((H/'private/live').glob('*/MODEL_STARTED.json'))
+        import sqlite3
+        with sqlite3.connect((JOURNAL/'research.sqlite3').as_uri()+'?mode=ro',uri=True) as check:
+            assert list(check.execute('SELECT key FROM research_meta'))==[('schema',)],'CONSUMED_JOURNAL_NO_CONTINUATION'
+        runtime=json.loads((H/'private/binding-final.json').read_bytes())['root']
+        assert not (Path(runtime)/'inference-ledger.json').exists()
+        assert not (Path(runtime)/'BLIND').exists() and not (Path(runtime)/'ADJ').exists()
+    else:assert not JOURNAL.exists(),'FRESH_JOURNAL_ONLY'
     assert not git('status','--porcelain'),'WORKTREE_DRIFT'
     free=current_disk();assert free>=2*1024**3+256*1024**2
-    write_once(H/'PRE_GC_LIVE.json',dict(task='C21G',timestamp=datetime.now(timezone.utc).isoformat(),free_bytes=free,peak_bytes=256*1024**2,reserve_bytes=2*1024**3,decision='PRE_GC_NOOP_SUFFICIENT',actions=[]))
+    write_once(H/('PRE_GC_LIVE'+SUFFIX+'.json'),dict(task='C21G',timestamp=datetime.now(timezone.utc).isoformat(),free_bytes=free,peak_bytes=256*1024**2,reserve_bytes=2*1024**3,decision='PRE_GC_NOOP_SUFFICIENT',actions=[]))
     authorization=dict(task=TASK,basis='Current user: 실행 승인·현재 동시 사용 없음',profile=SOL_HIGH_V1.contract,model=SOL_HIGH_V1.model,effort=SOL_HIGH_V1.effort,packet_sha256=PACKET_SHA,maximum_contexts=2,stage_seconds=600,input_bytes=393216,output_bytes=131072,retries=0,new_private_journal=True,financial_HTTP=0,operating_DB=0,send=False,other_execution_confirmed_absent=True,at=datetime.now(timezone.utc).isoformat(),head=git('rev-parse','HEAD'))
-    write_once(H/'USER_AUTHORIZATION.json',authorization,0o400)
+    authorization['original_initialization_failure_preserved']=CONTINUE_INITIALIZATION
+    write_once(AUTH_PATH,authorization,0o400)
     OUT.mkdir(mode=0o700)
     result=dict(status='PREMODEL_INITIALIZATION',model_attempts=0,accepted_stages=[],model_profile=SOL_HIGH_V1.contract,financial_HTTP=0,operating_DB=0,private_journal_created=False,retries=0,send=False)
     source_counts=None
@@ -87,8 +105,9 @@ def run():
             if (Path(fields[1]).name=='codex' and ' exec ' in ' '+fields[2]+' ') or str(binding.binary) in fields[2]:others.append(int(fields[0]))
         write_once(OUT/'CALLERS.json',dict(other_analysis_PIDs=others,user_no_concurrency=True,scope='Local process observation plus current user confirmation'))
         assert not others,'OTHER_ANALYSIS_PROCESS_PRESENT'
-        JOURNAL.mkdir(mode=0o700)
-        ResearchStore(JOURNAL/'research.sqlite3')
+        if not CONTINUE_INITIALIZATION:
+            JOURNAL.mkdir(mode=0o700)
+            ResearchStore(JOURNAL/'research.sqlite3')
         config=RuntimeConfig(JOURNAL/'research.sqlite3','C21G_SOL_HIGH_20261107',mode='write',environment='test');config.validate()
         result['private_journal_created']=True
         account=runtime_scope['account'];accepted={};requests={}
@@ -117,7 +136,7 @@ def run():
                 return (candidate==requests.get(candidate.get('stage'))
                     and candidate['model']=='gpt-6.1-sol' and candidate['effort']=='high'
                     and candidate['source_sha']==PACKET_SHA and candidate['execution_profile']==SOL_HIGH_V1.contract
-                    and digest(json.loads((H/'USER_AUTHORIZATION.json').read_bytes()))==digest(authorization)
+                    and digest(json.loads(AUTH_PATH.read_bytes()))==digest(authorization)
                     and not (binding.root/'STOP').exists() and not (JOURNAL/'STOP').exists()
                     and git('rev-parse','HEAD')==authorization['head'])
             cap,host=run_stage(binding=binding,config=config,packet=packet,registry=registry,source_loader=source_loader,
@@ -150,7 +169,7 @@ def run():
         result['model_attempt_count_note']='MODEL_STARTED counts backend transport entries; MODEL_RAW counts returned outputs, neither alone proves HTTP inference.'
         result['source_owner_consumptions']=source_counts
         result['private_DB_bytes']=sum(p.stat().st_size for p in JOURNAL.glob('*') if p.is_file()) if JOURNAL.exists() else 0
-        write_once(H/'LIVE_RESULT.json',result)
+        write_once(H/('LIVE_RESULT'+SUFFIX+'.json'),result)
         print(json.dumps(result,ensure_ascii=False),flush=True)
 
 if __name__=='__main__':run()

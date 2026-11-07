@@ -3,12 +3,25 @@ from contextlib import nullcontext
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 import time
+from pathlib import Path
+from urllib.parse import parse_qs, unquote, urlsplit
 
 from app.services import vnext_balanced_stage_review as stages
 from app.services.vnext_execution_profile import SOL_HIGH_V1
 from app.services.vnext_no_send_runner import run_manual_research
 from app.services.vnext_research_store import digest
 from maintenance.guarded_sol_host import execute, require_request, write_once
+
+
+def same_journal_target(value, expected):
+    """Recognize the original store's local SQLite URI, not a larger DB scope."""
+    value = str(value)
+    if value.startswith('file:'):
+        parsed = urlsplit(value)
+        if parsed.netloc or parsed.fragment or parse_qs(parsed.query) not in ({'mode': ['ro']}, {'mode': ['rw']}):
+            return False
+        value = unquote(parsed.path)
+    return Path(value) == Path(expected)
 
 
 def run_stage(*, binding, config, packet, registry, source_loader, economic_loader,
