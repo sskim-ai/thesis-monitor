@@ -15,6 +15,7 @@ from scripts import kis_estimate_capability_probe as base
 RATIO_PATH = "/uapi/domestic-stock/v1/finance/financial-ratio"
 RATIO_TR = "FHKST66430300"
 CONTROLS = ("005930", "000660")
+RETIRED = "KIS_FINANCIAL_RATIO_RETIRED_NO_LIVE_FETCH"
 
 
 class CalibrationProbe(base.Probe):
@@ -25,6 +26,8 @@ class CalibrationProbe(base.Probe):
         self.stage_b_allowed = False
 
     def fetch(self, code, kind="ratio"):
+        if kind == "ratio":
+            raise base.ProbeStop(RETIRED)
         if (not self.token or kind not in {"ratio", "estimate"}
                 or code not in base.KR8 or (code, kind) in self.calls
                 or self.data_count >= 16):
@@ -95,6 +98,7 @@ class CalibrationProbe(base.Probe):
 
 
 def run(output, env_file):
+    raise base.ProbeStop(RETIRED)
     output.mkdir(mode=0o700, parents=True, exist_ok=False)
     for name in ("httpx", "httpcore"):
         logging.getLogger(name).disabled = True
