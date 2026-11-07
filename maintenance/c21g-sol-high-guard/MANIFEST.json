@@ -1,0 +1,19 @@
+{
+  "source_tag": "rust-v0.155.1",
+  "original_guard_sha256": "e90d289921817df67d306d4af4798ca33bef0f9df0bd224de236e619d4c704ed",
+  "patched_guard_sha256": "96f72fd24f7814eef323fbcafef23ca96d132ed9c8c8ba90ee5d9eaa56216396",
+  "patch_sha256": "6540dcad3af0568551ef0f4be8c5efc1d6b508f333eda73eb6b9a122af1966ba",
+  "new_module_sha256": "f2ccfaa56e3fa24be5c1dc0bc8c23cee1761eddd8268d18b230c041af46dc65b",
+  "Cargo_lock_sha256": "df88a71b82843c6f092610fb07589f7a40032ddc25f50718354546ca541eb9b7",
+  "profile": "SOL_61_HIGH_EXECUTION_V1",
+  "task": "C21G_SOL_HIGH_GUARDED_HOST_COMPATIBILITY_AND_SINGLE_NO_SEND_CANARY",
+  "apply": "Apply task_guard.patch at codex-rs root; copy sol_task_scope.rs into http-client/src. No dependency fetch, catalog fabrication or legacy ledger reuse.",
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "host_build": "cargo build --offline --locked --profile dev-small -p codex-app-server --bin codex-app-server",
+  "diff_context_lines": 0,
+  "new_binary": {
+    "bytes": 289492992,
+    "sha256": "e29f831c91d699ff90854c02e978bf058629a733a9b20e2672718822b906cda5"
+  }
+}
