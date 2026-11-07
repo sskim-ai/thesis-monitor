@@ -297,6 +297,7 @@ def _identity(*, inputs, security, body, run_id, provider, metric_receipt):
     reasons, bindings = [], [digest(metric_receipt)]
     exchange, currency = None, None
     alias = None
+    registered_name_variant = False
     returned = body.get("stk_cd" if provider == "kiwoom" else "symbol")
     kind = str(security.get("security_type", "")).lower()
     if security.get("issuer_type") == "adr" or "depositary" in kind or kind in {"adr", "ads"}:
@@ -346,7 +347,6 @@ def _identity(*, inputs, security, body, run_id, provider, metric_receipt):
         else:
             row = matched[0]
             exchange = row.get("marketName")
-            expected_name = security.get("company_name")
             alias_owner = data.get("reviewed_alias_owner")
             if alias_owner is not None:
                 from app.services.reviewed_security_alias import ReviewedSecurityAliases
@@ -356,17 +356,20 @@ def _identity(*, inputs, security, body, run_id, provider, metric_receipt):
                     provider_code=row.get("code"), provider_name=row.get("name"),
                     market=market, provider_class=row.get("kind"),
                     observed_at=metric_receipt["received_at"])
-                expected_name = alias["provider_name"]
                 bindings.append(digest(alias))
             if (
                 row.get("marketCode") != market
                 or exchange not in MARKETS[market]
                 or security.get("exchange") not in {"KRX", MARKETS[market][0]}
                 or security.get("country") != "KR"
-                or _name(row.get("name")) != _name(expected_name)
+                or not isinstance(row.get("name"), str)
+                or not isinstance(body.get("stk_nm"), str)
+                or not _name(row.get("name"))
+                or not _name(body.get("stk_nm"))
                 or _name(body.get("stk_nm")) != _name(row.get("name"))
             ):
                 reasons.append("UNAVAILABLE_SECURITY_IDENTITY")
+            registered_name_variant = _name(row.get("name")) != _name(security.get("company_name"))
             bindings.append(digest(row))
         contract = "kiwoom-exact-security-code-identity-v1"
     else:
@@ -432,6 +435,8 @@ def _identity(*, inputs, security, body, run_id, provider, metric_receipt):
                       allowed_fields=("peTTM", "pbQuarterly", "forwardPE"))
     if alias is not None:
         result['name_mapping_proof'] = alias
+    if registered_name_variant:
+        result['name_diagnostics'] = ['REGISTERED_NAME_VARIANT_NONBLOCKING']
     return dict(**result, receipt_sha256=digest(result))
 
 
