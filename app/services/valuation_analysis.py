@@ -179,6 +179,75 @@ def matched_fper(eps,*,original_eps=None,price=None,actions=None):
     return current_fper(original_eps,price,actions)
 
 
+def dated_fper_source(read):
+    """Trusted retained-byte reader; revalidate all parents on consumption.
+
+    Provenance lives in this new fact's basis, not new default schema fields.
+    Existing EPS/ratio dumps and their hashes therefore remain unchanged.
+    """
+    if not callable(read):raise ValueError('analysis_dated_reader_required')
+    def consume():
+        from scripts import kis_current_fy1_owner as p,kis_exact_action_guard as a
+        from scripts.kis_fy1_semantic_owner import Evidence
+        cap=read();s=cap['security'];eps=cap['eps'];old=cap['original_eps']
+        if type(eps) is not ValuationAnalysisFact or eps.metric!='FY1_EPS':
+            raise ValueError('analysis_typed_EPS_required')
+        if (s['ticker']!=eps.ticker or s['canonical_security_id']!=eps.canonical_security_id
+                or s['country']!='KR' or s['exchange']!='KRX' or eps.provider!='KIS'):
+            raise ValueError('analysis_dated_security_conflict')
+        r=cap['eps_receipt'];raw=cap['eps_raw']
+        if (not isinstance(raw,bytes) or digest(raw)!=eps.raw_sha256
+                or r['raw_sha256']!=eps.raw_sha256 or digest(r)!=eps.source_receipt_sha256
+                or r['ended_at']!=eps.retrieval_timestamp or r['http_status']!=200):
+            raise ValueError('analysis_dated_EPS_source_changed')
+        p.eps_receipt(old)
+        if (old['estimate_sha256']!=eps.raw_sha256 or old['security_code']!=eps.ticker
+                or old['period']!=eps.forecast_fiscal_period or old['estdate']!=eps.estimate_vintage
+                or Decimal(old['value'])!=Decimal(eps.exact_value) or old['unit']!=eps.unit):
+            raise ValueError('analysis_dated_EPS_binding')
+        def evidence(item):
+            raw=item['raw']
+            if not isinstance(raw,bytes):raise ValueError('analysis_dated_original_bytes_required')
+            return Evidence(raw,digest(raw))
+        item=cap['price']
+        price=p.price_receipt(old,dict(s,currency='KRW',standard_code=old['security']['standard_code']),
+            evidence(item),item['receipt'],cap['calendar'],cap['price_docs'])
+        if set(cap['actions'])!=set(a.VARIANTS):raise ValueError('analysis_dated_action_families')
+        families={v:a.family_receipt(v,eps.ticker,eps.estimate_vintage,price['session_date'],
+            [(evidence(i),i['receipt'])],cap['action_docs']) for v,i in cap['actions'].items()}
+        guard=a.compatibility_receipt(old,price,families)
+        result=matched_fper(eps,original_eps=old,price=price,actions=guard)
+        if result['state']!='QUALIFIED':
+            return {s['ticker']:s},[],[dict(ticker=s['ticker'],reason=result['state'])]
+        acquired=[eps.retrieval_timestamp,item['receipt']['ended_at']]
+        acquired.extend(i['receipt']['ended_at'] for i in cap['actions'].values())
+        available=max(acquired,key=instant)
+        provenance=dict(contract='DATED_KIS_DERIVED_FPER_PROVENANCE_V1',
+            eps=eps.model_dump(mode='json'),historical_eps_receipt_sha256=old['receipt_sha256'],
+            price=dict(session=price['session_date'],close=price['close'],unit='KRW_PER_SHARE',
+                basis=price['price_basis'],raw_sha256=price['raw_response_sha256'],
+                source_receipt_sha256=price['source_receipt_sha256'],owner_receipt_sha256=price['receipt_sha256'],
+                collected_at=price['retrieved_at']),
+            actions=dict(policy=a.POLICY,state=guard['state'],receipt_sha256=guard['receipt_sha256'],
+                parents={v:dict(raw_sha256=digest(i['raw']),receipt_sha256=digest(i['receipt']),
+                    collected_at=i['receipt']['ended_at']) for v,i in cap['actions'].items()}),
+            available_at=available,derived_receipt_sha256=result['receipt_sha256'],
+            exact_quotient=result['exact_quotient'],current_price_qualified=False)
+        fact=ValuationAnalysisFact(metric='FPER',ticker=eps.ticker,canonical_security_id=eps.canonical_security_id,
+            provider='THESIS_MONITOR_DERIVED_KIS',value=float(Decimal(result['value'])),exact_value=result['value'],
+            unit='multiple',metric_semantic='FY1_FPER_DERIVED_FROM_KIS_EPS_AND_UNADJUSTED_CLOSE',
+            source_generation='DERIVED_DATED_FPER:'+digest(provenance),raw_sha256=eps.raw_sha256,
+            source_receipt_sha256=result['receipt_sha256'],retrieval_timestamp=available,
+            forecast_fiscal_period=eps.forecast_fiscal_period,estimate_vintage=eps.estimate_vintage,
+            estimated=True,scale_proof_sha256=eps.scale_proof_sha256,
+            basis=encoded(provenance).decode(),
+            caution='DATED ANALYSIS ONLY: price session '+price['session_date']+
+                '; available after '+available+'; not current price, point-in-time backtest, consensus or guidance. '+
+                'Bounded exact-security action guard, not all-time absence. EPS raw and derived receipt are distinct parents; no standalone direction.')
+        return {s['ticker']:s},[fact],[]
+    return AnalysisSource(consume)
+
+
 def native_cold_source(*,root,replay_sha256):
     def read():
         from app.vnext_worker import cold_registered_valuation_source
