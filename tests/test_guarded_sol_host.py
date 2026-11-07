@@ -70,6 +70,7 @@ def test_shared_response_filter_is_exact_and_network_defaults_off(tmp_path):
     from types import SimpleNamespace
     binding = SimpleNamespace(root=tmp_path, binary=tmp_path/'binary', catalog=tmp_path/'models.json', scope=tmp_path/'scope.json')
     text = host_profile(binding, tmp_path/'stage')
-    assert text.count('[a-f0-9]') == 128  # read and write deny exceptions
+    assert text.count('[a-f0-9]') == 256  # inference/control, read/write exceptions
+    assert text.count('/response-control-') == 2
     assert '(regex #"' in text and '(deny network*)' in text
     assert 'allow network-outbound' not in text and 'auth.json' not in text

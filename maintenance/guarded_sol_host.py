@@ -161,8 +161,11 @@ def host_profile(binding, stage_root, *, authenticated=False):
             allowed += [rules, *[plain(p) for p in rules.iterdir() if p.suffix == '.rules']]
     exceptions = '\n'.join('(require-not (literal ' + json.dumps(str(p)) + '))' for p in allowed)
     # Seatbelt's regex reader is not Python's; avoid escaped hyphens and counts.
-    response_pattern = '^' + re.escape(str(binding.root)).replace(r'\-', '-') + '/response-' + '[a-f0-9]' * 64 + '[.]json$'
-    response_exception = '(require-not (regex #' + json.dumps(response_pattern) + '))'
+    prefix = '^' + re.escape(str(binding.root)).replace(r'\-', '-')
+    response_patterns = [prefix + '/' + name + '[a-f0-9]' * 64 + '[.]json$'
+                         for name in ('response-', 'response-control-')]
+    response_exception = '\n'.join('(require-not (regex #' + json.dumps(pattern) + '))'
+                                   for pattern in response_patterns)
     shared_writes = '\n'.join('(require-not (literal ' + json.dumps(str(p)) + '))' for p in shared)
     root = json.dumps(str(stage_root))
     network = '''(allow network-outbound (remote tcp "*:443"))
