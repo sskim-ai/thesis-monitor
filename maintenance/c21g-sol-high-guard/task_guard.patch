@@ -1,114 +1,50 @@
 --- a/http-client/src/task_guard.rs
 +++ b/http-client/src/task_guard.rs
-@@ -12,10 +12,16 @@
- type Checked<T> = Result<T, &'static str>;
- const MAX_BODY: usize = 384 * 1024;
- const MAX_REQUESTS: usize = 12;
+@@ -14,0 +15,2 @@
 +#[path = "sol_task_scope.rs"]
 +mod sol_task_scope;
- 
- #[derive(Deserialize)]
- #[serde(deny_unknown_fields)]
- struct Policy {
+@@ -18,0 +21,4 @@
 +    #[serde(default)]
 +    execution_profile: Option<String>,
 +    #[serde(default)]
 +    account: Option<String>,
-     task: String,
-     stage: String,
-     security: String,
-@@ -71,7 +77,8 @@
-         if digest(&bytes) != expected { return Err("POLICY_DIGEST"); }
-         let policy: Policy = serde_json::from_slice(&bytes).map_err(|_| "POLICY_FORMAT")?;
-         validate_schema_binding(&policy.schema, policy.schema_binding.as_ref())?;
+@@ -74 +80,2 @@
 -        if !network_task_scope(&policy.task, &policy.ledger) || !["BLIND", "ADJ"].contains(&policy.stage.as_str())
 +        let sol_scope = sol_task_scope::validate_policy(&policy)?;
 +        if (!sol_scope && !network_task_scope(&policy.task, &policy.ledger)) || !["BLIND", "ADJ"].contains(&policy.stage.as_str())
-             || policy.security.is_empty() || policy.owner_sha256.len() != 64
-             || policy.prompt_sha256.len() != 64 || policy.request_sha256.len() != 64
-             || policy.thread_id.is_empty() || policy.source_generation.is_empty()
-@@ -144,10 +151,14 @@
- }
- 
- fn inspect(bytes: &[u8], schema: &Value, allowed_catalog: &Value) -> Checked<Value> {
+@@ -146,0 +154,4 @@
 +    inspect_profile(bytes, schema, allowed_catalog, "gpt-6-astra", "xhigh")
 +}
 +
 +fn inspect_profile(bytes: &[u8], schema: &Value, allowed_catalog: &Value, model: &str, effort: &str) -> Checked<Value> {
-     if bytes.len() > MAX_BODY { return Err("WIRE_INPUT_LIMIT"); }
-     let body: Value = serde_json::from_slice(bytes).map_err(|_| "BODY_JSON")?;
+@@ -149,2 +160,2 @@
 -    if body.get("model").and_then(Value::as_str) != Some("gpt-6-astra")
 -        || body.pointer("/reasoning/effort").and_then(Value::as_str) != Some("xhigh") {
 +    if body.get("model").and_then(Value::as_str) != Some(model)
 +        || body.pointer("/reasoning/effort").and_then(Value::as_str) != Some(effort) {
-         return Err("MODEL_EFFORT");
-     }
-     if body.pointer("/text/format/schema") != Some(schema) { return Err("OUTPUT_SCHEMA"); }
-@@ -187,6 +198,7 @@
-     let mut records: Vec<Value> = if existing.is_empty() { vec![] } else {
-         serde_json::from_str(&existing).map_err(|_| "LEDGER_FORMAT")?
-     };
+@@ -189,0 +201 @@
 +    sol_task_scope::validate_records(&records, p)?;
-     let sha = digest(bytes);
-     let input_sha = digest(&serde_json::to_vec(&body["input"]).map_err(|_| "INPUT_HASH")?);
-     if records.len() >= MAX_REQUESTS { return Err("INFERENCE_BUDGET"); }
-@@ -201,6 +213,7 @@
-         return Err("STAGE_BINDING");
-     }
-     records.push(json!({"task":p.task,"stage":p.stage,"security":p.security,
+@@ -203,0 +216 @@
 +        "execution_profile":p.execution_profile,"account":p.account,
-         "owner_sha256":p.owner_sha256,"prompt_sha256":p.prompt_sha256,
-         "request_sha256":p.request_sha256,"thread_id":p.thread_id,
-         "source_generation":p.source_generation,"input_sha256":input_sha,
-@@ -208,7 +221,7 @@
-         "catalog_sha256":digest(include_bytes!("task_guard_catalog.json")),
-         "schema_binding":p.schema_binding,
-         "observed_output_schema_sha256":digest(&serde_json::to_vec(&body["text"]["format"]["schema"]).map_err(|_| "SCHEMA_HASH")?),
+@@ -211 +224 @@
 -        "model":"gpt-6-astra","effort":"xhigh","dispatch_number":records.len()+1,
 +        "model":body["model"],"effort":body["reasoning"]["effort"],"dispatch_number":records.len()+1,
-         "time":timestamp,"status":"RESERVED_BEFORE_TRANSPORT_NOT_RESPONSE_PROOF"}));
-     let encoded = serde_json::to_vec(&records).map_err(|_| "LEDGER_ENCODE")?;
-     file.rewind().map_err(|_| "LEDGER_SEEK")?;
-@@ -247,7 +260,11 @@
-     let timestamp = now()?;
-     if timestamp < p.started_unix || timestamp >= p.deadline_unix { return Err("STAGE_DEADLINE"); }
-     let catalog: Value = serde_json::from_str(include_str!("task_guard_catalog.json")).map_err(|_| "COMPILED_CATALOG")?;
+@@ -250 +263,5 @@
 -    let body = inspect(bytes, &p.schema, &catalog)?;
 +    let body = if p.execution_profile.as_deref() == Some(sol_task_scope::PROFILE) {
 +        inspect_profile(bytes, &p.schema, &catalog, "gpt-6.1-sol", "high")?
 +    } else {
 +        inspect(bytes, &p.schema, &catalog)?
 +    };
-     validate_wire_format(&body)?;
-     let prompt_found = body["input"].as_array().is_some_and(|items| items.iter().any(|item| {
-         item["role"] == "user" && item["content"].as_array().is_some_and(|content| content.iter().any(|part| {
-@@ -404,8 +421,9 @@
- mod network_cause_tests {
-     use super::*;
-     #[test] fn prior_task_and_ledger_cannot_be_reused() {
+@@ -407,2 +424,3 @@
 -        let new=std::path::Path::new("/private/tmp/tm-posco-p1-wire-schema-20261101/inference-ledger.json");
 -        assert!(network_task_scope("POSCO_P1_WIRE_SCHEMA_20261101",new));
 +        let new=std::path::Path::new("/private/tmp/tm-posco-p1-flexible-output-20261101/inference-ledger.json");
 +        assert!(network_task_scope("POSCO_P1_FLEXIBLE_OUTPUT_20261101",new));
 +        assert!(!network_task_scope("POSCO_P1_WIRE_SCHEMA_20261101",new));
-         assert!(!network_task_scope("POSCO_P1_HOST_GUARD",new));
-         assert!(!network_task_scope("POSCO_P1_WIRE_SCHEMA_20261101",std::path::Path::new("/private/tmp/tm-posco-p1-network-boundary-20261101/inference-ledger.json")));
-         assert!(!network_task_scope("POSCO_P1_WIRE_SCHEMA_20261101",std::path::Path::new("/private/tmp/tm-posco-p1-wire-schema-20261101/../inference-ledger.json")));
-@@ -471,7 +489,7 @@
-         r.headers_mut().insert("cache-control","no-cache, no-store".parse().unwrap());r
-     }
-     fn cp(path: PathBuf) -> Policy {
+@@ -474 +492 @@
 -        Policy{task:"POSCO_P1_HOST_GUARD".into(),stage:"BLIND".into(),security:"TEST".into(),
 +        Policy{execution_profile:None,account:None,task:"POSCO_P1_HOST_GUARD".into(),stage:"BLIND".into(),security:"TEST".into(),
-             owner_sha256:"a".repeat(64),prompt_sha256:"b".repeat(64),request_sha256:"c".repeat(64),
-             thread_id:"TEST_THREAD".into(),source_generation:"TEST_ONLY".into(),schema:json!({}),
-             schema_binding:None,started_unix:1,deadline_unix:601,ledger:path}
-@@ -529,7 +547,7 @@
-     #[test] fn oversized_input_denied() { let(_,s,c)=fixture(); assert_eq!(inspect(&vec![32;MAX_BODY+1],&s,&c).unwrap_err(),"WIRE_INPUT_LIMIT"); }
-     #[test] fn websocket_always_disabled() { assert!(http_only()); }
-     fn ledger_policy(path: PathBuf) -> Policy {
+@@ -532 +550 @@
 -        Policy { task:"POSCO_P1_HOST_GUARD".into(), stage:"BLIND".into(),security:"SYNTHETIC".into(),
 +        Policy { execution_profile:None,account:None,task:"POSCO_P1_HOST_GUARD".into(), stage:"BLIND".into(),security:"SYNTHETIC".into(),
-             owner_sha256:"a".repeat(64),prompt_sha256:"b".repeat(64),request_sha256:"c".repeat(64),
-             thread_id:"test-thread".into(),source_generation:"SYNTHETIC_ONLY".into(),schema:json!({}),
-             schema_binding:None,started_unix:1,deadline_unix:601,ledger:path }
