@@ -205,6 +205,45 @@ def _mac_valuation_session():
         scoped_worker_launch,sealed_source_transport),caller_kind='CLI')
 
 
+def _mac_valuation_configuration(*,external_root,settings_env_file,base,attempt_marker):
+    """No HTTP, SQL, marker or Parent: validate likely host setup failures first."""
+    import os,sys
+    from pathlib import Path
+    from app.config import Settings
+    from app.services.vnext_research_store import plain,digest
+    from app.services.scoped_external_code_manifest import REQUIRED_V2,CONTRACT_V2,validate_external_manifest
+    external=plain(external_root);env=plain(settings_env_file)
+    if not env.is_file() or not external.is_dir():raise ValueError('mac_valuation_configuration_missing')
+    settings=Settings(_env_file=env)
+    credentials=dict(app_key=settings.kiwoom_app_key,secret_key=settings.kiwoom_secret_key)
+    if not all(isinstance(v,str) and v.strip() for v in credentials.values()):
+        raise ValueError('mac_valuation_original_credentials_missing')
+    if settings.kiwoom_rest_base_url!='https://api.kiwoom.com':
+        raise ValueError('mac_valuation_official_endpoint_required')
+    pins={}
+    for name in REQUIRED_V2:
+        p=plain(external/name)
+        if not p.is_file():raise ValueError('mac_valuation_external_code_missing')
+        raw=p.read_bytes();pins[name]=dict(bytes=len(raw),sha256=digest(raw))
+    validate_external_manifest(pins,CONTRACT_V2)
+    for target in (plain(base),plain(attempt_marker)):
+        if target.exists() or not target.parent.is_dir() or target.parent.stat().st_uid!=os.getuid():
+            raise ValueError('mac_valuation_new_owned_scratch_required')
+        s=os.statvfs(target.parent)
+        if s.f_bavail*s.f_frsize<12*2**30:raise ValueError('mac_valuation_disk_guard')
+    actual=Path(sys.executable).resolve(strict=True);framework=actual.parents[1]
+    if (sys.platform!='darwin' or not Path('/usr/bin/sandbox-exec').is_file()
+            or '/Frameworks/Python.framework/Versions/' not in str(framework)
+            or not (framework/'Resources/Python.app/Contents/MacOS/Python').is_file()):
+        raise ValueError('scoped_python_framework_layout_unverified')
+    session=_mac_valuation_session();session.attestation();session._lane._state()
+    required={'app.services.current_scoped_worker_bridge','app.services.current_scoped_source_dispatch',
+        'app.services.scoped_worker_launch','app.services.sealed_source_transport'}
+    if not required<={m.__name__ for m in session._modules}:
+        raise ValueError('scoped_source_parent_loaded_closure_required')
+    return credentials,session,pins
+
+
 async def run_mac_registered_valuation(*, decision, database, preflight, base,
         external_root, settings_env_file, attempt_marker, enabled=False):
     """One trusted operator call, current four-table capture, original live lane.
@@ -218,26 +257,18 @@ async def run_mac_registered_valuation(*, decision, database, preflight, base,
     from app.services import registered_valuation_source_intent as intents
     from app.services.minimal_class_c_export import ExportPermission,capture_authorized_class_c
     from app.services.production_source_context import POLICY
-    from app.services.scoped_external_code_manifest import REQUIRED_V2
     from app.services.vnext_research_store import digest
-    from app.config import Settings
     import httpx
     if enabled is not True or type(decision) is not registration.ApprovalDecision:
         raise ValueError('mac_valuation_trusted_operator_explicit_enable_required')
     if (set(decision.subjects)!=set(preflight['identities']) or not 1<=len(decision.subjects)<=8
             or not decision.approved):
         raise ValueError('mac_valuation_exact_approved_subjects')
-    if not Path(settings_env_file).is_file() or not Path(external_root).is_dir():
-        raise ValueError('mac_valuation_configuration_missing')
-    for name in REQUIRED_V2:
-        p=Path(external_root)/name
-        if p.is_symlink() or not p.is_file():raise ValueError('mac_valuation_external_code_missing')
-        p.read_bytes()
+    credential_values,session,external_pins=_mac_valuation_configuration(external_root=external_root,
+        settings_env_file=settings_env_file,base=base,attempt_marker=attempt_marker)
     # Static plan, host code/boot and persistent STOP checks precede any SQL.
     from app.services.valuation_research_preflight import prepare_registered_valuation
     prepared=prepare_registered_valuation(**preflight,enabled=True)
-    session=_mac_valuation_session()
-    session.attestation();session._lane._state()
     if prepared['receipt']['planned_attempts']>19:raise ValueError('mac_valuation_budget')
     path=Path(database);s=path.stat()
     permission=ExportPermission(decision.event_id,True,path,s.st_dev,s.st_ino,decision.subjects)
@@ -261,10 +292,11 @@ async def run_mac_registered_valuation(*, decision, database, preflight, base,
             generation_id=preflight['generation_id']+':intent',policy=POLICY,enabled=True)
         return dict(intent=intent,intent_generation=preflight['generation_id']+':intent',session=session)
     def credentials():
-        settings=Settings(_env_file=settings_env_file)
-        if settings.kiwoom_rest_base_url!='https://api.kiwoom.com':
-            raise ValueError('mac_valuation_official_endpoint_required')
-        return dict(app_key=settings.kiwoom_app_key,secret_key=settings.kiwoom_secret_key)
+        for name,pin in external_pins.items():
+            raw=(Path(external_root)/name).read_bytes()
+            if pin!=dict(bytes=len(raw),sha256=digest(raw)):
+                raise ValueError('mac_valuation_external_pin_changed')
+        return dict(credential_values)
     try:
         async with httpx.AsyncHTTPTransport(retries=0,verify=True,trust_env=False) as inner:
             with session.operation():
@@ -272,6 +304,16 @@ async def run_mac_registered_valuation(*, decision, database, preflight, base,
                     external_root=external_root,acquire_current_context=context,
                     load_credentials=credentials,inner=inner,enabled=True)
                 return dict(result,registration_capture=capture_receipt)
+    except BaseException as exc:
+        import re,traceback
+        detail=str(exc)
+        record=dict(exception_type=type(exc).__name__,detail_sha256=digest(detail.encode()),
+            error_code=detail if re.fullmatch('[a-z_]{1,100}',detail) else 'DETAIL_WITHHELD',
+            frames=[dict(path=f.filename,function=f.name,line=f.lineno)
+                for f in traceback.extract_tb(exc.__traceback__)],
+            registration_capture=capture_receipt,retry=False)
+        with marker.with_suffix('.failure.json').open('x') as f:json.dump(record,f)
+        raise
     finally:
         if intent is not None:intents.revoke_intent(intent)
         if approval is not None:registration.revoke_approval(approval)
