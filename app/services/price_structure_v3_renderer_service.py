@@ -353,7 +353,22 @@ def _append_price_basis_lines(
     current_quote: Mapping[str, object] | None,
     security_basis: str | None,
     adjustment_basis: str | None,
+    dated_source: Mapping[str, object] | None = None,
 ) -> None:
+    if dated_source is not None:
+        if (dated_source.get('scope')!='DATED_TECHNICAL_ANALYSIS'
+                or not re.fullmatch('[a-f0-9]{64}',str(dated_source.get('source_hash') or ''))
+                or not structure_basis_session or not security_basis or not adjustment_basis):
+            raise ValueError('dated_structure_source_binding_required')
+        value=Decimal(str(structure_basis_close))
+        line=f'• 가격 구조 기준값(조정봉·{structure_basis_session}): {_price_display(value,currency)}'
+        lines.append(line)
+        bindings.append(dict(contract='dated-native-structure-price-label-v1',owner='CURRENT_PRICE_STRUCTURE',
+            semantic_type='DATED_TECHNICAL_STRUCTURE_REFERENCE',fact_ref='dated-structure:'+str(dated_source['source_hash']),
+            source_hash=dated_source['source_hash'],value=str(value),currency=currency,security_basis=security_basis,
+            adjustment_basis=adjustment_basis,structure_basis_session=structure_basis_session,
+            current_price_qualified=False,rendered_line=line,as_of=as_of))
+        return
     quote = _complete_current_quote(current_quote)
     if quote is not None and str(quote["currency"]) != currency:
         quote = None
@@ -704,6 +719,14 @@ def validate_price_structure_render(
     render: PriceStructureRender,
 ) -> PriceStructureRenderValidation:
     errors: list[str] = []
+    for binding in render.numeric_bindings:
+        if binding.get('semantic_type')=='DATED_TECHNICAL_STRUCTURE_REFERENCE':
+            expected=f"• 가격 구조 기준값(조정봉·{binding.get('structure_basis_session')}): {_price_display(Decimal(str(binding['value'])),str(binding['currency']))}"
+            if (expected not in render.section.splitlines() or binding.get('rendered_line')!=expected
+                    or binding.get('current_price_qualified') is not False
+                    or not binding.get('source_hash') or not binding.get('security_basis')
+                    or not binding.get('adjustment_basis')):
+                errors.append('dated_structure_numeric_or_source_binding')
     sr_bindings = [
         binding
         for binding in render.numeric_bindings
@@ -956,6 +979,7 @@ def render_current_price_structure(
     enforce_user_visible_proximity: bool = False,
     security_basis: str | None = None,
     adjustment_basis: str | None = None,
+    dated_source: Mapping[str, object] | None = None,
 ) -> PriceStructureRender:
     nearest_support = summary.get("nearest_support")
     nearest_resistance = summary.get("nearest_resistance")
@@ -999,6 +1023,7 @@ def render_current_price_structure(
             current_quote=current_quote,
             security_basis=security_basis,
             adjustment_basis=adjustment_basis,
+            dated_source=dated_source,
         )
 
     if enforce_user_visible_proximity:

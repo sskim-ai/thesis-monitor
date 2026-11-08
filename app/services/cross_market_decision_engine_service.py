@@ -798,6 +798,25 @@ def build_decision_evidence_packet(
                     )
                 )
 
+    native_payload = None
+    if technical_context is not None and technical_context.native_view is not None:
+        native = technical_context.native_view.verify()
+        native_payload = native.prompt_payload()
+        for timeframe, period in native.periods.items():
+            if period.status != 'AVAILABLE':
+                continue
+            for field, value in period.indicators.items():
+                if period.indicator_quality[field] != 'PROVIDER_NATIVE':
+                    continue
+                refs.append(DecisionEvidenceRef(
+                    ref_id='native:'+_canonical_sha([period.source_hash,timeframe,field]),
+                    category=EvidenceCategory.TECHNICAL_FEATURE,
+                    label=f'{timeframe}:provider-native:{field}',
+                    statement=f'Provider native {field}; {native.indicator_schema}; dated technical only, not a legacy formula alias.',
+                    as_of=period.completed_as_of,value=str(value),
+                    source_ref=f'technical_context.{technical_context.technical_context_id}.native.{timeframe}.{field}',
+                    numeric_prose_eligible=False))
+
     # The producer channel owns use classification. Caller category/family labels
     # cannot turn saved hypotheses or timing inputs into current business facts.
     bound_refs = []
@@ -858,7 +877,8 @@ def build_decision_evidence_packet(
             technical_context.status if technical_context is not None else "LEGACY_UNSPECIFIED"
         ),
         technical_context_quality=(
-            {key: value.model_dump(mode="json") for key, value in technical_context.quality.items()}
+            dict({key: value.model_dump(mode="json") for key, value in technical_context.quality.items()},
+                 **({'provider_native':native_payload} if native_payload is not None else {}))
             if technical_context is not None
             else {}
         ),
