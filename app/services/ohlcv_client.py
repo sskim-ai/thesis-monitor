@@ -3,7 +3,7 @@ import hashlib
 import math
 import time
 from collections.abc import Mapping, Sequence
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, timezone
 from zoneinfo import ZoneInfo
 
 import httpx
@@ -50,6 +50,7 @@ from app.services.unified_source_observer import OhlcvReceiptObserver
 PERIOD_COUNTS = dict(MAX_COUNTS)
 PRICE_STRUCTURE_PERIOD_COUNTS = dict(MAX_COUNTS)
 OHLCV_PROVIDER_REQUEST_LIMIT = 1000
+NATIVE_INDICATOR_WINDOW = 5
 
 _DAILY_BOLLINGER_UPPER = {
     "3_month": "BB_36_1.541_UPPER",
@@ -415,8 +416,9 @@ class OhlcvClient:
             "periods": period,
             "count": provider_count,
             "include_indicators": str(include_indicators).lower(),
-            "indicator_limit": 1 if include_indicators else 0,
+            "indicator_limit": min(provider_count, NATIVE_INDICATOR_WINDOW) if include_indicators else 0,
             "adjusted": str(adjusted).lower(),
+            "include_investor_flows": str(ticker.isdigit() and period == "daily" and adjusted).lower(),
         }
         for attempt in range(attempts):
             _increment(acquisition_audit, "request_count")
@@ -676,7 +678,7 @@ class OhlcvClient:
     ) -> PriceContext:
         api_key = self.settings.ohlcv_api_key or self.settings.action_api_key
         headers = {"X-API-Key": api_key} if api_key else {}
-        context = PriceContext()
+        context = PriceContext(price_source_scope="dated_technical_only")
         adjusted_bars: dict[str, list[dict[str, object]]] = {}
         technical_acquisition: dict[str, object] = {
             "started_at": datetime.now(timezone.utc).isoformat(),
@@ -798,87 +800,33 @@ class OhlcvClient:
                     )
         context.available = any(item.actual_count > 0 for item in context.periods.values())
         context.chart.available = bool(context.chart.timeframes)
-        daily = context.periods.get("daily")
         session_state = market_session_for_ticker(ticker, as_of)
         observed_at = as_of or datetime.now(timezone.utc)
         if observed_at.tzinfo is None:
             observed_at = observed_at.replace(tzinfo=timezone.utc)
         observed_local = observed_at.astimezone(ZoneInfo(session_state.timezone_name))
-        raw_latest_date = daily.latest_date if daily else None
-        latest_date = raw_latest_date
-        date_shift_days = 0
-        if raw_latest_date and session_state.session != "open":
-            try:
-                parsed_latest = date.fromisoformat(raw_latest_date[:10])
-            except ValueError:
-                parsed_latest = None
-            if (
-                parsed_latest is not None
-                and parsed_latest > session_state.latest_completed_regular_session_date
-            ):
-                date_shift_days = (
-                    parsed_latest - session_state.latest_completed_regular_session_date
-                ).days
-                latest_date = session_state.latest_completed_regular_session_date.isoformat()
-                daily.latest_date = latest_date
-                if chart_daily := context.chart.timeframes.get("daily"):
-                    chart_daily.as_of_date = latest_date
-        if date_shift_days:
-            context.daily_history = [
-                HistoricalPricePoint(
-                    date=point.date - timedelta(days=date_shift_days),
-                    close=point.close,
-                )
-                for point in context.daily_history
-            ]
-            context.valuation_history = [
-                HistoricalPricePoint(
-                    date=point.date - timedelta(days=date_shift_days),
-                    close=point.close,
-                )
-                for point in context.valuation_history
-            ]
-            # Native technical input keeps original labels and quarantines future
-            # rows. Never shift source dates to satisfy a completed-session gate.
-        is_live_bar = (
-            session_state.session == "open" and latest_date == session_state.market_date.isoformat()
-        )
+        # Adjusted technical bars cannot issue an independent current-price
+        # Owner. Keep both source and PIT history dates exactly as received.
         context.decision = PriceDecisionContext(
-            current_price=daily.latest_close if daily else None,
             currency="KRW" if ticker.isdigit() else "USD",
-            price_as_of=latest_date,
-            exchange_trade_date=latest_date,
             latest_completed_regular_session_date=(
                 session_state.latest_completed_regular_session_date.isoformat()
             ),
             price_observed_at=observed_local.isoformat(),
             price_observed_timezone=session_state.timezone_name,
-            price_basis="intraday" if is_live_bar else "close" if latest_date else "unavailable",
+            price_basis="unavailable",
             market_session=session_state.session,
-            assessment_state="provisional" if is_live_bar else "final",
         )
-        chart_daily = context.chart.timeframes.get("daily")
-        context.chart.as_of_date = latest_date
-        context.chart.price_basis = "adjusted_intraday" if is_live_bar else "adjusted_close"
-        context.chart.quality = (
-            "provisional"
-            if is_live_bar
-            else "fresh"
-            if latest_date == session_state.latest_completed_regular_session_date.isoformat()
-            else "stale"
-            if latest_date
-            else "unavailable"
-        )
-        if chart_daily is not None:
-            chart_daily.quality = context.chart.quality
-            chart_daily.price_basis = context.chart.price_basis
-        for timeframe, chart_period in context.chart.timeframes.items():
-            if timeframe != "daily":
-                chart_period.price_basis = "adjusted_close"
+        context.warnings.append("native_technical_only: independent current-price Owner unavailable")
         native = build_provider_native_view(ticker=ticker,market='kr' if ticker.isdigit() else 'us',
             periods=adjusted_bars,cutoff=session_state.latest_completed_regular_session_date,
             completion_verifier=self.completion_verifier)
         adjusted_bars = native.completed_periods()
+        context.available = any(p.completed_count for p in native.periods.values())
+        context.chart.available = context.available
+        context.chart.as_of_date = native.periods['daily'].completed_as_of
+        context.chart.price_basis = 'adjusted_close'
+        context.chart.quality = 'dated_reference' if context.available else 'unavailable'
         for timeframe, rows in adjusted_bars.items():
             summary=_summarize_bars(MAX_COUNTS[timeframe],rows)
             context.periods[timeframe]=summary
