@@ -796,6 +796,12 @@ class OhlcvClient:
                         error_type=type(exc).__name__,
                         error_reason="ohlcv_unadjusted_valuation_request_failed",
                     )
+        return self._finalize_native_context(ticker=ticker, context=context, adjusted_bars=adjusted_bars,
+            technical_acquisition=technical_acquisition, as_of=as_of, price_structure_enabled=price_structure_enabled)
+
+    def _finalize_native_context(self, *, ticker, context, adjusted_bars,
+                                 technical_acquisition, as_of, price_structure_enabled):
+        """Shared projection for legacy collection and the protected daily reader."""
         context.available = any(item.actual_count > 0 for item in context.periods.values())
         context.chart.available = bool(context.chart.timeframes)
         session_state = market_session_for_ticker(ticker, as_of)
