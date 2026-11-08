@@ -1,0 +1,1051 @@
+--- a/codex-rs/app-server/src/main.rs
++++ b/codex-rs/app-server/src/main.rs
+@@ -82,0 +83,3 @@
++    if let Some(path) = std::env::var_os("TM_C21L_OFFLINE_FIXTURE") {
++        codex_http_client::task_guard::offline_predispatch_fixture(std::path::Path::new(&path));
++    }
+--- a/codex-rs/core/src/client.rs
++++ b/codex-rs/core/src/client.rs
+@@ -1190,0 +1191 @@
++        if codex_http_client::task_guard::http_only() { return false; }
+@@ -1877,0 +1879 @@
++        if codex_http_client::task_guard::http_only() { return Compression::None; }
+--- a/codex-rs/http-client/src/client.rs
++++ b/codex-rs/http-client/src/client.rs
+@@ -52,0 +53,5 @@
++        // An opaque reqwest client may follow redirects inside execute().
++        if crate::task_guard::http_only() {
++            eprintln!("TM_P1_PREDISPATCH_DENIED:OPAQUE_RAW_CLIENT_REDIRECT_POLICY");
++            std::process::exit(78);
++        }
+@@ -176 +181,4 @@
+-        self.inner.execute(request).await
++        let dispatch = crate::task_guard::enforce(&request);
++        let result = self.inner.execute(request).await;
++        crate::task_guard::response_receipt(dispatch, &result);
++        result
+--- a/codex-rs/http-client/src/client_builder.rs
++++ b/codex-rs/http-client/src/client_builder.rs
+@@ -343,0 +344,4 @@
++                if crate::task_guard::http_only() {
++                    eprintln!("TM_P1_PREDISPATCH_DENIED:CUSTOM_CA_FALLBACK_FORBIDDEN");
++                    std::process::exit(78);
++                }
+@@ -404 +408,2 @@
+-        if !self.follow_redirects {
++        // Each redirect must return through the task's pre-HTTP boundary.
++        if crate::task_guard::http_only() || !self.follow_redirects {
+--- a/codex-rs/http-client/src/lib.rs
++++ b/codex-rs/http-client/src/lib.rs
+@@ -25,0 +26 @@
++pub mod task_guard;
+--- /dev/null
++++ b/codex-rs/http-client/src/task_guard.rs
+@@ -0,0 +1,692 @@
++//! Task-local, fail-closed dispatch boundary. Not an upstream/product policy.
++use serde::Deserialize;
++use serde_json::{Value, json};
++use sha2::{Digest, Sha256};
++use std::fs::{self, OpenOptions};
++use std::io::{Read, Seek, Write};
++use std::os::unix::fs::{MetadataExt, OpenOptionsExt};
++use std::path::PathBuf;
++use std::sync::OnceLock;
++use std::time::{SystemTime, UNIX_EPOCH};
++
++type Checked<T> = Result<T, &'static str>;
++const MAX_BODY: usize = 384 * 1024;
++const MAX_REQUESTS: usize = 12;
++#[path = "sol_task_scope.rs"]
++mod sol_task_scope;
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Policy {
++    #[serde(default)]
++    execution_profile: Option<String>,
++    #[serde(default)]
++    account: Option<String>,
++    task: String,
++    stage: String,
++    security: String,
++    owner_sha256: String,
++    prompt_sha256: String,
++    request_sha256: String,
++    thread_id: String,
++    source_generation: String,
++    schema: Value,
++    #[serde(default)]
++    schema_binding: Option<SchemaBinding>,
++    started_unix: u64,
++    deadline_unix: u64,
++    ledger: PathBuf,
++}
++
++#[derive(Deserialize, serde::Serialize)]
++#[serde(deny_unknown_fields)]
++struct SchemaBinding {
++    adapter_version: String,
++    canonical_schema_sha256: String,
++    wire_schema_sha256: String,
++    changed_paths: Vec<String>,
++}
++
++pub fn http_only() -> bool { true }
++
++fn digest(bytes: &[u8]) -> String { format!("{:x}", Sha256::digest(bytes)) }
++
++fn now() -> Checked<u64> {
++    SystemTime::now().duration_since(UNIX_EPOCH).map(|v| v.as_secs()).map_err(|_| "CLOCK")
++}
++
++fn policy() -> Checked<&'static Policy> {
++    static POLICY: OnceLock<Result<Policy, &'static str>> = OnceLock::new();
++    POLICY.get_or_init(|| {
++        let path = std::env::var_os("TM_P1_DISPATCH_POLICY").ok_or("POLICY_MISSING")?;
++        let expected = match std::env::var("TM_P1_DISPATCH_POLICY_SHA256") {
++            Ok(value) => value,
++            Err(_) => {
++                // The stdio client learns the thread ID before publishing this immutable pin.
++                let pin = std::env::var_os("TM_P1_DISPATCH_POLICY_PIN_FILE").ok_or("POLICY_PIN_MISSING")?;
++                let meta = fs::symlink_metadata(&pin).map_err(|_| "POLICY_PIN_STAT")?;
++                if !meta.is_file() || meta.nlink() != 1 || meta.len() != 64 { return Err("POLICY_PIN_IDENTITY"); }
++                fs::read_to_string(pin).map_err(|_| "POLICY_PIN_READ")?
++            }
++        };
++        let metadata = fs::symlink_metadata(&path).map_err(|_| "POLICY_STAT")?;
++        if !metadata.is_file() || metadata.nlink() != 1 || metadata.len() > 128*1024 {
++            return Err("POLICY_NOT_PLAIN_BOUNDED_FILE");
++        }
++        let bytes = fs::read(path).map_err(|_| "POLICY_READ")?;
++        if digest(&bytes) != expected { return Err("POLICY_DIGEST"); }
++        let policy: Policy = serde_json::from_slice(&bytes).map_err(|_| "POLICY_FORMAT")?;
++        validate_schema_binding(&policy.schema, policy.schema_binding.as_ref())?;
++        let sol_scope = sol_task_scope::validate_policy(&policy)?;
++        if !sol_scope || !["BLIND", "ADJ"].contains(&policy.stage.as_str())
++            || policy.security.is_empty() || policy.owner_sha256.len() != 64
++            || policy.prompt_sha256.len() != 64 || policy.request_sha256.len() != 64
++            || policy.thread_id.is_empty() || policy.source_generation.is_empty()
++            || policy.deadline_unix <= policy.started_unix
++            || policy.deadline_unix - policy.started_unix > 600 || !policy.ledger.is_absolute() {
++            return Err("POLICY_SCOPE");
++        }
++        Ok(policy)
++    }).as_ref().map_err(|e| *e)
++}
++
++fn network_task_scope(task: &str, ledger: &std::path::Path) -> bool {
++    task == "POSCO_P1_FLEXIBLE_OUTPUT_20261101"
++        && ledger.starts_with("/private/tmp/tm-posco-p1-flexible-output-20261101")
++        && !ledger.components().any(|c| c == std::path::Component::ParentDir)
++}
++
++fn validate_schema_binding(schema: &Value, binding: Option<&SchemaBinding>) -> Checked<()> {
++    let b=binding.ok_or("SCHEMA_BINDING_MISSING")?;
++    let valid_sha=|s: &str| s.len()==64 && s.bytes().all(|c| c.is_ascii_hexdigit());
++    if b.adapter_version!="LOCAL_REF_DESCRIPTION_INLINE_V1" || !valid_sha(&b.canonical_schema_sha256)
++        || !valid_sha(&b.wire_schema_sha256) || b.changed_paths.is_empty()
++        || b.changed_paths.iter().any(|p| !p.starts_with('/')) {
++        return Err("SCHEMA_BINDING_SCOPE");
++    }
++    if digest(&serde_json::to_vec(schema).map_err(|_| "SCHEMA_HASH")?)!=b.wire_schema_sha256 {
++        return Err("WIRE_SCHEMA_DIGEST");
++    }
++    Ok(())
++}
++
++fn validate_wire_format(body: &Value) -> Checked<()> {
++    if body.pointer("/text/format/type").and_then(Value::as_str)!=Some("json_schema")
++        || body.pointer("/text/format/strict")!=Some(&Value::Bool(true)) {
++        return Err("STRICT_FORMAT_REQUIRED");
++    }
++    Ok(())
++}
++
++// Catalog equality covers full schemas, namespaces, descriptions and nested V8 declarations.
++// No recursive fallback: tool declarations in unrecognized locations are rejected.
++fn catalog_locations(value: &Value, path: &str, found: &mut Vec<Value>) -> Checked<()> {
++    match value {
++        Value::Object(map) => {
++            for (key, child) in map {
++                if key == "tools" {
++                    let permitted = path.is_empty() || (path.starts_with("/input/")
++                        && path[7..].parse::<usize>().is_ok()
++                        && map.get("type").and_then(Value::as_str) == Some("additional_tools")
++                        && map.get("role").and_then(Value::as_str) == Some("developer"));
++                    if !permitted { return Err("NESTED_TOOL_LOCATION"); }
++                    if child.is_null() { continue; }
++                    if !child.is_array() { return Err("TOOLS_NOT_ARRAY"); }
++                    if child.as_array().is_some_and(|v| v.is_empty()) { continue; }
++                    found.push(child.clone());
++                } else {
++                    if key == "additional_tools" { return Err("UNRECOGNIZED_ADDITIONAL_TOOLS"); }
++                    catalog_locations(child, &format!("{path}/{key}"), found)?;
++                }
++            }
++        }
++        Value::Array(items) => {
++            for (index, item) in items.iter().enumerate() {
++                catalog_locations(item, &format!("{path}/{index}"), found)?;
++            }
++        }
++        _ => {}
++    }
++    Ok(())
++}
++
++fn inspect(bytes: &[u8], schema: &Value, allowed_catalog: &Value) -> Checked<Value> {
++    inspect_profile(bytes, schema, allowed_catalog, "gpt-6-astra", "xhigh")
++}
++
++fn inspect_profile(bytes: &[u8], schema: &Value, allowed_catalog: &Value, model: &str, effort: &str) -> Checked<Value> {
++    if bytes.len() > MAX_BODY { return Err("WIRE_INPUT_LIMIT"); }
++    let body: Value = serde_json::from_slice(bytes).map_err(|_| "BODY_JSON")?;
++    if body.get("model").and_then(Value::as_str) != Some(model)
++        || body.pointer("/reasoning/effort").and_then(Value::as_str) != Some(effort) {
++        return Err("MODEL_EFFORT");
++    }
++    if body.pointer("/text/format/schema") != Some(schema) { return Err("OUTPUT_SCHEMA"); }
++    if body.get("stream") != Some(&Value::Bool(true)) { return Err("NON_STREAM_REQUEST"); }
++    if body.get("generate") == Some(&Value::Bool(false)) || body.get("previous_response_id").is_some() {
++        return Err("PREWARM_OR_UNBOUND_CONTINUATION");
++    }
++    let mut catalogs = Vec::new();
++    catalog_locations(&body, "", &mut catalogs)?;
++    if catalogs.len() != 1 || &catalogs[0] != allowed_catalog {
++        // Offline-only diagnostic contains generated tool declarations, never prompt/auth/body.
++        if std::env::var("TM_P1_PREDISPATCH_PROBE").as_deref()==Ok("1") {
++            let p=policy()?;
++            let bytes=serde_json::to_vec(&catalogs).map_err(|_| "CATALOG_DIAGNOSTIC_JSON")?;
++            if bytes.len()>64*1024 { return Err("CATALOG_DIAGNOSTIC_LIMIT"); }
++            let mut f=OpenOptions::new().write(true).create_new(true).mode(0o600).custom_flags(0x100)
++                .open(p.ledger.with_file_name("observed-public-tool-catalog.json")).map_err(|_| "CATALOG_DIAGNOSTIC_WRITE")?;
++            f.write_all(&bytes).map_err(|_| "CATALOG_DIAGNOSTIC_WRITE")?;
++            f.sync_all().map_err(|_| "CATALOG_DIAGNOSTIC_SYNC")?;
++            eprintln!("TM_P1_PUBLIC_CATALOG_DIAGNOSTIC:sha256={};bytes={}",digest(&bytes),bytes.len());
++        }
++        return Err("CATALOG_MISMATCH");
++    }
++    Ok(body)
++}
++
++fn reserve(bytes: &[u8], body: &Value, p: &Policy, timestamp: u64) -> Checked<()> {
++    // macOS O_NOFOLLOW. This binary is task-local to the approved Mac host.
++    let mut file = OpenOptions::new().read(true).write(true).create(true)
++        .truncate(false).mode(0o600).custom_flags(0x100)
++        .open(&p.ledger).map_err(|_| "LEDGER_OPEN")?;
++    file.try_lock().map_err(|_| "LEDGER_CONCURRENT")?;
++    let metadata = file.metadata().map_err(|_| "LEDGER_STAT")?;
++    if !metadata.is_file() || metadata.nlink() != 1 || metadata.len() > 64*1024 { return Err("LEDGER_IDENTITY"); }
++    let mut existing = String::new();
++    file.read_to_string(&mut existing).map_err(|_| "LEDGER_READ")?;
++    let mut records: Vec<Value> = if existing.is_empty() { vec![] } else {
++        serde_json::from_str(&existing).map_err(|_| "LEDGER_FORMAT")?
++    };
++    sol_task_scope::validate_records(&records, p)?;
++    let sha = digest(bytes);
++    let input_sha = digest(&serde_json::to_vec(&body["input"]).map_err(|_| "INPUT_HASH")?);
++    if records.len() >= MAX_REQUESTS { return Err("INFERENCE_BUDGET"); }
++    if records.iter().any(|r| r["wire_sha256"] == sha || r["input_sha256"] == input_sha) { return Err("RETRY_FORBIDDEN"); }
++    if records.iter().any(|r| r["task"] != p.task || r["security"] != p.security) {
++        return Err("LEDGER_TASK_BINDING");
++    }
++    if records.iter().any(|r| r["stage"] == "ADJ") && p.stage != "ADJ" {
++        return Err("STAGE_REPLAY_FORBIDDEN");
++    }
++    if records.iter().any(|r| r["stage"] == p.stage && (r["thread_id"] != p.thread_id || r["request_sha256"] != p.request_sha256)) {
++        return Err("STAGE_BINDING");
++    }
++    records.push(json!({"task":p.task,"stage":p.stage,"security":p.security,
++        "execution_profile":p.execution_profile,"account":p.account,
++        "owner_sha256":p.owner_sha256,"prompt_sha256":p.prompt_sha256,
++        "request_sha256":p.request_sha256,"thread_id":p.thread_id,
++        "source_generation":p.source_generation,"input_sha256":input_sha,
++        "wire_sha256":sha,"wire_bytes":bytes.len(),"parsed_sha256":digest(&serde_json::to_vec(body).map_err(|_| "PARSED_HASH")?),
++        "catalog_sha256":digest(include_bytes!("task_guard_catalog.json")),
++        "schema_binding":p.schema_binding,
++        "observed_output_schema_sha256":digest(&serde_json::to_vec(&body["text"]["format"]["schema"]).map_err(|_| "SCHEMA_HASH")?),
++        "model":body["model"],"effort":body["reasoning"]["effort"],"dispatch_number":records.len()+1,
++        "time":timestamp,"status":"RESERVED_BEFORE_TRANSPORT_NOT_RESPONSE_PROOF"}));
++    let encoded = serde_json::to_vec(&records).map_err(|_| "LEDGER_ENCODE")?;
++    file.rewind().map_err(|_| "LEDGER_SEEK")?;
++    file.write_all(&encoded).map_err(|_| "LEDGER_WRITE")?;
++    file.set_len(encoded.len() as u64).map_err(|_| "LEDGER_LENGTH")?;
++    file.sync_all().map_err(|_| "LEDGER_SYNC")?;
++    Ok(())
++}
++
++fn check(request: &reqwest::Request) -> Checked<()> {
++    let url = request.url();
++    if url.scheme() != "https" || url.port_or_known_default() != Some(443)
++        || !url.username().is_empty() || url.password().is_some() { return Err("TRANSPORT_OR_DESTINATION"); }
++    let host = url.host_str().ok_or("DESTINATION_HOST")?;
++    let path = url.path();
++    // Auth remains entirely inside the original host. No body/header is recorded here.
++    if host == "auth.openai.com" && path == "/oauth/token" && request.method() == reqwest::Method::POST {
++        return Ok(());
++    }
++    if host != "chatgpt.com" { return Err("DESTINATION_HOST"); }
++    if path == "/backend-api/wham/settings/user" {
++        control_shape(request)?;
++        return reserve_control(policy()?, now()?);
++    }
++    if request.method() == reqwest::Method::GET && path == "/backend-api/codex/models" { return Ok(()); }
++    if request.method() != reqwest::Method::POST || path != "/backend-api/codex/responses" || url.query().is_some() {
++        return Err("NON_RESPONSES_ROUTE");
++    }
++    if !request.headers().contains_key("authorization") { return Err("HOST_AUTH_MISSING"); }
++    if request.headers().contains_key("content-encoding") { return Err("COMPRESSED_PAYLOAD_UNSUPPORTED"); }
++    let bytes = request.body().and_then(reqwest::Body::as_bytes).ok_or("NON_REPLAYABLE_BODY")?;
++    let p = policy()?;
++    if request.headers().get("chatgpt-account-id").and_then(|v| v.to_str().ok()) != p.account.as_deref() {
++        return Err("ACCOUNT_HEADER_BINDING");
++    }
++    if request.headers().get("thread-id").and_then(|v| v.to_str().ok()) != Some(p.thread_id.as_str()) {
++        return Err("THREAD_BINDING");
++    }
++    let timestamp = now()?;
++    if timestamp < p.started_unix || timestamp >= p.deadline_unix { return Err("STAGE_DEADLINE"); }
++    let catalog: Value = serde_json::from_str(include_str!("task_guard_catalog.json")).map_err(|_| "COMPILED_CATALOG")?;
++    let body = if p.execution_profile.as_deref() == Some(sol_task_scope::PROFILE) {
++        inspect_profile(bytes, &p.schema, &catalog, "gpt-6.1-sol", "high")?
++    } else {
++        inspect(bytes, &p.schema, &catalog)?
++    };
++    validate_wire_format(&body)?;
++    let prompt_found = body["input"].as_array().is_some_and(|items| items.iter().any(|item| {
++        item["role"] == "user" && item["content"].as_array().is_some_and(|content| content.iter().any(|part| {
++            part["type"] == "input_text" && part["text"].as_str().is_some_and(|text| digest(text.as_bytes()) == p.prompt_sha256)
++        }))
++    }));
++    if !prompt_found { return Err("ORIGINAL_PROMPT_MISSING"); }
++    reserve(bytes, &body, p, timestamp)
++}
++
++fn control_shape(request: &reqwest::Request) -> Checked<()> {
++    if request.method() != reqwest::Method::GET || request.url().query().is_some()
++        || request.body().is_some() || !request.headers().contains_key("authorization")
++        || request.headers().get("cache-control").and_then(|v| v.to_str().ok()) != Some("no-cache, no-store") {
++        return Err("HOST_CONTROL_SHAPE");
++    }
++    Ok(())
++}
++
++fn control_id(p: &Policy) -> String {
++    digest(format!("GIT_ATTRIBUTION_POLICY_V1:{}:{}:{}",p.stage,p.thread_id,p.request_sha256).as_bytes())
++}
++
++fn reserve_control(p: &Policy, timestamp: u64) -> Checked<()> {
++    if timestamp < p.started_unix || timestamp >= p.deadline_unix { return Err("STAGE_DEADLINE"); }
++    if p.ledger.exists() {
++        let rows: Vec<Value> = serde_json::from_slice(&fs::read(&p.ledger).map_err(|_| "CONTROL_PHASE_LEDGER")?)
++            .map_err(|_| "CONTROL_PHASE_LEDGER")?;
++        if rows.iter().any(|r|r["thread_id"]==p.thread_id) { return Err("HOST_CONTROL_AFTER_INFERENCE"); }
++    }
++    let mut file=OpenOptions::new().read(true).write(true).create(true).truncate(false).mode(0o600)
++        .custom_flags(0x100).open(p.ledger.with_file_name("host-control-ledger.json")).map_err(|_| "CONTROL_LEDGER_OPEN")?;
++    file.try_lock().map_err(|_| "CONTROL_LEDGER_CONCURRENT")?;
++    let meta=file.metadata().map_err(|_| "CONTROL_LEDGER_STAT")?;
++    if !meta.is_file() || meta.nlink()!=1 || meta.len()>8192 { return Err("CONTROL_LEDGER_IDENTITY"); }
++    let mut raw=String::new();file.read_to_string(&mut raw).map_err(|_| "CONTROL_LEDGER_READ")?;
++    let mut rows:Vec<Value>=if raw.is_empty(){vec![]}else{serde_json::from_str(&raw).map_err(|_| "CONTROL_LEDGER_FORMAT")?};
++    if rows.len()>=2 || rows.iter().any(|r|r["stage"]==p.stage || r["thread_id"]==p.thread_id) {
++        return Err("HOST_CONTROL_NO_RETRY_BUDGET");
++    }
++    rows.push(json!({"policy":"GIT_ATTRIBUTION_POLICY_V1","route":"GET /backend-api/wham/settings/user",
++        "stage":p.stage,"thread_id":p.thread_id,"request_sha256":p.request_sha256,"dispatch_id":control_id(p),
++        "phase":"PRE_INFERENCE_WORLD_STATE","timestamp":timestamp,"body_present":false,"inference":false}));
++    let bytes=serde_json::to_vec(&rows).map_err(|_| "CONTROL_LEDGER_JSON")?;
++    file.rewind().map_err(|_| "CONTROL_LEDGER_SEEK")?;file.write_all(&bytes).map_err(|_| "CONTROL_LEDGER_WRITE")?;
++    file.set_len(bytes.len() as u64).map_err(|_| "CONTROL_LEDGER_SIZE")?;file.sync_all().map_err(|_| "CONTROL_LEDGER_SYNC")
++}
++
++pub(crate) fn enforce(request: &reqwest::Request) -> Option<String> {
++    if std::env::var("TM_P1_PREDISPATCH_PROBE").as_deref() == Ok("1")
++        && request.url().path() != "/backend-api/codex/responses" {
++        eprintln!("TM_P1_PREDISPATCH_DENIED:OFFLINE_ANCILLARY_FORBIDDEN");
++        std::process::exit(78);
++    }
++    if let Err(reason) = check(request) {
++        // Only compiled public route names and Rust symbols; never URL/query/header/body values.
++        eprintln!("TM_P1_ROUTE_DENIAL:{}", denial_metadata(request, reason));
++        eprintln!("TM_P1_PREDISPATCH_DENIED:{reason}");
++        std::process::exit(78);
++    }
++    if request.url().path() == "/backend-api/codex/responses" {
++        if std::env::var("TM_P1_PREDISPATCH_PROBE").as_deref() == Ok("1") {
++            eprintln!("TM_P1_OFFLINE_PREDISPATCH_PASS:catalog_model_effort_schema_prompt_thread_budget_checked;transport_called=false");
++            std::process::exit(77);
++        }
++        Some(digest(request.body().and_then(reqwest::Body::as_bytes).unwrap_or_default()))
++    } else if request.url().path()=="/backend-api/wham/settings/user" {
++        Some(format!("control-{}",control_id(policy().expect("checked policy"))))
++    } else {
++        eprintln!("TM_P1_EXISTING_ANCILLARY_ALLOWED:{}",if request.url().host_str()==Some("auth.openai.com"){"ORIGINAL_AUTH"}else{"MODEL_METADATA"});
++        None
++    }
++}
++
++fn denial_metadata(request: &reqwest::Request, reason: &str) -> Value {
++    let host_class = match request.url().host_str() {
++        Some("chatgpt.com") => "CHATGPT",
++        Some("auth.openai.com") => "ORIGINAL_AUTH",
++        _ => "OTHER_REDACTED",
++    };
++    let path = request.url().path();
++    let template = match path {
++        "/backend-api/wham/usage" | "/backend-api/wham/settings/user"
++        | "/backend-api/wham/accounts/check" | "/backend-api/wham/profiles/me"
++        | "/backend-api/wham/rate-limit-reset-credits" | "/backend-api/wham/workspace-messages"
++        | "/backend-api/codex/models" | "/backend-api/codex/responses"
++        | "/backend-api/codex/analytics-events/events"
++        | "/backend-api/codex/responses/compact" | "/oauth/token" => path,
++        _ => "/<redacted>",
++    };
++    let trace = std::backtrace::Backtrace::force_capture().to_string();
++    let symbols: Vec<String> = trace.lines().filter_map(|line| {
++        let (_, value) = line.trim().split_once(": ")?;
++        if value.starts_with("codex_") && value.len() < 320
++            && value.chars().all(|c| c.is_ascii_alphanumeric() || "_:<> {},.&()".contains(c)) {
++            Some(value.to_owned())
++        } else { None }
++    }).take(16).collect();
++    json!({"version":"P1_SAFE_ROUTE_DIAGNOSTIC_V1", "host_class":host_class,
++        "method":match request.method().as_str(){"GET"=>"GET","POST"=>"POST",_=>"OTHER"},
++        "path_template":template,"path_sha256":digest(path.as_bytes()),
++        "caller_symbols":symbols,"reason":reason,"dispatched":false,
++        "query_present":request.url().query().is_some(),"body_present":request.body().is_some()})
++}
++
++pub(crate) fn response_receipt(sha: Option<String>, result: &Result<reqwest::Response, reqwest::Error>) {
++    let Some(sha) = sha else { return; };
++    let receipt = match result {
++        Ok(response) => json!({"wire_sha256":sha,"response_status":response.status().as_u16(),
++            "request_id_sha256":response.headers().get("x-request-id").map(|v| digest(v.as_bytes())),
++            "response_headers_received":true,"stream_completion_not_proven":true}),
++        Err(error) => json!({"wire_sha256":sha,"response_headers_received":false,
++            "connect_error":error.is_connect(),"timeout":error.is_timeout(),
++            "cause":safe_error_chain(error)}),
++    };
++    let written = (|| -> Checked<()> {
++        let p = policy()?;
++        let path = p.ledger.with_file_name(format!("response-{sha}.json"));
++        let mut file = OpenOptions::new().write(true).create_new(true).mode(0o600)
++            .custom_flags(0x100).open(path).map_err(|_| "RESPONSE_RECEIPT_OPEN")?;
++        file.write_all(&serde_json::to_vec(&receipt).map_err(|_| "RESPONSE_RECEIPT_JSON")?)
++            .map_err(|_| "RESPONSE_RECEIPT_WRITE")?;
++        file.sync_all().map_err(|_| "RESPONSE_RECEIPT_SYNC")
++    })();
++    if written.is_err() { eprintln!("TM_P1_RESPONSE_RECEIPT_DENIED"); std::process::exit(78); }
++}
++
++/// Test seam in the actual app-server executable. Never enables a live transport.
++/// Positive and negative cases exit inside enforce before reqwest dispatch.
++#[doc(hidden)]
++pub fn offline_predispatch_fixture(path: &std::path::Path) -> ! {
++    #[derive(Deserialize)]
++    #[serde(deny_unknown_fields)]
++    struct Fixture { url: String, headers: std::collections::BTreeMap<String,String>, body: Value, #[serde(default)] opaque_raw_client: bool }
++    let run = || -> Checked<()> {
++        if std::env::var("TM_P1_PREDISPATCH_PROBE").as_deref()!=Ok("1") {
++            return Err("OFFLINE_PROBE_REQUIRED");
++        }
++        if !path.starts_with("/private/tmp/c21l-offline-20261108")
++            || path.components().any(|c| c == std::path::Component::ParentDir)
++            || path.canonicalize().map_err(|_|"FIXTURE_PATH")? != path {
++            return Err("FIXTURE_PATH");
++        }
++        let meta=fs::symlink_metadata(path).map_err(|_|"FIXTURE_STAT")?;
++        if !meta.is_file() || meta.nlink()!=1 || meta.len()>512*1024 { return Err("FIXTURE_IDENTITY"); }
++        let fixture:Fixture=serde_json::from_slice(&fs::read(path).map_err(|_|"FIXTURE_READ")?)
++            .map_err(|_|"FIXTURE_JSON")?;
++        let client=if fixture.opaque_raw_client {
++            crate::HttpClient::new(reqwest::Client::new())
++        } else {
++            crate::HttpClientBuilder::new().without_redirects().build_direct().map_err(|_|"FIXTURE_CLIENT")?
++        };
++        let mut request=client.post(&fixture.url).json(&fixture.body);
++        for (name,value) in fixture.headers { request=request.header(name,value); }
++        let runtime=tokio::runtime::Builder::new_current_thread().enable_all().build()
++            .map_err(|_|"FIXTURE_RUNTIME")?;
++        // The following line is unreachable after a valid or denied predispatch decision.
++        let _result=runtime.block_on(request.send());
++        Err("OFFLINE_TRANSPORT_REACHED")
++    };
++    eprintln!("TM_C21L_OFFLINE_FAILURE:{}",run().err().unwrap_or("UNEXPECTED_RETURN"));
++    std::process::exit(79);
++}
++
++/// Only typed errno/kind and bounded cause codes leave the trusted host.
++/// Display text is inspected transiently, never emitted or hashed into receipts.
++pub fn safe_error_chain(error: &(dyn std::error::Error + 'static)) -> serde_json::Value {
++    let mut cursor = Some(error);
++    let mut io = Vec::new();
++    let mut depth = 0;
++    let (mut dns, mut proxy, mut tls, mut timeout) = (false, false, false, false);
++    while let Some(cause) = cursor {
++        if depth >= 16 { break; }
++        let text = cause.to_string().to_ascii_lowercase();
++        dns |= text.contains("dns error") || text.contains("failed to lookup address") || text.contains("nodename nor servname");
++        proxy |= text.contains("proxy connect") || text.contains("proxy tunnel");
++        tls |= cause.is::<native_tls::Error>() || cause.is::<rustls::Error>();
++        if let Some(e) = cause.downcast_ref::<std::io::Error>() {
++            timeout |= e.kind() == std::io::ErrorKind::TimedOut;
++            io.push(json!({"kind":format!("{:?}", e.kind()),"os_errno":e.raw_os_error()}));
++        }
++        if let Some(e) = cause.downcast_ref::<reqwest::Error>() { timeout |= e.is_timeout(); }
++        depth += 1;
++        cursor = cause.source();
++    }
++    let code = if dns { "DNS_RESOLUTION_FAILURE" } else if proxy { "PROXY_ROUTE_FAILED" }
++        else if tls { "TLS_TRUST_OR_NEGOTIATION" } else if timeout { "TIMEOUT" }
++        else if io.iter().any(|v| v["kind"] == "PermissionDenied") { "IO_PERMISSION_DENIED_LAYER_UNCONFIRMED" }
++        else if io.iter().any(|v| v["kind"] == "ConnectionRefused") { "TCP_CONNECTION_REFUSED" }
++        else { "UNKNOWN" };
++    json!({"schema":"REDACTED_CONNECT_CAUSE_V1","code":code,"io":io,"depth":depth,
++        "truncated":cursor.is_some(),"dns_proxy_text_match_is_diagnostic_not_authority":true})
++}
++
++#[cfg(test)]
++mod network_cause_tests {
++    use super::*;
++    #[test] fn prior_task_and_ledger_cannot_be_reused() {
++        let new=std::path::Path::new("/private/tmp/tm-posco-p1-flexible-output-20261101/inference-ledger.json");
++        assert!(network_task_scope("POSCO_P1_FLEXIBLE_OUTPUT_20261101",new));
++        assert!(!network_task_scope("POSCO_P1_WIRE_SCHEMA_20261101",new));
++        assert!(!network_task_scope("POSCO_P1_HOST_GUARD",new));
++        assert!(!network_task_scope("POSCO_P1_WIRE_SCHEMA_20261101",std::path::Path::new("/private/tmp/tm-posco-p1-network-boundary-20261101/inference-ledger.json")));
++        assert!(!network_task_scope("POSCO_P1_WIRE_SCHEMA_20261101",std::path::Path::new("/private/tmp/tm-posco-p1-wire-schema-20261101/../inference-ledger.json")));
++    }
++    #[test] fn secret_unknown_is_not_serialized() {
++        let e=std::io::Error::other("https://private.invalid/?token=SECRET bearer SECRET cookie SECRET 192.0.2.3");
++        let r=safe_error_chain(&e); let s=r.to_string();
++        assert_eq!(r["code"],"UNKNOWN");
++        for token in ["SECRET","https","cookie","192.0.2.3"] { assert!(!s.contains(token)); }
++    }
++    #[test] fn errno_is_typed_not_layer_invention() {
++        let r=safe_error_chain(&std::io::Error::from_raw_os_error(1));
++        assert_eq!(r["code"],"IO_PERMISSION_DENIED_LAYER_UNCONFIRMED");
++        assert_eq!(r["io"][0]["os_errno"],1);
++    }
++    #[test] fn dns_text_never_leaves_receipt() {
++        let r=safe_error_chain(&std::io::Error::other("failed to lookup address for SECRET_PRIVATE_HOST"));
++        assert_eq!(r["code"],"DNS_RESOLUTION_FAILURE"); assert!(!r.to_string().contains("SECRET"));
++    }
++    #[test] fn nested_io_timeout_is_preserved() {
++        let e=std::io::Error::new(std::io::ErrorKind::TimedOut,"SECRET");
++        assert_eq!(safe_error_chain(&e)["code"],"TIMEOUT");
++    }
++    #[test] fn malformed_reqwest_url_does_not_leak() {
++        let error=reqwest::Client::new().get("http://[SECRET.invalid").build().unwrap_err();
++        assert!(!safe_error_chain(&error).to_string().contains("SECRET"));
++    }
++}
++
++#[cfg(test)]
++mod route_tests {
++    use super::*;
++    fn request(method: reqwest::Method, path: &str) -> reqwest::Request {
++        reqwest::Request::new(method, format!("https://chatgpt.com{path}").parse().unwrap())
++    }
++    #[test] fn analytics_remains_denied() {
++        let r=request(reqwest::Method::POST,"/backend-api/codex/analytics-events/events");
++        assert_eq!(check(&r),Err("NON_RESPONSES_ROUTE"));
++        let d=denial_metadata(&r,"NON_RESPONSES_ROUTE");
++        assert_eq!(d["path_sha256"],"5b1f13207946f6dd6c0458c1160743e04ded1ff14095ac7cd3749a36c8e96956");
++        assert_eq!(d["dispatched"],false);
++    }
++    #[test] fn dynamic_path_query_body_headers_never_logged() {
++        let mut r=request(reqwest::Method::POST,"/secret-user/secret-path?token=secret-query");
++        r.headers_mut().insert("authorization","secret-header".parse().unwrap());
++        *r.body_mut()=Some("secret-body".into());
++        let d=denial_metadata(&r,"NON_RESPONSES_ROUTE");
++        let s=d.to_string();
++        assert!(!s.contains("secret-"));
++        assert_eq!(d["path_template"],"/<redacted>");
++    }
++    #[test] fn compact_stays_denied() { assert_eq!(check(&request(reqwest::Method::POST,"/backend-api/codex/responses/compact")),Err("NON_RESPONSES_ROUTE")); }
++    #[test] fn analytics_cannot_be_metadata() { assert_eq!(check(&request(reqwest::Method::GET,"/backend-api/codex/analytics-events/events")),Err("NON_RESPONSES_ROUTE")); }
++    #[test] fn public_models_route_unchanged() { assert!(check(&request(reqwest::Method::GET,"/backend-api/codex/models")).is_ok()); }
++    #[test] fn unapproved_host_remains_denied() {
++        let r=reqwest::Request::new(reqwest::Method::POST,"https://example.org/backend-api/codex/analytics-events/events".parse().unwrap());
++        assert_eq!(check(&r),Err("DESTINATION_HOST"));
++        assert_eq!(denial_metadata(&r,"DESTINATION_HOST")["host_class"],"OTHER_REDACTED");
++    }
++    fn control() -> reqwest::Request {
++        let mut r=request(reqwest::Method::GET,"/backend-api/wham/settings/user");
++        r.headers_mut().insert("authorization","SYNTHETIC".parse().unwrap());
++        r.headers_mut().insert("cache-control","no-cache, no-store".parse().unwrap());r
++    }
++    fn cp(path: PathBuf) -> Policy {
++        Policy{execution_profile:None,account:None,task:"POSCO_P1_HOST_GUARD".into(),stage:"BLIND".into(),security:"TEST".into(),
++            owner_sha256:"a".repeat(64),prompt_sha256:"b".repeat(64),request_sha256:"c".repeat(64),
++            thread_id:"TEST_THREAD".into(),source_generation:"TEST_ONLY".into(),schema:json!({}),
++            schema_binding:None,started_unix:1,deadline_unix:601,ledger:path}
++    }
++    #[test] fn original_read_only_control_shape_allowed() { assert!(control_shape(&control()).is_ok()); }
++    #[test] fn control_shape_rejects_body_query_method_and_missing_auth() {
++        let mut r=control();*r.body_mut()=Some("test".into());assert!(control_shape(&r).is_err());
++        let mut r=control();r.url_mut().set_query(Some("test=1"));assert!(control_shape(&r).is_err());
++        let mut r=control();*r.method_mut()=reqwest::Method::POST;assert!(control_shape(&r).is_err());
++        let mut r=control();r.headers_mut().remove("authorization");assert!(control_shape(&r).is_err());
++    }
++    #[test] fn one_control_per_stage_and_two_total() {
++        let d=tempfile::tempdir().unwrap();let mut p=cp(d.path().join("inference.json"));
++        assert!(reserve_control(&p,2).is_ok());assert_eq!(reserve_control(&p,2),Err("HOST_CONTROL_NO_RETRY_BUDGET"));
++        p.stage="ADJ".into();p.thread_id="ADJ_THREAD".into();assert!(reserve_control(&p,2).is_ok());
++        assert_eq!(reserve_control(&p,2),Err("HOST_CONTROL_NO_RETRY_BUDGET"));
++    }
++    #[test] fn control_after_inference_rejected() {
++        let d=tempfile::tempdir().unwrap();let p=cp(d.path().join("inference.json"));
++        fs::write(&p.ledger,serde_json::to_vec(&json!([{"thread_id":p.thread_id}])).unwrap()).unwrap();
++        assert_eq!(reserve_control(&p,2),Err("HOST_CONTROL_AFTER_INFERENCE"));
++    }
++    #[test] fn control_corrupt_ledger_not_reset() {
++        let d=tempfile::tempdir().unwrap();let p=cp(d.path().join("inference.json"));
++        let path=d.path().join("host-control-ledger.json");fs::write(&path,b"corrupt").unwrap();
++        assert_eq!(reserve_control(&p,2),Err("CONTROL_LEDGER_FORMAT"));assert_eq!(fs::read(path).unwrap(),b"corrupt");
++    }
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++    fn fixture() -> (Value, Value, Value) {
++        let catalog: Value = serde_json::from_str(include_str!("task_guard_catalog.json")).unwrap();
++        let schema = json!({"type":"object"});
++        let body = json!({"model":"gpt-6-astra","reasoning":{"effort":"xhigh"},"stream":true,
++            "text":{"format":{"schema":schema}},"input":[{"type":"additional_tools","role":"developer","tools":catalog}]});
++        (body, schema, catalog)
++    }
++    fn verify(b: &Value, s: &Value, c: &Value) -> Checked<Value> {
++        inspect(&serde_json::to_vec(b).unwrap(), s, c)
++    }
++    #[test] fn pinned_lite_catalog_allowed() { let (b,s,c)=fixture(); assert!(verify(&b,&s,&c).is_ok()); }
++    #[test] fn pinned_normal_catalog_allowed() { let(mut b,s,c)=fixture(); b["tools"]=c.clone(); b["input"]=json!([]); assert!(verify(&b,&s,&c).is_ok()); }
++    #[test] fn shell_in_namespace_denied() { let(mut b,s,c)=fixture(); b["input"][0]["tools"][0]["tools"][0]["name"]=json!("exec_command"); assert!(verify(&b,&s,&c).is_err()); }
++    #[test] fn hidden_nested_tools_denied() { let(mut b,s,c)=fixture(); b["input"].as_array_mut().unwrap().push(json!({"payload":{"tools":[{"type":"web_search"}]}})); assert!(verify(&b,&s,&c).is_err()); }
++    #[test] fn additional_tools_key_denied() { let(mut b,s,c)=fixture(); b["additional_tools"]=c.clone(); assert!(verify(&b,&s,&c).is_err()); }
++    #[test] fn duplicate_catalog_denied() { let(mut b,s,c)=fixture(); b["tools"]=c.clone(); assert!(verify(&b,&s,&c).is_err()); }
++    #[test] fn altered_v8_description_denied() { let(mut b,s,c)=fixture(); b["input"][0]["tools"][0]["tools"][0]["description"]=json!("host shell enabled"); assert!(verify(&b,&s,&c).is_err()); }
++    #[test] fn schema_change_denied() { let(mut b,s,c)=fixture(); b["text"]["format"]["schema"]=json!({}); assert!(verify(&b,&s,&c).is_err()); }
++    #[test] fn model_change_denied() { let(mut b,s,c)=fixture(); b["model"]=json!("other"); assert!(verify(&b,&s,&c).is_err()); }
++    #[test] fn effort_change_denied() { let(mut b,s,c)=fixture(); b["reasoning"]["effort"]=json!("low"); assert!(verify(&b,&s,&c).is_err()); }
++    #[test] fn prewarm_denied() { let(mut b,s,c)=fixture(); b["generate"]=json!(false); assert!(verify(&b,&s,&c).is_err()); }
++    #[test] fn response_replay_id_denied() { let(mut b,s,c)=fixture(); b["previous_response_id"]=json!("old"); assert!(verify(&b,&s,&c).is_err()); }
++    #[test] fn oversized_input_denied() { let(_,s,c)=fixture(); assert_eq!(inspect(&vec![32;MAX_BODY+1],&s,&c).unwrap_err(),"WIRE_INPUT_LIMIT"); }
++    #[test] fn websocket_always_disabled() { assert!(http_only()); }
++    fn ledger_policy(path: PathBuf) -> Policy {
++        Policy { execution_profile:None,account:None,task:"POSCO_P1_HOST_GUARD".into(), stage:"BLIND".into(),security:"SYNTHETIC".into(),
++            owner_sha256:"a".repeat(64),prompt_sha256:"b".repeat(64),request_sha256:"c".repeat(64),
++            thread_id:"test-thread".into(),source_generation:"SYNTHETIC_ONLY".into(),schema:json!({}),
++            schema_binding:None,started_unix:1,deadline_unix:601,ledger:path }
++    }
++    #[test] fn retry_and_changed_metadata_retry_denied() {
++        let dir=tempfile::tempdir().unwrap(); let p=ledger_policy(dir.path().join("ledger.json"));
++        let b=json!({"input":["same"]});
++        assert!(reserve(b"original",&b,&p,2).is_ok());
++        assert_eq!(reserve(b"original",&b,&p,3).unwrap_err(),"RETRY_FORBIDDEN");
++        assert_eq!(reserve(b"metadata_changed",&b,&p,3).unwrap_err(),"RETRY_FORBIDDEN");
++    }
++    #[test] fn total_request_budget_shared_between_stages() {
++        let dir=tempfile::tempdir().unwrap(); let mut p=ledger_policy(dir.path().join("ledger.json"));
++        for index in 0..12 { if index == 6 {p.stage="ADJ".into();p.thread_id="adj-thread".into();}
++            assert!(reserve(index.to_string().as_bytes(),&json!({"input":[index]}),&p,2).is_ok()); }
++        assert_eq!(reserve(b"13",&json!({"input":[13]}),&p,2).unwrap_err(),"INFERENCE_BUDGET");
++    }
++    #[test] fn wrong_thread_or_request_rejected() {
++        let dir=tempfile::tempdir().unwrap(); let mut p=ledger_policy(dir.path().join("ledger.json"));
++        assert!(reserve(b"1",&json!({"input":[1]}),&p,2).is_ok());
++        p.thread_id="different".into();
++        assert_eq!(reserve(b"2",&json!({"input":[2]}),&p,2).unwrap_err(),"STAGE_BINDING");
++    }
++    #[test] fn corrupt_ledger_does_not_reset_budget() {
++        let dir=tempfile::tempdir().unwrap(); let p=ledger_policy(dir.path().join("ledger.json"));
++        fs::write(&p.ledger,b"broken").unwrap();
++        assert_eq!(reserve(b"1",&json!({"input":[]}),&p,2).unwrap_err(),"LEDGER_FORMAT");
++        assert_eq!(fs::read(&p.ledger).unwrap(),b"broken");
++    }
++    #[test] fn concurrent_ledger_is_rejected() {
++        let dir=tempfile::tempdir().unwrap(); let p=ledger_policy(dir.path().join("ledger.json"));
++        let file=OpenOptions::new().write(true).create_new(true).open(&p.ledger).unwrap();file.lock().unwrap();
++        assert_eq!(reserve(b"1",&json!({"input":[]}),&p,2).unwrap_err(),"LEDGER_CONCURRENT");
++    }
++    #[test] fn symlink_ledger_is_rejected() {
++        let dir=tempfile::tempdir().unwrap();let p=ledger_policy(dir.path().join("ledger.json"));
++        let target=dir.path().join("target");fs::write(&target,b"[]").unwrap();
++        std::os::unix::fs::symlink(&target,&p.ledger).unwrap();
++        assert_eq!(reserve(b"1",&json!({"input":[]}),&p,2).unwrap_err(),"LEDGER_OPEN");
++        assert_eq!(fs::read(target).unwrap(),b"[]");
++    }
++    #[test] fn unapproved_endpoint_and_compaction_denied() {
++        for url in ["https://api.openai.com/v1/responses", "https://chatgpt.com/backend-api/codex/responses/compact", "http://127.0.0.1/v1/responses"] {
++            let req=reqwest::Client::new().post(url).body("{}").build().unwrap(); assert!(check(&req).is_err());
++        }
++    }
++}
++
++#[cfg(test)]
++mod wire_schema_tests {
++    use super::*;
++    #[test] fn flexible_continuation_keeps_actual_wire_ceiling() {
++        let catalog: Value=serde_json::from_str(include_str!("task_guard_catalog.json")).unwrap();
++        let schema=json!({"type":"object"});
++        let mut b=json!({"model":"gpt-6-astra","reasoning":{"effort":"xhigh"},"stream":true,
++            "tools":catalog,"text":{"format":{"schema":schema}},
++            "input":[{"type":"function_call_output","call_id":"bounded","output":"RESULT_AVAILABLE_BY_REF"}]});
++        assert!(inspect(&serde_json::to_vec(&b).unwrap(),&schema,&catalog).is_ok());
++        b["input"][0]["output"]=json!("x".repeat(MAX_BODY));
++        assert_eq!(inspect(&serde_json::to_vec(&b).unwrap(),&schema,&catalog).unwrap_err(),"WIRE_INPUT_LIMIT");
++    }
++    fn binding(schema: &Value) -> SchemaBinding {
++        SchemaBinding{adapter_version:"LOCAL_REF_DESCRIPTION_INLINE_V1".into(),
++            canonical_schema_sha256:"a".repeat(64),
++            wire_schema_sha256:digest(&serde_json::to_vec(schema).unwrap()),
++            changed_paths:vec!["/properties/axis".into()]}
++    }
++    #[test] fn exact_wire_binding_required() {
++        let s=json!({"type":"object"});let mut b=binding(&s);
++        assert!(validate_schema_binding(&s,Some(&b)).is_ok());
++        assert_eq!(validate_schema_binding(&s,None),Err("SCHEMA_BINDING_MISSING"));
++        b.wire_schema_sha256="b".repeat(64);
++        assert_eq!(validate_schema_binding(&s,Some(&b)),Err("WIRE_SCHEMA_DIGEST"));
++    }
++    #[test] fn binding_metadata_is_fail_closed() {
++        let s=json!({});let mut b=binding(&s);b.adapter_version="unknown".into();
++        assert_eq!(validate_schema_binding(&s,Some(&b)),Err("SCHEMA_BINDING_SCOPE"));
++        let mut b=binding(&s);b.canonical_schema_sha256="forged".into();
++        assert_eq!(validate_schema_binding(&s,Some(&b)),Err("SCHEMA_BINDING_SCOPE"));
++        let mut b=binding(&s);b.changed_paths.clear();
++        assert_eq!(validate_schema_binding(&s,Some(&b)),Err("SCHEMA_BINDING_SCOPE"));
++    }
++    #[test] fn strict_json_schema_cannot_downgrade() {
++        let mut v=json!({"text":{"format":{"type":"json_schema","strict":true}}});
++        assert!(validate_wire_format(&v).is_ok());
++        v["text"]["format"]["strict"]=json!(false);
++        assert_eq!(validate_wire_format(&v),Err("STRICT_FORMAT_REQUIRED"));
++        v["text"]["format"]["strict"]=json!(true);v["text"]["format"]["type"]=json!("json_object");
++        assert_eq!(validate_wire_format(&v),Err("STRICT_FORMAT_REQUIRED"));
++    }
++    #[test] fn new_scope_excludes_previous_failed_ledger() {
++        let p=std::path::Path::new("/private/tmp/tm-posco-p1-flexible-output-20261101/inference-ledger.json");
++        assert!(network_task_scope("POSCO_P1_FLEXIBLE_OUTPUT_20261101",p));
++        assert!(!network_task_scope("POSCO_P1_WIRE_SCHEMA_20261101",p));
++        assert!(!network_task_scope("POSCO_P1_FLEXIBLE_OUTPUT_20261101",std::path::Path::new("/private/tmp/tm-posco-p1-wire-schema-20261101/inference-ledger.json")));
++    }
++}
+--- /dev/null
++++ b/codex-rs/http-client/src/sol_task_scope.rs
+@@ -0,0 +1,118 @@
++//! Exact task-local Sol binding; legacy guard paths are not aliases for this scope.
++use super::{Checked, Policy, digest};
++use serde::Deserialize;
++use serde_json::Value;
++use std::fs;
++use std::os::unix::fs::{MetadataExt, PermissionsExt};
++use std::path::{Component, Path, PathBuf};
++
++pub(super) const PROFILE: &str = "SOL_61_HIGH_EXECUTION_V1";
++const TASK: &str = "C21L_OFFICIAL_0167_GUARDED_SOL_HIGH_PORT_AND_OFFLINE_PREDISPATCH";
++
++#[derive(Deserialize)]
++#[serde(deny_unknown_fields)]
++struct Scope {
++    task: String,
++    execution_profile: String,
++    account: String,
++    security: String,
++    owner_sha256: String,
++    source_generation: String,
++    root: PathBuf,
++    ledger: PathBuf,
++    stage_seconds: u64,
++    input_bytes: usize,
++    output_bytes: usize,
++    retries: u32,
++}
++
++fn scope_matches(s: &Scope, p: &Policy) -> Checked<()> {
++    if s.task != TASK || p.task != s.task || s.execution_profile != PROFILE
++        || p.execution_profile.as_deref() != Some(PROFILE)
++        || s.account.is_empty() || p.account.as_deref() != Some(s.account.as_str())
++        || p.security != s.security || p.owner_sha256 != s.owner_sha256
++        || p.source_generation != s.source_generation || p.ledger != s.ledger
++        || !s.root.is_absolute() || s.root.components().any(|c| c == Component::ParentDir)
++        || s.ledger != s.root.join("inference-ledger.json")
++        || s.stage_seconds != 600 || s.input_bytes != 393216 || s.output_bytes != 131072 || s.retries != 0
++        || !["BLIND", "ADJ"].contains(&p.stage.as_str())
++        || [&p.owner_sha256, &p.prompt_sha256, &p.request_sha256].iter()
++            .any(|s| s.len() != 64 || !s.bytes().all(|c| c.is_ascii_hexdigit()))
++    { return Err("SOL_SCOPE_BINDING"); }
++    Ok(())
++}
++
++fn plain_ancestors(path: &Path) -> Checked<()> {
++    for parent in path.ancestors() {
++        if fs::symlink_metadata(parent).map_err(|_| "SOL_PATH_STAT")?.file_type().is_symlink() {
++            return Err("SOL_PATH_SYMLINK");
++        }
++    }
++    Ok(())
++}
++
++pub(super) fn validate_policy(p: &Policy) -> Checked<bool> {
++    let file = std::env::var_os("TM_SOL_TASK_SCOPE");
++    if p.execution_profile.is_none() && p.account.is_none() && file.is_none() { return Ok(false); }
++    if p.execution_profile.as_deref() != Some(PROFILE) { return Err("SOL_PROFILE"); }
++    let file = PathBuf::from(file.ok_or("SOL_SCOPE_MISSING")?);
++    plain_ancestors(&file)?;
++    let meta = fs::symlink_metadata(&file).map_err(|_| "SOL_SCOPE_STAT")?;
++    if !meta.is_file() || meta.nlink() != 1 || meta.len() > 8192
++        || meta.permissions().mode() & 0o222 != 0 { return Err("SOL_SCOPE_IDENTITY"); }
++    let bytes = fs::read(&file).map_err(|_| "SOL_SCOPE_READ")?;
++    let expected = std::env::var("TM_SOL_TASK_SCOPE_SHA256").map_err(|_| "SOL_SCOPE_PIN_MISSING")?;
++    if digest(&bytes) != expected { return Err("SOL_SCOPE_DIGEST"); }
++    let scope: Scope = serde_json::from_slice(&bytes).map_err(|_| "SOL_SCOPE_FORMAT")?;
++    scope_matches(&scope, p)?;
++    plain_ancestors(&scope.root)?;
++    if scope.root.canonicalize().map_err(|_| "SOL_ROOT")? != scope.root { return Err("SOL_ROOT_CANONICAL"); }
++    Ok(true)
++}
++
++pub(super) fn validate_records(rows: &[Value], p: &Policy) -> Checked<()> {
++    if p.execution_profile.as_deref() != Some(PROFILE) { return Ok(()); }
++    if rows.iter().any(|r| r["execution_profile"] != PROFILE
++        || r["account"].as_str() != p.account.as_deref()
++        || r["owner_sha256"] != p.owner_sha256 || r["source_generation"] != p.source_generation
++        || r["model"] != "gpt-6.1-sol" || r["effort"] != "high") {
++        return Err("SOL_LEDGER_BINDING");
++    }
++    Ok(())
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++    use serde_json::json;
++    fn pair() -> (Scope, Policy) {
++        let s = Scope { task:TASK.into(), execution_profile:PROFILE.into(), account:"ACCOUNT".into(),
++            security:"SYNTHETIC_SECURITY".into(), owner_sha256:"a".repeat(64), source_generation:"DATED_SOURCE".into(),
++            root:"/private/tmp/synthetic-sol-scope".into(), ledger:"/private/tmp/synthetic-sol-scope/inference-ledger.json".into(),
++            stage_seconds:600,input_bytes:393216,output_bytes:131072,retries:0 };
++        let p = Policy { task:s.task.clone(),execution_profile:Some(PROFILE.into()),account:Some(s.account.clone()),
++            stage:"BLIND".into(),security:s.security.clone(),owner_sha256:s.owner_sha256.clone(),prompt_sha256:"b".repeat(64),
++            request_sha256:"c".repeat(64),thread_id:"fresh-blind".into(),source_generation:s.source_generation.clone(),
++            schema:json!({}),schema_binding:None,started_unix:1,deadline_unix:601,ledger:s.ledger.clone() };
++        (s,p)
++    }
++    #[test] fn exact_scope_blind_and_adj() { let(s,mut p)=pair();assert!(scope_matches(&s,&p).is_ok());p.stage="ADJ".into();p.thread_id="fresh-adj".into();assert!(scope_matches(&s,&p).is_ok()); }
++    #[test] fn old_task_is_not_a_sol_alias() { let(s,mut p)=pair();p.task="POSCO_P1_FLEXIBLE_OUTPUT_20261101".into();assert!(scope_matches(&s,&p).is_err()); }
++    #[test] fn old_or_changed_ledger_denied() { let(s,mut p)=pair();p.ledger="/private/tmp/old/inference-ledger.json".into();assert!(scope_matches(&s,&p).is_err()); }
++    #[test] fn account_subject_source_and_packet_bound() { for field in 0..4 {let(s,mut p)=pair();match field {0=>p.account=Some("OTHER".into()),1=>p.security="OTHER".into(),2=>p.source_generation="OTHER".into(),_=>p.owner_sha256="d".repeat(64)};assert!(scope_matches(&s,&p).is_err());} }
++    #[test] fn exact_profile_required() { let(s,mut p)=pair();p.execution_profile=Some("ASTRA_XHIGH_EXECUTION_V1".into());assert!(scope_matches(&s,&p).is_err()); }
++    #[test] fn path_and_limit_changes_denied() {for field in 0..6 {let(mut s,p)=pair();match field {0=>s.root="relative".into(),1=>s.ledger="/private/tmp/wrong.json".into(),2=>s.retries=1,3=>s.stage_seconds=601,4=>s.input_bytes=393217,_=>s.output_bytes=131073};assert!(scope_matches(&s,&p).is_err());} }
++    #[test] fn sol_model_and_effort_exact() {
++        let schema=json!({"type":"object"});let catalog=json!([{"type":"function","name":"synthetic"}]);
++        for (model,effort,allowed) in [("gpt-6.1-sol","high",true),("gpt-6-astra","xhigh",false),("gpt-6.1-sol","medium",false),("other","high",false)] {
++            let b=json!({"model":model,"reasoning":{"effort":effort},"stream":true,"tools":catalog,"text":{"format":{"schema":schema}}});
++            assert_eq!(super::super::inspect_profile(&serde_json::to_vec(&b).unwrap(),&schema,&catalog,"gpt-6.1-sol","high").is_ok(),allowed);
++        }
++    }
++    #[test] fn ledger_cannot_inherit_another_profile() { let(_,p)=pair();assert!(validate_records(&[],&p).is_ok());assert!(validate_records(&[json!({"execution_profile":"ASTRA_XHIGH_EXECUTION_V1"})],&p).is_err()); }
++    #[test] fn changed_prompt_request_and_schema_not_accepted_by_legacy_guards() {
++        let(_,mut p)=pair();p.prompt_sha256="not-a-hash".into();let(s,_)=pair();assert!(scope_matches(&s,&p).is_err());
++        p.prompt_sha256="b".repeat(64);p.request_sha256="not-a-hash".into();assert!(scope_matches(&s,&p).is_err());
++        assert!(super::super::validate_schema_binding(&json!({}),None).is_err());
++    }
++}
+--- /dev/null
++++ b/codex-rs/http-client/src/task_guard_catalog.json
+@@ -0,0 +1,182 @@
++[
++  {
++    "description": "",
++    "name": "functions",
++    "tools": [
++      {
++        "description": "Run JavaScript code to orchestrate/compose tool calls\n- Evaluates the provided JavaScript code in a fresh V8 isolate as an async module.\n- All nested tools are available on the global `tools` object, for example `await tools.exec_command(...)`. Tool names are exposed as normalized JavaScript identifiers, for example `await tools.mcp__ologs__get_profile(...)`.\n- Nested tool methods take either a string or an object as their input argument.\n- Nested tools return either an object or a string, based on the description.\n- Runs raw JavaScript -- no Node, no file system, no network access, no console.\n- Accepts raw JavaScript source text, not JSON, quoted strings, or markdown code fences.\n- You may optionally start the tool input with a first-line pragma like `// @exec: {\"yield_time_ms\": 10000, \"max_output_tokens\": 1000}`.\n- `yield_time_ms` asks `exec` to yield early if the script is still running. Defaults to 30000 ms.\n- `max_output_tokens` sets the token budget for direct `exec` results. Defaults to 10000 tokens.\n- When the JS code is fully evaluated, the isolate's lifetime ends and unawaited promises are silently discarded.\n\n- Global helpers:\n- `exit()`: Immediately ends the current script successfully (like an early return from the top level).\n- `text(value: string | number | boolean | undefined | null)`: Appends a text item. Non-string values are stringified with `JSON.stringify(...)` when possible.\n- `image(imageUrlOrItem: string | { image_url: string; detail?: \"auto\" | \"low\" | \"high\" | \"original\" | null } | ImageContent, detail?: \"auto\" | \"low\" | \"high\" | \"original\" | null)`: Appends an image item. `image_url` should be a base64-encoded `data:` URL. To forward an MCP tool image, pass an individual `ImageContent` block from `result.content`, for example `image(result.content[0])`. MCP image blocks may request detail with `_meta: { \"codex/imageDetail\": \"original\" }`. When provided, the second `detail` argument overrides any detail embedded in the first argument.\n- `audio(audioUrlOrItem: string | { audio_url: string } | AudioContent)`: Appends an audio item. `audio_url` should be a base64-encoded `data:` URL. To forward an MCP tool audio block, pass an individual `AudioContent` block from `result.content`, for example `audio(result.content[0])`.\n- `generatedImage(result: { image_url: string; output_hint?: string })`: Appends an image-generation result and its optional output hint. HTTP(S) URLs are not supported.\n- `store(key: string, value: any)`: stores a serializable value under a string key for later `exec` calls in the same session.\n- `load(key: string)`: returns the stored value for a string key, or `undefined` if it is missing.\n- `notify(value: string | number | boolean | undefined | null)`: immediately injects an extra `custom_tool_call_output` for the current `exec` call. Values are stringified like `text(...)`.\n- `setTimeout(callback: () => void, delayMs?: number)`: schedules a callback to run later and returns a timeout id. Pending timeouts do not keep `exec` alive by themselves; await an explicit promise if you need to wait for one.\n- `clearTimeout(timeoutId?: number)`: cancels a timeout created by `setTimeout`.\n- `ALL_TOOLS`: metadata for the enabled nested tools as `{ name, description }` entries.\n- `yield_control()`: yields the accumulated output to the model immediately while the script keeps running.\n\n### `tm_analysis`\nAnalyze verified public input in an isolated executor. Results are untrusted computations, not source or investment authority. Scratch is limited to analysis.txt and slot-01.txt through slot-63.txt, each at most 1MiB; files are under ../scratch. Input is read-only. No processes or network. Output contract V2: large output is captured and returned fully only if the remaining input byte budget permits. Otherwise a session-bound result ref and explicit preview are returned. Use read_result with ref, byte offset and max_bytes for a needed range, or run_python for selective calculations on the same public input. Ref output is never source authority.\n\nexec tool declaration:\n```ts\ndeclare const tools: { tm_analysis(args: { input_ref?: string; max_bytes?: number; name?: \"analysis.txt\" | \"slot-01.txt\" | \"slot-02.txt\" | \"slot-03.txt\" | \"slot-04.txt\" | \"slot-05.txt\" | \"slot-06.txt\" | \"slot-07.txt\" | \"slot-08.txt\" | \"slot-09.txt\" | \"slot-10.txt\" | \"slot-11.txt\" | \"slot-12.txt\" | \"slot-13.txt\" | \"slot-14.txt\" | \"slot-15.txt\" | \"slot-16.txt\" | \"slot-17.txt\" | \"slot-18.txt\" | \"slot-19.txt\" | \"slot-20.txt\" | \"slot-21.txt\" | \"slot-22.txt\" | \"slot-23.txt\" | \"slot-24.txt\" | \"slot-25.txt\" | \"slot-26.txt\" | \"slot-27.txt\" | \"slot-28.txt\" | \"slot-29.txt\" | \"slot-30.txt\" | \"slot-31.txt\" | \"slot-32.txt\" | \"slot-33.txt\" | \"slot-34.txt\" | \"slot-35.txt\" | \"slot-36.txt\" | \"slot-37.txt\" | \"slot-38.txt\" | \"slot-39.txt\" | \"slot-40.txt\" | \"slot-41.txt\" | \"slot-42.txt\" | \"slot-43.txt\" | \"slot-44.txt\" | \"slot-45.txt\" | \"slot-46.txt\" | \"slot-47.txt\" | \"slot-48.txt\" | \"slot-49.txt\" | \"slot-50.txt\" | \"slot-51.txt\" | \"slot-52.txt\" | \"slot-53.txt\" | \"slot-54.txt\" | \"slot-55.txt\" | \"slot-56.txt\" | \"slot-57.txt\" | \"slot-58.txt\" | \"slot-59.txt\" | \"slot-60.txt\" | \"slot-61.txt\" | \"slot-62.txt\" | \"slot-63.txt\"; offset?: number; op: \"inspect_json\" | \"read_csv\" | \"grep\" | \"list_input\" | \"run_python\" | \"scratch_write\" | \"read_result\"; ref?: string; text?: string; }): Promise<unknown>; };\n```\n\n## clock\nTools for reading and waiting on time.\n\n### `clock__curr_time`\nReturn the current time in UTC.\n\nexec tool declaration:\n```ts\ndeclare const tools: { clock__curr_time(args: {}): Promise<{\n  // Current UTC time formatted as YYYY-MM-DD HH:MM:SS UTC.\n  current_time: string;\n}>; };\n```",
++        "format": {
++          "definition": "\nstart: pragma_source | plain_source\npragma_source: PRAGMA_LINE NEWLINE SOURCE\nplain_source: SOURCE\n\nPRAGMA_LINE: /[ \\t]*\\/\\/ @exec:[^\\r\\n]*/\nNEWLINE: /\\r?\\n/\nSOURCE: /[\\s\\S]+/\n",
++          "syntax": "lark",
++          "type": "grammar"
++        },
++        "name": "exec",
++        "type": "custom"
++      },
++      {
++        "description": "Waits on a yielded `exec` cell and returns new output or completion.\n- Use `wait` only after `exec` returns `Script running with cell ID ...`.\n- `cell_id` identifies the running `exec` cell to resume.\n- `yield_time_ms` controls how long to wait for more output before yielding again. Defaults to 10000 ms.\n- `max_tokens` limits how much new output this wait call returns. Defaults to 10000 tokens.\n- `terminate: true` stops the running cell; false or omitted waits for output.\n- `wait` returns only the new output since the last yield, or the final completion or termination result for that cell.\n- If the cell is still running, `wait` may yield again with the same `cell_id`.\n- If the cell has already finished, `wait` returns the completed result and closes the cell.",
++        "name": "wait",
++        "parameters": {
++          "additionalProperties": false,
++          "properties": {
++            "cell_id": {
++              "description": "Identifier of the running exec cell.",
++              "type": "string"
++            },
++            "max_tokens": {
++              "description": "Output token budget for this wait call. Defaults to 10000 tokens.",
++              "type": "number"
++            },
++            "terminate": {
++              "description": "True stops the running exec cell; false or omitted waits for output.",
++              "type": "boolean"
++            },
++            "yield_time_ms": {
++              "description": "Wait before yielding more output. Defaults to 10000 ms.",
++              "type": "number"
++            }
++          },
++          "required": [
++            "cell_id"
++          ],
++          "type": "object"
++        },
++        "strict": false,
++        "type": "function"
++      },
++      {
++        "description": "Request user input for one to three short questions and wait for the response. This tool is only available in Plan mode.",
++        "name": "request_user_input",
++        "parameters": {
++          "additionalProperties": false,
++          "properties": {
++            "questions": {
++              "description": "Questions to show the user. Prefer 1 and do not exceed 3",
++              "items": {
++                "additionalProperties": false,
++                "properties": {
++                  "header": {
++                    "description": "Short header label shown in the UI (12 or fewer chars).",
++                    "type": "string"
++                  },
++                  "id": {
++                    "description": "Stable identifier for mapping answers (snake_case).",
++                    "type": "string"
++                  },
++                  "options": {
++                    "description": "Provide 2-3 mutually exclusive choices. Put the recommended option first and suffix its label with \"(Recommended)\". Do not include an \"Other\" option in this list; the client will add a free-form \"Other\" option automatically.",
++                    "items": {
++                      "additionalProperties": false,
++                      "properties": {
++                        "description": {
++                          "description": "One short sentence explaining impact/tradeoff if selected.",
++                          "type": "string"
++                        },
++                        "label": {
++                          "description": "User-facing label (1-5 words).",
++                          "type": "string"
++                        }
++                      },
++                      "required": [
++                        "label",
++                        "description"
++                      ],
++                      "type": "object"
++                    },
++                    "type": "array"
++                  },
++                  "question": {
++                    "description": "Single-sentence prompt shown to the user.",
++                    "type": "string"
++                  }
++                },
++                "required": [
++                  "id",
++                  "header",
++                  "question",
++                  "options"
++                ],
++                "type": "object"
++              },
++              "type": "array"
++            }
++          },
++          "required": [
++            "questions"
++          ],
++          "type": "object"
++        },
++        "strict": false,
++        "type": "function"
++      },
++      {
++        "description": "Ask the user one or more questions during ongoing work. Use this tool only to request missing information, preferences, constraints, clarification, or approval. The tool returns immediately without ending the turn or waiting for a reply; any reply arrives asynchronously as a new user message. Keep questions concise, self-contained, and easy to understand, using a level of detail appropriate to the user and task. The UI always allows a free-text answer, including when suggested options are provided. A preselected option is not submitted automatically.",
++        "name": "request_user_input_async",
++        "parameters": {
++          "additionalProperties": false,
++          "properties": {
++            "questions": {
++              "description": "One or more self-contained questions to present together, in display order.",
++              "items": {
++                "additionalProperties": false,
++                "properties": {
++                  "options": {
++                    "description": "Suggested answers, in display order. Put the recommended answer first; the first option is preselected by default. The user can select one option or enter a free-text answer. Do not include an Other option or a free-text placeholder; the UI provides free-text input automatically. Omit options for a free-text-only question.",
++                    "items": {
++                      "type": "string"
++                    },
++                    "minItems": 1,
++                    "type": "array"
++                  },
++                  "title": {
++                    "description": "The complete question shown to the user, including any context needed to answer it.",
++                    "type": "string"
++                  }
++                },
++                "required": [
++                  "title"
++                ],
++                "type": "object"
++              },
++              "minItems": 1,
++              "type": "array"
++            }
++          },
++          "required": [
++            "questions"
++          ],
++          "type": "object"
++        },
++        "strict": false,
++        "type": "function"
++      }
++    ],
++    "type": "namespace"
++  },
++  {
++    "description": "Tools for reading and waiting on time.",
++    "name": "clock",
++    "tools": [
++      {
++        "description": "Pause execution for a specified duration. The sleep ends early when new input arrives for the active turn. Returns the elapsed wall-clock time.",
++        "name": "sleep",
++        "parameters": {
++          "additionalProperties": false,
++          "properties": {
++            "duration_ms": {
++              "description": "How long to sleep in milliseconds. Must be between 1 and 43200000.",
++              "type": "number"
++            }
++          },
++          "required": [
++            "duration_ms"
++          ],
++          "type": "object"
++        },
++        "strict": false,
++        "type": "function"
++      }
++    ],
++    "type": "namespace"
++  }
++]
+--- a/codex-rs/websocket-client/src/lib.rs
++++ b/codex-rs/websocket-client/src/lib.rs
+@@ -158,0 +159,6 @@
++        if codex_http_client::task_guard::http_only() {
++            return Err(WebSocketError::Io(io::Error::new(
++                io::ErrorKind::PermissionDenied,
++                "C21L_TASK_GUARD_WEBSOCKET_FORBIDDEN",
++            )));
++        }
