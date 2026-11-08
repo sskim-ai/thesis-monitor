@@ -1,0 +1,13 @@
+--- a/http-client/src/task_guard.rs
++++ b/http-client/src/task_guard.rs
+@@ -260,8 +260,8 @@
+     let timestamp = now()?;
+     if timestamp < p.started_unix || timestamp >= p.deadline_unix { return Err("STAGE_DEADLINE"); }
+     let catalog: Value = serde_json::from_str(include_str!("task_guard_catalog.json")).map_err(|_| "COMPILED_CATALOG")?;
+-    let body = if p.execution_profile.as_deref() == Some(sol_task_scope::PROFILE) {
+-        inspect_profile(bytes, &p.schema, &catalog, "gpt-6.1-sol", "high")?
++    let body = if let Some(effort) = sol_task_scope::effort(p.execution_profile.as_deref())? {
++        inspect_profile(bytes, &p.schema, &catalog, "gpt-6.1-sol", effort)?
+     } else {
+         inspect(bytes, &p.schema, &catalog)?
+     };

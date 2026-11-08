@@ -17,9 +17,10 @@ class ExecutionProfile:
 
 ASTRA_XHIGH_V1 = ExecutionProfile('ASTRA_XHIGH_EXECUTION_V1','gpt-6-astra','xhigh')
 SOL_HIGH_V1 = ExecutionProfile('SOL_61_HIGH_EXECUTION_V1','gpt-6.1-sol','high')
+SOL_MEDIUM_V1 = ExecutionProfile('SOL_61_MEDIUM_EXECUTION_V1','gpt-6.1-sol','medium')
 
 
 def require_profile(profile):
-    if type(profile) is not ExecutionProfile or profile not in (ASTRA_XHIGH_V1,SOL_HIGH_V1):
+    if type(profile) is not ExecutionProfile or profile not in (ASTRA_XHIGH_V1,SOL_HIGH_V1,SOL_MEDIUM_V1):
         raise ValueError('exact_supported_execution_profile_required')
     return profile

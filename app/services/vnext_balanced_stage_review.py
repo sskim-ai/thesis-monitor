@@ -12,7 +12,7 @@ from app.services import vnext_balanced_research as balanced
 from app.services.vnext_optional_fy1_research import ReviewOwner
 from app.services.vnext_no_send_controller import NoSendController
 from app.services.vnext_research_store import digest
-from app.services.vnext_execution_profile import ASTRA_XHIGH_V1, SOL_HIGH_V1
+from app.services.vnext_execution_profile import ASTRA_XHIGH_V1, SOL_HIGH_V1, SOL_MEDIUM_V1
 
 CONTRACT='BALANCED_STAGE_SCOPED_REVIEW_V1'
 ORIGINAL='BALANCED_ORIGINAL_PROMPT_V1'
@@ -26,7 +26,9 @@ UNIFIED_AI='UNIFIED_JUDGMENT_V2_AI_OWNED'
 UNIFIED_AI_V3='UNIFIED_JUDGMENT_V3_AI_OWNED'
 UNIFIED_AI_V3_CITATION='UNIFIED_JUDGMENT_V3_AI_OWNED_CITATION_PROMPT_V1'
 UNIFIED_AI_V3_SOL_HIGH='UNIFIED_JUDGMENT_V3_AI_OWNED_SOL_HIGH_PROMPT_V1'
-UNIFIED_AI_VERSIONS=(UNIFIED_AI, UNIFIED_AI_V3, UNIFIED_AI_V3_CITATION, UNIFIED_AI_V3_SOL_HIGH)
+UNIFIED_AI_V3_SOL_MEDIUM='UNIFIED_JUDGMENT_V3_AI_OWNED_SOL_MEDIUM_BLIND_PROMPT_V1'
+SOL_VERSIONS=(UNIFIED_AI_V3_SOL_HIGH, UNIFIED_AI_V3_SOL_MEDIUM)
+UNIFIED_AI_VERSIONS=(UNIFIED_AI, UNIFIED_AI_V3, UNIFIED_AI_V3_CITATION, *SOL_VERSIONS)
 TIMING_V3_EXECUTION_CONTRACT='DATED_TECHNICAL_STAGE_REVIEW_V3'
 INPUT_LIMIT=384*1024
 OUTPUT_LIMIT=128*1024
@@ -52,14 +54,18 @@ def _engine(version):
 
 
 def output_contract(version):
-    return UNIFIED_AI_V3 if version in (UNIFIED_AI_V3_CITATION,UNIFIED_AI_V3_SOL_HIGH) else version
+    return UNIFIED_AI_V3 if version in (UNIFIED_AI_V3_CITATION,*SOL_VERSIONS) else version
 
 
 def execution_profile(version):
+    if version == UNIFIED_AI_V3_SOL_MEDIUM:
+        return SOL_MEDIUM_V1
     return SOL_HIGH_V1 if version == UNIFIED_AI_V3_SOL_HIGH else ASTRA_XHIGH_V1
 
 
 def execution_contract(version):
+    if version == UNIFIED_AI_V3_SOL_MEDIUM:
+        return 'UNIFIED_STAGE_REVIEW_V3_SOL_61_MEDIUM_BLIND_V1'
     if version == UNIFIED_AI_V3_SOL_HIGH:
         return 'UNIFIED_STAGE_REVIEW_V3_SOL_61_HIGH_V1'
     if version in (UNIFIED_AI_V3_CITATION,UNIFIED_AI_V3_SOL_HIGH):
@@ -79,6 +85,8 @@ def _v3_prior_version(prior, version):
 
 
 def prompt(packet,stage,*,knowledge,registry,prior=None,version=ORIGINAL):
+    if version == UNIFIED_AI_V3_SOL_MEDIUM and (stage != 'BLIND' or prior is not None):
+        raise ValueError('sol_medium_blind_only')
     if version not in (ORIGINAL,EXPLICIT,POLICY_V2,DATED_TIMING,DATED_TIMING_V2,DATED_TIMING_V3,UNIFIED,*UNIFIED_AI_VERSIONS) or stage not in ('BLIND','ADJUDICATION'):
         raise ValueError('stage_prompt_version')
     if version in (DATED_TIMING,DATED_TIMING_V2,DATED_TIMING_V3,UNIFIED) and packet.get('contract')!=_engine(version).CONTRACT:
@@ -102,6 +110,8 @@ partial scope. Two distinct cited metrics are still required for TechnicalReview
 '''
     if version==UNIFIED_AI_V3_SOL_HIGH:
         text+='\nEXECUTION PROFILE: SOL_61_HIGH_EXECUTION_V1; gpt-6.1-sol/high.\nThe unchanged economic-policy ASTRA_ADJ tag is a legacy schema tag, not a runtime identity or an accepted-model receipt. Only the backend two-stage Sol execution Owner can issue SOL_HIGH_ADJ provenance. No source rights are extended.\n'
+    if version==UNIFIED_AI_V3_SOL_MEDIUM:
+        text+='\nEXECUTION PROFILE: SOL_61_MEDIUM_EXECUTION_V1; gpt-6.1-sol/medium.\nThe unchanged economic-policy ASTRA_ADJ tag is a legacy schema tag, not a runtime identity or an accepted-model receipt. This is a single BLIND stage only, not an adjudicated result or a two-stage Owner. No source rights are extended.\n'
     if version==EXPLICIT:
         text+='''
 PROMPT CONTRACT: BALANCED_UNISSUED_CONFIDENCE_PROMPT_V2.
@@ -129,6 +139,8 @@ def output_schema(packet,version):
 
 
 def _stage_request(*,invocation_id,account,packet,stage,version,knowledge,registry,prior):
+    if version == UNIFIED_AI_V3_SOL_MEDIUM and (stage != 'BLIND' or prior is not None):
+        raise ValueError('sol_medium_blind_only')
     if not invocation_id or not account:raise ValueError('stage_identity_required')
     if stage=='ADJUDICATION' and not isinstance(prior,AcceptedStage):
         raise ValueError('accepted_blind_capability_required')
@@ -147,8 +159,8 @@ def _stage_request(*,invocation_id,account,packet,stage,version,knowledge,regist
         prior_stage_sha=digest(prior_data) if prior_data else None,
         model=execution_profile(version).model,effort=execution_profile(version).effort,
         timeout_seconds=SECONDS,input_bytes=INPUT_LIMIT,output_bytes=OUTPUT_LIMIT,retries=0,send=False)
-    if version==UNIFIED_AI_V3_SOL_HIGH:
-        request['execution_profile']=SOL_HIGH_V1.contract
+    if version in SOL_VERSIONS:
+        request['execution_profile']=execution_profile(version).contract
     return request,text
 
 
@@ -196,7 +208,7 @@ class AcceptedStage:
                 or e.get('prompt_sha')!=digest(text.encode()) or e.get('schema_sha')!=digest(output_schema(self.packet,self.version))
                 or e.get('output_sha')!=digest(data['output'])):
             raise ValueError('stage_exact_execution_binding')
-        if self.version==UNIFIED_AI_V3_SOL_HIGH and e.get('execution_profile')!=SOL_HIGH_V1.contract:
+        if self.version in SOL_VERSIONS and e.get('execution_profile')!=execution_profile(self.version).contract:
             raise ValueError('stage_exact_profile_binding')
         if len(json.dumps(data['output'],ensure_ascii=False).encode())>OUTPUT_LIMIT:
             raise ValueError('stage_output_limit')
@@ -272,8 +284,8 @@ class StageController(NoSendController):
         one_shot=digest({k:v for k,v in host_scope.items() if k!='expires_at'})
         host_request=dict(contract=HOST_CONTRACT,identity=identity,market=host_scope['market'],
                           session=host_scope['session'],manual_scope_sha256=one_shot)
-        if version==UNIFIED_AI_V3_SOL_HIGH:
-            host_request['execution_profile']=SOL_HIGH_V1.contract
+        if version in SOL_VERSIONS:
+            host_request['execution_profile']=execution_profile(version).contract
         grant=dict(contract='ACCEPTED_STAGE_PARENT_RECONSUMPTION_V1',stage_request=deepcopy(request),
                    host_request_sha256=digest(host_request),host_attempt=host_attempt,
                    original_scope_sha256=digest(host_scope),new_model_calls=0,send=False)
