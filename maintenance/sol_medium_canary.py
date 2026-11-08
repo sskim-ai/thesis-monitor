@@ -1,5 +1,6 @@
 """Explicitly approved single Medium BLIND; no ADJ or final judgment issuance."""
 from contextlib import contextmanager
+from copy import deepcopy
 from datetime import datetime, timezone
 import fcntl
 import json
@@ -36,6 +37,15 @@ def validate_authorization(auth, scope, head):
         raise ValueError('medium_fresh_explicit_approval_required')
 
 
+def validate_projection(original, projected, before_sha, after_sha):
+    """Only the reviewed stage implementation identity may differ in a reissue."""
+    old, new = deepcopy(original), deepcopy(projected)
+    name = 'vnext_balanced_stage_review.py'
+    if (old['implementation'].pop(name) != before_sha or new['implementation'].pop(name) != after_sha
+            or old != new):
+        raise ValueError('medium_source_semantics_or_original_generation_changed')
+
+
 def execute_once(root):
     root = plain(root)
     scope = json.loads((root/'private/run-scope.json').read_bytes())
@@ -70,6 +80,16 @@ def execute_once(root):
     for relative, expected in freeze['code_pins'].items():
         if digest(plain(worktree/relative).read_bytes()) != expected:
             raise ValueError('medium_code_pin_drift')
+    if 'initialization_abort' in scope:
+        abort = plain(scope['initialization_abort'])
+        if digest(abort.read_bytes()) != scope['initialization_abort_sha256']:
+            raise ValueError('medium_initialization_abort_changed')
+        previous = json.loads(abort.read_bytes())
+        if (previous.get('reason') != 'medium_original_source_owner_mismatch'
+                or previous.get('stage_host_attempts') != 0 or previous.get('returned_outputs') != 0
+                or previous.get('private_DB_bytes') != 0 or previous.get('financial_HTTP') != 0
+                or previous.get('accepted_BLIND') is not False):
+            raise ValueError('medium_not_an_unused_premodel_initialization')
     if not freeze['offline_checks_passed']:
         raise ValueError('medium_offline_checks_required')
     require_fresh(root, runtime, journal)
@@ -92,6 +112,12 @@ def execute_once(root):
         packet = json.loads(packet_path.read_bytes())
         if digest(packet) != scope['packet_sha256']:
             raise ValueError('medium_packet_changed')
+        if 'original_packet_path' in scope:
+            original_packet = json.loads(plain(scope['original_packet_path']).read_bytes())
+            if digest(original_packet) != scope['original_packet_sha256']:
+                raise ValueError('medium_original_packet_changed')
+            validate_projection(original_packet, packet, scope['previous_stage_code_sha256'],
+                digest(plain(worktree/'app/services/vnext_balanced_stage_review.py').read_bytes()))
         view, counts = restore_view(packet=packet, **scope['source'])
         registry = UseRegistry()
         ticker = packet['base']['public_security']['ticker']

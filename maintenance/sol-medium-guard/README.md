@@ -23,3 +23,10 @@ No financial API, operating DB, service, schedule, send or order is enabled.
 
 Failed terminal diagnostics retain bounded machine error codes and hashes;
 server messages, echoed input and authentication material are not copied.
+
+When the retained packet pins the earlier stage implementation, re-enter the
+original Source Owner and bundle builder. A new derived packet must preserve
+every original field except the reviewed stage implementation hash. The old
+packet and failed pre-model initialization remain intact. A continuation is
+allowed only when the prior result proves zero host stages, model outputs,
+financial requests and journal bytes; the single model-context cap is unchanged.

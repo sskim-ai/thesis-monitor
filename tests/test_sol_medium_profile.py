@@ -15,7 +15,7 @@ from test_vnext_balanced_stage_review import MemoryController
 from app.services.vnext_research_store import ResearchStore, digest
 from app.services.vnext_runtime import RuntimeConfig
 from maintenance.guarded_sol_canary import run_stage
-from maintenance.sol_medium_canary import validate_authorization
+from maintenance.sol_medium_canary import validate_authorization, validate_projection
 
 
 def test_medium_blind_original_validation_and_profile_cannot_be_relabelled(monkeypatch):
@@ -105,3 +105,15 @@ def test_medium_authorization_rejects_old_high_or_expanded_scope():
     for change in (dict(effort='high'), dict(ADJ=1), dict(maximum_contexts=2), dict(head='c'*40)):
         with pytest.raises(ValueError):
             validate_authorization(dict(auth, **change), scope, 'b'*40)
+
+
+def test_reprojection_changes_only_reviewed_implementation_identity():
+    before = dict(implementation={'vnext_balanced_stage_review.py': 'a'*64, 'economic.py': 'c'*64},
+        source_generation='ORIGINAL', facts=[dict(value='7', use='DATED_ONLY')])
+    after = deepcopy(before)
+    after['implementation']['vnext_balanced_stage_review.py'] = 'b'*64
+    validate_projection(before, after, 'a'*64, 'b'*64)
+    for changed in (dict(source_generation='NEW'), dict(facts=[dict(value='8', use='DATED_ONLY')]),
+                    dict(facts=[dict(value='7', use='CURRENT_DIRECTION')])):
+        with pytest.raises(ValueError, match='source_semantics'):
+            validate_projection(before, dict(after, **changed), 'a'*64, 'b'*64)
