@@ -7,6 +7,7 @@ from dataclasses import dataclass
 import hashlib
 import importlib.util
 import json
+import math
 import os
 from pathlib import Path
 import queue
@@ -227,6 +228,7 @@ def execute(binding, *, request, prompt, schema, packet, owner_check, deadline, 
                TM_SOL_TASK_SCOPE=str(binding.scope), TM_SOL_TASK_SCOPE_SHA256=binding.scope_sha256, TM_P1_POLICY_AUDIT='1')
     args = ['/usr/bin/sandbox-exec', '-f', str(root / 'host.sb'), str(binding.binary), '--listen', 'stdio://'] + config_args(binding, root)
     client = None
+    tid = turn_id = completion = None
     runtime = dict(verified=False, model=profile.model, effort=profile.effort,
                    execution_profile=profile.contract, guard_binary_sha256=binding.binary_sha256)
     try:
@@ -291,28 +293,112 @@ def execute(binding, *, request, prompt, schema, packet, owner_check, deadline, 
         runtime.update(verified=True, session=tid, guard_requests=rows, response_receipts=responses)
         return value, runtime
     finally:
-        if client:
-            runtime['host_shutdown'] = client.close()
-        runtime['executor_shutdown'] = broker.close()
-        runtime['broker_receipts'] = broker.receipts
-        write_once(out / 'HOST_TRANSPORT.json', runtime)
+        try:
+            if client:
+                runtime['host_shutdown'] = client.close()
+        finally:
+            runtime['executor_shutdown'] = broker.close()
+            runtime['broker_receipts'] = broker.receipts
+            try:
+                diagnostics = error_observability(completion, list(client.events) if client else [],
+                    thread_id=tid, turn_id=turn_id, receipt_root=binding.root, observed_unix=time.time())
+                write_once(out / 'ERROR_OBSERVABILITY.json', diagnostics)
+                runtime['error_observability_sha256'] = digest(diagnostics)
+            except Exception as exc:
+                runtime['error_observability_persistence'] = 'FAILED'
+                runtime['error_observability_error_type'] = type(exc).__name__
+            write_once(out / 'HOST_TRANSPORT.json', runtime)
 
 
 def terminal_diagnostic(completion):
     """Keep machine error codes, not arbitrary server messages or echoed input."""
     error = (completion or {}).get('error') or {}
     info = error.get('codexErrorInfo') if isinstance(error, dict) else None
+    # Exact rust-v0.155.1 enums; arbitrary identifier-looking strings can be secrets.
+    scalar_codes = {'contextWindowExceeded', 'sessionBudgetExceeded', 'usageLimitExceeded',
+        'rateLimitExceeded', 'serverOverloaded', 'cyberPolicy', 'misalignmentPolicyViolation',
+        'internalServerError', 'unauthorized', 'badRequest', 'threadRollbackFailed', 'sandboxError', 'other'}
+    http_codes = {'httpConnectionFailed', 'responseStreamConnectionFailed',
+                  'responseStreamDisconnected', 'responseTooManyFailedAttempts'}
     safe_info = {}
-    if isinstance(info, dict):
-        for key, value in info.items():
-            if re.fullmatch(r'[a-zA-Z][a-zA-Z0-9_]{0,63}', key):
-                if value is None or type(value) in (bool, int):
-                    safe_info[key] = value
-                elif isinstance(value, dict):
-                    safe_info[key] = {k: v for k, v in value.items()
-                                      if k in ('httpStatusCode', 'statusCode') and type(v) is int}
-    elif isinstance(info, str) and re.fullmatch(r'[a-zA-Z][a-zA-Z0-9_]{0,63}', info):
+    if isinstance(info, dict) and len(info) == 1:
+        key, value = next(iter(info.items()))
+        if key in http_codes and isinstance(value, dict):
+            status = value.get('httpStatusCode')
+            safe_info[key] = {'httpStatusCode': status} if type(status) is int and 100 <= status <= 599 else {}
+        elif key == 'activeTurnNotSteerable':
+            safe_info[key] = {}
+    elif isinstance(info, str) and info in scalar_codes:
         safe_info = info
     status = (completion or {}).get('status')
     return dict(status=status if status in ('failed', 'interrupted', 'completed') else 'unknown',
                 error_info=safe_info, error_sha256=digest(error), raw_message_retained=False, retry=False)
+
+
+def error_observability(completion, events, *, thread_id, turn_id, receipt_root, observed_unix):
+    """Bounded error projections only; the original event buffer stays in memory."""
+    observed = observed_unix if type(observed_unix) in (int, float) and math.isfinite(observed_unix) else None
+    def identity(value):
+        return digest(value.encode()) if isinstance(value, str) else None
+    records = []
+    total = 0
+    for index, event in enumerate(events):
+        if not isinstance(event, dict) or event.get('direction') != 'receive':
+            continue
+        message = event.get('message')
+        if not isinstance(message, dict) or message.get('method') not in ('error', 'turn/completed'):
+            continue
+        total += 1
+        if len(records) >= 64:
+            continue
+        params = message.get('params')
+        params = params if isinstance(params, dict) else {}
+        is_terminal = message['method'] == 'turn/completed'
+        turn = params.get('turn')
+        turn = turn if isinstance(turn, dict) else {}
+        error = turn.get('error') if is_terminal else params.get('error')
+        error = error if isinstance(error, dict) else {}
+        event_turn = turn.get('id') if is_terminal else params.get('turnId')
+        checked = terminal_diagnostic(dict(status=turn.get('status'), error=error))
+        records.append(dict(sequence=index, method=message['method'], observed_unix=observed,
+            event_timestamp='NOT_RECORDED_BY_ORIGINAL_TRANSPORT',
+            thread_id_sha256=identity(params.get('threadId')), turn_id_sha256=identity(event_turn),
+            scope_match=bool(thread_id and turn_id and params.get('threadId') == thread_id and event_turn == turn_id),
+            status=checked['status'], error_info=checked['error_info'], error_sha256=checked['error_sha256'],
+            error_present=bool(error), message_present=isinstance(error.get('message'), str),
+            additional_details_present=isinstance(error.get('additionalDetails'), str),
+            will_retry=params.get('willRetry') if type(params.get('willRetry')) is bool else None))
+    receipts = []
+    for path in sorted(Path(receipt_root).glob('response-*.json')):
+        if not re.fullmatch(r'response-[a-f0-9]{64}[.]json', path.name):
+            continue
+        if len(receipts) >= 12:
+            break
+        raw = plain(path).read_bytes()
+        if len(raw) > 8192:
+            raise ValueError('diagnostic_receipt_size')
+        value = json.loads(raw)
+        status = value.get('response_status')
+        receipts.append(dict(file=path.name, sha256=digest(raw),
+            response_status=status if type(status) is int and 100 <= status <= 599 else None))
+    bound = [r for r in records if r['scope_match']]
+    signatures = {digest(r['error_info']) for r in bound if r['error_info']}
+    statuses = {r['response_status'] for r in receipts if r['response_status'] is not None}
+    for row in bound:
+        if isinstance(row['error_info'], dict):
+            for value in row['error_info'].values():
+                if 'httpStatusCode' in value:
+                    statuses.add(value['httpStatusCode'])
+    terminal = terminal_diagnostic(completion)
+    terminal_event = next((r for r in reversed(bound) if r['method'] == 'turn/completed'), None)
+    disagreement = len(signatures) > 1 or len(statuses) > 1
+    if terminal_event and (terminal_event['status'], terminal_event['error_info']) != (terminal['status'], terminal['error_info']):
+        disagreement = True
+    if terminal['status'] == 'completed' and any(r['method'] == 'error' and r['error_present'] for r in bound):
+        disagreement = True
+    return dict(contract='SAFE_SOL_ERROR_OBSERVABILITY_V1', observed_unix=observed,
+        expected_thread_sha256=identity(thread_id), expected_turn_sha256=identity(turn_id),
+        events=records, event_count=total, omitted_events=max(0, total-len(records)),
+        terminal=terminal, receipt_references=receipts, multiple_sources_disagree=disagreement,
+        error_evidence_missing=not any(r['error_present'] for r in bound) and not bool((completion or {}).get('error')),
+        raw_text_retained=False, retry_authority=False, source_or_stage_authority=False)
