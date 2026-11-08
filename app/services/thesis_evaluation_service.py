@@ -218,7 +218,12 @@ def _build_price_decision(
         decision.currency = str(rules.get("currency") or "") or None
     if legacy_price and decision.price_basis == "unavailable" and daily and daily.latest_date:
         decision.price_basis = "close"
-    decision.current_position = _price_position_text(context) if legacy_price else "날짜 명시 기술 연구용; 현재가격 위치 미확인"
+    if legacy_price:
+        decision.current_position = _price_position_text(context)
+    elif decision.current_price is not None and decision.price_as_of and decision.price_basis != "unavailable":
+        decision.current_position = "독립 현재가격 확인됨 · 구간 내 위치 판단 미산출"
+    else:
+        decision.current_position = "날짜 명시 기술 연구용; 현재가격 미확인 · 위치 판단 미산출"
     decision.registered_rules_available = bool(rules)
     if not rules:
         decision.price_state = "no_price_rule"

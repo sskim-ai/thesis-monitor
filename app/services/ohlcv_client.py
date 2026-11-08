@@ -718,8 +718,6 @@ class OhlcvClient:
                     context.chart.timeframes[period] = _chart_timeframe_context(
                         period, bars, summary
                     )
-                    if period == "daily" and ticker.isdigit():
-                        context.supply = _investor_supply_context(bars)
                     if period == "daily":
                         for bar in bars:
                             close = _number(bar.get("close"))
@@ -822,6 +820,14 @@ class OhlcvClient:
             periods=adjusted_bars,cutoff=session_state.latest_completed_regular_session_date,
             completion_verifier=self.completion_verifier)
         adjusted_bars = native.completed_periods()
+        if ticker.isdigit():
+            # Top-level summaries have no independent completion/date binding.
+            # Keep original per-bar flows, never move or recompute aggregates.
+            completed_supply_rows = [
+                {key: value for key, value in row.items() if key != "supply_demand"}
+                for row in adjusted_bars["daily"]
+            ]
+            context.supply = _investor_supply_context(completed_supply_rows)
         context.available = any(p.completed_count for p in native.periods.values())
         context.chart.available = context.available
         context.chart.as_of_date = native.periods['daily'].completed_as_of
