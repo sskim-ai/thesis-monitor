@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from enum import StrEnum
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, model_validator
 
@@ -375,6 +376,7 @@ class ChartContext(BaseModel):
 
 class PriceContext(BaseModel):
     available: bool = False
+    price_source_scope: Literal["legacy", "dated_technical_only"] = "legacy"
     periods: dict[str, PricePeriodSummary] = Field(default_factory=dict)
     rule_evaluation: PriceRuleEvaluation | None = None
     decision: PriceDecisionContext = Field(default_factory=PriceDecisionContext)
@@ -391,6 +393,11 @@ class PriceContext(BaseModel):
 
     def technical_context_payload(self) -> dict[str, object]:
         return dict(self._technical_context_payload)
+
+    def allows_legacy_price_fallback(self) -> bool:
+        # This versioned scope restricts fallback, never grants price authority.
+        return (self.price_source_scope != "dated_technical_only"
+                and self._technical_context_payload.get("contract") != "packet-owned-native-technical-context-v2")
 
 
 class HistoricalValuationStatistics(BaseModel):

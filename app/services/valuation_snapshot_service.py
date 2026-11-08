@@ -2114,7 +2114,7 @@ class ValuationSnapshotService:
     ) -> ValuationSnapshot:
         now = as_of or datetime.now(timezone.utc)
         price_decision = price_context.decision
-        daily_price = price_context.periods.get("daily")
+        daily_price = price_context.periods.get("daily") if price_context.allows_legacy_price_fallback() else None
         current_price = price_decision.current_price or (
             daily_price.latest_close if daily_price else None
         )

@@ -159,7 +159,7 @@ def test_client_to_typed_prompt_and_original_sr_no_send(market,ticker,monkeypatc
     if market=='us':assert context.supply.available is False
     assert all(technical.native_view.periods[tf].completed_count==n for tf,n in counts.items())
     assert [int(p['count']) for p in requests[:3]]==[1000,700,300]
-    assert all(p['indicator_limit']=='1' for p in requests[:3])
+    assert all(p['indicator_limit']=='5' for p in requests[:3])
     assert requests[3]['adjusted']=='false' and requests[3]['count']=='300'
     evidence=build_decision_evidence_packet(packet=dict(packet_id='C21R_SYNTHETIC',market=market,assessment_date='2026-11-06'),
         stock=dict(ticker=ticker,company_name='SYNTHETIC NO-SEND',fact_catalog=[]),technical_context=technical)

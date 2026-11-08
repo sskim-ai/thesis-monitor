@@ -209,15 +209,16 @@ def _build_price_decision(
     rules = _json_dict(thesis.price_rules)
     daily = context.periods.get("daily")
     decision = context.decision
-    if decision.current_price is None and daily is not None:
+    legacy_price = context.allows_legacy_price_fallback()
+    if legacy_price and decision.current_price is None and daily is not None:
         decision.current_price = daily.latest_close
-    if decision.price_as_of is None and daily is not None:
+    if legacy_price and decision.price_as_of is None and daily is not None:
         decision.price_as_of = daily.latest_date
     if not decision.currency:
         decision.currency = str(rules.get("currency") or "") or None
-    if decision.price_basis == "unavailable" and daily and daily.latest_date:
+    if legacy_price and decision.price_basis == "unavailable" and daily and daily.latest_date:
         decision.price_basis = "close"
-    decision.current_position = _price_position_text(context)
+    decision.current_position = _price_position_text(context) if legacy_price else "날짜 명시 기술 연구용; 현재가격 위치 미확인"
     decision.registered_rules_available = bool(rules)
     if not rules:
         decision.price_state = "no_price_rule"
