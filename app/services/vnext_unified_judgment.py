@@ -273,12 +273,14 @@ def _axis(axis, *, issued):
 
 def validate_and_render(value, packet, *, registry, economic_loader, timing_owner=None,
                         dated_numeric_context=False, numeric_owner=None, historical_owner=None,
-                        factual_properties=False, valuation_analysis_owner=None, **unused):
+                        factual_properties=False, valuation_analysis_owner=None,
+                        versioned_source_owner=None, **unused):
     if packet.get('contract') in AI_OWNED_CONTRACTS:
         return _validate_opinion(value, packet, registry=registry, economic_loader=economic_loader,
             timing_owner=timing_owner, dated_numeric_context=dated_numeric_context,
             numeric_owner=numeric_owner, historical_owner=historical_owner,
-            factual_properties=factual_properties,valuation_analysis_owner=valuation_analysis_owner)
+            factual_properties=factual_properties,valuation_analysis_owner=valuation_analysis_owner,
+            versioned_source_owner=versioned_source_owner)
     parsed = UnifiedOutput.model_validate(value).model_dump(mode='json')
     if parsed != value or value['security_id'] != packet['base']['public_security']['canonical_security_id']:
         raise ValueError('unified_exact_identity_or_types')
@@ -780,8 +782,20 @@ def _validate_opinion(value, packet, *, registry, economic_loader, timing_owner=
         raise ValueError('unified_original_cold_loader_required')
     original = economic_loader()
     cutoff = packet['technical']['technical']['cutoff'] if packet.get('technical') else None
-    if build_bundle(original, registry=registry, timing_owner=timing_owner, cutoff=cutoff,
-                    contract=contract, **options) != packet:
+    versioned = options.pop('versioned_source_owner', None)
+    if versioned is not None:
+        from app.services.versioned_source_replay import VersionedSourceReplay
+        if type(versioned) is not VersionedSourceReplay or timing_owner is not None:
+            raise ValueError('versioned_original_source_capability_required')
+        rebuilt = versioned.rebuild(original, packet=packet,
+            consumer_schema=schema(security_id=packet['base']['public_security']['canonical_security_id'],
+                                   contract=contract),
+            options={k:v for k,v in options.items() if v is not None and v is not False},
+            registry=registry)
+    else:
+        rebuilt = build_bundle(original, registry=registry, timing_owner=timing_owner, cutoff=cutoff,
+                               contract=contract, **options)
+    if rebuilt != packet:
         raise ValueError('unified_live_source_binding')
     rows = {r['ref']:r for r in packet['admissibility']}
     allowed = {r for r,e in rows.items() if e['analytic_opinion_use']['eligible']}
