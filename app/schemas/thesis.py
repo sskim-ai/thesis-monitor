@@ -357,6 +357,7 @@ class ChartTimeframeContext(BaseModel):
     macd: float | None = None
     macd_signal: float | None = None
     macd_histogram: float | None = None
+    indicator_source_semantics: dict[str, str] = Field(default_factory=dict)
 
 
 class ChartContext(BaseModel):

@@ -39,11 +39,9 @@ DYNAMIC_BOLLINGER_CONTRACT = "dynamic-bollinger-support-resistance-v1"
 PROVISIONAL_BOLLINGER_CONTRACT = "provisional-bollinger-expansion-v2"
 
 TIMEFRAME_ORDER: tuple[Timeframe, ...] = ("monthly", "weekly", "daily")
-HISTORY_REQUESTS: dict[Timeframe, int] = {
-    "daily": 1200,
-    "weekly": 600,
-    "monthly": 300,
-}
+from app.services.provider_native_technical import MAX_COUNTS, PIVOT_LOOKBACKS
+HISTORY_REQUESTS = dict(MAX_COUNTS)
+LEGACY_HISTORY_REQUESTS = {'daily':1200,'weekly':600,'monthly':300}
 PROVIDER_INTERFACE_LIMIT = 1000
 PIVOT_WINDOWS: dict[Timeframe, tuple[int, int]] = {
     "daily": (3, 3),
@@ -430,6 +428,7 @@ class PriceStructureWaveFibV3Result(FrozenModel):
     user_visible: bool = False
     business_thesis_mutation: bool = False
     official_assessment_mutation: bool = False
+    provider_native: bool = False
 
 
 def _decimal(value: object) -> Decimal:
@@ -629,6 +628,7 @@ def prepare_long_history(
     market: Literal["KR", "US"] | None = None,
     observed_at: str | None = None,
     provider_limit: int | None = PROVIDER_INTERFACE_LIMIT,
+    provider_native: bool = False,
 ) -> tuple[tuple[PriceBar, ...], LongHistoryCoverage]:
     completed = normalize_completed_bars(
         raw_bars,
@@ -637,7 +637,7 @@ def prepare_long_history(
         market=market,
         observed_at=observed_at,
     )
-    requested = HISTORY_REQUESTS[timeframe]
+    requested = (HISTORY_REQUESTS if provider_native else LEGACY_HISTORY_REQUESTS)[timeframe]
     provider_returned = len(completed)
     complete_bars = tuple(bar for bar in completed if bar.bar_state == "COMPLETE")
     partial_bars = tuple(bar for bar in completed if bar.bar_state == "PARTIAL")
@@ -650,7 +650,10 @@ def prepare_long_history(
         and completed_count < requested
     )
     complete_to_listing = completed_count < requested and not limit_hit
-    if completed_count >= requested:
+    if provider_native and completed_count > 0:
+        status = 'PASS'
+        reason = 'MAX_IS_NOT_MINIMUM' if completed_count < requested else None
+    elif completed_count >= requested:
         status: CoverageStatus = "PASS"
         reason = None
     elif completed_count > max(PIVOT_WINDOWS[timeframe]) * 2 + 3:
@@ -1862,14 +1865,14 @@ def build_timeframe_zone_map(
     pivot_zones: Sequence[TechnicalZone],
     fibonacci: Sequence[FibonacciReference],
     current_price: Decimal,
+    include_bollinger: bool = True,
 ) -> tuple[TechnicalZone, ...]:
     completed_bars = tuple(bar for bar in bars if bar.bar_state == "COMPLETE")
     sources: list[ZoneSource] = []
     for zone in pivot_zones:
         sources.extend(zone.sources)
-    sources.extend(
-        _bollinger_sources(completed_bars, ticker=ticker, timeframe=timeframe)
-    )
+    if include_bollinger:
+        sources.extend(_bollinger_sources(completed_bars, ticker=ticker, timeframe=timeframe))
     box = _balance_box_source(
         completed_bars,
         ticker=ticker,
@@ -2899,6 +2902,7 @@ def build_price_structure_wave_fib_v3(
     raw_by_timeframe: Mapping[Timeframe, Sequence[Mapping[str, object]]],
     observed_at: str | None = None,
     provider_limit: int | None = PROVIDER_INTERFACE_LIMIT,
+    provider_native: bool = False,
 ) -> PriceStructureWaveFibV3Result:
     started = time.perf_counter()
     histories: dict[Timeframe, tuple[PriceBar, ...]] = {}
@@ -2914,11 +2918,12 @@ def build_price_structure_wave_fib_v3(
             market=market,
             observed_at=observed_at,
             provider_limit=provider_limit,
+            provider_native=provider_native,
         )
         histories[timeframe] = bars
         coverage[timeframe] = item_coverage
         pivots[timeframe] = detect_pivots(
-            bars,
+            tuple(b for b in bars if b.bar_state=='COMPLETE')[-PIVOT_LOOKBACKS[timeframe]:] if provider_native else bars,
             ticker=ticker,
             timeframe=timeframe,
             adjustment_basis=adjustment_basis,
@@ -2984,6 +2989,7 @@ def build_price_structure_wave_fib_v3(
             pivot_zones=sr_maps[timeframe],
             fibonacci=(),
             current_price=current_price,
+            include_bollinger=not provider_native,
         )
         maps[timeframe] = build_timeframe_zone_map(
             ticker=ticker,
@@ -2992,8 +2998,9 @@ def build_price_structure_wave_fib_v3(
             pivot_zones=sr_maps[timeframe],
             fibonacci=fibonacci,
             current_price=current_price,
+            include_bollinger=not provider_native,
         )
-        provisional_maps[timeframe] = build_provisional_bollinger_zone_map(
+        provisional_maps[timeframe] = () if provider_native else build_provisional_bollinger_zone_map(
             ticker=ticker,
             timeframe=timeframe,
             bars=histories[timeframe],
@@ -3026,6 +3033,7 @@ def build_price_structure_wave_fib_v3(
     )
     elapsed = _rounded(Decimal(str((time.perf_counter() - started) * 1000)))
     return PriceStructureWaveFibV3Result(
+        provider_native=provider_native,
         ticker=ticker,
         security_id=security_id,
         market=market,

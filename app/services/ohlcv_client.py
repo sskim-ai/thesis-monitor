@@ -39,22 +39,16 @@ from app.services.ohlcv_provider_integrity_service import (
     inspect_normalized_ohlcv_rows,
 )
 from app.services.packet_owned_technical_context_service import (
-    build_packet_owned_technical_context,
+    build_native_packet_context,
 )
+from app.services.provider_native_technical import MAX_COUNTS, FORMULAS, build_provider_native_view
+from app.services.unified_snapshot_contract import digest
 from app.services.provider_telemetry_service import ProviderTelemetryService
 from app.services.unified_source_observer import OhlcvReceiptObserver
 
 
-PERIOD_COUNTS = {
-    "daily": 500,
-    "weekly": 300,
-    "monthly": 100,
-}
-PRICE_STRUCTURE_PERIOD_COUNTS = {
-    "daily": 1200,
-    "weekly": 600,
-    "monthly": 300,
-}
+PERIOD_COUNTS = dict(MAX_COUNTS)
+PRICE_STRUCTURE_PERIOD_COUNTS = dict(MAX_COUNTS)
 OHLCV_PROVIDER_REQUEST_LIMIT = 1000
 
 _DAILY_BOLLINGER_UPPER = {
@@ -375,14 +369,17 @@ def _chart_timeframe_context(
         macd=_number(latest.get("MACD")),
         macd_signal=_number(latest.get("MACD_SIGNAL")),
         macd_histogram=_number(latest.get("MACD_HIST")),
+        indicator_source_semantics=dict(FORMULAS),
     )
 
 
 class OhlcvClient:
     def __init__(self, transport: httpx.AsyncBaseTransport | None = None, *,
-                 source_observer: OhlcvReceiptObserver | None = None) -> None:
+                 source_observer: OhlcvReceiptObserver | None = None,
+                 completion_verifier=None) -> None:
         self.settings = get_settings()
         self.transport = transport
+        self.completion_verifier = completion_verifier
         self.source_observer = source_observer
 
     async def _get_period(self, client: httpx.AsyncClient, params: dict) -> httpx.Response:
@@ -433,6 +430,7 @@ class OhlcvClient:
                     ticker=ticker,
                     period=period,
                     adjusted=adjusted,
+                    response_body_sha256=hashlib.sha256(response.content).hexdigest(),
                 )
                 _increment(acquisition_audit, "success_count")
                 first_inspection = inspect_normalized_ohlcv_rows(
@@ -461,6 +459,7 @@ class OhlcvClient:
                             ticker=ticker,
                             period=period,
                             adjusted=adjusted,
+                            response_body_sha256=hashlib.sha256(refetch_response.content).hexdigest(),
                         )
                     )
                     _increment(acquisition_audit, "success_count")
@@ -566,13 +565,14 @@ class OhlcvClient:
         ticker: str,
         period: str,
         adjusted: bool,
+        response_body_sha256: str | None = None,
     ) -> tuple[list[dict[str, object]], object, str]:
         if not isinstance(payload, Mapping):
             raise ValueError("ohlcv_provider_schema_invalid")
         resolved = payload.get("resolved_symbol")
         if isinstance(resolved, Mapping):
             resolved_code = str(resolved.get("code") or "").upper()
-            if resolved_code and resolved_code != ticker.upper():
+            if resolved_code != ticker.upper():
                 raise ValueError("ohlcv_security_identity_mismatch")
         meta = payload.get("meta")
         provider = "ohlcv_analyst"
@@ -615,6 +615,21 @@ class OhlcvClient:
                         ),
                     )
                 )
+        market = 'kr' if ticker.isdigit() else 'us'
+        if not isinstance(resolved, Mapping) or str(resolved.get('market','')).lower()!=market:
+            raise ValueError('ohlcv_market_identity_mismatch')
+        allowed_venues={'kr':{'KRX','KOSPI','KOSDAQ'},'us':{'NASDAQ','NYSE','AMEX','NYSEARCA','NYSE ARCA','ND','NY','NA'}}
+        if str(resolved.get('exchange','')).upper() not in allowed_venues[market]:
+            raise ValueError('ohlcv_exchange_identity_unverified')
+        if not isinstance(meta,Mapping) or type(meta.get('adjusted')) is not bool or meta['adjusted'] is not adjusted:
+            raise ValueError('ohlcv_adjustment_basis_mismatch')
+        response_sha = digest(payload)
+        for bar in bars:
+            bar['_native_capture'] = dict(provider=provider,code=ticker,market=market,
+                adjusted=adjusted,timeframe=period,response_sha256=response_sha,
+                response_body_sha256=response_body_sha256,
+                exchange=resolved['exchange'],
+                normalized_bar_sha256=digest(bar))
         return bars, payload.get("supply_demand"), provider
 
     @staticmethod
@@ -701,7 +716,7 @@ class OhlcvClient:
                     context.chart.timeframes[period] = _chart_timeframe_context(
                         period, bars, summary
                     )
-                    if period == "daily":
+                    if period == "daily" and ticker.isdigit():
                         context.supply = _investor_supply_context(bars)
                     if period == "daily":
                         for bar in bars:
@@ -743,7 +758,7 @@ class OhlcvClient:
                     client,
                     ticker,
                     "weekly",
-                    PERIOD_COUNTS["weekly"],
+                    300,  # Existing unadjusted Valuation history contract, independent of technical MAX.
                     adjusted=False,
                     include_indicators=False,
                 )
@@ -823,21 +838,8 @@ class OhlcvClient:
                 )
                 for point in context.valuation_history
             ]
-            shifted_bars: dict[str, list[dict[str, object]]] = {}
-            for period, bars in adjusted_bars.items():
-                shifted_bars[period] = []
-                for bar in bars:
-                    shifted = dict(bar)
-                    try:
-                        shifted_date = date.fromisoformat(str(bar.get("date") or "")[:10])
-                    except ValueError:
-                        pass
-                    else:
-                        shifted["date"] = (
-                            shifted_date - timedelta(days=date_shift_days)
-                        ).isoformat()
-                    shifted_bars[period].append(shifted)
-            adjusted_bars = shifted_bars
+            # Native technical input keeps original labels and quarantines future
+            # rows. Never shift source dates to satisfy a completed-session gate.
         is_live_bar = (
             session_state.session == "open" and latest_date == session_state.market_date.isoformat()
         )
@@ -873,6 +875,17 @@ class OhlcvClient:
         for timeframe, chart_period in context.chart.timeframes.items():
             if timeframe != "daily":
                 chart_period.price_basis = "adjusted_close"
+        native = build_provider_native_view(ticker=ticker,market='kr' if ticker.isdigit() else 'us',
+            periods=adjusted_bars,cutoff=session_state.latest_completed_regular_session_date,
+            completion_verifier=self.completion_verifier)
+        adjusted_bars = native.completed_periods()
+        for timeframe, rows in adjusted_bars.items():
+            summary=_summarize_bars(MAX_COUNTS[timeframe],rows)
+            context.periods[timeframe]=summary
+            context.chart.timeframes[timeframe]=_chart_timeframe_context(timeframe,rows,summary)
+            context.chart.timeframes[timeframe].price_basis='adjusted_close'
+        context.daily_history=[HistoricalPricePoint(date=date.fromisoformat(row['date']),close=row['close'])
+                               for row in adjusted_bars['daily']]
         context.chart.structure = analyze_chart_structure(
             adjusted_bars,
             timeframe_contexts={
@@ -880,7 +893,8 @@ class OhlcvClient:
                 for timeframe, value in context.chart.timeframes.items()
             },
             investor_supply=context.supply,
-            price_basis=context.chart.price_basis,
+            price_basis='adjusted_close',
+            provider_native=True,
         )
         if price_structure_enabled:
             try:
@@ -895,6 +909,7 @@ class OhlcvClient:
                     raw_by_timeframe=adjusted_bars,
                     observed_at=observed_local.isoformat(),
                     provider_limit=OHLCV_PROVIDER_REQUEST_LIMIT,
+                    provider_native=True,
                 )
             except (TypeError, ValueError) as exc:
                 context.warnings.append(f"price_structure_v3: {type(exc).__name__}")
@@ -914,16 +929,10 @@ class OhlcvClient:
             technical_acquisition["failure_classes"] = tuple(
                 dict.fromkeys(str(item) for item in failure_classes)
             )
-        technical_context = build_packet_owned_technical_context(
-            ticker=ticker,
-            market="kr" if ticker.isdigit() else "us",
+        technical_context = build_native_packet_context(
+            view=native,
             session=session_state.session,
             as_of=observed_local.isoformat(),
-            periods=adjusted_bars,
-            cutoff=session_state.latest_completed_regular_session_date,
-            expected_daily_completed=(
-                session_state.latest_completed_regular_session_date.isoformat()
-            ),
             acquisition=technical_acquisition,
         )
         context.set_technical_context_payload(technical_context.model_dump(mode="json"))

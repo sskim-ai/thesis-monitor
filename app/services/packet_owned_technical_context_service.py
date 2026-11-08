@@ -8,7 +8,8 @@ from decimal import Decimal, InvalidOperation
 from enum import StrEnum
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_serializer, model_validator
+from app.services.provider_native_technical import ProviderNativeTechnicalView
 
 from app.services.ohlcv_feature_engine_service import (
     MultiTimeframeFeaturePacket,
@@ -85,7 +86,7 @@ class OhlcvAcquisitionTelemetry(FrozenModel):
 
 
 class PacketOwnedTechnicalContext(FrozenModel):
-    contract: Literal["packet-owned-technical-context-v1"] = CONTRACT_VERSION
+    contract: Literal["packet-owned-technical-context-v1", "packet-owned-native-technical-context-v2"] = CONTRACT_VERSION
     technical_context_id: str
     ticker: str
     market: Literal["kr", "us"]
@@ -107,6 +108,51 @@ class PacketOwnedTechnicalContext(FrozenModel):
     acquisition: OhlcvAcquisitionTelemetry = OhlcvAcquisitionTelemetry()
     failure_reason: str | None = None
     cautions: tuple[str, ...] = ()
+    native_view: ProviderNativeTechnicalView | None = None
+
+    @model_validator(mode='after')
+    def native_binding(self):
+        if self.contract == 'packet-owned-native-technical-context-v2':
+            if (self.native_view is None or self.features is not None
+                    or self.native_view.provider_code != self.ticker
+                    or self.native_view.market != self.market):
+                raise ValueError('packet_native_view_binding')
+            self.native_view.verify()
+        elif self.native_view is not None:
+            raise ValueError('legacy_packet_cannot_claim_native_view')
+        return self
+
+    @model_serializer(mode='wrap')
+    def compatible_serialization(self, handler):
+        value=handler(self)
+        if self.native_view is None:value.pop('native_view',None)
+        return value
+
+
+def build_native_packet_context(*, view, session, as_of, acquisition=None):
+    if type(view) is not ProviderNativeTechnicalView:
+        raise ValueError('typed_provider_native_view_required')
+    view.verify()
+    quality={}
+    for tf,p in view.periods.items():
+        available=p.status=='AVAILABLE'
+        quality[TIMEFRAME_KEYS[tf]]=TimeframeTechnicalQuality(timeframe=tf,
+            status=TechnicalContextStatus.PARTIAL_SAFE if available else TechnicalContextStatus.INVALID if p.status=='INVALID' else TechnicalContextStatus.UNAVAILABLE,
+            freshness_state=TechnicalFreshnessState.TIMEFRAME_CURRENT if available else TechnicalFreshnessState.UNAVAILABLE,
+            last_completed_bar=p.completed_as_of,bar_count=p.completed_count,final_bar_count=p.completed_count,
+            feature_count=sum(q=='PROVIDER_NATIVE' for q in p.indicator_quality.values()),
+            usable_for_current_reasoning=False,reasons=(*p.reasons,'DATED_TECHNICAL_ONLY_NO_CURRENT_PRICE'))
+    available=any(p.status=='AVAILABLE' for p in view.periods.values())
+    return PacketOwnedTechnicalContext(contract='packet-owned-native-technical-context-v2',
+        technical_context_id='native-technical:'+view.view_sha256[:24],ticker=view.provider_code,market=view.market,
+        session=session,as_of=as_of,source_version=view.contract,currency='KRW' if view.market=='kr' else 'USD',
+        security_identity=view.provider_code,status=TechnicalContextStatus.PARTIAL_SAFE if available else TechnicalContextStatus.UNAVAILABLE,
+        freshness_state=TechnicalFreshnessState.TIMEFRAME_CURRENT if available else TechnicalFreshnessState.UNAVAILABLE,
+        last_completed_bar={TIMEFRAME_KEYS[tf]:p.completed_as_of for tf,p in view.periods.items()},
+        bar_counts={TIMEFRAME_KEYS[tf]:p.completed_count for tf,p in view.periods.items()},quality=quality,
+        raw_bar_fingerprint=view.source_hash,feature_fingerprint=view.view_sha256,
+        acquisition=OhlcvAcquisitionTelemetry.model_validate(acquisition or {}),native_view=view,
+        cautions=('PROVIDER_NATIVE_FORMULAS_NOT_LEGACY_WILDER','DATED_TECHNICAL_ONLY_NO_CURRENT_PRICE'))
 
 
 def _canonical_sha(value: object) -> str:

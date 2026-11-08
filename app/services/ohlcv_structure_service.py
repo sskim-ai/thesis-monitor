@@ -1493,6 +1493,7 @@ def analyze_chart_structure(
     timeframe_contexts: Mapping[str, Mapping[str, object]] | None = None,
     investor_supply: InvestorSupplyContext | Mapping[str, object] | None = None,
     price_basis: str = "adjusted_close",
+    provider_native: bool = False,
 ) -> dict[str, object]:
     timeframe_contexts = timeframe_contexts or {}
     series_by_timeframe = {
@@ -1579,6 +1580,9 @@ def analyze_chart_structure(
         for key, value in dict(daily_context.get("bollinger_upper") or {}).items()
         if _number(value) is not None
     }
+    if provider_native:
+        # Provider BB periods/std conventions are not the legacy confluence contract.
+        bollinger_values = {}
     all_zones = score_price_zones(
         raw_zones,
         bollinger_values=list(bollinger_values.values()),

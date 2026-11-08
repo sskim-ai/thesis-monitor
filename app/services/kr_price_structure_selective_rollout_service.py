@@ -6,6 +6,7 @@ from dataclasses import asdict, dataclass
 from enum import StrEnum
 
 from app.config import get_settings
+from app.services.unified_snapshot_contract import digest
 from app.services.price_structure_v3_family_consensus_service import (
     apply_family_consensus_feedback,
 )
@@ -181,6 +182,7 @@ def build_kr_price_structure_rollout_decision(
         enforce_user_visible_proximity=True,
         security_basis=str(context.get("security_basis") or "") or None,
         adjustment_basis=str(context.get("adjustment_basis") or "") or None,
+        dated_source=_mapping(context.get('native_dated_source')) or None,
     )
     validation = validate_price_structure_render(render)
     if validation.status == "FAIL":
@@ -219,6 +221,7 @@ def build_kr_price_structure_runtime_context(
     raw_by_timeframe: Mapping[str, Sequence[Mapping[str, object]]],
     observed_at: str,
     provider_limit: int,
+    provider_native: bool = False,
 ) -> dict[str, object]:
     return build_price_structure_runtime_context(
         ticker=ticker,
@@ -230,6 +233,7 @@ def build_kr_price_structure_runtime_context(
         raw_by_timeframe=raw_by_timeframe,
         observed_at=observed_at,
         provider_limit=provider_limit,
+        provider_native=provider_native,
     )
 
 
@@ -244,6 +248,7 @@ def build_price_structure_runtime_context(
     raw_by_timeframe: Mapping[str, Sequence[Mapping[str, object]]],
     observed_at: str,
     provider_limit: int,
+    provider_native: bool = False,
 ) -> dict[str, object]:
     result = build_price_structure_wave_fib_v3(
         ticker=ticker,
@@ -255,6 +260,7 @@ def build_price_structure_runtime_context(
         raw_by_timeframe=raw_by_timeframe,  # type: ignore[arg-type]
         observed_at=observed_at,
         provider_limit=provider_limit,
+        provider_native=provider_native,
     )
     current_cycle = tuple(
         item
@@ -361,6 +367,11 @@ def build_price_structure_runtime_context(
         },
     }
     context["eligibility"] = classify_kr_price_structure(context).value
+    if provider_native:
+        context['current_quote']=None
+        context['technical_source_scope']='DATED_TECHNICAL_ANALYSIS'
+        context['native_current_price_qualified']=False
+        context['native_dated_source']=dict(scope='DATED_TECHNICAL_ANALYSIS',source_hash=digest(raw_by_timeframe))
     return context
 
 

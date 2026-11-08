@@ -114,6 +114,7 @@ def build_us_price_structure_rollout_decision(
         enforce_user_visible_proximity=True,
         security_basis=str(context.get("security_basis") or "") or None,
         adjustment_basis=str(context.get("adjustment_basis") or "") or None,
+        dated_source=context.get('native_dated_source'),
     )
     validation = validate_price_structure_render(render)
     if validation.status == "FAIL":
@@ -152,6 +153,7 @@ def build_us_price_structure_runtime_context(
     raw_by_timeframe: Mapping[str, Sequence[Mapping[str, object]]],
     observed_at: str,
     provider_limit: int,
+    provider_native: bool = False,
 ) -> dict[str, object]:
     return build_price_structure_runtime_context(
         ticker=ticker,
@@ -163,4 +165,5 @@ def build_us_price_structure_runtime_context(
         raw_by_timeframe=raw_by_timeframe,
         observed_at=observed_at,
         provider_limit=provider_limit,
+        provider_native=provider_native,
     )
