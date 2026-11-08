@@ -1,0 +1,50 @@
+--- a/codex-rs/http-client/src/sol_task_scope.rs
++++ b/codex-rs/http-client/src/sol_task_scope.rs
+@@ -7,7 +7,7 @@
+ use std::path::{Component, Path, PathBuf};
+ 
+ pub(super) const PROFILE: &str = "SOL_61_HIGH_EXECUTION_V1";
+-const TASK: &str = "C21L_OFFICIAL_0167_GUARDED_SOL_HIGH_PORT_AND_OFFLINE_PREDISPATCH";
++const TASK: &str = "C21P_0167_GUARDED_ADAPTER_CONTRACT_AND_ONE_CONDITIONAL_BLIND";
+ 
+ #[derive(Deserialize)]
+ #[serde(deny_unknown_fields)]
+@@ -35,7 +35,7 @@
+         || !s.root.is_absolute() || s.root.components().any(|c| c == Component::ParentDir)
+         || s.ledger != s.root.join("inference-ledger.json")
+         || s.stage_seconds != 600 || s.input_bytes != 393216 || s.output_bytes != 131072 || s.retries != 0
+-        || !["BLIND", "ADJ"].contains(&p.stage.as_str())
++        || p.stage != "BLIND"
+         || [&p.owner_sha256, &p.prompt_sha256, &p.request_sha256].iter()
+             .any(|s| s.len() != 64 || !s.bytes().all(|c| c.is_ascii_hexdigit()))
+     { return Err("SOL_SCOPE_BINDING"); }
+@@ -96,7 +96,7 @@
+             schema:json!({}),schema_binding:None,started_unix:1,deadline_unix:601,ledger:s.ledger.clone() };
+         (s,p)
+     }
+-    #[test] fn exact_scope_blind_and_adj() { let(s,mut p)=pair();assert!(scope_matches(&s,&p).is_ok());p.stage="ADJ".into();p.thread_id="fresh-adj".into();assert!(scope_matches(&s,&p).is_ok()); }
++    #[test] fn exact_scope_blind_only() { let(s,mut p)=pair();assert!(scope_matches(&s,&p).is_ok());p.stage="ADJ".into();p.thread_id="fresh-adj".into();assert!(scope_matches(&s,&p).is_err()); }
+     #[test] fn old_task_is_not_a_sol_alias() { let(s,mut p)=pair();p.task="POSCO_P1_FLEXIBLE_OUTPUT_20261101".into();assert!(scope_matches(&s,&p).is_err()); }
+     #[test] fn old_or_changed_ledger_denied() { let(s,mut p)=pair();p.ledger="/private/tmp/old/inference-ledger.json".into();assert!(scope_matches(&s,&p).is_err()); }
+     #[test] fn account_subject_source_and_packet_bound() { for field in 0..4 {let(s,mut p)=pair();match field {0=>p.account=Some("OTHER".into()),1=>p.security="OTHER".into(),2=>p.source_generation="OTHER".into(),_=>p.owner_sha256="d".repeat(64)};assert!(scope_matches(&s,&p).is_err());} }
+--- a/codex-rs/http-client/src/task_guard.rs
++++ b/codex-rs/http-client/src/task_guard.rs
+@@ -239,14 +239,16 @@
+     let path = url.path();
+     // Auth remains entirely inside the original host. No body/header is recorded here.
+     if host == "auth.openai.com" && path == "/oauth/token" && request.method() == reqwest::Method::POST {
+-        return Ok(());
++        return Err("C21P_UNEXPECTED_AUTH_REISSUE");
+     }
+     if host != "chatgpt.com" { return Err("DESTINATION_HOST"); }
+     if path == "/backend-api/wham/settings/user" {
+         control_shape(request)?;
+         return reserve_control(policy()?, now()?);
+     }
+-    if request.method() == reqwest::Method::GET && path == "/backend-api/codex/models" { return Ok(()); }
++    if request.method() == reqwest::Method::GET && path == "/backend-api/codex/models" {
++        return Err("C21P_UNEXPECTED_MODEL_METADATA_GET");
++    }
+     if request.method() != reqwest::Method::POST || path != "/backend-api/codex/responses" || url.query().is_some() {
+         return Err("NON_RESPONSES_ROUTE");
+     }

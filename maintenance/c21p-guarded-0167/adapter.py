@@ -1,0 +1,402 @@
+"""Task-local exact Sol profile binding for the original public-analysis broker.
+
+This is not a scheduler, a source authority, or a replacement Stage Owner.
+All paths and helper bytes are supplied by a local, pinned launch manifest.
+"""
+from dataclasses import dataclass
+import hashlib
+import importlib.util
+import json
+import math
+import os
+from pathlib import Path
+import queue
+import re
+import sys
+import time
+import types
+
+from app.services.vnext_execution_profile import SOL_HIGH_V1, SOL_MEDIUM_V1
+from app.services import vnext_balanced_stage_review as stages
+
+TASK = 'C21P_0167_GUARDED_ADAPTER_CONTRACT_AND_ONE_CONDITIONAL_BLIND'
+VERSION = 'UNIFIED_JUDGMENT_V3_AI_OWNED_SOL_HIGH_PROMPT_V1'
+MEDIUM_TASK = 'SOL_MEDIUM_SINGLE_BLIND_20261107'
+
+
+def profile_contract(name):
+    if name == SOL_HIGH_V1.contract:
+        return SOL_HIGH_V1, TASK, VERSION
+    raise ValueError('exact_sol_profile_required')
+
+
+def digest(data):
+    if not isinstance(data, bytes):
+        data = json.dumps(data, sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode()
+    return hashlib.sha256(data).hexdigest()
+
+
+def plain(path):
+    path = Path(path)
+    if not path.is_absolute() or any(p.is_symlink() for p in (path, *path.parents)):
+        raise ValueError('plain_absolute_path_required')
+    if path.is_file() and path.stat().st_nlink != 1:
+        raise ValueError('unique_file_required')
+    return path
+
+
+def write_once(path, value, mode=0o600):
+    path = Path(path)
+    data = value if isinstance(value, bytes) else json.dumps(value, ensure_ascii=False, separators=(',', ':')).encode()
+    with path.open('xb') as stream:
+        stream.write(data)
+        stream.flush()
+        os.fsync(stream.fileno())
+    path.chmod(mode)
+
+
+@dataclass(frozen=True)
+class Binding:
+    binary: Path
+    binary_sha256: str
+    catalog: Path
+    catalog_sha256: str
+    legacy: Path
+    helper_pins: dict
+    root: Path
+    scope: Path
+    scope_sha256: str
+    execution_profile: str = SOL_HIGH_V1.contract
+
+    def verify(self):
+        profile, task, _ = profile_contract(self.execution_profile)
+        for path, expected in [(self.binary, self.binary_sha256), (self.catalog, self.catalog_sha256), (self.scope, self.scope_sha256)]:
+            if digest(plain(path).read_bytes()) != expected:
+                raise ValueError('runtime_asset_pin')
+        plain(self.root)
+        if self.root.resolve() != self.root:
+            raise ValueError('canonical_root_required')
+        for name, expected in self.helper_pins.items():
+            if digest(plain(self.legacy.parent / name).read_bytes()) != expected:
+                raise ValueError('original_helper_changed')
+        models = json.loads(self.catalog.read_bytes())['models']
+        if len(models) != 1 or models[0]['slug'] != profile.model:
+            raise ValueError('exact_catalog_model')
+        if profile.effort not in [x['effort'] for x in models[0]['supported_reasoning_levels']]:
+            raise ValueError('catalog_effort')
+        scope = json.loads(self.scope.read_bytes())
+        if (scope['task'], scope['execution_profile'], scope['root'], scope['ledger']) != (
+            task, profile.contract, str(self.root), str(self.root / 'inference-ledger.json')):
+            raise ValueError('exact_scope_required')
+        if self.scope.stat().st_mode & 0o222:
+            raise ValueError('scope_must_be_read_only')
+        return scope
+
+
+def require_request(request, prompt, schema, packet, scope):
+    profile, task, version = profile_contract(scope.get('execution_profile', SOL_HIGH_V1.contract))
+    if profile == SOL_MEDIUM_V1 and (scope.get('task') != task or request.get('stage') != 'BLIND'):
+        raise ValueError('medium_fresh_blind_scope_required')
+    expected = dict(model=profile.model, effort=profile.effort,
+                    execution_profile=profile.contract, prompt_version=version,
+                    contract=stages.execution_contract(version),
+                    timeout_seconds=600, input_bytes=393216, output_bytes=131072, retries=0, send=False)
+    if any(request.get(k) != v for k, v in expected.items()):
+        raise ValueError('exact_sol_stage_contract')
+    if request['stage'] != 'BLIND' or not request['invocation_id']:
+        raise ValueError('fresh_stage_identity')
+    if len(prompt.encode()) > 393216 or request['prompt_sha'] != digest(prompt.encode()) or request['schema_sha'] != digest(schema):
+        raise ValueError('prompt_schema_binding')
+    if request['source_sha'] != digest(packet) or scope['owner_sha256'] != digest(packet):
+        raise ValueError('packet_binding')
+    if request['account'] != scope['account'] or request['security']['canonical_security_id'] != scope['security']:
+        raise ValueError('subject_account_binding')
+    if request['source_as_of'] != scope['source_generation']:
+        raise ValueError('source_generation_binding')
+    if (request['stage'] == 'BLIND') != (request['prior_stage_sha'] is None):
+        raise ValueError('accepted_prior_binding_required')
+
+
+def original(binding):
+    binding.verify()
+    saved = dict(sys.modules)
+    sys.path.insert(0, str(binding.legacy))
+    for name in ('task', 'host_preflight', 'executor_stream', 'flexible_output', 'wire_schema'):
+        sys.modules.pop(name, None)
+    try:
+        spec = importlib.util.spec_from_file_location('c21p_original_transport', binding.legacy / 'live_transport.py')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        seen = set()
+        def check_closure(current):
+            if id(current) in seen:
+                return
+            seen.add(id(current))
+            path = getattr(current, '__file__', None)
+            if not path or not Path(path).is_relative_to(binding.legacy.parent):
+                return
+            path = Path(path)
+            key = str(path.relative_to(binding.legacy.parent))
+            if path.suffix != '.py' or binding.helper_pins.get(key) != digest(plain(path).read_bytes()):
+                raise ValueError('unapproved_original_helper_dependency')
+            for value in vars(current).values():
+                if isinstance(value, types.ModuleType):
+                    check_closure(value)
+        check_closure(module)
+        if module.t.BASE != binding.root or module.t.TASK_ID != TASK:
+            raise ValueError('c21p_frozen_legacy_task_binding')
+        return module
+    finally:
+        sys.path.pop(0)
+        for name in set(sys.modules) - set(saved):
+            sys.modules.pop(name, None)
+        sys.modules.update(saved)
+
+
+def config_args(binding, stage_root):
+    profile, _, _ = profile_contract(binding.execution_profile)
+    values = dict(model=profile.model, model_reasoning_effort=profile.effort,
+                  approval_policy='never', sandbox_mode='read-only', web_search='disabled',
+                  model_catalog_json=str(binding.catalog), sqlite_home=str(stage_root / 'state'),
+                  log_dir=str(stage_root / 'logs'))
+    values.update({'analytics.enabled': False, 'agents.enabled': False, 'orchestrator.skills.enabled': False})
+    values.update({'features.' + n: False for n in ('shell_tool', 'unified_exec', 'code_mode', 'multi_agent',
+                  'multi_agent_v2', 'apps', 'plugins', 'request_permissions', 'js_repl', 'realtime_conversation', 'image_generation')})
+    return [item for key, value in values.items() for item in ('-c', key + '=' + json.dumps(value))]
+
+
+def host_profile(binding, stage_root, *, authenticated=False):
+    home = Path.home()
+    shared = [binding.root / 'inference-ledger.json', binding.root / 'host-control-ledger.json']
+    allowed = [binding.binary, binding.catalog, binding.scope, *shared]
+    if authenticated:
+        allowed += [home / '.codex/auth.json']
+        rules = home / '.codex/rules'
+        if rules.is_dir():
+            allowed += [rules, *[plain(p) for p in rules.iterdir() if p.suffix == '.rules']]
+    exceptions = '\n'.join('(require-not (literal ' + json.dumps(str(p)) + '))' for p in allowed)
+    # Seatbelt's regex reader is not Python's; avoid escaped hyphens and counts.
+    prefix = '^' + re.escape(str(binding.root)).replace(r'\-', '-')
+    response_patterns = [prefix + '/' + name + '[a-f0-9]' * 64 + '[.]json$'
+                         for name in ('response-', 'response-control-')]
+    response_exception = '\n'.join('(require-not (regex #' + json.dumps(pattern) + '))'
+                                   for pattern in response_patterns)
+    shared_writes = '\n'.join('(require-not (literal ' + json.dumps(str(p)) + '))' for p in shared)
+    root = json.dumps(str(stage_root))
+    network = '''(allow network-outbound (remote tcp "*:443"))
+(allow network-outbound (remote udp "*:53"))
+(allow network-outbound (remote unix-socket (literal "/private/var/run/mDNSResponder")))''' if authenticated else ''
+    return f'''(version 1)
+(allow default)
+(deny network*)
+{network}
+(deny file-read-data (require-all (subpath {json.dumps(str(home))})
+ (require-not (subpath {root})) {exceptions} {response_exception}))
+(deny file-write* (require-all (subpath {json.dumps(str(home))}) (require-not (subpath {root})) {shared_writes} {response_exception}))
+(deny file-write* (literal {json.dumps(str(stage_root / 'policy.json'))})
+ (literal {json.dumps(str(stage_root / 'policy.sha256'))}) (literal {json.dumps(str(binding.scope))}))
+'''
+
+
+def execute(binding, *, request, prompt, schema, packet, owner_check, deadline, out):
+    """Original broker/guard receipts; the caller still uses the original StageController."""
+    scope = binding.verify()
+    profile, task, _ = profile_contract(binding.execution_profile)
+    require_request(request, prompt, schema, packet, scope)
+    if not callable(owner_check) or not owner_check() or not 0 < deadline - time.time() <= 600:
+        raise ValueError('live_owner_deadline_required')
+    original_module = original(binding)
+    t = original_module.t
+    wire_schema, schema_binding = original_module.adapt(schema)
+    stage = 'BLIND' if request['stage'] == 'BLIND' else 'ADJ'
+    root = binding.root / stage
+    root.mkdir(mode=0o700)
+    for name in ('input', 'scratch', 'state', 'logs', 'tmp'):
+        (root / name).mkdir()
+    write_once(root / 'input/public_packet.json', packet)
+    write_once(root / 'input/original_prompt.txt', prompt.encode())
+    files = {p.name: t.pin(p) for p in (root / 'input').iterdir()}
+    broker = original_module.PublicBroker(root, files=files, deadline=deadline, budget=binding.root / 'tool-budget.json',
+        security=scope['security'], generation=scope['source_generation'], owner_ref=digest(packet),
+        session=request['invocation_id'], owner_check=owner_check, request_identity=request)
+    write_once(root / 'host.sb', host_profile(binding, root, authenticated=True).encode())
+    env = dict(PATH='/usr/bin:/bin', HOME=str(Path.home()), CODEX_HOME=str(Path.home() / '.codex'),
+               TMPDIR=str(root / 'tmp'), RUST_LOG='off', CODEX_DISABLE_REMOTE_CONTROL='1',
+               TM_P1_DISPATCH_POLICY=str(root / 'policy.json'), TM_P1_DISPATCH_POLICY_PIN_FILE=str(root / 'policy.sha256'),
+               TM_SOL_TASK_SCOPE=str(binding.scope), TM_SOL_TASK_SCOPE_SHA256=binding.scope_sha256, TM_P1_POLICY_AUDIT='1')
+    args = ['/usr/bin/sandbox-exec', '-f', str(root / 'host.sb'), str(binding.binary), '--strict-config', '--listen', 'stdio://'] + config_args(binding, root)
+    client = None
+    tid = turn_id = completion = None
+    runtime = dict(verified=False, model=profile.model, effort=profile.effort,
+                   execution_profile=profile.contract, guard_binary_sha256=binding.binary_sha256)
+    try:
+        broker.start()
+        client = original_module.load_transport()(args, cwd=root / 'input', env=env, stderr=root / 'host.stderr.log')
+        client.rpc('initialize', dict(clientInfo=dict(name='tm_guarded_sol', version='1'), capabilities=dict(experimentalApi=True)))
+        client.send(dict(method='initialized', params={}))
+        account = client.rpc('account/read', dict(refreshToken=False))
+        if account.get('account', {}).get('type') != 'chatgpt':
+            raise ValueError('signed_in_chatgpt_required')
+        del account
+        client.events.clear(); client.pending.clear()
+        thread = client.rpc('thread/start', dict(model=profile.model, ephemeral=True, approvalPolicy='never', environments=[],
+            dynamicTools=[original_module.SPEC], cwd=str(root / 'input'), runtimeWorkspaceRoots=[], experimentalRawEvents=False,
+            baseInstructions='Follow the supplied versioned public research contract. Only bounded tm_analysis computations are permitted. Tool outputs are not source authority. Return the required JSON.',
+            developerInstructions='The two public files are exact prompt and packet copies. Preserve all source-use restrictions.'))
+        tid = thread['thread']['id']
+        if thread['model'] != profile.model:
+            raise ValueError('returned_thread_model')
+        policy = dict(task=task, execution_profile=profile.contract, account=request['account'], stage=stage,
+            security=scope['security'], owner_sha256=digest(packet), prompt_sha256=digest(prompt.encode()), request_sha256=digest(request),
+            thread_id=tid, source_generation=scope['source_generation'], schema=wire_schema,
+            schema_binding={k: schema_binding[k] for k in ('adapter_version', 'canonical_schema_sha256', 'wire_schema_sha256', 'changed_paths')},
+            started_unix=int(time.time()), deadline_unix=int(deadline - 5), ledger=scope['ledger'])
+        write_once(root / 'policy.json', policy, 0o400)
+        write_once(root / 'policy.sha256', digest((root / 'policy.json').read_bytes()).encode(), 0o400)
+        turn = client.rpc('turn/start', dict(threadId=tid, environments=[], input=[dict(type='text', text=prompt)],
+                          effort=profile.effort, outputSchema=wire_schema), seconds=min(30, deadline-time.time()-10))
+        turn_id = turn['turn']['id']; broker.bind(tid, turn_id)
+        pending = list(client.pending); client.pending.clear(); completion = None
+        while time.time() < deadline - 10:
+            try:
+                message = pending.pop(0) if pending else client.receive(min(5, max(.01, deadline-time.time()-10)))
+            except queue.Empty:
+                continue
+            method = message.get('method')
+            if method == 'item/tool/call':
+                reply = broker.dispatch(message['params']); client.send(dict(id=message['id'], result=reply))
+            elif 'id' in message and method:
+                raise ValueError('unexpected_server_request')
+            elif method == 'turn/completed':
+                if message['params']['threadId'] != tid or message['params']['turn']['id'] != turn_id:
+                    raise ValueError('completion_binding')
+                completion = message['params']['turn']; break
+        if not completion or completion['status'] != 'completed':
+            write_once(out / 'TERMINAL_DIAGNOSTIC.json', terminal_diagnostic(completion))
+            raise ValueError('turn_not_completed_no_retry')
+        items = [e['message']['params']['item'] for e in client.events if e['direction'] == 'receive'
+                 and e['message'].get('method') == 'item/completed' and e['message']['params']['item'].get('type') == 'agentMessage']
+        raw = items[-1]['text'].encode()
+        write_once(out / 'MODEL_RAW.txt', raw)
+        if len(raw) > 131072:
+            raise ValueError('output_limit_no_truncation')
+        value = json.loads(raw)
+        rows = t.load(binding.root / 'inference-ledger.json')
+        rows = [r for r in rows if r['thread_id'] == tid]
+        if not rows or any(r['request_sha256'] != digest(request) or r['model'] != profile.model or r['effort'] != profile.effort for r in rows):
+            raise ValueError('guard_receipt_binding')
+        responses = [t.load(binding.root / ('response-' + r['wire_sha256'] + '.json')) for r in rows]
+        if not all(r['response_status'] == 200 and r['response_headers_received'] for r in responses) or not owner_check():
+            raise ValueError('authentic_response_and_live_owner_required')
+        runtime.update(verified=True, session=tid, guard_requests=rows, response_receipts=responses)
+        return value, runtime
+    finally:
+        try:
+            if client:
+                runtime['host_shutdown'] = client.close()
+        finally:
+            runtime['executor_shutdown'] = broker.close()
+            runtime['broker_receipts'] = broker.receipts
+            try:
+                diagnostics = error_observability(completion, list(client.events) if client else [],
+                    thread_id=tid, turn_id=turn_id, receipt_root=binding.root, observed_unix=time.time())
+                write_once(out / 'ERROR_OBSERVABILITY.json', diagnostics)
+                runtime['error_observability_sha256'] = digest(diagnostics)
+            except Exception as exc:
+                runtime['error_observability_persistence'] = 'FAILED'
+                runtime['error_observability_error_type'] = type(exc).__name__
+            write_once(out / 'HOST_TRANSPORT.json', runtime)
+
+
+def terminal_diagnostic(completion):
+    """Keep machine error codes, not arbitrary server messages or echoed input."""
+    error = (completion or {}).get('error') or {}
+    info = error.get('codexErrorInfo') if isinstance(error, dict) else None
+    # Exact rust-v0.155.1 enums; arbitrary identifier-looking strings can be secrets.
+    scalar_codes = {'contextWindowExceeded', 'sessionBudgetExceeded', 'usageLimitExceeded',
+        'rateLimitExceeded', 'serverOverloaded', 'cyberPolicy', 'misalignmentPolicyViolation',
+        'internalServerError', 'unauthorized', 'badRequest', 'threadRollbackFailed', 'sandboxError', 'other'}
+    http_codes = {'httpConnectionFailed', 'responseStreamConnectionFailed',
+                  'responseStreamDisconnected', 'responseTooManyFailedAttempts'}
+    safe_info = {}
+    if isinstance(info, dict) and len(info) == 1:
+        key, value = next(iter(info.items()))
+        if key in http_codes and isinstance(value, dict):
+            status = value.get('httpStatusCode')
+            safe_info[key] = {'httpStatusCode': status} if type(status) is int and 100 <= status <= 599 else {}
+        elif key == 'activeTurnNotSteerable':
+            safe_info[key] = {}
+    elif isinstance(info, str) and info in scalar_codes:
+        safe_info = info
+    status = (completion or {}).get('status')
+    return dict(status=status if status in ('failed', 'interrupted', 'completed') else 'unknown',
+                error_info=safe_info, error_sha256=digest(error), raw_message_retained=False, retry=False)
+
+
+def error_observability(completion, events, *, thread_id, turn_id, receipt_root, observed_unix):
+    """Bounded error projections only; the original event buffer stays in memory."""
+    observed = observed_unix if type(observed_unix) in (int, float) and math.isfinite(observed_unix) else None
+    def identity(value):
+        return digest(value.encode()) if isinstance(value, str) else None
+    records = []
+    total = 0
+    for index, event in enumerate(events):
+        if not isinstance(event, dict) or event.get('direction') != 'receive':
+            continue
+        message = event.get('message')
+        if not isinstance(message, dict) or message.get('method') not in ('error', 'turn/completed'):
+            continue
+        total += 1
+        if len(records) >= 64:
+            continue
+        params = message.get('params')
+        params = params if isinstance(params, dict) else {}
+        is_terminal = message['method'] == 'turn/completed'
+        turn = params.get('turn')
+        turn = turn if isinstance(turn, dict) else {}
+        error = turn.get('error') if is_terminal else params.get('error')
+        error = error if isinstance(error, dict) else {}
+        event_turn = turn.get('id') if is_terminal else params.get('turnId')
+        checked = terminal_diagnostic(dict(status=turn.get('status'), error=error))
+        records.append(dict(sequence=index, method=message['method'], observed_unix=observed,
+            event_timestamp='NOT_RECORDED_BY_ORIGINAL_TRANSPORT',
+            thread_id_sha256=identity(params.get('threadId')), turn_id_sha256=identity(event_turn),
+            scope_match=bool(thread_id and turn_id and params.get('threadId') == thread_id and event_turn == turn_id),
+            status=checked['status'], error_info=checked['error_info'], error_sha256=checked['error_sha256'],
+            error_present=bool(error), message_present=isinstance(error.get('message'), str),
+            additional_details_present=isinstance(error.get('additionalDetails'), str),
+            will_retry=params.get('willRetry') if type(params.get('willRetry')) is bool else None))
+    receipts = []
+    for path in sorted(Path(receipt_root).glob('response-*.json')):
+        if not re.fullmatch(r'response-[a-f0-9]{64}[.]json', path.name):
+            continue
+        if len(receipts) >= 12:
+            break
+        raw = plain(path).read_bytes()
+        if len(raw) > 8192:
+            raise ValueError('diagnostic_receipt_size')
+        value = json.loads(raw)
+        status = value.get('response_status')
+        receipts.append(dict(file=path.name, sha256=digest(raw),
+            response_status=status if type(status) is int and 100 <= status <= 599 else None))
+    bound = [r for r in records if r['scope_match']]
+    signatures = {digest(r['error_info']) for r in bound if r['error_info']}
+    statuses = {r['response_status'] for r in receipts if r['response_status'] is not None}
+    for row in bound:
+        if isinstance(row['error_info'], dict):
+            for value in row['error_info'].values():
+                if 'httpStatusCode' in value:
+                    statuses.add(value['httpStatusCode'])
+    terminal = terminal_diagnostic(completion)
+    terminal_event = next((r for r in reversed(bound) if r['method'] == 'turn/completed'), None)
+    disagreement = len(signatures) > 1 or len(statuses) > 1
+    if terminal_event and (terminal_event['status'], terminal_event['error_info']) != (terminal['status'], terminal['error_info']):
+        disagreement = True
+    if terminal['status'] == 'completed' and any(r['method'] == 'error' and r['error_present'] for r in bound):
+        disagreement = True
+    return dict(contract='SAFE_SOL_ERROR_OBSERVABILITY_V1', observed_unix=observed,
+        expected_thread_sha256=identity(thread_id), expected_turn_sha256=identity(turn_id),
+        events=records, event_count=total, omitted_events=max(0, total-len(records)),
+        terminal=terminal, receipt_references=receipts, multiple_sources_disagree=disagreement,
+        error_evidence_missing=not any(r['error_present'] for r in bound) and not bool((completion or {}).get('error')),
+        raw_text_retained=False, retry_authority=False, source_or_stage_authority=False)
