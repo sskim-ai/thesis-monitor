@@ -1,0 +1,28 @@
+{
+  "base_tag": "rust-v0.155.1",
+  "base_guard_sha256": "96f72fd24f7814eef323fbcafef23ca96d132ed9c8c8ba90ee5d9eaa56216396",
+  "base_module_sha256": "f2ccfaa56e3fa24be5c1dc0bc8c23cee1761eddd8268d18b230c041af46dc65b",
+  "guard_sha256": "bd59513aa63207a91378464f0f6d37b82fe661fabf4790e62df26c5e2b557736",
+  "module_sha256": "5e166ad393a6076c626ff7743c71dc4ea29d719eb159d47821dfea7857a14bd4",
+  "Cargo_lock_sha256": "df88a71b82843c6f092610fb07589f7a40032ddc25f50718354546ca541eb9b7",
+  "binary_sha256": "434ddb481e7b0dd1d0e3b5a6dc5a39ba4a562c64cad0b0b96478dd06eefc89fc",
+  "patch_sha256": "23280b2e06ee3ee2c96e4f5da9ca9cf8ac31b4e11f11ba44fc5f542d44862274",
+  "tests": {
+    "exit": 0,
+    "seconds": 2.513710042461753,
+    "stdout_sha256": "af9eb298c712715f1fcbe325e88af4d4431ccfca03a7c20875ce2acbd4a9e98a",
+    "stderr_sha256": "21eb02d34260956ac99841eb2677ddf524c9a3cbf7051cc33ee36e790d63e011"
+  },
+  "build": {
+    "exit": 0,
+    "seconds": 87.2803624579683,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "f7a978e1cf913c3510d52c9372137809edd7cd4fe0a95fedfa929c3b771136a6"
+  },
+  "offline": true,
+  "profile": "SOL_61_MEDIUM_EXECUTION_V1",
+  "allowed_stage": "BLIND",
+  "maximum_contexts": 1,
+  "retries": 0,
+  "ADJ": 0
+}

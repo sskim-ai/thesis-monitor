@@ -15,10 +15,20 @@ import sys
 import time
 import types
 
-from app.services.vnext_execution_profile import SOL_HIGH_V1
+from app.services.vnext_execution_profile import SOL_HIGH_V1, SOL_MEDIUM_V1
+from app.services import vnext_balanced_stage_review as stages
 
 TASK = 'C21G_SOL_HIGH_GUARDED_HOST_COMPATIBILITY_AND_SINGLE_NO_SEND_CANARY'
 VERSION = 'UNIFIED_JUDGMENT_V3_AI_OWNED_SOL_HIGH_PROMPT_V1'
+MEDIUM_TASK = 'SOL_MEDIUM_SINGLE_BLIND_20261107'
+
+
+def profile_contract(name):
+    if name == SOL_HIGH_V1.contract:
+        return SOL_HIGH_V1, TASK, VERSION
+    if name == SOL_MEDIUM_V1.contract:
+        return SOL_MEDIUM_V1, MEDIUM_TASK, stages.UNIFIED_AI_V3_SOL_MEDIUM
+    raise ValueError('exact_sol_profile_required')
 
 
 def digest(data):
@@ -57,8 +67,10 @@ class Binding:
     root: Path
     scope: Path
     scope_sha256: str
+    execution_profile: str = SOL_HIGH_V1.contract
 
     def verify(self):
+        profile, task, _ = profile_contract(self.execution_profile)
         for path, expected in [(self.binary, self.binary_sha256), (self.catalog, self.catalog_sha256), (self.scope, self.scope_sha256)]:
             if digest(plain(path).read_bytes()) != expected:
                 raise ValueError('runtime_asset_pin')
@@ -69,13 +81,13 @@ class Binding:
             if digest(plain(self.legacy.parent / name).read_bytes()) != expected:
                 raise ValueError('original_helper_changed')
         models = json.loads(self.catalog.read_bytes())['models']
-        if len(models) != 1 or models[0]['slug'] != SOL_HIGH_V1.model:
+        if len(models) != 1 or models[0]['slug'] != profile.model:
             raise ValueError('exact_catalog_model')
-        if SOL_HIGH_V1.effort not in [x['effort'] for x in models[0]['supported_reasoning_levels']]:
+        if profile.effort not in [x['effort'] for x in models[0]['supported_reasoning_levels']]:
             raise ValueError('catalog_effort')
         scope = json.loads(self.scope.read_bytes())
         if (scope['task'], scope['execution_profile'], scope['root'], scope['ledger']) != (
-            TASK, SOL_HIGH_V1.contract, str(self.root), str(self.root / 'inference-ledger.json')):
+            task, profile.contract, str(self.root), str(self.root / 'inference-ledger.json')):
             raise ValueError('exact_scope_required')
         if self.scope.stat().st_mode & 0o222:
             raise ValueError('scope_must_be_read_only')
@@ -83,9 +95,12 @@ class Binding:
 
 
 def require_request(request, prompt, schema, packet, scope):
-    expected = dict(model=SOL_HIGH_V1.model, effort=SOL_HIGH_V1.effort,
-                    execution_profile=SOL_HIGH_V1.contract, prompt_version=VERSION,
-                    contract='UNIFIED_STAGE_REVIEW_V3_SOL_61_HIGH_V1',
+    profile, task, version = profile_contract(scope.get('execution_profile', SOL_HIGH_V1.contract))
+    if profile == SOL_MEDIUM_V1 and (scope.get('task') != task or request.get('stage') != 'BLIND'):
+        raise ValueError('medium_fresh_blind_scope_required')
+    expected = dict(model=profile.model, effort=profile.effort,
+                    execution_profile=profile.contract, prompt_version=version,
+                    contract=stages.execution_contract(version),
                     timeout_seconds=600, input_bytes=393216, output_bytes=131072, retries=0, send=False)
     if any(request.get(k) != v for k, v in expected.items()):
         raise ValueError('exact_sol_stage_contract')
@@ -130,7 +145,7 @@ def original(binding):
                     check_closure(value)
         check_closure(module)
         module.t.BASE = binding.root
-        module.t.TASK_ID = TASK
+        module.t.TASK_ID = profile_contract(binding.execution_profile)[1]
         return module
     finally:
         sys.path.pop(0)
@@ -140,7 +155,8 @@ def original(binding):
 
 
 def config_args(binding, stage_root):
-    values = dict(model=SOL_HIGH_V1.model, model_reasoning_effort=SOL_HIGH_V1.effort,
+    profile, _, _ = profile_contract(binding.execution_profile)
+    values = dict(model=profile.model, model_reasoning_effort=profile.effort,
                   approval_policy='never', sandbox_mode='read-only', web_search='disabled',
                   model_catalog_json=str(binding.catalog), sqlite_home=str(stage_root / 'state'),
                   log_dir=str(stage_root / 'logs'))
@@ -186,6 +202,7 @@ def host_profile(binding, stage_root, *, authenticated=False):
 def execute(binding, *, request, prompt, schema, packet, owner_check, deadline, out):
     """Original broker/guard receipts; the caller still uses the original StageController."""
     scope = binding.verify()
+    profile, task, _ = profile_contract(binding.execution_profile)
     require_request(request, prompt, schema, packet, scope)
     if not callable(owner_check) or not owner_check() or not 0 < deadline - time.time() <= 600:
         raise ValueError('live_owner_deadline_required')
@@ -210,8 +227,8 @@ def execute(binding, *, request, prompt, schema, packet, owner_check, deadline, 
                TM_SOL_TASK_SCOPE=str(binding.scope), TM_SOL_TASK_SCOPE_SHA256=binding.scope_sha256, TM_P1_POLICY_AUDIT='1')
     args = ['/usr/bin/sandbox-exec', '-f', str(root / 'host.sb'), str(binding.binary), '--listen', 'stdio://'] + config_args(binding, root)
     client = None
-    runtime = dict(verified=False, model=SOL_HIGH_V1.model, effort=SOL_HIGH_V1.effort,
-                   execution_profile=SOL_HIGH_V1.contract, guard_binary_sha256=binding.binary_sha256)
+    runtime = dict(verified=False, model=profile.model, effort=profile.effort,
+                   execution_profile=profile.contract, guard_binary_sha256=binding.binary_sha256)
     try:
         broker.start()
         client = original_module.load_transport()(args, cwd=root / 'input', env=env, stderr=root / 'host.stderr.log')
@@ -222,14 +239,14 @@ def execute(binding, *, request, prompt, schema, packet, owner_check, deadline, 
             raise ValueError('signed_in_chatgpt_required')
         del account
         client.events.clear(); client.pending.clear()
-        thread = client.rpc('thread/start', dict(model=SOL_HIGH_V1.model, ephemeral=True, approvalPolicy='never', environments=[],
+        thread = client.rpc('thread/start', dict(model=profile.model, ephemeral=True, approvalPolicy='never', environments=[],
             dynamicTools=[original_module.SPEC], cwd=str(root / 'input'), runtimeWorkspaceRoots=[], experimentalRawEvents=False,
             baseInstructions='Follow the supplied versioned public research contract. Only bounded tm_analysis computations are permitted. Tool outputs are not source authority. Return the required JSON.',
             developerInstructions='The two public files are exact prompt and packet copies. Preserve all source-use restrictions.'))
         tid = thread['thread']['id']
-        if thread['model'] != SOL_HIGH_V1.model:
+        if thread['model'] != profile.model:
             raise ValueError('returned_thread_model')
-        policy = dict(task=TASK, execution_profile=SOL_HIGH_V1.contract, account=request['account'], stage=stage,
+        policy = dict(task=task, execution_profile=profile.contract, account=request['account'], stage=stage,
             security=scope['security'], owner_sha256=digest(packet), prompt_sha256=digest(prompt.encode()), request_sha256=digest(request),
             thread_id=tid, source_generation=scope['source_generation'], schema=wire_schema,
             schema_binding={k: schema_binding[k] for k in ('adapter_version', 'canonical_schema_sha256', 'wire_schema_sha256', 'changed_paths')},
@@ -237,7 +254,7 @@ def execute(binding, *, request, prompt, schema, packet, owner_check, deadline, 
         write_once(root / 'policy.json', policy, 0o400)
         write_once(root / 'policy.sha256', digest((root / 'policy.json').read_bytes()).encode(), 0o400)
         turn = client.rpc('turn/start', dict(threadId=tid, environments=[], input=[dict(type='text', text=prompt)],
-                          effort=SOL_HIGH_V1.effort, outputSchema=wire_schema), seconds=min(30, deadline-time.time()-10))
+                          effort=profile.effort, outputSchema=wire_schema), seconds=min(30, deadline-time.time()-10))
         turn_id = turn['turn']['id']; broker.bind(tid, turn_id)
         pending = list(client.pending); client.pending.clear(); completion = None
         while time.time() < deadline - 10:
@@ -255,6 +272,7 @@ def execute(binding, *, request, prompt, schema, packet, owner_check, deadline, 
                     raise ValueError('completion_binding')
                 completion = message['params']['turn']; break
         if not completion or completion['status'] != 'completed':
+            write_once(out / 'TERMINAL_DIAGNOSTIC.json', terminal_diagnostic(completion))
             raise ValueError('turn_not_completed_no_retry')
         items = [e['message']['params']['item'] for e in client.events if e['direction'] == 'receive'
                  and e['message'].get('method') == 'item/completed' and e['message']['params']['item'].get('type') == 'agentMessage']
@@ -265,7 +283,7 @@ def execute(binding, *, request, prompt, schema, packet, owner_check, deadline, 
         value = json.loads(raw)
         rows = t.load(binding.root / 'inference-ledger.json')
         rows = [r for r in rows if r['thread_id'] == tid]
-        if not rows or any(r['request_sha256'] != digest(request) or r['model'] != SOL_HIGH_V1.model or r['effort'] != SOL_HIGH_V1.effort for r in rows):
+        if not rows or any(r['request_sha256'] != digest(request) or r['model'] != profile.model or r['effort'] != profile.effort for r in rows):
             raise ValueError('guard_receipt_binding')
         responses = [t.load(binding.root / ('response-' + r['wire_sha256'] + '.json')) for r in rows]
         if not all(r['response_status'] == 200 and r['response_headers_received'] for r in responses) or not owner_check():
@@ -278,3 +296,23 @@ def execute(binding, *, request, prompt, schema, packet, owner_check, deadline, 
         runtime['executor_shutdown'] = broker.close()
         runtime['broker_receipts'] = broker.receipts
         write_once(out / 'HOST_TRANSPORT.json', runtime)
+
+
+def terminal_diagnostic(completion):
+    """Keep machine error codes, not arbitrary server messages or echoed input."""
+    error = (completion or {}).get('error') or {}
+    info = error.get('codexErrorInfo') if isinstance(error, dict) else None
+    safe_info = {}
+    if isinstance(info, dict):
+        for key, value in info.items():
+            if re.fullmatch(r'[a-zA-Z][a-zA-Z0-9_]{0,63}', key):
+                if value is None or type(value) in (bool, int):
+                    safe_info[key] = value
+                elif isinstance(value, dict):
+                    safe_info[key] = {k: v for k, v in value.items()
+                                      if k in ('httpStatusCode', 'statusCode') and type(v) is int}
+    elif isinstance(info, str) and re.fullmatch(r'[a-zA-Z][a-zA-Z0-9_]{0,63}', info):
+        safe_info = info
+    status = (completion or {}).get('status')
+    return dict(status=status if status in ('failed', 'interrupted', 'completed') else 'unknown',
+                error_info=safe_info, error_sha256=digest(error), raw_message_retained=False, retry=False)
