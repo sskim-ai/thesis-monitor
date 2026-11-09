@@ -30,13 +30,40 @@ def read_history(root):
     return ledger,entries
 
 
+def recovered_plan(path,include_conditional=False):
+    plan=json.loads(Path(path).read_text())
+    assert plan['new_GET_max']==34 and plan['new_physical_max']==500
+    batches=plan['batches'];keys=[(b['ticker'],r['timeframe']) for b in batches for r in b['requests']]
+    assert len(keys)==33 and len(set(keys))==33 and all(b['GET_max']==3 and b['physical_max']<=44 for b in batches)
+    assert all([(r['timeframe'],r['count']) for r in b['requests']]==[('daily',1000),('weekly',700),('monthly',300)] for b in batches)
+    previous=plan['prior_requested_role_keys']
+    assert not set(keys)&{tuple(k) for k in previous}
+    if include_conditional:batches=batches+[plan['conditional_IBM_monthly']]
+    return batches
+
+
+def require_recovered_lane():
+    state=Path.home()/'Library/Application Support/ThesisMonitor/KiwoomGlobalLane/state.json'
+    if state.is_symlink():raise ValueError('Lane_state_not_plain')
+    value=json.loads(state.read_text())
+    if value.get('halted') is not False or value.get('in_flight') is not False:
+        raise ValueError('GLOBAL_LANE_STOP_NO_GET_SENT')
+
+
 async def execute(args):
     import httpx
     from app.services.ohlcv_client import OhlcvClient
     from app.services.dated_technical_research import fetch_daily,safe_endpoint,write_new
     from app.services.dated_multiframe_research import fetch_wm,assemble
     from app.services.market_session import market_session_for_ticker
-    batches=prepare_plan(args.plan);root=Path(args.output)
+    if args.recovered_stop_plan:
+        if args.continue_other_stocks:raise ValueError('new_budget_cannot_reuse_old_continuation')
+        require_recovered_lane()
+        batches=recovered_plan(args.plan,args.include_conditional_ibm)
+    else:batches=prepare_plan(args.plan)
+    GET_max=34 if args.recovered_stop_plan else 60
+    physical_max=500 if args.recovered_stop_plan else 655
+    root=Path(args.output)
     prior=None;old_roles={}
     if args.continue_other_stocks:
         previous=Path(args.continue_other_stocks)
@@ -60,7 +87,7 @@ async def execute(args):
     feature=r.json() if r.status_code==200 else {}
     if feature.get('GET_max')!=4 or feature.get('physical_max')!=44 or feature.get('retry')!=0:
         raise ValueError('existing_service_cost_scope_mismatch_STOP')
-    ledger=dict(status='RUNNING',GET_max=60,physical_max=655,GETs=0,physical_HTTP=0,
+    ledger=dict(status='RUNNING',GET_max=GET_max,physical_max=physical_max,GETs=0,physical_HTTP=0,
         physical_count_confirmed=True,model=0,DB=0,send=0,retry=0,service_restarts=0,securities=[])
     if prior:
         ledger.update(GETs=prior['GETs'],physical_HTTP=prior['physical_HTTP'],
@@ -70,7 +97,8 @@ async def execute(args):
     instance=None
     try:
         for b in batches:
-            if ledger['GETs']+b['GET_max']>60 or ledger['physical_HTTP']+b['physical_max']>655:
+            if b.get('conditional_after_33') and ledger['GETs']!=33:continue
+            if ledger['GETs']+b['GET_max']>GET_max or ledger['physical_HTTP']+b['physical_max']>physical_max:
                 ledger['status']='NOT_FETCHED_BUDGET';break
             symbol,market=b['ticker'],b['market'];stockroot=root/(market+'-'+symbol);stockroot.mkdir()
             run_id='c21z-'+uuid.uuid4().hex;observed=datetime.now(timezone.utc)
@@ -83,7 +111,7 @@ async def execute(args):
             quality_failures=[]
             for request in b['requests']:
                 tf=request['timeframe']
-                remaining=min(44-run_total,655-ledger['physical_HTTP'])
+                remaining=min(44-run_total,physical_max-ledger['physical_HTTP'])
                 if remaining<1:raise ValueError('physical_budget_exhausted_STOP')
                 output=stockroot/tf;ledger['GETs']+=1;failure=None
                 try:
@@ -111,9 +139,13 @@ async def execute(args):
                 stock['receipts'][-1]['physical_delta']=delta
                 print(json.dumps(dict(symbol=symbol,timeframe=tf,GETs=ledger['GETs'],physical_HTTP=ledger['physical_HTTP'],status=receipt.get('status'))),flush=True)
                 if failure:
-                    if isinstance(failure,ValueError) and str(failure) in {'invalid_OHLCV_no_refetch','invalid_historical_OHLCV'}:
+                    if isinstance(failure,ValueError) and str(failure) in {'invalid_OHLCV_no_refetch','invalid_historical_OHLCV','not_isolated_price_relation_error','recent_nonlatest_error_not_admitted','remaining_source_invalid'}:
                         quality_failures.append(dict(timeframe=tf,reason=str(failure),original_preserved=True))
                         if tf=='daily':daily_root=None
+                        continue
+                    diagnostic=receipt.get('service_diagnostic',{})
+                    if diagnostic.get('global_stop') is False and 500<=diagnostic.get('upstream_status',0)<=599:
+                        quality_failures.append(dict(timeframe=tf,reason='received_upstream_5xx_no_retry',diagnostic=diagnostic))
                         continue
                     raise failure
             try:
@@ -141,7 +173,7 @@ async def execute(args):
             members={str(p.relative_to(stockroot)):dict(bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest()) for p in stockroot.rglob('*') if p.is_file()}
             write_new(stockroot/'STOCK_SEAL.json',json.dumps(dict(stock=stock,files=members),ensure_ascii=False,indent=2).encode())
             (root/'PROGRESS.json').write_text(json.dumps(ledger,ensure_ascii=False,indent=2))
-        else:ledger['status']='ALL_REMAINING_ROLES_ATTEMPTED_QUALITY_FAILURES_PRESERVED' if prior else 'LIVE_20_STOCKS_DWM_COLLECTED_NO_SEND'
+        else:ledger['status']='C22A_DELTA_SCOPE_ATTEMPTED_NO_SEND' if args.recovered_stop_plan else 'ALL_REMAINING_ROLES_ATTEMPTED_QUALITY_FAILURES_PRESERVED' if prior else 'LIVE_20_STOCKS_DWM_COLLECTED_NO_SEND'
     except Exception as exc:
         ledger['status']='FAILED_NO_RETRY_STOP';ledger['failure_type']=type(exc).__name__
         detail=str(exc)
@@ -157,9 +189,12 @@ def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--plan',required=True)
     p.add_argument('--live',action='store_true');p.add_argument('--output',required=True)
     p.add_argument('--continue-other-stocks',help='Explicit user-approved continuation after source-quality STOP only')
+    p.add_argument('--recovered-stop-plan',action='store_true',help='Only after explicit operational approval and formal existing-Lane recovery')
+    p.add_argument('--include-conditional-ibm',action='store_true')
     a=p.parse_args()
     if not a.live:
-        print(json.dumps(dict(mode='PLAN_ONLY_NO_HTTP',batches=prepare_plan(a.plan),GET_max=60,physical_max=655,retry=0,model=0,DB=0,send=0)));return
+        batches=recovered_plan(a.plan,a.include_conditional_ibm) if a.recovered_stop_plan else prepare_plan(a.plan)
+        print(json.dumps(dict(mode='PLAN_ONLY_NO_HTTP',batches=batches,GET_max=34 if a.recovered_stop_plan else 60,physical_max=500 if a.recovered_stop_plan else 655,retry=0,model=0,DB=0,send=0)));return
     try:asyncio.run(execute(a))
     except Exception as exc:
         detail=str(exc);safe=detail if isinstance(exc,ValueError) and detail.replace('_','').isalnum() else type(exc).__name__

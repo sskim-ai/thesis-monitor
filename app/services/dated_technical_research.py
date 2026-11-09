@@ -23,6 +23,19 @@ def write_new(path,raw):
     with path.open('xb') as f:f.write(raw)
 
 
+def safe_service_diagnostic(response):
+    try:value=response.json().get('diagnostic')
+    except (ValueError,AttributeError):return None
+    if not isinstance(value,dict):return None
+    import re
+    if (value.get('phase') not in {'pre_send','transport','http_status','json_decode','provider_code'}
+            or type(value.get('global_stop')) is not bool
+            or not re.fullmatch('[A-Za-z0-9_]{1,64}',str(value.get('error_type','')))
+            or not re.fullmatch('[A-Za-z0-9_]{1,32}',str(value.get('api_id','')))):
+        return None
+    return {k:value.get(k) for k in ['phase','error_type','upstream_status','api_id','physical_count','global_stop']}
+
+
 async def fetch_daily(client,*,symbol,market,history_through,observed_at,output,
                       run_id,physical_remaining=44,count=300,require_budget=True):
     if (market not in {'kr','us'} or symbol.isdigit()!=(market=='kr')
@@ -54,6 +67,8 @@ async def fetch_daily(client,*,symbol,market,history_through,observed_at,output,
             response=await h.get('/ohlcv',params=params,headers=headers)
         raw=response.content;write_new(output/'response.body',raw)
         receipt.update(body_sha256=hashlib.sha256(raw).hexdigest(),bytes=len(raw),HTTP_status=response.status_code)
+        diagnostic=safe_service_diagnostic(response)
+        if diagnostic:receipt['service_diagnostic']=diagnostic
         if response.headers.get('X-Research-Budget-Protocol')=='simple-research-budget-v1':
             receipt['physical_cumulative_count']=int(response.headers.get('X-Research-Physical-Count','0'))
             receipt['budget_instance']=response.headers.get('X-Research-Budget-Instance')
@@ -68,11 +83,16 @@ async def fetch_daily(client,*,symbol,market,history_through,observed_at,output,
         if set(payload.get('periods',{}))!={'daily'}:raise ValueError('daily_response_required')
         bars,supply,_=client._decode_period_payload(payload,ticker=symbol,period='daily',adjusted=True,
             response_body_sha256=receipt['body_sha256'])
+        from app.services.dated_bar_admission import admit_rows
+        original_returned=len(bars)
+        original_dates=[date.fromisoformat(b['date']) for b in bars]
+        bars,qa=admit_rows(bars,ticker=symbol,market=market,timeframe='daily',cutoff=state.latest_completed_regular_session_date)
+        if qa:write_new(output/'DEBUG_SOURCE_EXCLUSION.json',json.dumps(qa,ensure_ascii=False,indent=2).encode())
         inspection=inspect_normalized_ohlcv_rows(bars,timeframe='daily')
         if not inspection.valid:raise ValueError('invalid_OHLCV_no_refetch')
         observed_day=observed_at.astimezone(__import__('zoneinfo').ZoneInfo(state.timezone_name)).date()
         dates=[date.fromisoformat(b['date']) for b in bars]
-        plausible_dates=[d for d in dates if d<=observed_day]
+        plausible_dates=[d for d in original_dates if d<=observed_day]
         latest=max(plausible_dates) if plausible_dates else None
         # Dated historical chart evidence, not a FINAL flag/current close owner.
         # Only a row followed by a later plausible chart row can be consumed.
@@ -84,7 +104,7 @@ async def fetch_daily(client,*,symbol,market,history_through,observed_at,output,
                 and marker not in {'PARTIAL','PROVISIONAL','OPEN','LIVE','UNCONFIRMED','UNKNOWN','INVALID'})
         usable=[b for b in bars if historical(b,'daily',state.latest_completed_regular_session_date)]
         write_new(output/'valid-historical-bars.json',json.dumps(usable,ensure_ascii=False,indent=2).encode())
-        receipt.update(returned_count=len(bars),usable_count=len(usable),excluded_count=len(bars)-len(usable),
+        receipt.update(returned_count=original_returned,usable_count=len(usable),excluded_count=original_returned-len(usable),
             last_historical_session=usable[-1]['date'] if usable else None,
             completion_basis='later_chart_row_dated_historical_only',latest_raw_date=bars[-1]['date'] if bars else None)
         if not usable:raise ValueError('no_proven_historical_daily_rows')

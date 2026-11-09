@@ -7,7 +7,7 @@ import hashlib,json
 from pathlib import Path
 import httpx
 from app.schemas.thesis import PriceContext
-from app.services.dated_technical_research import safe_endpoint,write_new
+from app.services.dated_technical_research import safe_endpoint,write_new,safe_service_diagnostic
 from app.services.market_session import market_session_for_ticker,_exchange_calendar
 from app.services.ohlcv_provider_integrity_service import inspect_normalized_ohlcv_rows
 from app.services.provider_native_technical import MAX_COUNTS,FORMULAS
@@ -32,6 +32,10 @@ def period_end(label,timeframe,market):
 
 
 def select_historical(bars,*,timeframe,market,cutoff):
+    if bars:
+        from app.services.dated_bar_admission import admit_rows
+        ticker=bars[0].get('_native_capture',{}).get('code')
+        bars,_=admit_rows(bars,ticker=ticker,market=market,timeframe=timeframe,cutoff=cutoff)
     inspection=inspect_normalized_ohlcv_rows(bars,timeframe=timeframe)
     if bars and not inspection.valid:raise ValueError('invalid_historical_OHLCV')
     labels=[date.fromisoformat(b['date']) for b in bars]
@@ -69,6 +73,8 @@ async def fetch_wm(client,*,symbol,market,timeframe,observed_at,analysis_cutoff,
         receipt.update(HTTP_status=response.status_code,body_sha256=hashlib.sha256(raw).hexdigest(),bytes=len(raw),
             physical_cumulative_count=int(response.headers.get('X-Research-Physical-Count','-1')),
             budget_instance=response.headers.get('X-Research-Budget-Instance'))
+        diagnostic=safe_service_diagnostic(response)
+        if diagnostic:receipt['service_diagnostic']=diagnostic
         if response.headers.get('X-Research-Budget-Protocol')!='simple-research-budget-v1':raise ValueError('cost_meter_missing')
         if response.status_code!=200:raise ValueError('HTTP_error_STOP_no_retry')
         if len(raw)>8*1024**2:raise ValueError('response_too_large')
@@ -76,10 +82,14 @@ async def fetch_wm(client,*,symbol,market,timeframe,observed_at,analysis_cutoff,
         if payload.get('meta',{}).get('provider')!='kiwoom' or set(payload.get('periods',{}))!={timeframe}:raise ValueError('response_provider_or_period_mismatch')
         bars,_,_=client._decode_period_payload(payload,ticker=symbol,period=timeframe,adjusted=True,
             response_body_sha256=receipt['body_sha256'])
+        from app.services.dated_bar_admission import admit_rows
+        original_returned=len(bars);original_last_label=bars[-1]['date'] if bars else None
+        bars,qa=admit_rows(bars,ticker=symbol,market=market,timeframe=timeframe,cutoff=analysis_cutoff)
+        if qa:write_new(output/'DEBUG_SOURCE_EXCLUSION.json',json.dumps(qa,ensure_ascii=False,indent=2).encode())
         used,excluded,ends=select_historical(bars,timeframe=timeframe,market=market,cutoff=analysis_cutoff)
         write_new(output/'valid-historical-bars.json',json.dumps(used,ensure_ascii=False,indent=2).encode())
-        receipt.update(returned=len(bars),used=len(used),excluded=excluded,
-            latest_original_label=bars[-1]['date'] if bars else None,
+        receipt.update(returned=original_returned,used=len(used),excluded=excluded,
+            latest_original_label=original_last_label,
             last_used_original_label=used[-1]['date'] if used else None,
             last_used_period_end=ends[used[-1]['date']] if used else None,
             period_end_by_original_label=ends,status='DATED_WM_RECEIVED' if used else 'TIMEFRAME_UNAVAILABLE')
@@ -99,10 +109,16 @@ def assemble(client,*,daily_root,wm_sources,symbol,market,observed_at,output):
     cutoff=date.fromisoformat(receipt['actual_historical_as_of'])
     daily,_,_=client._decode_period_payload(json.loads(raw),ticker=symbol,period='daily',adjusted=True,
         response_body_sha256=receipt['body_sha256'])
+    from app.services.dated_bar_admission import admit_rows
+    snapshot_cutoff=date.fromisoformat(receipt.get('latest_completed_session') or receipt['actual_historical_as_of'])
+    daily,daily_qa=admit_rows(daily,ticker=symbol,market=market,timeframe='daily',cutoff=snapshot_cutoff)
+    internal_qa=[daily_qa] if daily_qa else []
     chosen=json.loads((daily_root/'valid-historical-bars.json').read_text())
     if not all(row in daily for row in chosen):raise ValueError('daily_selection_changed')
     approved={'daily':{r['date'] for r in chosen}};periods={'daily':daily};selection={}
     for tf,(bars,wm_receipt) in wm_sources.items():
+        bars,qa=admit_rows(bars,ticker=symbol,market=market,timeframe=tf,cutoff=snapshot_cutoff)
+        if qa:internal_qa.append(qa)
         used,excluded,ends=select_historical(bars,timeframe=tf,market=market,cutoff=cutoff)
         approved[tf]={r['date'] for r in used};periods[tf]=bars
         selection[tf]=dict(original_label=used[-1]['date'] if used else None,
@@ -133,6 +149,7 @@ def assemble(client,*,daily_root,wm_sources,symbol,market,observed_at,output):
     output=Path(output)
     if output.exists():raise ValueError('new_combined_output_required')
     output.mkdir(parents=True)
+    if internal_qa:write_new(output/'DEBUG_SOURCE_EXCLUSIONS.json',json.dumps(internal_qa,ensure_ascii=False,indent=2).encode())
     write_new(output/'TECHNICAL_MODEL_INPUT.json',json.dumps(prompt,ensure_ascii=False,indent=2).encode())
     write_new(output/'NO_SEND.json',json.dumps(result,ensure_ascii=False,indent=2).encode())
     write_new(output/'NO_SEND.md',('DATED D/W/M / NO-SEND\nDaily historical as-of: '+cutoff.isoformat()
