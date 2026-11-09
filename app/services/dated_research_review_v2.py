@@ -7,7 +7,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
-from app.services.dated_research_model import encoded, digest, reference_catalog, build_prompt
+from app.services.dated_research_model import encoded, digest, reference_catalog, build_prompt, _Citation
 from app.services.kr_financial_lineage_service import opendart_field_lineage
 
 CONTRACT = 'DATED_RESEARCH_REVIEW_V2_OFFLINE'
@@ -56,6 +56,51 @@ def temporal_record(fact, *, cutoff, prepared_at, mode, available_at_proven=None
         direction_anchor_temporally_eligible=eligible, original_owner_grants_unchanged=True,
         caveat=('POST_CUTOFF_OR_AVAILABILITY_UNPROVEN_NOT_A_PIT_ANCHOR' if not pit else 'PIT_AVAILABLE')
             if mode == 'POINT_IN_TIME' else 'LATER_INFORMATION_EXPLICIT_RETROSPECTIVE_NOT_BACKDATED')
+
+
+def source_bound_temporal(view, ref, *, mode, prepared_at):
+    """Derive eligibility from the hash-bound source view, never caller eligibility flags."""
+    rows = [r for r in view['valuation'] if r['source_locator'] == ref]
+    if len(rows) != 1:
+        raise ValueError('valuation_locator_not_unique')
+    row = rows[0]; fact = row['original_fact']
+    if number(row['value']) != number(fact.get('exact_value',fact['value'])) or row['metric'] != fact['metric']:
+        raise ValueError('valuation_value_or_metric_drift')
+    for key in ('ticker', 'requested_security_id', 'returned_security_id'):
+        if fact.get(key) is not None and fact[key] != view['ticker']:
+            raise ValueError('valuation_security_drift')
+    security_ids = {r['original_fields'].get('canonical_security_id') for r in view['financial_observations']}
+    security_ids.discard(None)
+    if fact.get('canonical_security_id') and security_ids and fact['canonical_security_id'] not in security_ids:
+        raise ValueError('valuation_canonical_security_drift')
+    locator = json.loads(ref)
+    if (locator.get('receipt') != fact.get('source_receipt_sha256') or
+            locator.get('field') != (fact.get('provider_field') or fact['metric'])):
+        raise ValueError('valuation_locator_receipt_drift')
+    available = None
+    receipt = view.get('capture_receipts', {}).get(fact.get('source_receipt_sha256'))
+    if receipt is not None:
+        if (digest(encoded(receipt)) != fact.get('source_receipt_sha256') or
+                receipt.get('raw_sha256') != fact.get('raw_sha256') or not fact.get('raw_sha256') or
+                (receipt.get('ticker') is not None and receipt['ticker'] != view['ticker'])):
+            raise ValueError('capture_receipt_binding_mismatch')
+        captured = next((receipt.get(k) for k in ('retrieved_at','finished_at','collected_at','captured_at') if receipt.get(k)),None)
+        if captured:
+            if instant(captured) != instant(fact['retrieval_timestamp']):
+                raise ValueError('capture_receipt_time_conflict')
+            available = captured
+    record = temporal_record(fact, cutoff=view['as_of'], prepared_at=prepared_at, mode=mode, available_at_proven=available)
+    nested = json.loads(fact['basis']) if isinstance(fact.get('basis'),str) and fact['basis'].startswith('{') else {}
+    if (fact.get('reference_price_as_of') and nested.get('price',{}).get('session') and
+            fact['reference_price_as_of'] != nested['price']['session']):
+        raise ValueError('valuation_price_session_conflict')
+    for key in ('issuer_estimate_vintage', 'reference_price_as_of'):
+        if record[key] and date.fromisoformat(str(record[key])[:10]) > instant(record['retrieved_at']).date():
+            raise ValueError('valuation_future_vintage_or_price_session')
+    record.update(source_fact_sha256=digest(encoded(fact)), source_locator=ref,
+        source_receipt_sha256=fact.get('source_receipt_sha256'), raw_sha256=fact.get('raw_sha256'),
+        original_use_limits={k:deepcopy(fact.get(k)) for k in ('overall_direction_use','analysis_scope','caution','caveats')})
+    return record
 
 
 def replay_occurrence(raw, receipt, request, lineage):
@@ -162,6 +207,17 @@ def comparison_semantics(fields):
         return UNKNOWN
 
 
+def comparison_period_detail(fields):
+    compatible = comparison_semantics(fields)
+    result = dict(compatible=compatible, kind='UNVERIFIED', value_adjustment=None)
+    if compatible is True:
+        lengths = [(date.fromisoformat(fields[end])-date.fromisoformat(fields[start])).days+1
+            for start,end in (('period_start','period_end'),('prior_period_start','prior_period_end'))]
+        result.update(kind='EQUAL_DURATION' if lengths[0] == lengths[1] else
+            'ISSUER_DECLARED_53_52_WEEK_COMPARABLE_WITH_CAVEAT', current_days=lengths[0], prior_days=lengths[1])
+    return result
+
+
 def operating_margin(revenue, operating_income):
     keys = ('issuer_id', 'statement_basis', 'period_start', 'period_end', 'period_type', 'currency', 'unit', 'unit_scale')
     for row in (revenue, operating_income):
@@ -196,6 +252,7 @@ class Axis(_Strict):
     unknown: list[str]
     as_of: str
     temporal_limitations: list[str]
+    claim_role: Literal['DATED_OBSERVATION','ECONOMIC_HYPOTHESIS','VERIFIED_CAUSAL_FACT','ENTRY_TIMING_CONTEXT','UNKNOWN'] = 'UNKNOWN'
 
 
 class ResearchSplit(_Strict):
@@ -209,6 +266,7 @@ class ResearchSplit(_Strict):
     thesis_comparison: Literal['NOT_COMPARED_TO_REGISTERED_THESIS']
     NO_SEND: Literal[True]
     Strict_NATIVE_STAGE_READY: Literal[False]
+    citations: list[_Citation] = []
 
 
 def validate_split(output, *, view, binding, temporal):
@@ -234,18 +292,34 @@ def validate_split(output, *, view, binding, temporal):
         for ref in refs:
             if catalog['refs'][ref]['kind'] == 'valuation_locator_not_owner':
                 time = temporal.get(ref)
-                if (not time or time['research_mode'] != result['research_mode'] or
-                        time['historical_information_cutoff'] != view['as_of'] or
-                        not time['direction_anchor_temporally_eligible']):
+                if not time or not time.get('research_prepared_at'):
+                    raise ValueError('source_bound_prepared_time_required')
+                expected = source_bound_temporal(view, ref, mode=result['research_mode'], prepared_at=time['research_prepared_at'])
+                if (any(k in time and time[k] != expected[k] for k in expected) or
+                        not expected['direction_anchor_temporally_eligible']):
                     raise ValueError('valuation_not_temporally_eligible')
-                if time['caveat'] not in axis['temporal_limitations']:
+                if expected['caveat'] not in axis['temporal_limitations']:
                     raise ValueError('temporal_caveat_required')
+        kinds = {catalog['refs'][r]['kind'] for r in refs}
+        economic = {'financial', 'public_business_profile_not_verified_cause', 'valuation_locator_not_owner'}
+        if name == 'newbuyer_fundamental_attractiveness' and axis['state'] != UNKNOWN and not kinds & economic:
+            raise ValueError('fundamental_requires_economic_context_not_only_technical')
+        if axis['claim_role'] == 'VERIFIED_CAUSAL_FACT' and (
+                not view.get('verified_mechanism_count') or not kinds & {'financial','public_business_profile_not_verified_cause'}):
+            raise ValueError('unverified_cause_promoted_to_fact')
+        if name == 'newbuyer_entry_timing' and axis['state'] == 'FAVORABLE' and not kinds & {
+                'dated_technical','original_dated_SR_fact','original_dated_SR_source_sha256'}:
+            raise ValueError('favorable_timing_requires_price_context')
     if result['structural_risk'] == 'OBSERVED_RISK' and not view['structural_risk']['occurred_risk_assertion']:
         raise ValueError('unverified_risk_promoted_to_occurred')
+    for citation in result['citations']:
+        if citation['axis'] not in ('newbuyer_fundamental_attractiveness','newbuyer_entry_timing') or citation['ref'] not in result[citation['axis']]['refs']:
+            raise ValueError('split_numeric_axis_ref_mismatch')
+    render_numeric_citations(result,catalog,view)
     return result
 
 
-def render_numeric_citations(output, catalog, view):
+def render_numeric_citations(output, catalog, view, *, quality_sidecar=None, capture_receipts=None):
     """Exact structured citations only; this projector never generates an opinion."""
     rows = []
     financial = {r['original_ref']: r for r in view['financial_observations']}
@@ -256,16 +330,47 @@ def render_numeric_citations(output, catalog, view):
             raise ValueError('exact_numeric_citation_mismatch')
         ref = citation['ref']; original = financial.get(ref, {}).get('original_fields', {})
         valuation = valuations.get(ref, {})
+        qa = (quality_sidecar or {}).get(ref, {})
+        start_key, end_key = ('prior_period_start','prior_period_end') if fact['path'] == 'fields.prior_comparable_value' else ('period_start','period_end')
+        start,end = original.get(start_key),original.get(end_key)
+        period_state = 'NOT_FINANCIAL_PERIOD'
+        if original:
+            period_state = 'MATCHED' if start and end and fact['period'] == f'{start}/{end}' else 'UNKNOWN_OR_CONFLICT'
+            if period_state != 'MATCHED': start,end = None,None
+        retrieved = None; providers = set()
+        for proof in qa.get('raw_replay', []):
+            providers.add(proof['provider'])
+            receipt = (capture_receipts or {}).get(proof['capture_receipt_sha256'])
+            if receipt and digest(encoded(receipt)) == proof['capture_receipt_sha256'] and receipt.get('raw_sha256') == proof['original_raw_sha256']:
+                value = receipt.get('finished_at')
+                if value: instant(value); retrieved = max((retrieved or value,value),key=instant)
         provenance = dict(value=fact['value'], unit=fact['unit'], period=fact['period'], basis=fact['basis'],
             original_scale=original.get('unit_scale', UNKNOWN),
-            period_start=original.get('period_start'), period_end=original.get('period_end'),
-            period_type=original.get('period_type'), provider=valuation.get('provider') or
-                ('opendart' if original.get('currency') == 'KRW' else 'sec') if ref in financial or valuation else UNKNOWN,
-            ref=ref, path=fact['path'], retrieved_at=valuation.get('retrieval_timestamp') or financial.get(ref, {}).get('source_cutoff'),
+            raw_independently_verified_scale=qa.get('period_and_unit_scale_verified',UNKNOWN),
+            period_start=start, period_end=end, period_metadata_state=period_state,
+            period_type=original.get('period_type'), provider=valuation.get('provider') or (next(iter(providers)) if len(providers)==1 else UNKNOWN),
+            ref=ref, path=fact['path'], retrieved_at=valuation.get('retrieval_timestamp') or retrieved,
+            source_cutoff=financial.get(ref, {}).get('source_cutoff'), as_of=view['as_of'],
+            technical_as_of=fact['period'] if catalog['refs'][ref]['kind'].startswith(('dated_technical','original_dated_SR')) else None,
             FY1_caveat='ESTIMATE_NOT_REPORTED_PROFIT; VINTAGE_DISTINCT_FROM_RETRIEVAL' if
                 ('FY1' in str(valuation) or 'FORWARD' in str(valuation).upper()) else None)
         rows.append(provenance)
     return rows
+
+
+def split_preview(view, binding, *, mode, prepared_at):
+    """Source-only input/schema preview. Never convert legacy model labels into new answers."""
+    if not binding.get('byte_binding_verified') or digest(encoded(view)) != binding['research_view_sha256']:
+        raise ValueError('preview_source_digest_mismatch')
+    catalog = reference_catalog(view)
+    time = {row['source_locator']:source_bound_temporal(view,row['source_locator'],mode=mode,prepared_at=prepared_at)
+        for row in view['valuation']}
+    return dict(contract=CONTRACT, ticker=view['ticker'],as_of=view['as_of'],research_mode=mode,
+        source_binding=deepcopy(binding),temporal=time, source_view=deepcopy(view), reference_catalog=catalog,
+        split_schema=ResearchSplit.model_json_schema(),
+        evidence_roles={ref:row['kind'] for ref,row in catalog['refs'].items()},
+        new_judgment=None, model_executed=False, status='PASSED_SOURCE_INPUT__ITEM_PARTIAL_QUALITY__JUDGMENT_NOT_RUN',
+        NO_SEND=True,Strict_NATIVE_STAGE_READY=False)
 
 
 def compact_evidence(view):
