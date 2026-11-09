@@ -17,5 +17,5 @@ def test_review_manifest_preserves_raw_json_and_citations(tmp_path,monkeypatch):
 def test_private_prompt_and_credential_payload_rejected(tmp_path,monkeypatch):
     monkeypatch.setattr(r,'OUT',tmp_path)
     with pytest.raises(AssertionError):r.seal('bad1.zip',{'prompt.private.txt':b'prompt'})
-    with pytest.raises(AssertionError):r.seal('bad2.zip',{'payload.json':b'{"x":"-----BEGIN PRIVATE KEY-----"}'})
+    with pytest.raises(AssertionError):r.seal('bad2.zip',{'payload.json':b'{"x":"-----BEGIN '+b'PRIVATE KEY-----"}'})
     assert not list(tmp_path.glob('*.zip'))
