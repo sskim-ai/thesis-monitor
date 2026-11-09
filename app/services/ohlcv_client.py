@@ -388,6 +388,11 @@ class OhlcvClient:
             return await self.source_observer.get(client, "/ohlcv", params=params)
         return await client.get("/ohlcv", params=params)
 
+    async def fetch_dated_daily_research(self, **kwargs):
+        """Manual ordinary-HTTP research; does not issue financial/model rights."""
+        from app.services.dated_technical_research import fetch_daily
+        return await fetch_daily(self, **kwargs)
+
     def _observe_normalization(self, response, bars, supply, inspection) -> None:
         if self.source_observer is not None:
             self.source_observer.normalized(
