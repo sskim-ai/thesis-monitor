@@ -753,6 +753,16 @@ def build_decision_evidence_packet(
                 )
             )
 
+    dated_native = None
+    if technical_context is not None and technical_context.native_view is not None:
+        dated_native = technical_context.native_view.verify()
+        if (dated_native.provider_code != ticker or dated_native.market != market
+                or dated_native.cutoff > assessment_date):
+            raise ValueError('native_evidence_identity_or_date_mismatch')
+    dated_available = sorted(tf for tf,p in dated_native.periods.items()
+        if p.status == 'AVAILABLE') if dated_native is not None else []
+    dated_scope_only = bool(dated_available and technical_context.status == 'PARTIAL_SAFE'
+        and not technical_context.failure_reason)
     usable_timeframes = {"daily", "weekly", "monthly"}
     if technical_context is not None:
         usable_timeframes = {
@@ -766,6 +776,9 @@ def build_decision_evidence_packet(
                 category=EvidenceCategory.QUALITY,
                 label="기술 컨텍스트 품질",
                 statement=(
+                    f"dated_native_timeframes={','.join(dated_available)}; "
+                    "current_price_qualified=false; current_reasoning_not_granted"
+                ) if dated_scope_only else (
                     f"technical_context={technical_context.status}; "
                     f"freshness={technical_context.freshness_state}; "
                     f"usable_timeframes={','.join(sorted(usable_timeframes)) or 'none'}"
@@ -815,7 +828,11 @@ def build_decision_evidence_packet(
                     statement=f'Provider native {field}; {native.indicator_schema}; dated technical only, not a legacy formula alias.',
                     as_of=period.completed_as_of,value=str(value),
                     source_ref=f'technical_context.{technical_context.technical_context_id}.native.{timeframe}.{field}',
-                    numeric_prose_eligible=False))
+                    numeric_prose_eligible=(native.provider == 'ohlcv_analyst'
+                        and period.provider in {'kiwoom','ohlcv_analyst'}
+                        and period.completed_as_of is not None
+                        and period.completed_as_of <= dated_native.cutoff
+                        and decimal_value(value) is not None)))
 
     # The producer channel owns use classification. Caller category/family labels
     # cannot turn saved hypotheses or timing inputs into current business facts.
@@ -839,7 +856,8 @@ def build_decision_evidence_packet(
     unique = {ref.ref_id: ref for ref in bound_refs}
     normalized = tuple(unique[key] for key in sorted(unique))
     cautions = [str(value) for value in stock.get("data_cautions") or ()]
-    if technical_context is not None and technical_context.status != TechnicalContextStatus.FULL:
+    if (technical_context is not None and technical_context.status != TechnicalContextStatus.FULL
+            and not dated_scope_only):
         cautions.append(
             "technical_context_limit:"
             + technical_context.status

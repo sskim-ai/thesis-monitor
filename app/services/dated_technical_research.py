@@ -28,7 +28,7 @@ def safe_service_diagnostic(response):
     except (ValueError,AttributeError):return None
     if not isinstance(value,dict):return None
     import re
-    if (value.get('phase') not in {'pre_send','transport','http_status','json_decode','provider_code'}
+    if (value.get('phase') not in {'pre_send','transport','http_status','json_decode','provider_code','local_call','local_serialization','local_validation'}
             or type(value.get('global_stop')) is not bool
             or not re.fullmatch('[A-Za-z0-9_]{1,64}',str(value.get('error_type','')))
             or not re.fullmatch('[A-Za-z0-9_]{1,32}',str(value.get('api_id','')))):
@@ -78,6 +78,10 @@ async def fetch_daily(client,*,symbol,market,history_through,observed_at,output,
             raise ValueError('service_cost_meter_not_available')
         receipt['physical_cumulative_count']=int(response.headers.get('X-Research-Physical-Count','0'))
         receipt['budget_instance']=response.headers.get('X-Research-Budget-Instance')
+        receipt['service_identity']=dict(module_sha256=response.headers.get('X-Research-Module-SHA256'),
+            loaded_definitions_sha256=response.headers.get('X-Research-Loaded-Definitions-SHA256'),
+            pid=int(response.headers.get('X-Research-Service-PID','0')),
+            maintenance=response.headers.get('X-Research-Maintenance'))
         payload=response.json()
         if payload.get('meta',{}).get('provider')!='kiwoom':raise ValueError('unexpected_provider')
         if set(payload.get('periods',{}))!={'daily'}:raise ValueError('daily_response_required')
