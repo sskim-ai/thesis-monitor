@@ -805,11 +805,15 @@ class OhlcvClient:
             technical_acquisition=technical_acquisition, as_of=as_of, price_structure_enabled=price_structure_enabled)
 
     def _finalize_native_context(self, *, ticker, context, adjusted_bars,
-                                 technical_acquisition, as_of, price_structure_enabled):
+                                 technical_acquisition, as_of, price_structure_enabled,
+                                 dated_analysis_as_of: date | None = None):
         """Shared projection for legacy collection and the protected daily reader."""
         context.available = any(item.actual_count > 0 for item in context.periods.values())
         context.chart.available = bool(context.chart.timeframes)
         session_state = market_session_for_ticker(ticker, as_of)
+        analysis_cutoff = dated_analysis_as_of or session_state.latest_completed_regular_session_date
+        if analysis_cutoff > session_state.latest_completed_regular_session_date:
+            raise ValueError('dated_analysis_after_completed_session')
         observed_at = as_of or datetime.now(timezone.utc)
         if observed_at.tzinfo is None:
             observed_at = observed_at.replace(tzinfo=timezone.utc)
@@ -828,7 +832,7 @@ class OhlcvClient:
         )
         context.warnings.append("native_technical_only: independent current-price Owner unavailable")
         native = build_provider_native_view(ticker=ticker,market='kr' if ticker.isdigit() else 'us',
-            periods=adjusted_bars,cutoff=session_state.latest_completed_regular_session_date,
+            periods=adjusted_bars,cutoff=analysis_cutoff,
             completion_verifier=self.completion_verifier)
         adjusted_bars = native.completed_periods()
         if ticker.isdigit():
@@ -870,7 +874,7 @@ class OhlcvClient:
                 )
                 context.chart.structure["price_structure_v3"] = builder(
                     ticker=ticker,
-                    cutoff=(session_state.latest_completed_regular_session_date.isoformat()),
+                    cutoff=analysis_cutoff.isoformat(),
                     raw_by_timeframe=adjusted_bars,
                     observed_at=observed_local.isoformat(),
                     provider_limit=OHLCV_PROVIDER_REQUEST_LIMIT,

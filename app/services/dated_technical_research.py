@@ -46,6 +46,7 @@ async def fetch_daily(client,*,symbol,market,history_through,observed_at,output,
     if key:headers['X-API-Key']=key
     receipt=dict(symbol=symbol,market=market,params=params,observed_at=observed_at.isoformat(),
         history_through=history_through.isoformat(),scope='dated_technical_analysis',
+        latest_completed_session=state.latest_completed_regular_session_date.isoformat(),
         current_price_qualified=False,valuation_qualified=False,NO_SEND=True)
     try:
         async with httpx.AsyncClient(base_url=endpoint,transport=client.transport,
@@ -87,20 +88,25 @@ async def fetch_daily(client,*,symbol,market,history_through,observed_at,output,
             last_historical_session=usable[-1]['date'] if usable else None,
             completion_basis='later_chart_row_dated_historical_only',latest_raw_date=bars[-1]['date'] if bars else None)
         if not usable:raise ValueError('no_proven_historical_daily_rows')
+        actual_as_of=date.fromisoformat(usable[-1]['date'])
+        receipt.update(actual_historical_as_of=actual_as_of.isoformat(),
+            effective_analysis_as_of=actual_as_of.isoformat())
         analysis=copy(client);analysis.completion_verifier=historical
         context=analysis._finalize_native_context(ticker=symbol,context=PriceContext(price_source_scope='dated_technical_only'),
             adjusted_bars={'daily':bars},technical_acquisition={'request_count':1,'retry_count':0,'failure_classes':[]},
-            as_of=observed_at,price_structure_enabled=True)
+            as_of=observed_at,price_structure_enabled=True,dated_analysis_as_of=actual_as_of)
         from app.services.kr_price_structure_selective_rollout_service import build_kr_price_structure_rollout_decision
         from app.services.us_price_structure_selective_rollout_service import build_us_price_structure_rollout_decision
         render=build_kr_price_structure_rollout_decision if market=='kr' else build_us_price_structure_rollout_decision
         rendered=render(context.chart.structure['price_structure_v3'],ticker=symbol,monitored_subject=True,enabled=True)
         if rendered.render_validation_errors:raise ValueError('SR_numeric_binding_invalid')
+        receipt['status']='DATED_TECHNICAL_ANALYSIS_READY'
         preview=dict(receipt=receipt,technical_input=context.technical_context_payload(),
             SR=rendered.to_dict(),NO_SEND=rendered.section or 'Dated technical structure unavailable; no levels invented.')
         write_new(output/'NO_SEND.json',json.dumps(preview,ensure_ascii=False,indent=2).encode())
-        write_new(output/'NO_SEND.md',('DATED TECHNICAL RESEARCH / NO-SEND\n'+preview['NO_SEND']).encode())
-        receipt['status']='DATED_TECHNICAL_ANALYSIS_READY'
+        write_new(output/'NO_SEND.md',('DATED TECHNICAL RESEARCH / NO-SEND\n'
+            +'Historical as-of: '+actual_as_of.isoformat()+'\nObserved at: '+observed_at.isoformat()
+            +'\n'+preview['NO_SEND']).encode())
         return context,receipt
     except Exception as exc:
         receipt['status']='FAILED_NO_RETRY';receipt['failure_type']=type(exc).__name__
