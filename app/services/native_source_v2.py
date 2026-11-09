@@ -1,9 +1,8 @@
 """Explicit native GET capabilities. V1 and direct Kiwoom Parents are untouched.
 
-There is no live runtime enroller in the current service. Bare objects, receipts
-and toggles cannot populate this registry. Offline tests install TEST_ONLY roots;
-those roots can send only through MockTransport. Live enrollment fails closed
-until an independently reviewed service/physical-transport adapter exists.
+Bare objects, receipts and toggles cannot populate this registry. The private
+host adapter resolves original registration and service enrollment capabilities.
+It is not installed in the running service by this source-only change.
 """
 from dataclasses import dataclass, field
 from datetime import date,datetime,timezone
@@ -28,7 +27,8 @@ _ROOTS=WeakKeyDictionary();_PARENTS=WeakKeyDictionary();_RESULTS=WeakKeyDictiona
 _LOCK=RLock()
 ROOT=Path(__file__).resolve().parents[2]
 PINS=('app/services/native_source_v2.py','app/services/ohlcv_client.py',
-      'app/services/provider_native_technical.py','app/services/ohlcv_completed_bar_finality_service.py')
+      'app/services/provider_native_technical.py','app/services/ohlcv_completed_bar_finality_service.py',
+      'app/services/native_service_enrollment.py')
 
 def _now():return datetime.now(timezone.utc)
 def _pins():return {n:hashlib.sha256((ROOT/n).read_bytes()).hexdigest() for n in PINS}
@@ -94,16 +94,20 @@ class _Runtime:
     meter_id:str|None=None
     physical_max:int=44
     issued:bool=False
+    service_bridge:object=field(default=None,repr=False)
 
 def bind_live_runtime(*,participant=None):
-    """No new authority from caller JSON or an old direct-Kiwoom Parent.
-
-    This is the first missing integration, not an approval prompt or a bypass.
-    A later reviewed host adapter must bind original current registration,
-    explicit native GET consent, loaded service/account/Lane and ALL physical
-    sends before it can enroll a live runtime. None is available in this task.
-    """
-    raise ValueError('native_signed_service_runtime_and_physical_adapter_required')
+    from app.services.native_service_enrollment import resolve_participant
+    bridge,reads,check=resolve_participant(participant)
+    root=NativeRuntimeRoot()
+    _ROOTS[root]=_Runtime(mode='LIVE',issuer_id=bridge.issuer,caller_id=bridge.caller,
+        account_sha256=bridge.account,service_code_sha256=bridge.code,
+        service_config_sha256=bridge.config,endpoint=bridge.endpoint,
+        generation_id=bridge.generation,expires=bridge.expires,
+        bindings=tuple((r.market,r.symbol,r.security_id,r.issuer_id,r.exchange,r.currency,r.session.isoformat()) for r in reads),
+        registration_check=check,key=secrets.token_bytes(32),physical_max=bridge.maximum,
+        meter_id=bridge.meter_id,service_bridge=bridge)
+    return root
 
 def _runtime(root):
     if type(root) is not NativeRuntimeRoot or root not in _ROOTS:
@@ -112,6 +116,7 @@ def _runtime(root):
     if not state.active or state.pid!=os.getpid() or _now()>=state.expires:
         raise ValueError('native_runtime_expired_revoked_or_process_changed')
     state.registration_check()
+    if state.service_bridge is not None:state.service_bridge.check()
     return state
 
 def revoke_runtime(root):
@@ -230,14 +235,18 @@ class NativeObserverV2:
                 frozen_query=frozen,query_sha256=digest(params),nonce=nonce,
                 parent_sha256=digest(s['receipt']),scope=SCOPE)
             async def send():
-                response=await client.get(route,params=params,headers={'X-Native-Source-Nonce':nonce})
+                headers=(r.service_bridge.request_headers(nonce,params) if r.service_bridge is not None
+                         else {'X-Native-Source-Nonce':nonce})
+                response=await client.get(route,params=params,headers=headers)
                 if len(response.content)>8*1024**2:raise ValueError('native_response_size_exceeded')
                 return response
             response=await capture_source_response(root=self.root,identity=identity,receipt=receipt,send=send)
             response.raise_for_status();_parent(self.parent)
             proof=json.loads(response.headers.get('X-Native-Source-Proof','{}'))
             signature=response.headers.get('X-Native-Source-Signature','')
-            if not hmac.compare_digest(signature,hmac.new(r.key,encoded(proof),'sha256').hexdigest()):
+            verified=(r.service_bridge.verify_proof(proof,signature) if r.service_bridge is not None else
+                      hmac.compare_digest(signature,hmac.new(r.key,encoded(proof),'sha256').hexdigest()))
+            if not verified:
                 raise ValueError('native_service_signature_mismatch')
             expected=dict(nonce=nonce,query_sha256=digest(params),body_sha256=hashlib.sha256(response.content).hexdigest(),
                 issuer=r.issuer_id,caller=r.caller_id,account_sha256=r.account_sha256,
@@ -276,12 +285,16 @@ class NativeObserverV2:
             bars,supply,_=OhlcvClient._decode_period_payload(response.json(),ticker=read.symbol,period='daily',adjusted=True,
                 response_body_sha256=hashlib.sha256(response.content).hexdigest())
             if digest(dict(bars=bars,supply_demand=supply))!=digest(normalized):raise ValueError('native_parser_or_body_mismatch')
-            if not bars or any(assess_completed_bar_finality(b,cutoff=read.session).state!='FINAL' for b in bars):
-                raise ValueError('native_completed_daily_required')
-            if bars[-1]['date']!=read.session.isoformat():raise ValueError('native_current_completed_session_mismatch')
+            from app.services.provider_native_technical import build_provider_native_view
+            projected=build_provider_native_view(ticker=read.symbol,market=read.market,
+                periods={'daily':bars},cutoff=read.session).verify().periods['daily']
+            if projected.status!='AVAILABLE':raise ValueError('native_completed_daily_required_UNCONFIRMED_FINALITY')
+            if projected.completed_as_of!=read.session.isoformat():raise ValueError('native_current_completed_session_mismatch_UNCONFIRMED_FINALITY')
             p['normalized']=digest(normalized)
             durable_json(self.root/(read.role+'.normalization.json'),dict(contract=contract,valid=True,
                 fingerprint=fingerprint,normalized_sha256=p['normalized'],raw_sha256=hashlib.sha256(response.content).hexdigest(),
+                completed_projection_sha256=digest(projected.model_dump(mode='json')),
+                quarantined_count=projected.quarantined_count,completed_as_of=projected.completed_as_of,
                 scope=SCOPE,mode=s['receipt']['mode']),exclusive=True)
         except BaseException:
             s['failed']=True;raise
