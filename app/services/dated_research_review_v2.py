@@ -242,6 +242,13 @@ class _Strict(BaseModel):
     model_config = ConfigDict(extra='forbid', strict=True)
 
 
+class EconomicSupport(_Strict):
+    ref: str
+    path: str
+    statement_fragment: str
+    source_excerpt: str
+
+
 class Axis(_Strict):
     state: str
     confidence: Literal['LOW', 'MEDIUM', 'HIGH']
@@ -253,6 +260,7 @@ class Axis(_Strict):
     as_of: str
     temporal_limitations: list[str]
     claim_role: Literal['DATED_OBSERVATION','ECONOMIC_HYPOTHESIS','VERIFIED_CAUSAL_FACT','ENTRY_TIMING_CONTEXT','UNKNOWN'] = 'UNKNOWN'
+    independent_economic_support: list[EconomicSupport] = []
 
 
 class ResearchSplit(_Strict):
@@ -269,6 +277,40 @@ class ResearchSplit(_Strict):
     citations: list[_Citation] = []
 
 
+def _standalone_forbidden(fact):
+    return (fact.get('overall_direction_use') is False or
+        'NOT_STANDALONE_DIRECTION' in str(fact.get('analysis_scope','')).upper() or
+        'no standalone direction' in str(fact.get('caution','')).lower())
+
+
+def _economic_support_linked(axis, axis_name, citations, catalog, valuation_raws):
+    """Require an inspectable argument link, not just an extra financial ref in a list."""
+    for link in axis['independent_economic_support']:
+        ref = link['ref']
+        if (ref not in axis['refs'] or ref not in axis['pro'] + axis['con'] or
+                not link['statement_fragment'].strip() or link['statement_fragment'] not in axis['statement']):
+            continue
+        entry = catalog['refs'][ref]
+        if entry['kind'] == 'financial':
+            raw = entry['fields'].get('original_raw_sha256') or entry.get('source_sha256')
+            if not raw or raw in valuation_raws:
+                continue
+            if any(c['axis']==axis_name and c['ref']==ref and c['path']==link['path'] for c in citations):
+                return True
+        if entry['kind'] == 'public_business_profile_not_verified_cause':
+            # A profile can support a business hypothesis, never a verified causal FACT.
+            context = entry['original_context']
+            excerpt = link['source_excerpt']
+            if not context.get('source_sha256') or context['source_sha256'] in valuation_raws:
+                continue
+            cell = context
+            for component in link['path'].split('.'):
+                cell = cell.get(component) if isinstance(cell,dict) else None
+            if isinstance(cell,str) and excerpt.strip() and excerpt in cell:
+                return True
+    return False
+
+
 def validate_split(output, *, view, binding, temporal):
     result = ResearchSplit.model_validate(output).model_dump()
     if result['ticker'] != view['ticker'] or result['input_digest'] != binding['research_view_sha256']:
@@ -278,6 +320,10 @@ def validate_split(output, *, view, binding, temporal):
     if view.get('research_mode') and view['research_mode'] != result['research_mode']:
         raise ValueError('original_research_mode_conflict')
     catalog = reference_catalog(view)
+    for citation in result['citations']:
+        if citation['axis'] not in ('newbuyer_fundamental_attractiveness','newbuyer_entry_timing') or citation['ref'] not in result[citation['axis']]['refs']:
+            raise ValueError('split_numeric_axis_ref_mismatch')
+    render_numeric_citations(result,catalog,view)
     for name, labels in (
         ('newbuyer_fundamental_attractiveness', ('ATTRACTIVE', 'NEUTRAL', 'UNATTRACTIVE', 'UNKNOWN')),
         ('newbuyer_entry_timing', ('FAVORABLE', 'WAIT_FOR_CONFIRMATION', 'UNFAVORABLE', 'UNKNOWN'))):
@@ -304,18 +350,21 @@ def validate_split(output, *, view, binding, temporal):
         economic = {'financial', 'public_business_profile_not_verified_cause', 'valuation_locator_not_owner'}
         if name == 'newbuyer_fundamental_attractiveness' and axis['state'] != UNKNOWN and not kinds & economic:
             raise ValueError('fundamental_requires_economic_context_not_only_technical')
-        if axis['claim_role'] == 'VERIFIED_CAUSAL_FACT' and (
-                not view.get('verified_mechanism_count') or not kinds & {'financial','public_business_profile_not_verified_cause'}):
-            raise ValueError('unverified_cause_promoted_to_fact')
+        if axis['claim_role'] == 'VERIFIED_CAUSAL_FACT':
+            # The current catalog exposes observations and unverified profiles, not causal proof refs.
+            raise ValueError('no_proven_cause_ref_available')
+        if name == 'newbuyer_fundamental_attractiveness' and axis['state'] in ('ATTRACTIVE','UNATTRACTIVE'):
+            facts = [catalog['refs'][r]['original_fact'] for r in axis['refs']
+                if catalog['refs'][r]['kind']=='valuation_locator_not_owner']
+            if facts and any(_standalone_forbidden(f) for f in facts) and not any(
+                    f.get('overall_direction_use') is True and not _standalone_forbidden(f) for f in facts):
+                if not _economic_support_linked(axis,name,result['citations'],catalog,{f.get('raw_sha256') for f in facts}):
+                    raise ValueError('valuation_cannot_be_standalone_direction_without_linked_economic_support')
         if name == 'newbuyer_entry_timing' and axis['state'] == 'FAVORABLE' and not kinds & {
                 'dated_technical','original_dated_SR_fact','original_dated_SR_source_sha256'}:
             raise ValueError('favorable_timing_requires_price_context')
     if result['structural_risk'] == 'OBSERVED_RISK' and not view['structural_risk']['occurred_risk_assertion']:
         raise ValueError('unverified_risk_promoted_to_occurred')
-    for citation in result['citations']:
-        if citation['axis'] not in ('newbuyer_fundamental_attractiveness','newbuyer_entry_timing') or citation['ref'] not in result[citation['axis']]['refs']:
-            raise ValueError('split_numeric_axis_ref_mismatch')
-    render_numeric_citations(result,catalog,view)
     return result
 
 
