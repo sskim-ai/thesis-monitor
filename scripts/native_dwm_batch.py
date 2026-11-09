@@ -107,12 +107,41 @@ def conditional_is_stable(ledger):
             and s.get('status') in {'NATIVE_DWM_COMPLETE','NATIVE_DWM_PARTIAL_NULL'} for s in ledger['securities']))
 
 
+def verify_first_daily(root,receipt,*,symbol,market,physical_bound,expected_service_sha,expected_service_pid):
+    from app.services.packet_owned_technical_context_service import PacketOwnedTechnicalContext
+    from app.services.provider_native_technical import INDICATORS
+    root=Path(root);raw=(root/'response.body').read_bytes()
+    if receipt.get('status')!='DATED_TECHNICAL_ANALYSIS_READY' or hashlib.sha256(raw).hexdigest()!=receipt.get('body_sha256'):
+        raise ValueError('canary_daily_source_not_ready_STOP')
+    if not 0<receipt['physical_cumulative_count']<=physical_bound:
+        raise ValueError('canary_daily_physical_bound_STOP')
+    actual=receipt.get('service_identity',{})
+    if (actual.get('module_sha256')!=expected_service_sha or actual.get('pid')!=expected_service_pid
+            or actual.get('maintenance')!='0' or len(actual.get('loaded_definitions_sha256',''))!=64):
+        raise ValueError('canary_actual_service_identity_STOP')
+    preview=json.loads((root/'NO_SEND.json').read_text())
+    context=PacketOwnedTechnicalContext.model_validate(preview['technical_input']);native=context.native_view
+    native.verify();period=native.periods['daily']
+    if (native.provider_code!=symbol or native.market!=market or period.status!='AVAILABLE'
+            or set(period.indicators)!=set(INDICATORS) or native.current_price_qualified
+            or period.completed_as_of!=receipt['actual_historical_as_of'] or not preview.get('NO_SEND')):
+        raise ValueError('canary_native_or_NO_SEND_contract_STOP')
+    require_recovered_lane()
+    return dict(status='REAL_FIRST_DAILY_CANARY_PASS',symbol=symbol,market=market,
+        body_sha256=receipt['body_sha256'],native38=38,as_of=period.completed_as_of,
+        nulls=sum(v is None for v in period.indicators.values()),physical_HTTP=receipt['physical_cumulative_count'],
+        service_identity=actual,current_price_qualified=False,model=0,send=0)
+
+
 async def execute(args):
     import httpx
     from app.services.ohlcv_client import OhlcvClient
     from app.services.dated_technical_research import fetch_daily,safe_endpoint,write_new
     from app.services.dated_multiframe_research import fetch_wm,assemble
     from app.services.market_session import market_session_for_ticker
+    if args.canary_first_daily and (not args.recovered_stop_plan or not args.expected_service_sha
+            or len(args.expected_service_sha)!=64 or not args.expected_service_pid or args.expected_service_pid<=0):
+        raise ValueError('canary_service_identity_required_before_HTTP')
     if args.recovered_stop_plan:
         if args.continue_other_stocks:raise ValueError('new_budget_cannot_reuse_old_continuation')
         require_recovered_lane()
@@ -223,6 +252,12 @@ async def execute(args):
                 ledger['physical_HTTP']+=delta;stock['physical_HTTP']=count
                 stock['receipts'][-1]['physical_delta']=delta
                 ledger.pop('in_flight_role',None)
+                if args.canary_first_daily and ledger['GETs']==1:
+                    if tf!='daily' or failure:raise ValueError('first_daily_canary_failed_no_followup_STOP')
+                    canary=verify_first_daily(output,receipt,symbol=symbol,market=market,physical_bound=request['physical_max'],
+                        expected_service_sha=args.expected_service_sha,expected_service_pid=args.expected_service_pid)
+                    write_new(root/'FIRST_CANARY.json',json.dumps(canary,ensure_ascii=False,indent=2).encode())
+                    ledger['first_daily_canary']=canary
                 print(json.dumps(dict(symbol=symbol,timeframe=tf,GETs=ledger['GETs'],physical_HTTP=ledger['physical_HTTP'],status=receipt.get('status'))),flush=True)
                 if failure:
                     if isinstance(failure,ValueError) and str(failure) in {'invalid_OHLCV_no_refetch','invalid_historical_OHLCV','not_isolated_price_relation_error','recent_nonlatest_error_not_admitted','remaining_source_invalid'}:
@@ -266,6 +301,10 @@ async def execute(args):
             write_new(stockroot/'STOCK_SEAL.json',json.dumps(dict(stock=stock,files=members),ensure_ascii=False,indent=2).encode())
             ledger.setdefault('stock_seals',{})[market+'-'+symbol]=hashlib.sha256((stockroot/'STOCK_SEAL.json').read_bytes()).hexdigest()
             write_progress(root,ledger)
+            if args.canary_first_daily and len(ledger['securities'])==1:
+                if stock.get('consumer_failure_preserved_no_model') or stock['status'] not in {'NATIVE_DWM_COMPLETE','NATIVE_DWM_PARTIAL_NULL'}:
+                    raise ValueError('first_stock_DWM_consumer_failed_STOP')
+                require_recovered_lane()
         else:ledger['status']='C22A_DELTA_SCOPE_ATTEMPTED_NO_SEND' if args.recovered_stop_plan else 'ALL_REMAINING_ROLES_ATTEMPTED_QUALITY_FAILURES_PRESERVED' if prior else 'LIVE_20_STOCKS_DWM_COLLECTED_NO_SEND'
     except Exception as exc:
         ledger['status']='FAILED_NO_RETRY_STOP';ledger['failure_type']=type(exc).__name__
@@ -285,6 +324,9 @@ def main():
     p.add_argument('--recovered-stop-plan',action='store_true',help='Only after explicit operational approval and formal existing-Lane recovery')
     p.add_argument('--include-conditional-ibm',action='store_true')
     p.add_argument('--resume-sealed',help='Same delta budget only; verified complete stock seals, never partial requests')
+    p.add_argument('--canary-first-daily',action='store_true',help='Verify first real daily response and first DWM before continuing')
+    p.add_argument('--expected-service-sha')
+    p.add_argument('--expected-service-pid',type=int)
     a=p.parse_args()
     if not a.live:
         batches=recovered_plan(a.plan,a.include_conditional_ibm) if a.recovered_stop_plan else prepare_plan(a.plan)
