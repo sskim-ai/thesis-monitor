@@ -50,6 +50,12 @@ def require_recovered_lane():
         raise ValueError('GLOBAL_LANE_STOP_NO_GET_SENT')
 
 
+def conditional_is_stable(ledger):
+    return (ledger['GETs']==33 and len(ledger['securities'])==11
+        and all(not s.get('source_quality_failures') and not s.get('consumer_failure_preserved_no_model')
+            and s.get('status') in {'NATIVE_DWM_COMPLETE','NATIVE_DWM_PARTIAL_NULL'} for s in ledger['securities']))
+
+
 async def execute(args):
     import httpx
     from app.services.ohlcv_client import OhlcvClient
@@ -97,7 +103,10 @@ async def execute(args):
     instance=None
     try:
         for b in batches:
-            if b.get('conditional_after_33') and ledger['GETs']!=33:continue
+            if b.get('conditional_after_33'):
+                if not conditional_is_stable(ledger):
+                    ledger['optional_role_skipped']='prior33_not_stably_completed';continue
+                require_recovered_lane()
             if ledger['GETs']+b['GET_max']>GET_max or ledger['physical_HTTP']+b['physical_max']>physical_max:
                 ledger['status']='NOT_FETCHED_BUDGET';break
             symbol,market=b['ticker'],b['market'];stockroot=root/(market+'-'+symbol);stockroot.mkdir()
