@@ -3,6 +3,7 @@ from copy import deepcopy
 from datetime import datetime, date
 from decimal import Decimal, InvalidOperation
 import json
+import re
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
@@ -11,6 +12,7 @@ from app.services.dated_research_model import encoded, digest, reference_catalog
 from app.services.kr_financial_lineage_service import opendart_field_lineage
 
 CONTRACT = 'DATED_RESEARCH_REVIEW_V2_OFFLINE'
+VALIDATOR_REVISION = 'C22J_SPLIT_PROSE_REFS_V3_20261110'
 UNKNOWN = 'UNKNOWN'
 Mode = Literal['POINT_IN_TIME', 'RETROSPECTIVE_DATED_RESEARCH']
 
@@ -283,35 +285,61 @@ def _standalone_forbidden(fact):
         'no standalone direction' in str(fact.get('caution','')).lower())
 
 
-def _economic_support_linked(axis, axis_name, citations, catalog, valuation_raws):
-    """Require an inspectable argument link, not just an extra financial ref in a list."""
-    for link in axis['independent_economic_support']:
-        ref = link['ref']
-        if (ref not in axis['refs'] or ref not in axis['pro'] + axis['con'] or
-                not link['statement_fragment'].strip() or link['statement_fragment'] not in axis['statement']):
-            continue
-        entry = catalog['refs'][ref]
-        if entry['kind'] == 'financial':
-            raw = entry['fields'].get('original_raw_sha256') or entry.get('source_sha256')
-            if not raw or raw in valuation_raws:
-                continue
-            if any(c['axis']==axis_name and c['ref']==ref and c['path']==link['path'] for c in citations):
-                return True
-        if entry['kind'] == 'public_business_profile_not_verified_cause':
-            # A profile can support a business hypothesis, never a verified causal FACT.
-            context = entry['original_context']
-            excerpt = link['source_excerpt']
-            if not context.get('source_sha256') or context['source_sha256'] in valuation_raws:
-                continue
-            cell = context
-            for component in link['path'].split('.'):
-                cell = cell.get(component) if isinstance(cell,dict) else None
-            if isinstance(cell,str) and excerpt.strip() and excerpt in cell:
-                return True
+def _economic_link_bound(link, axis_name, citations, catalog):
+    if not link['statement_fragment'].strip():return False
+    entry=catalog['refs'][link['ref']]
+    if entry['kind']=='financial':
+        return any(c['axis']==axis_name and c['ref']==link['ref'] and c['path']==link['path'] for c in citations)
+    if entry['kind']=='public_business_profile_not_verified_cause':
+        cell=entry['original_context']
+        for component in link['path'].split('.'):
+            cell=cell.get(component) if isinstance(cell,dict) else None
+        return isinstance(cell,str) and bool(link['source_excerpt'].strip()) and link['source_excerpt'] in cell
     return False
 
 
+def _economic_support_linked(axis, axis_name, citations, catalog, valuation_raws):
+    """Check structural support/provenance, not exact prose overlap or investment truth."""
+    for link in axis['independent_economic_support']:
+        if not _economic_link_bound(link,axis_name,citations,catalog):continue
+        entry=catalog['refs'][link['ref']]
+        raw = (entry['fields'].get('original_raw_sha256') or entry.get('source_sha256')) if entry['kind']=='financial' else entry['original_context'].get('source_sha256')
+        if raw and raw not in valuation_raws:return True
+    return False
+
+
+def _axis_refs(axis, name, citations):
+    return list(dict.fromkeys(axis['refs'] + [c['ref'] for c in citations if c['axis']==name] +
+        [link['ref'] for link in axis['independent_economic_support']]))
+
+
+def _caveat_disclosed(ref, code, limitations):
+    token = r'(?<![A-Z0-9_])' + re.escape(code) + r'(?![A-Z0-9_])'
+    return code in limitations or any(ref in item and re.search(token,item) for item in limitations)
+
+
+def _numeric_fact_matches(candidate, expected, value):
+    if set(candidate) != set(expected) or any(candidate[k]!=expected[k] for k in expected if k!='value'):
+        return False
+    if isinstance(value,bool) or isinstance(expected['value'],bool):return False
+    try:
+        a,b=Decimal(str(value)),Decimal(str(expected['value']))
+        if type(candidate['value']) is float:
+            parsed=Decimal(str(candidate['value']))
+            if not parsed.is_finite() or parsed!=a:return False
+        return a.is_finite() and b.is_finite() and a==b
+    except InvalidOperation:
+        return type(value) is str and value==expected['value']
+
+
 def validate_split(output, *, view, binding, temporal):
+    # Raw JSON input retains decimal lexemes for lossless validation; no answer field is repaired.
+    numeric_values = None
+    if isinstance(output,(str,bytes)):
+        def reject_constant(value):raise ValueError('nonfinite_JSON_number')
+        lexical=json.loads(output,parse_float=Decimal,parse_constant=reject_constant)
+        numeric_values={i:c['value'] for i,c in enumerate(lexical.get('citations',[]))}
+        output=json.loads(output,parse_constant=reject_constant)
     result = ResearchSplit.model_validate(output).model_dump()
     if result['ticker'] != view['ticker'] or result['input_digest'] != binding['research_view_sha256']:
         raise ValueError('exact_output_binding_mismatch')
@@ -321,20 +349,22 @@ def validate_split(output, *, view, binding, temporal):
         raise ValueError('original_research_mode_conflict')
     catalog = reference_catalog(view)
     for citation in result['citations']:
-        if citation['axis'] not in ('newbuyer_fundamental_attractiveness','newbuyer_entry_timing') or citation['ref'] not in result[citation['axis']]['refs']:
+        if citation['axis'] not in ('newbuyer_fundamental_attractiveness','newbuyer_entry_timing'):
             raise ValueError('split_numeric_axis_ref_mismatch')
-    render_numeric_citations(result,catalog,view)
+    render_numeric_citations(result,catalog,view,numeric_values=numeric_values)
     for name, labels in (
         ('newbuyer_fundamental_attractiveness', ('ATTRACTIVE', 'NEUTRAL', 'UNATTRACTIVE', 'UNKNOWN')),
         ('newbuyer_entry_timing', ('FAVORABLE', 'WAIT_FOR_CONFIRMATION', 'UNFAVORABLE', 'UNKNOWN'))):
-        axis = result[name]
+        axis = {**result[name], 'refs':_axis_refs(result[name],name,result['citations'])}
         if axis['state'] not in labels or not axis['statement'] or axis['as_of'] != view['as_of']:
             raise ValueError('axis_state_statement_or_time_invalid')
         if axis['state'] != UNKNOWN and not axis['refs']:
             raise ValueError('issued_axis_requires_citations')
-        refs = axis['refs'] + axis['pro'] + axis['con']
-        if any(ref not in catalog['refs'] or ref not in axis['refs'] for ref in refs):
+        refs = axis['refs']
+        if any(ref not in catalog['refs'] for ref in refs):
             raise ValueError('unknown_or_unbound_reference')
+        if any(not _economic_link_bound(link,name,result['citations'],catalog) for link in axis['independent_economic_support']):
+            raise ValueError('economic_support_ref_path_or_explanation_unbound')
         for ref in refs:
             if catalog['refs'][ref]['kind'] == 'valuation_locator_not_owner':
                 time = temporal.get(ref)
@@ -344,7 +374,7 @@ def validate_split(output, *, view, binding, temporal):
                 if (any(k in time and time[k] != expected[k] for k in expected) or
                         not expected['direction_anchor_temporally_eligible']):
                     raise ValueError('valuation_not_temporally_eligible')
-                if expected['caveat'] not in axis['temporal_limitations']:
+                if not _caveat_disclosed(ref,expected['caveat'],axis['temporal_limitations']):
                     raise ValueError('temporal_caveat_required')
         kinds = {catalog['refs'][r]['kind'] for r in refs}
         economic = {'financial', 'public_business_profile_not_verified_cause', 'valuation_locator_not_owner'}
@@ -368,14 +398,15 @@ def validate_split(output, *, view, binding, temporal):
     return result
 
 
-def render_numeric_citations(output, catalog, view, *, quality_sidecar=None, capture_receipts=None):
+def render_numeric_citations(output, catalog, view, *, quality_sidecar=None, capture_receipts=None, numeric_values=None):
     """Exact structured citations only; this projector never generates an opinion."""
     rows = []
     financial = {r['original_ref']: r for r in view['financial_observations']}
     valuations = {r['source_locator']: r['original_fact'] for r in view['valuation']}
-    for citation in output['citations']:
+    for i,citation in enumerate(output['citations']):
         fact = {k: v for k, v in citation.items() if k != 'axis'}
-        if isinstance(fact.get('value'), bool) or fact not in catalog['numeric_facts']:
+        value = numeric_values[i] if numeric_values is not None else fact.get('value')
+        if not any(_numeric_fact_matches(fact,expected,value) for expected in catalog['numeric_facts']):
             raise ValueError('exact_numeric_citation_mismatch')
         ref = citation['ref']; original = financial.get(ref, {}).get('original_fields', {})
         valuation = valuations.get(ref, {})
@@ -405,6 +436,18 @@ def render_numeric_citations(output, catalog, view, *, quality_sidecar=None, cap
                 ('FY1' in str(valuation) or 'FORWARD' in str(valuation).upper()) else None)
         rows.append(provenance)
     return rows
+
+
+def split_quality_review(output, *, view):
+    """Report-only blind spots, not a second truth validator or an automatic label downgrade."""
+    result=ResearchSplit.model_validate(output).model_dump();flags=[]
+    if not result['citations']:flags.append('NO_STRUCTURED_NUMERIC_CITATIONS_REVIEW')
+    for name in ('newbuyer_fundamental_attractiveness','newbuyer_entry_timing'):
+        axis=result[name];text=' '.join([axis['statement'],*axis['pro'],*axis['con'],*axis['unknown']])
+        if re.search(r'\d',text):flags.append(name+':FREE_PROSE_NUMERIC_COVERAGE_NOT_PROVEN')
+        if axis['confidence']=='HIGH':flags.append(name+':CONFIDENCE_CALIBRATION_NOT_PROVEN')
+    return dict(revision=VALIDATOR_REVISION,flags=flags,report_only=True,
+        prose_truth_proven=False,causal_quality_proven=False,labels_changed=False)
 
 
 def split_preview(view, binding, *, mode, prepared_at):
