@@ -2,6 +2,7 @@
 from calendar import monthrange
 from copy import copy
 from datetime import date,timedelta
+from functools import lru_cache
 import hashlib,json
 from pathlib import Path
 import httpx
@@ -12,6 +13,12 @@ from app.services.ohlcv_provider_integrity_service import inspect_normalized_ohl
 from app.services.provider_native_technical import MAX_COUNTS,FORMULAS
 
 
+@lru_cache(maxsize=64)
+def _extended_calendar(name,year):
+    import exchange_calendars
+    return exchange_calendars.get_calendar(name,start=date(year-1,1,1),end=date(year+2,1,1))
+
+
 def period_end(label,timeframe,market):
     """Interpret an unchanged label by its containing calendar period."""
     if timeframe=='daily':return label
@@ -20,9 +27,7 @@ def period_end(label,timeframe,market):
     else:raise ValueError('unsupported_timeframe')
     calendar=_exchange_calendar('XKRX' if market=='kr' else 'XNYS')
     if end<calendar.first_session.date() or end>calendar.last_session.date():
-        import exchange_calendars
-        calendar=exchange_calendars.get_calendar('XKRX' if market=='kr' else 'XNYS',
-            start=label-timedelta(days=370),end=end+timedelta(days=370))
+        calendar=_extended_calendar('XKRX' if market=='kr' else 'XNYS',label.year)
     return calendar.date_to_session(end,direction='previous').date()
 
 
