@@ -4,7 +4,7 @@ from datetime import date
 from math import isclose
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.macro.providers.market import MARKET_SYMBOLS
 from app.services.market_numeric_claim_service import digest, number, numeric_catalog
@@ -52,7 +52,7 @@ class MarketDisplayPlan(BaseModel):
     eligible_refs: tuple[str, ...]
     items: tuple[DisplayItem, ...]
     display_view: MarketUserDisplayView | None = None
-    sector_taxonomy_version: Literal['sector-universe-user-confirmed-v2'] | None = None
+    sector_taxonomy_version: Literal['sector-universe-user-confirmed-v2'] | None = Field(default=None, exclude_if=lambda v: v is None)
 
 
 def build_display_plan(source, *, market, assessment_date, eligible_refs, display_view=None, sector_taxonomy_version=None):

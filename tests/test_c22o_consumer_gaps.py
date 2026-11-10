@@ -109,3 +109,14 @@ def test_current_kr_projection_auxiliary_groups_and_future_refs():
     future_plan=build_display_plan(future,market='kr',assessment_date='2026-11-06',eligible_refs=refs,sector_taxonomy_version=VERSION)
     assert not any(i.block_id=='sector_auxiliary' for i in future_plan.items)
     assert all(i.status=='UNAVAILABLE' for i in future_plan.items if i.block_id=='sectors')
+
+
+def test_default_legacy_serialization_omits_new_option_even_nested():
+    from pydantic import TypeAdapter
+    source=component_sector_source(json.loads(custody('us')['reference_path'].read_bytes()))
+    kwargs=dict(market='us',assessment_date='2026-11-05',eligible_refs=[f['fact_id'] for f in source['fact_catalog']])
+    legacy=build_display_plan(source,**kwargs)
+    assert 'sector_taxonomy_version' not in legacy.model_dump(mode='json')
+    assert 'sector_taxonomy_version' not in TypeAdapter(dict).dump_python({'plan':legacy},mode='json')['plan']
+    explicit=build_display_plan(source,**kwargs,sector_taxonomy_version=VERSION)
+    assert explicit.model_dump(mode='json')['sector_taxonomy_version']==VERSION
