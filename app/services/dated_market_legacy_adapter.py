@@ -16,7 +16,7 @@ def component_sector_source(reference):
             or reference.get('original_cold_status')!='ORIGINAL_COMPONENT_OWNER_COLD_PASS_NOT_FULL_PARENT'
             or digest(reference['value'])!=reference['value_sha256'] or reference['full_market_parent'] is not False):
         raise ValueError('dated_sector_original_component_required')
-    market=reference['market'];session=reference['completed_session'];facts=[];identities=set();basis={}
+    market=reference['market'];session=reference['completed_session'];facts=[];identities=set();source_refs=set();basis={}
     if market not in {'us','kr'}:raise ValueError('dated_sector_market')
     values=reference['value']['observations' if market=='us' else 'sectors']
     for row in values:
@@ -36,15 +36,17 @@ def component_sector_source(reference):
             if row.get('listed_count') is not None and row['listed_count']<=0:continue
             if not row.get('source_ref') or session not in row['source_ref']:
                 raise ValueError('dated_sector_ref_session')
+            if row['source_ref'] in source_refs:raise ValueError('dated_sector_duplicate_source_ref')
+            source_refs.add(row['source_ref'])
             fields=deepcopy(row);fields['quality']='verified';metric=row['metric_role']
         if not identity or (scope,identity) in identities:raise ValueError('dated_sector_duplicate_identity')
         identities.add((scope,identity))
-        if scope in basis and basis[scope]!=metric:raise ValueError('dated_sector_mixed_metric_role')
-        basis[scope]=metric
         value=fields['return_pct']
         if value is None:continue
         if isinstance(value,bool) or not isinstance(value,(int,float)) or not isfinite(value):
             raise ValueError('dated_sector_return_invalid')
+        if scope in basis and basis[scope]!=metric:raise ValueError('dated_sector_mixed_metric_role')
+        basis[scope]=metric
         facts.append(dict(fact_id='dated-sector:'+scope+':'+identity,fact_type='market_sector' if market=='us' else 'market_cross_section_sector',
             as_of_date=session,fields=fields))
     return dict(session=dict(market=market,assessment_date=session,latest_completed_regular_session_date=session),

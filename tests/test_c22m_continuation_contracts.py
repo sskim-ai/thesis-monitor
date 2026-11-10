@@ -54,7 +54,7 @@ def reference(market='us',count=6):
     else:
         names=['음식료/담배','화학','제약','금속','기계장비','전기전자']
         value=dict(sectors=[dict(sector=n,sector_code=str(i),market_scope=m,taxonomy='kiwoom-sector-index-v1',metric_role='actual_sector_breadth',
-            return_pct=float(i),listed_count=10,source_ref=f'kiwoom:ka20003:{m}:{session}') for m in ('KOSPI','KOSDAQ') for i,n in enumerate(names[:count])])
+            return_pct=float(i),listed_count=10,source_ref=f'kiwoom:ka20003:{m}:{i}:{session}') for m in ('KOSPI','KOSDAQ') for i,n in enumerate(names[:count])])
     return dict(scope='DATED_SOURCE_INSPECTION_NOT_MARKET_CONTEXT',market=market,completed_session=session,
         original_cold_status='ORIGINAL_COMPONENT_OWNER_COLD_PASS_NOT_FULL_PARENT',full_market_parent=False,value=value,value_sha256=digest(value),
         original_bundle_sha256='a'*64,original_component_sha256='b'*64)
@@ -243,3 +243,11 @@ def test_new_flow_role_and_text_hash_boundary():
             policy=UnifiedSourcePolicy(frozenset(('kiwoom_rest',))),aggregate_flows_only=True)
     preview=render_component_sectors(reference())
     assert preview['text_sha256']==hashlib.sha256(preview['text'].encode()).hexdigest()
+
+
+def test_sector_duplicate_reference_and_null_basis_boundary():
+    ref=reference('kr');rows=ref['value']['sectors'];rows[1]['source_ref']=rows[0]['source_ref'];ref['value_sha256']=digest(ref['value'])
+    with pytest.raises(ValueError,match='duplicate_source_ref'):render_component_sectors(ref)
+    ref=reference('kr');rows=ref['value']['sectors'];rows.append(dict(rows[0],sector_code='new-null',source_ref='kiwoom:ka20003:KOSPI:new-null:2026-11-05',metric_role='sector_price_proxy',return_pct=None))
+    ref['value_sha256']=digest(ref['value']);result=render_component_sectors(ref)
+    assert all(i['status']=='AVAILABLE' for i in result['selected_items'])
