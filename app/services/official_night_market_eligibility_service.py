@@ -50,8 +50,8 @@ def night_market_eligibility(row, *, market, assessment_date, completed_session_
         if (market != "us" or completed >= assessed or observed.date() != assessed
                 or completed != us_market_session(observed).latest_completed_regular_session_date
                 or observed.timetz().replace(tzinfo=None) < time(6)
-                or session != expected or row.get("night_trade_date") != str(expected)
-                or row.get("regular_reference_date") != str(mapping.regular_reference_date)):
+                or session != expected or str(row.get("night_trade_date")) != str(expected)
+                or str(row.get("regular_reference_date")) != str(mapping.regular_reference_date)):
             errors.append("night_target_session_unresolved")
         if (row.get("source") != ENDPOINT or row.get("exchange") != "XKRX"
                 or row.get("reference_date_contract") != US_MORNING_NIGHT_REFERENCE_DATE_CONTRACT

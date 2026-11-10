@@ -71,7 +71,8 @@ class KrxNightFuturesProvider:
         return materialize_night_probe(probe, history_directory=self.history_directory)
 
 
-def materialize_night_probe(probe: KrxNightFuturesProbeResult, *, history_directory: Path | None) -> MacroProviderResult:
+def materialize_night_probe(probe: KrxNightFuturesProbeResult, *, history_directory: Path | None,
+                            night_end_dates: bool = False) -> MacroProviderResult:
     """Existing typed history/DWM owner, with storage supplied explicitly for replay."""
     history_update = (persist_live_probe_history(probe) if history_directory is None
                       else persist_live_probe_history(probe, root=history_directory))
@@ -102,6 +103,7 @@ def materialize_night_probe(probe: KrxNightFuturesProbeResult, *, history_direct
             daily_change_pct=item.change_pct,
             daily_baseline_date=item.reference_date,
             daily_baseline_close=item.reference_price,
+            night_end_dates=night_end_dates,
         )
         observations.append(
             CollectedObservation(

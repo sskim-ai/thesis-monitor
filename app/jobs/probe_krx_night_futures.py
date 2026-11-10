@@ -119,6 +119,8 @@ class KrxNightFuturesProbeResult(BaseModel):
     service: str = KRX_SERVICE_NAME
     source_url: str = KRX_FUTURES_DAILY_URL
     fetched_at: datetime
+    assessment_cutoff: datetime | None = Field(default=None, exclude_if=lambda v: v is None)
+    capture_started_at: datetime | None = Field(default=None, exclude_if=lambda v: v is None)
     reason: str | None = None
     queried_dates: list[date] = Field(default_factory=list)
     source_date: date | None = None
@@ -677,6 +679,8 @@ async def fetch_live_probe(
     transport: httpx.AsyncBaseTransport | None = None,
     max_lookback_days: int = 7,
     source_observer: RunAcquisitionObserver | None = None,
+    exact_dates: tuple[date, ...] | None = None,
+    hard_stop_on_error: bool = False,
 ) -> KrxNightFuturesProbeResult:
     from app.services.unified_live_source_transport import is_native_live_transport
 
@@ -686,6 +690,10 @@ async def fetch_live_probe(
     if observed.tzinfo is None:
         observed = observed.replace(tzinfo=KST)
     fetched_at = observed.astimezone(timezone.utc)
+    if exact_dates is not None:
+        return await _fetch_exact_probe(dates=exact_dates, cutoff=observed,
+            api_key=api_key, transport=transport, observer=source_observer,
+            hard_stop_on_error=hard_stop_on_error)
     if not api_key:
         return _attach_fetch_telemetry(
             KrxNightFuturesProbeResult(
@@ -862,6 +870,70 @@ async def fetch_live_probe(
         response_bodies=response_bodies,
         live_source=is_native_live_transport(transport),
     )
+
+
+def exact_payload_error(payload, query_date):
+    rows = _rows(payload)
+    if not rows:
+        return 'EMPTY_ROWS'
+    if any(str(r.get('BAS_DD')) != query_date.strftime('%Y%m%d') for r in rows):
+        return 'RAW_DATE_MISMATCH'
+    configured = [r for item in rows if (r := _parse_row(item)) is not None and r.product in TARGET_PRODUCTS]
+    if not configured or any(not r.contract_code or r.maturity is None for r in configured):
+        return 'CONFIGURED_RAW_IDENTITY_MISSING'
+    return None
+
+
+async def _fetch_exact_probe(*, dates, cutoff, api_key, transport, observer, hard_stop_on_error):
+    """Explicit source-only selection; legacy lookback behavior is unchanged."""
+    if (not isinstance(dates, tuple) or not 1 <= len(dates) <= 2
+            or any(type(d) is not date for d in dates) or tuple(sorted(set(dates))) != dates
+            or cutoff.utcoffset() is None or any(d > cutoff.astimezone(KST).date() for d in dates)
+            or hard_stop_on_error is not True or observer is None):
+        raise ValueError('krx_exact_dates_frozen_observer_and_hard_stop_required')
+    if not api_key:
+        return KrxNightFuturesProbeResult(status='not_configured', fetched_at=datetime.now(timezone.utc),
+            assessment_cutoff=cutoff, reason='KRX_key_not_configured')
+    payloads, bodies, hashes, statuses = {}, {}, {}, []
+    queried = []
+    started = datetime.now(timezone.utc)
+    received = started
+    error = None
+    async with httpx.AsyncClient(timeout=get_settings().macro_provider_timeout_seconds,
+            transport=transport, follow_redirects=False,
+            headers={'AUTH_KEY': api_key, 'User-Agent': USER_AGENT}) as client:
+        for d in dates:
+            queried.append(d)
+            try:
+                response = await observer.get(client, KRX_FUTURES_DAILY_URL,
+                    params={'basDd':d.strftime('%Y%m%d')}, response_secrets=(api_key,))
+                _identity, receipt = response.extensions['unified_source_receipt']
+                received = datetime.fromisoformat(receipt['received_at'])
+                if response.status_code != 200:
+                    error = 'krx_exact_HTTP_' + str(response.status_code)
+                else:
+                    payload = response.json()
+                    error = exact_payload_error(payload, d)
+                statuses.append(KrxProbeDateStatus(query_date=d,http_status=response.status_code,
+                    raw_payload_sha256=receipt['artifact_sha256'],result=error or 'captured'))
+                if error:
+                    break
+                payloads[d], bodies[d], hashes[d] = payload, response.content, receipt['artifact_sha256']
+            except (httpx.HTTPError, ValueError, TypeError, KeyError) as exc:
+                error = 'krx_exact_' + type(exc).__name__
+                received = datetime.now(timezone.utc)
+                statuses.append(KrxProbeDateStatus(query_date=d,result=error))
+                break
+    result = parse_krx_futures_payloads(payloads,fetched_at=received,queried_dates=queried,payload_sha256_by_date=hashes)
+    result.assessment_cutoff, result.capture_started_at = cutoff, started
+    result.date_statuses = statuses
+    expected = expected_latest_completed_krx_session(received.astimezone(KST).date())
+    result = _attach_fetch_telemetry(result,payloads=payloads,expected_session=expected,observation_time=received)
+    result.session_freshness = ('fresh' if result.night_session_usable and result.source_date == expected
+        and result.finality_valid else 'unverified')
+    if error:
+        result.status, result.reason, result.night_session_usable = 'unavailable', error, False
+    return _attach_source_captures(result,payloads=payloads,response_bodies=bodies,live_source=False)
 
 
 def _report(result: KrxNightFuturesProbeResult) -> str:

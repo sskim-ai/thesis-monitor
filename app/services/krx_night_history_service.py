@@ -8,7 +8,7 @@ from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from typing import Literal, Mapping
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.config import get_settings
 from app.jobs.probe_krx_night_futures import (
@@ -147,6 +147,7 @@ class KrxNightAggregateBar(BaseModel):
 
 class KrxNightTimeframes(BaseModel):
     contract: str = KRX_NIGHT_DWM_CONTRACT
+    calendar_contract: Literal['KRX_NIGHT_END_DATE_V1'] | None = Field(default=None, exclude_if=lambda v: v is None)
     instrument_root: str
     series_code: str
     contract_code: str
@@ -499,13 +500,13 @@ def resolve_near_month(
     return min(candidates, key=lambda item: _maturity_key(item.contract_maturity), default=None)
 
 
-def _session_dates(start: date, end: date) -> tuple[date, ...]:
+def _session_dates(start: date, end: date, *, night_end_dates: bool = False) -> tuple[date, ...]:
     if end < start:
         return ()
     return tuple(
         current
         for offset in range((end - start).days + 1)
-        if is_exchange_session_date("XKRX", current := start + timedelta(days=offset))
+        if is_exchange_session_date("XKRX", (current := start + timedelta(days=offset)) - timedelta(days=int(night_end_dates)))
     )
 
 
@@ -536,9 +537,10 @@ def _complete_baseline(
     *,
     start: date,
     timeframe: str,
+    night_end_dates: bool = False,
 ) -> KrxNightDailyBar | None:
     previous_start, previous_end = _previous_bounds(start, timeframe)
-    expected = _session_dates(previous_start, previous_end)
+    expected = _session_dates(previous_start, previous_end, night_end_dates=night_end_dates)
     bars = [all_contract_bars[value] for value in expected if value in all_contract_bars]
     if not expected or len(bars) != len(expected):
         return None
@@ -552,9 +554,10 @@ def _aggregate(
     timeframe: Literal["WEEKLY", "MONTHLY"],
     same_contract: Mapping[date, KrxNightDailyBar],
     all_product: Mapping[date, tuple[KrxNightDailyBar, ...]],
+    night_end_dates: bool = False,
 ) -> KrxNightAggregateBar:
     start, end = _period_bounds(selected.reference_date, timeframe)
-    expected = _session_dates(start, end)
+    expected = _session_dates(start, end, night_end_dates=night_end_dates)
     elapsed = tuple(value for value in expected if value <= selected.reference_date)
     future = tuple(value for value in expected if value > selected.reference_date)
     included = [same_contract[value] for value in elapsed if value in same_contract]
@@ -576,6 +579,7 @@ def _aggregate(
         same_contract,
         start=start,
         timeframe=timeframe,
+        night_end_dates=night_end_dates,
     )
     close = included[-1].close
     change_value = close - baseline.close if baseline is not None else None
@@ -630,6 +634,7 @@ def build_same_contract_timeframes(
     daily_change_pct: float | None = None,
     daily_baseline_date: date | None = None,
     daily_baseline_close: float | None = None,
+    night_end_dates: bool = False,
 ) -> KrxNightTimeframes | None:
     lookback = reference_date.replace(day=1) - timedelta(days=45)
     all_bars = load_history(
@@ -742,6 +747,7 @@ def build_same_contract_timeframes(
         source_fingerprints=(selected.normalized_fingerprint,),
     )
     return KrxNightTimeframes(
+        calendar_contract='KRX_NIGHT_END_DATE_V1' if night_end_dates else None,
         instrument_root=instrument_root,
         series_code=selected.series_code,
         contract_code=selected.contract_code,
@@ -752,6 +758,7 @@ def build_same_contract_timeframes(
             instrument_root=instrument_root,
             selected=selected,
             timeframe="WEEKLY",
+            night_end_dates=night_end_dates,
             same_contract=same_contract,
             all_product=by_date,
         ),
@@ -759,6 +766,7 @@ def build_same_contract_timeframes(
             instrument_root=instrument_root,
             selected=selected,
             timeframe="MONTHLY",
+            night_end_dates=night_end_dates,
             same_contract=same_contract,
             all_product=by_date,
         ),
