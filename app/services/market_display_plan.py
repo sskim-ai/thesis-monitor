@@ -60,10 +60,8 @@ class MarketDisplayPlan(BaseModel):
 def build_display_plan(source, *, market, assessment_date, eligible_refs, display_view=None, sector_taxonomy_version=None, macro_display_capture=None):
     macro_claims = {}
     if macro_display_capture is not None:
-        if market != 'us':raise ValueError('display_macro_capture_US_only')
-        from app.services.dated_macro_display_claims import load_claims
-        macro_display_capture = MacroCaptureSelection.model_validate(macro_display_capture)
-        macro_claims = {c['series_code']:c for c in load_claims(macro_display_capture)}
+        # A pinned archive is not a current Parent/run/cutoff authorization.
+        raise ValueError('sealed_macro_capture_offline_source_only_not_current_owner')
     if sector_taxonomy_version not in (None, 'sector-universe-user-confirmed-v2'):
         raise ValueError('display_sector_taxonomy_version')
     confirmed = sector_taxonomy_version is not None

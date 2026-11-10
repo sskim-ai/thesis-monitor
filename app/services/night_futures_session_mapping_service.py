@@ -9,7 +9,7 @@ import exchange_calendars as exchange_calendar
 
 NIGHT_FUTURES_SESSION_DATE_CONTRACT = "night-futures-session-date-v2"
 US_MORNING_NIGHT_REFERENCE_DATE_CONTRACT = (
-    "us-morning-night-reference-date-v3"
+    "us-morning-night-reference-date-v4-end-date"
 )
 KST = ZoneInfo("Asia/Seoul")
 NIGHT_SESSION_COMPLETION_TIME = time(6, 0)
@@ -40,6 +40,8 @@ class UsMorningNightReferenceDate:
     exchange_calendar: str
     reference_rule: str
     session_clock_finality: str
+    night_trade_date: date
+    regular_reference_date: date
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -51,40 +53,32 @@ def resolve_us_morning_night_reference_date(
     us_regular_session_date: date | None = None,
     max_lookback_days: int = 20,
 ) -> UsMorningNightReferenceDate | None:
-    """Resolve the product reference date for the US morning digest.
-
-    The date owner is XKRX, not the US session and not calendar subtraction.
-    Finality remains an independent wall-clock condition.
-    """
+    """Keep the KRX night end date separate from its preceding DAY baseline."""
     observation_kst = (
         observation_time.replace(tzinfo=KST)
         if observation_time.tzinfo is None
         else observation_time.astimezone(KST)
     )
-    try:
-        calendar = exchange_calendar.get_calendar("XKRX")
-        for days_back in range(1, max_lookback_days + 1):
-            candidate = observation_kst.date() - timedelta(days=days_back)
-            if not calendar.is_session(candidate):
-                continue
-            return UsMorningNightReferenceDate(
-                contract=US_MORNING_NIGHT_REFERENCE_DATE_CONTRACT,
-                observation_time_kst=observation_kst,
-                us_regular_session_date=us_regular_session_date,
-                expected_reference_date=candidate,
-                exchange_calendar="XKRX",
-                reference_rule=(
-                    "latest_valid_xkrx_business_date_strictly_before_kst_date"
-                ),
-                session_clock_finality=(
-                    "FINAL_BY_06_00_KST"
-                    if observation_kst.timetz().replace(tzinfo=None)
-                    >= NIGHT_SESSION_COMPLETION_TIME
-                    else "BEFORE_06_00_KST"
-                ),
-            )
-    except (ValueError, IndexError, TypeError):
-        return None
+    mapping = map_latest_completed_krx_night_session(
+        observation_kst, us_regular_session_date=us_regular_session_date,
+        max_lookback_days=max_lookback_days,
+    )
+    if mapping is not None:
+        return UsMorningNightReferenceDate(
+            contract=US_MORNING_NIGHT_REFERENCE_DATE_CONTRACT,
+            observation_time_kst=observation_kst,
+            us_regular_session_date=us_regular_session_date,
+            expected_reference_date=mapping.provider_night_bas_dd,
+            exchange_calendar="XKRX",
+            reference_rule="KRX_night_trade_date_is_end_date_DAY_baseline_is_start_date",
+            session_clock_finality=(
+                "FINAL_BY_06_00_KST"
+                if observation_kst.timetz().replace(tzinfo=None) >= NIGHT_SESSION_COMPLETION_TIME
+                else "BEFORE_06_00_KST"
+            ),
+            night_trade_date=mapping.provider_night_bas_dd,
+            regular_reference_date=mapping.krx_regular_business_date,
+        )
     return None
 
 

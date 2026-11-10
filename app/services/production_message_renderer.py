@@ -22,6 +22,8 @@ def source_only_message(owner, handle):
 
 
 def market_message(session, *, sector_taxonomy_version=None, macro_display_capture=None):
+    if macro_display_capture is not None:
+        raise ValueError('sealed_macro_capture_offline_source_only_not_current_owner')
     data = session.projected[session.market]
     packet, context = data['packet'], data['context']
     output = session.markets[session.market]

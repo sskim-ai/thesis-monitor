@@ -128,6 +128,9 @@ def materialize_night_probe(probe: KrxNightFuturesProbeResult, *, history_direct
                     "session_basis_contract": ("night-futures-session-basis-v1"),
                     "session_type": item.session_type,
                     "session_date": item.session_date.isoformat(),
+                    "night_trade_date": item.session_date.isoformat(),
+                    "regular_reference_date": item.reference_date.isoformat(),
+                    "observation_time_kst": probe.fetched_at.astimezone(KST).isoformat(),
                     "trade_date": item.session_date.isoformat(),
                     "session_open": datetime.combine(
                         item.reference_date, time(18), tzinfo=KST

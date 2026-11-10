@@ -183,3 +183,34 @@ def verify_us_source_preview(output,selection):
     if digest(output)!=digest(expected) or output['text']!=expected['text']:raise ValueError('macro_preview_complete_audit_mismatch')
     return dict(status='PASS',scope='FULL_BODY_INCLUDING_AUXILIARY',text_sha256=expected['text_sha256'],
         claim_set_sha256=expected['claim_set_sha256'],direction_eligible=False)
+
+
+def render_kr_source_preview(selection):
+    """Hide ungenerated stance labels only; preserve the dated original fields."""
+    selection=MacroCaptureSelection.model_validate(selection)
+    p=Path(selection.archive_path)
+    if any(x.is_symlink() for x in (p,*p.parents)) or hashlib.sha256(p.read_bytes()).hexdigest()!=selection.archive_sha256:
+        raise ValueError('kr_preview_archive_binding')
+    with zipfile.ZipFile(p) as z:
+        name='REAL_KR_MARKET_NO_SEND.json';raw=z.read(name)
+        pin=json.loads(z.read('MANIFEST.json'))['files'][name]
+        if len(raw)!=pin['bytes'] or hashlib.sha256(raw).hexdigest()!=pin['sha256']:
+            raise ValueError('kr_preview_member_binding')
+        original=json.loads(raw)
+    if (original['market']!='kr' or original['FullMarketParent'] is not False
+            or original['NO_SEND'] is not True or original['market_judgment'] is not None
+            or original['confidence'] is not None):
+        raise ValueError('kr_preview_source_only_scope')
+    text=original['text'].replace(' · 판단 유보 / 확신도 산정 불가','')
+    return dict(contract='dated-KR-user-message-format-v2',text=text,
+        text_sha256=hashlib.sha256(text.encode()).hexdigest(),original=original,
+        original_message_sha256=hashlib.sha256(raw).hexdigest(),source_archive_sha256=selection.archive_sha256,
+        session=original['session'],market_judgment=None,confidence=None,status='PARTIAL',
+        NO_SEND=True,default_enabled=False,full_market_parent=False,direction_eligible=False)
+
+
+def verify_kr_source_preview(output,selection):
+    expected=render_kr_source_preview(selection)
+    if output!=expected:raise ValueError('kr_preview_complete_audit_mismatch')
+    return dict(status='PASS',scope='FULL_BODY_AND_ORIGINAL_FIELDS',text_sha256=expected['text_sha256'],
+        market_judgment=None,confidence=None,direction_eligible=False)
