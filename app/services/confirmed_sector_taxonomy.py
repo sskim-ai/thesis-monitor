@@ -25,8 +25,18 @@ KR_NAMES = {
 SIZE_CODES = {'KOSPI': ('002', '003', '004', '604', '605'),
               'KOSDAQ': ('138', '139', '140', '142', '143', '144', '145', '150', '151')}
 PARENT_CODES = {'KOSPI': '027', 'KOSDAQ': '106'}
+PROVIDERS = {'us': 'ohlcv_analyst', 'kr': 'kiwoom_rest'}
+AUX_GROUPS = {
+    'KOSPI': {'002': 'SIZE', '003': 'SIZE', '004': 'SIZE', '604': 'STYLE', '605': 'STYLE'},
+    'KOSDAQ': {'138': 'SIZE', '139': 'SIZE', '140': 'SIZE', '142': 'COMPANY_SEGMENT',
+               '143': 'COMPANY_SEGMENT', '144': 'COMPANY_SEGMENT', '145': 'COMPANY_SEGMENT',
+               '150': 'SIZE', '151': 'UNIVERSE'},
+}
+AUX_LABELS = {'SIZE': '규모별 지수(별도)', 'STYLE': '스타일 지수(별도)',
+              'COMPANY_SEGMENT': '기업유형 지수(별도)', 'UNIVERSE': '구성범위 지수(별도)'}
 REGISTRY = dict(version=VERSION, us_broad=US_BROAD, us_watch=('SOXX',),
                 kr_names=KR_NAMES, size_codes=SIZE_CODES, parent_codes=PARENT_CODES,
+                display_revision='sector-display-consumer-v3', providers=PROVIDERS, auxiliary_groups=AUX_GROUPS,
                 unresolved={'KOSPI': ('021', '603'), 'KOSDAQ': ('160', '165')})
 REGISTRY_SHA256 = digest(REGISTRY)
 
@@ -57,6 +67,22 @@ def classify_row(row, market):
     return 'KR_DETAILED_INDUSTRY', 'original_independent_detailed_code'
 
 
+def auxiliary_label(market, venue, code):
+    return '반도체 관심 업종(별도)' if market == 'us' else AUX_LABELS[AUX_GROUPS[venue][code]]
+
+
+def relative_rank_text(text):
+    return text.replace(' TOP3', ' 상대 강세 TOP3').replace(' BOTTOM3', ' 상대 약세 BOTTOM3')
+
+
+def display_fact_classification(fact, market):
+    """Display selection only; existing current/eligible/numeric checks still apply."""
+    fields = fact['fields']
+    if fields.get('provider', PROVIDERS[market]) != PROVIDERS[market]:
+        raise ValueError('confirmed_sector_provider_mismatch')
+    return classify_row(fields, market)
+
+
 def render_confirmed_sectors(reference):
     """Called only after original archive/raw/value pin checks in the adapter."""
     from app.services.dated_market_legacy_adapter import component_sector_source, _render_component_sectors
@@ -84,7 +110,9 @@ def render_confirmed_sectors(reference):
             if row.get('metric_role') not in {'actual_sector_breadth', 'sector_price_proxy'}:
                 raise ValueError('confirmed_sector_auxiliary_basis')
             valid = valid and row.get('listed_count', 0) > 0
-        binding = dict(provider='kiwoom_rest', venue=scope, raw_symbol=code,
+        if row.get('provider', PROVIDERS[market]) != PROVIDERS[market]:
+            raise ValueError('confirmed_sector_provider_mismatch')
+        binding = dict(provider=PROVIDERS[market], venue=scope, raw_symbol=code,
             source_taxonomy='configured-sector-etf-proxies' if market == 'us' else row['taxonomy'],
             registry_version=VERSION, registry_sha256=REGISTRY_SHA256,
             source_row_sha256=digest(row), component_sha256=reference['original_component_sha256'],
@@ -95,7 +123,8 @@ def render_confirmed_sectors(reference):
         if valid and category in {'US_BROAD_SECTOR', 'KR_DETAILED_INDUSTRY'}:
             projected['value'][key].append(deepcopy(row))
         elif valid and category in {'US_SEMICONDUCTOR_WATCH', 'KR_SIZE_STYLE_INDEX'}:
-            label = '반도체 관심 업종(별도)' if market == 'us' else '규모별 지수(별도)'
+            label = auxiliary_label(market, scope, code)
+            binding['auxiliary_group'] = 'SEMICONDUCTOR_WATCH' if market == 'us' else AUX_GROUPS[scope][code]
             name = code if market == 'us' else row['sector']
             auxiliary.append(dict(binding=binding, text=f'{scope} {label} {name}: {value:+.2f}% · {session} · source-row {digest(row)}'))
     # This is an internal filtered view of an already verified original value,
@@ -111,6 +140,18 @@ def render_confirmed_sectors(reference):
         categories=dict(Counter(x['category'] for x in ledger if x['venue'] == venue)), ranking=counts[venue])
         for venue in (('US',) if market == 'us' else ('KOSPI', 'KOSDAQ'))}
     result['coverage'] = 'PASS' if all(v['ranking'] >= 6 for v in result['candidate_counts'].values()) else 'PARTIAL_SECTOR_COVERAGE'
-    result['text'] += '\n'.join(x['text'] for x in auxiliary) + '\n'
+    result['text'] = relative_rank_text(result['text']) + '\n'.join(x['text'] for x in auxiliary) + '\n'
     result['text_sha256'] = hashlib.sha256(result['text'].encode()).hexdigest()
+    result['core_audit_scope'] = 'Canonical core only; complete output requires retained-output regeneration audit'
     return result
+
+
+def verify_retained_sector_output(output, **custody):
+    """Rebuild from backend-selected custody, not a supplied PASS or rehash."""
+    from app.services.dated_market_legacy_adapter import render_retained_component_sectors
+    expected = render_retained_component_sectors(**custody, taxonomy_version=VERSION)
+    if type(output) is not dict or digest(output) != digest(expected) or output.get('text') != expected['text']:
+        raise ValueError('confirmed_sector_complete_output_mismatch')
+    return dict(status='PASS', scope='CORE_AND_AUXILIARY_COMPLETE_BYTES_AND_BINDINGS',
+                text_sha256=expected['text_sha256'], registry_sha256=REGISTRY_SHA256,
+                source_only=True, full_market_parent=False, NO_SEND=True)

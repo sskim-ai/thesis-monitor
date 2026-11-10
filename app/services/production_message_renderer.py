@@ -21,7 +21,7 @@ def source_only_message(owner, handle):
     return render_source_only_report(owner, handle)
 
 
-def market_message(session):
+def market_message(session, *, sector_taxonomy_version=None):
     data = session.projected[session.market]
     packet, context = data['packet'], data['context']
     output = session.markets[session.market]
@@ -30,7 +30,8 @@ def market_message(session):
             or market_owner.numeric_boundary(context, source)['status'] != 'PASS'):
         raise ValueError('production_market_render_owner_gap')
     display = build_display_plan(source, market=session.market, assessment_date=packet['assessment_date'],
-        eligible_refs=context['request_eligible_refs'], display_view=data['views']['display'])
+        eligible_refs=context['request_eligible_refs'], display_view=data['views']['display'],
+        sector_taxonomy_version=sector_taxonomy_version)
     receipt = dict(status='PASS', errors=[], market=session.market, assessment_date=packet['assessment_date'],
         source_context_sha256=digest(source), decision_sha256=digest(output),
         numeric_catalog_sha256=digest(context['numeric_catalog']), display_plan_sha256=digest(display.model_dump(mode='json')))

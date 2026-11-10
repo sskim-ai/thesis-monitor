@@ -52,9 +52,15 @@ class MarketDisplayPlan(BaseModel):
     eligible_refs: tuple[str, ...]
     items: tuple[DisplayItem, ...]
     display_view: MarketUserDisplayView | None = None
+    sector_taxonomy_version: Literal['sector-universe-user-confirmed-v2'] | None = None
 
 
-def build_display_plan(source, *, market, assessment_date, eligible_refs, display_view=None):
+def build_display_plan(source, *, market, assessment_date, eligible_refs, display_view=None, sector_taxonomy_version=None):
+    if sector_taxonomy_version not in (None, 'sector-universe-user-confirmed-v2'):
+        raise ValueError('display_sector_taxonomy_version')
+    confirmed = sector_taxonomy_version is not None
+    if confirmed:
+        from app.services.confirmed_sector_taxonomy import display_fact_classification, auxiliary_label, relative_rank_text, REGISTRY_SHA256, PROVIDERS
     session = source.get('session') or {}
     completed = session.get('latest_completed_regular_session_date')
     if (market not in {'us', 'kr'} or date.fromisoformat(completed) > date.fromisoformat(assessment_date)
@@ -203,6 +209,18 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
                 if not identity or identity in identities:
                     raise ValueError('ambiguous_display_sector:' + venue)
                 identities.add(identity)
+                if confirmed:
+                    category, reason = display_fact_classification(fact, market)
+                    if category not in {'US_BROAD_SECTOR', 'KR_DETAILED_INDUSTRY'}:
+                        if category in {'US_SEMICONDUCTOR_WATCH', 'KR_SIZE_STYLE_INDEX'}:
+                            if market == 'kr' and (fields.get('listed_count') is None or fields['listed_count'] <= 0):
+                                continue
+                            label = auxiliary_label(market, venue, identity)
+                            add('sector_auxiliary', venue + ' ' + label, [fact], [binding],
+                                text=f"{venue} {label} {fields.get('sector') or identity}: {binding.value:+.2f}% · {completed}",
+                                proof=dict(provider=PROVIDERS[market], registry_sha256=REGISTRY_SHA256,
+                                    source_fact_sha256=digest(fact), category=category, reason=reason))
+                        continue
                 candidates.append((fact, binding))
         ordered = sorted(candidates, key=lambda pair: (-pair[1].value, pair[0]['fact_id']))
         proof = dict(venue=venue, session=completed,
@@ -215,7 +233,7 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
                 continue
             values = [f"{f['fields'].get('sector') or f['fields'].get('label')}: {b.value:+.2f}%" for f, b in selected]
             add('sectors', venue + ' ' + ranking, [f for f, _ in selected], [b for _, b in selected],
-                text=venue + ' ' + ranking + ' · ' + ' / '.join(values), proof=proof)
+                text=(relative_rank_text(venue + ' ' + ranking) if confirmed else venue + ' ' + ranking) + ' · ' + ' / '.join(values), proof=proof)
 
     if market == 'kr':
         macro('USDKRW')
@@ -231,12 +249,13 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
             unavailable_text='한국 야간선물 · KOSPI200\n일: 자료 부족\n주: 자료 부족\n월: 자료 부족')
     return MarketDisplayPlan(market=market, assessment_date=assessment_date, completed_session=completed,
         internal_source_sha256=digest(source), eligible_refs=tuple(sorted(eligible_refs)), items=tuple(items),
-        display_view=display_view)
+        display_view=display_view, sector_taxonomy_version=sector_taxonomy_version)
 
 
 def render_display_plan(plan, source, narrative):
     expected = build_display_plan(source, market=plan.market, assessment_date=plan.assessment_date,
-                                  eligible_refs=plan.eligible_refs, display_view=plan.display_view)
+                                  eligible_refs=plan.eligible_refs, display_view=plan.display_view,
+                                  sector_taxonomy_version=plan.sector_taxonomy_version)
     if plan != expected:
         raise ValueError('selected_market_display_binding_mismatch')
     if any(char.isnumeric() for char in narrative):
