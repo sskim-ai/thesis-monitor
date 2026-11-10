@@ -11,6 +11,10 @@ SERIES=('DGS3','DGS5','DGS10','DGS30','VIXCLS','DCOILWTICO','DTWEXBGS')
 YIELDS=SERIES[:4]
 CONTRACT='previous-observation-verified-display-only-v1'
 
+def validate_series_unit(series,unit):
+    expected='percent' if series in YIELDS else 'usd_per_barrel' if series=='DCOILWTICO' else 'index'
+    if series not in SERIES or unit!=expected:raise ValueError('macro_display_series_unit')
+
 class MacroCaptureSelection(BaseModel):
     """A backend-selected file reference, not an Owner or permission token."""
     model_config=ConfigDict(extra='forbid',frozen=True)
@@ -101,6 +105,7 @@ def load_claims(selection):
         claims=[]
         for series in SERIES:
             source=max(rows[series],key=lambda x:x['observed_at'])
+            validate_series_unit(series,source['unit'])
             temporal=source['raw_payload']['publication_context']
             receipts=[r for r in provider['original_receipts'] if r['request']['params'].get('series_id')==series]
             if len(receipts)!=1:raise ValueError('macro_display_receipt_ambiguity')

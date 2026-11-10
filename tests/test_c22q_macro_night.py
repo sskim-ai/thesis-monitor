@@ -130,3 +130,9 @@ def test_raw_night_finality_and_raw_date(kind):
         raw_payload_sha256='a'*64,raw_relative_path='fixture-only')
     if kind in ('null','forged_bas_dd'):assert not result.bars
     else:assert result.bars[0].bar_finality==('UNFINALIZED' if kind=='before' else 'FINAL')
+
+
+@pytest.mark.parametrize('series,wrong_unit',[('DGS3','bp'),('DCOILWTICO','percent')])
+def test_series_unit_cannot_be_reinterpreted(series,wrong_unit):
+    from app.services.dated_macro_display_claims import validate_series_unit
+    with pytest.raises(ValueError):validate_series_unit(series,wrong_unit)
