@@ -82,7 +82,8 @@ def us_market_aggregate_owner(*, role: SourceRole, source_url: str,
 
 def kiwoom_aggregate_owner(*, role: SourceRole, observed_at: datetime, max_pages: int,
                            max_requests_per_page: int, policy: UnifiedSourcePolicy,
-                           consumer_complete: bool = False) -> OwnerAdapter:
+                           consumer_complete: bool = False,
+                           aggregate_flows_only: bool = False) -> OwnerAdapter:
     from app.providers.kiwoom_rest_client import KiwoomCallStats, KiwoomRestResponse, payload_sha256
     from app.services.kiwoom_kr_market_context_service import (
         KiwoomKrMarketContextService, kiwoom_market_reads,
@@ -97,6 +98,10 @@ def kiwoom_aggregate_owner(*, role: SourceRole, observed_at: datetime, max_pages
         raise ValueError("source_timezone_required")
     if consumer_complete and role.key != "kr_local_indices_sectors_breadth":
         raise ValueError("consumed_page_owner_scope_mismatch")
+    if type(aggregate_flows_only) is not bool:
+        raise ValueError('aggregate_only_explicit_boolean_required')
+    if aggregate_flows_only and role.key not in {'kr_local_indices_sectors_breadth','kr_market_investor_flows'}:
+        raise ValueError('aggregate_only_original_market_role_required')
 
     def replay(graph: VerifiedAggregate, cutoff: datetime) -> OwnerProjection:
         receipt = graph.receipt
@@ -171,7 +176,9 @@ def kiwoom_aggregate_owner(*, role: SourceRole, observed_at: datetime, max_pages
         if client.index != len(graph.child_receipts):
             raise ValueError("kiwoom_owner_unconsumed_children")
         value = result.cross_section.model_dump(mode="json")
-        if role.key == "kr_local_indices_sectors_breadth":
+        if aggregate_flows_only:
+            value = aggregate_flow_reference(result, session=role.session)
+        elif role.key == "kr_local_indices_sectors_breadth":
             value = {k: value[k] for k in ("indices", "sectors", "breadth", "breadth_by_scope")}
         elif role.key == "kr_market_investor_flows" and not result.audit.blocked_concentration_markets:
             value = {k: value[k] for k in ("market_flows", "concentration")}
@@ -186,9 +193,35 @@ def kiwoom_aggregate_owner(*, role: SourceRole, observed_at: datetime, max_pages
     fingerprint = digest({"files": _fingerprints("app/services/unified_aggregate_owners.py",
         "app/services/kiwoom_kr_market_context_service.py", "app/providers/kiwoom_rest_client.py"),
         "observed_at": observed_at.isoformat(), "reads": [r.model_dump(mode="json") for r in reads]})
+    if aggregate_flows_only:
+        fingerprint=digest({'base':fingerprint,'scope':'AGGREGATE_ONLY_SOURCE_REFERENCE','consumer_complete':consumer_complete})
+        return OwnerAdapter('kiwoom-aggregate-flows-reference-v1',fingerprint,reject_single,replay,observed_at)
     if consumer_complete:
         from app.services.kiwoom_consumed_page_contract import CONTRACT
         fingerprint = digest({"base": fingerprint, "completion": _fingerprints(
             "app/services/kiwoom_consumed_page_contract.py")})
         return OwnerAdapter(CONTRACT, fingerprint, reject_single, replay, observed_at)
     return OwnerAdapter("kiwoom-child-owner-replay-v1", fingerprint, reject_single, replay)
+
+
+def aggregate_flow_reference(result, *, session):
+    """After full original page replay, expose ka10051 totals, not attribution."""
+    from app.services.kiwoom_kr_market_context_service import KiwoomMarketContextCollection
+    if type(result) is not KiwoomMarketContextCollection or str(result.audit.session_date)!=session:
+        raise ValueError('aggregate_only_original_collection_and_session')
+    rows=result.cross_section.market_flows;seen=set()
+    for row in rows:
+        key=(row.market,row.actor)
+        if (key in seen or row.market not in {'KOSPI','KOSDAQ'} or row.actor not in {'foreign','institution','retail'}
+                or row.currency!='KRW' or row.source_unit!='100M_KRW' or row.source_unit_scale_krw!=100_000_000
+                or row.exchange_basis!='KRX_NXT_INTEGRATED' or not isfinite(row.net_buy_amount)
+                or not row.source_ref or 'ka10051' not in row.source_ref or session not in row.source_ref):
+            raise ValueError('aggregate_only_scope_actor_unit_or_ref')
+        seen.add(key)
+    if seen!={(m,a) for m in ('KOSPI','KOSDAQ') for a in ('foreign','institution','retail')}:
+        raise ValueError('aggregate_only_complete_actor_market_set')
+    return dict(contract='kiwoom-aggregate-flows-reference-v1',scope='AGGREGATE_ONLY_SOURCE_REFERENCE',
+        session=session,market_flows=[r.model_dump(mode='json') for r in rows],
+        concentration=[],concentration_eligible=False,full_market_parent=False,economic_use=False,
+        blocked_concentration_markets=result.audit.blocked_concentration_markets,
+        reconciliations=[r.model_dump(mode='json') for r in result.audit.reconciliation])

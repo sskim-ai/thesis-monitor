@@ -69,14 +69,26 @@ def public_request(request):
     return {'method': request.method, 'route': route, 'params': params}
 
 
+SELECTED_FRED = ('DGS3','DGS5','DGS10','DGS30','VIXCLS','DCOILWTICO','DTWEXBGS')
+
+
+def replay_selected_market_publications(**kwargs):
+    """Opt-in dated seven-series FRED/ECOS level replay; no Full Market grant."""
+    return replay_fresh_publications(**kwargs, _selected_market_fields=True)
+
+
 def replay_fresh_publications(*, run_id, run_started_at, acquisition_cutoff, as_of,
-                              providers, policy, market_scope='ALL22'):
+                              providers, policy, market_scope='ALL22', _selected_market_fields=False):
     times = (run_started_at, acquisition_cutoff, as_of)
     if any(t.utcoffset() is None for t in times) or not run_started_at <= as_of <= acquisition_cutoff:
         raise ValueError('fresh_publication_generation_time_invalid')
     if market_scope not in {'ALL22', 'KR8_ONLY', 'US14_ONLY'}:
         raise ValueError('fresh_publication_market_scope_unknown')
-    expected = {'ecos'} if market_scope == 'KR8_ONLY' else set(PROVIDERS)
+    if type(_selected_market_fields) is not bool:
+        raise ValueError('publication_selection_requires_explicit_boolean')
+    if _selected_market_fields and market_scope != 'ALL22':
+        raise ValueError('selected_publication_scope_mismatch')
+    expected = {'fred','ecos'} if _selected_market_fields else {'ecos'} if market_scope == 'KR8_ONLY' else set(PROVIDERS)
     if set(providers) != expected:
         raise ValueError('fresh_publication_exact_provider_set_required')
 
@@ -117,11 +129,32 @@ def replay_fresh_publications(*, run_id, run_started_at, acquisition_cutoff, as_
                 return httpx.Response(row['http_status'], content=bodies[row['artifact']], request=request)
 
         transport = ReplayTransport()
-        provider = PROVIDERS[name](transport=transport, clock=lambda: transport.received_at)
+        options = {'series':SELECTED_FRED} if _selected_market_fields and name == 'fred' else {}
+        provider = PROVIDERS[name](transport=transport, clock=lambda: transport.received_at, **options)
         provider.settings = provider.settings.model_copy(update={name + '_api_key': 'offline-no-credential'})
         result = await provider.collect(as_of)
         if transport.errors or transport.index != len(receipts):
             raise ValueError('fresh_publication_request_replay_not_exact')
+        if _selected_market_fields:
+            allowed = set(SELECTED_FRED) if name == 'fred' else {'USDKRW'}
+            # A failed latest FRED row can leave an older row appended before
+            # the Provider reports its parse error. That is not latest proof.
+            if name=='fred' and result.warnings:
+                raise ValueError('selected_publication_source_parse_warning')
+            result.observations = [row for row in result.observations if row.series_code in allowed]
+            if ({row.series_code for row in result.observations} != allowed
+                    or len(receipts) != (7 if name == 'fred' else 1)):
+                raise ValueError('selected_publication_missing_or_extra_series')
+            seen=set()
+            for row in result.observations:
+                key=(row.series_code,row.observed_at)
+                unit=('원' if name=='ecos' else 'usd_per_barrel' if row.series_code=='DCOILWTICO'
+                    else 'index' if row.series_code in {'DTWEXBGS','VIXCLS'} else 'percent')
+                temporal=row.raw_payload['publication_context']
+                if (key in seen or row.unit!=unit or row.observed_at.date()>as_of.date()
+                        or temporal['query_as_of']!=as_of.isoformat()):
+                    raise ValueError('selected_publication_unit_period_or_duplicate')
+                seen.add(key)
         _bind_same_response_changes(result, as_of)
         value = TypeAdapter(MacroProviderResult).dump_python(result, mode='json')
         for observation in value['observations']:
@@ -137,7 +170,10 @@ def replay_fresh_publications(*, run_id, run_started_at, acquisition_cutoff, as_
         return output
 
     values = asyncio.run(run())
-    return dict(contract='fresh-publication-replay-v1', run_id=run_id,
+    result=dict(contract='dated-selected-market-publication-replay-v1' if _selected_market_fields else 'fresh-publication-replay-v1', run_id=run_id,
         run_started_at=run_started_at.isoformat(), acquisition_cutoff=acquisition_cutoff.isoformat(),
         query_as_of=as_of.isoformat(), providers=values, external_provider_calls=0,
         currentness_owner=SOURCE_TIME_CONTRACT, value_sha256=digest(values))
+    if _selected_market_fields:
+        result.update(scope='DATED_FIELDS_ONLY',full_market_parent=False,market_direction=False,default_enabled=False)
+    return result
