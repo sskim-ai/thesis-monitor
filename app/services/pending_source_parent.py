@@ -91,7 +91,7 @@ def _issue_parent(*,intake_owner,config,session,generation_id,cutoff,code_sha,
                 security_ids=(row['security_id'],),session=row['session'])
     elif not wire['stock_reads']:
         raise ValueError('pending_parent_original_chart_reads_required')
-    for read in wire['stock_reads']:
+    for read in (() if close_only else wire['stock_reads']):
         intake.consume_intake(intake_owner,generation_id=generation_id,role=read.role,
             security_ids=(read.canonical_security_id,),session=read.latest_completed_session)
     plan=wire['request_plan']
@@ -117,6 +117,8 @@ def _issue_parent(*,intake_owner,config,session,generation_id,cutoff,code_sha,
             from app.services.pending_completed_close_contract import CONTRACT as CLOSE_CONTRACT,PURPOSE as CLOSE_PURPOSE
             receipt.update(contract=CLOSE_CONTRACT,scope=CLOSE_PURPOSE,
                 chart_coverage=False,current_authority=False,valuation_use=False,economic_use=False)
+            if config.capture_selection.contract == 'scoped-price-capture-selection-v2':
+                receipt['close_selection_contract'] = config.capture_selection.contract
         _LIVE[parent]=dict(pid=os.getpid(),pins=pins(),intake=intake_owner,session=session,
             config=config,wire=wire,identities=identities,receipt=receipt,claimed=False,
             worker_pid=None,challenge=None,ack=False,close_only=close_only)
@@ -166,7 +168,7 @@ def state(parent):
         for row in requirements(s['config'],s['wire']):
             intake.consume_intake(s['intake'],generation_id=s['receipt']['generation_id'],role='completed_close',
                 security_ids=(row['security_id'],),session=row['session'])
-    for read in s['wire']['stock_reads']:
+    for read in (() if s.get('close_only') else s['wire']['stock_reads']):
         intake.consume_intake(s['intake'],generation_id=s['receipt']['generation_id'],role=read.role,
             security_ids=(read.canonical_security_id,),session=read.latest_completed_session)
     return s

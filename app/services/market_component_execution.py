@@ -124,10 +124,13 @@ def prepare_capture(*,parent,wire,session,base,credentials,inner,external_root,i
                 or any(d.endpoint_operation not in ('credential_exchange','ka10099','ka10001') for d in plan.descriptors)):
             raise ValueError('identity_capture_original_parent_and_twenty_cap_required')
     if completed_close_only:
-        from app.services.pending_completed_close_contract import PURPOSE
+        from app.services.pending_completed_close_contract import PURPOSE, requirements
         receipt=pending.resolve_parent(parent,plan=plan)
+        selected=config.capture_selection.contract=='scoped-price-capture-selection-v2'
+        if selected: requirements(config,wire)
         if (identity_only or receipt['scope']!=PURPOSE or receipt['maximum_attempts']>20
-                or len(plan.descriptors)!=15 or any(d.transient_retry_max for d in plan.descriptors)):
+                or (not selected and len(plan.descriptors)!=15)
+                or any(d.transient_retry_max for d in plan.descriptors)):
             raise ValueError('close_capture_original_typed_parent_and_fifteen_cap_required')
     if valuation_only:
         from app.services.registered_valuation_source_intent import PURPOSE
