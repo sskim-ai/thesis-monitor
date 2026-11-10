@@ -10,6 +10,7 @@ from app.macro.providers.market import MARKET_SYMBOLS
 from app.services.market_numeric_claim_service import digest, number, numeric_catalog
 from app.services.macro_source_time import CONTRACT as TIME_CONTRACT
 from app.services.market_display_view import MarketUserDisplayView, verify_display_view
+from app.services.dated_macro_display_claims import MacroCaptureSelection
 
 CONTRACT = 'market-selected-display-v1'
 US_SECTORS = tuple(k for k, v in MARKET_SYMBOLS.items() if v == 'sector')
@@ -53,9 +54,16 @@ class MarketDisplayPlan(BaseModel):
     items: tuple[DisplayItem, ...]
     display_view: MarketUserDisplayView | None = None
     sector_taxonomy_version: Literal['sector-universe-user-confirmed-v2'] | None = Field(default=None, exclude_if=lambda v: v is None)
+    macro_display_capture: MacroCaptureSelection | None = Field(default=None, exclude_if=lambda v: v is None)
 
 
-def build_display_plan(source, *, market, assessment_date, eligible_refs, display_view=None, sector_taxonomy_version=None):
+def build_display_plan(source, *, market, assessment_date, eligible_refs, display_view=None, sector_taxonomy_version=None, macro_display_capture=None):
+    macro_claims = {}
+    if macro_display_capture is not None:
+        if market != 'us':raise ValueError('display_macro_capture_US_only')
+        from app.services.dated_macro_display_claims import load_claims
+        macro_display_capture = MacroCaptureSelection.model_validate(macro_display_capture)
+        macro_claims = {c['series_code']:c for c in load_claims(macro_display_capture)}
     if sector_taxonomy_version not in (None, 'sector-universe-user-confirmed-v2'):
         raise ValueError('display_sector_taxonomy_version')
     confirmed = sector_taxonomy_version is not None
@@ -178,13 +186,27 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
         label = fields.get('label', series)
         text = f"{label}: {binding.value:,.2f}{suffix} ({fact['as_of_date']} 관측)" if valid else None
         bindings = [binding] if valid else []
+        derived = macro_claims.get(series)
+        if valid and derived is not None:
+            if (derived['raw_sha256'] != publication['response_sha256'] or derived['level'] != fields[key]
+                    or derived['observation_date'] != fact['as_of_date']
+                    or derived['query_as_of'] != publication['query_as_of']):
+                raise ValueError('display_macro_original_fact_binding')
+            if series in {'DGS3','DGS5','DGS10','DGS30'}:
+                from app.services.dated_macro_display_claims import yield_line
+                text = yield_line(label, derived['level'], derived['delta_bp'], derived['observation_date'], derived['previous_observation_date'])
+            elif series in {'DCOILWTICO','DTWEXBGS','VIXCLS'}:
+                delta = f"{derived['change_pct']:+.2f}%" if derived['change_pct'] is not None else '변동률 자료 부족'
+                previous = derived['previous_observation_date'] or '자료 부족'
+                text += f' · {delta} (직전 {previous} 대비)'
         if valid and series == 'USDKRW':
             change = bind(fact, 'change_pct', {'pct', 'percent'})
             if change and fields.get('today_signal_eligible') is True:
                 bindings.append(change)
                 text += f' · {change.value:+.2f}%'
         add('fx' if series == 'USDKRW' else 'macro', label, [fact] if valid else [], bindings, text=text,
-            proof={'publication_context_sha256': digest(publication)} if valid else {})
+            proof={'publication_context_sha256': digest(publication), **({'display_only_derived_claim_id':derived['claim_id'],
+                'derived_registry_sha256':digest(derived['numeric_registry']), 'direction_eligible':False} if derived else {})} if valid else {})
 
     if market == 'us':
         for series in US_MACRO:
@@ -249,13 +271,13 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
             unavailable_text='한국 야간선물 · KOSPI200\n일: 자료 부족\n주: 자료 부족\n월: 자료 부족')
     return MarketDisplayPlan(market=market, assessment_date=assessment_date, completed_session=completed,
         internal_source_sha256=digest(source), eligible_refs=tuple(sorted(eligible_refs)), items=tuple(items),
-        display_view=display_view, sector_taxonomy_version=sector_taxonomy_version)
+        display_view=display_view, sector_taxonomy_version=sector_taxonomy_version, macro_display_capture=macro_display_capture)
 
 
 def render_display_plan(plan, source, narrative):
     expected = build_display_plan(source, market=plan.market, assessment_date=plan.assessment_date,
                                   eligible_refs=plan.eligible_refs, display_view=plan.display_view,
-                                  sector_taxonomy_version=plan.sector_taxonomy_version)
+                                  sector_taxonomy_version=plan.sector_taxonomy_version, macro_display_capture=plan.macro_display_capture)
     if plan != expected:
         raise ValueError('selected_market_display_binding_mismatch')
     if any(char.isnumeric() for char in narrative):

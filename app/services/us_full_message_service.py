@@ -226,7 +226,8 @@ def _treasury_curve_block(
             lines.append(f"• {label}: 관측쌍 검증 실패")
             return
         date_label = observed[5:].replace("-", "/")
-        lines.append(f"• {label}: {level:.2f}% · {delta_bp:+.0f}bp ({date_label} 관측)")
+        from app.services.dated_macro_display_claims import yield_line
+        lines.append('• ' + yield_line(label, level, delta_bp, observed, previous_date))
         fact_ids.append(_fact_id(fact))
         observation_dates.append(observed)
 
