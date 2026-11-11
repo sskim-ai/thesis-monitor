@@ -130,7 +130,9 @@ def main(*, test_bootstrap=None):
             emit({'result': {'status': 'PASS' if len(rows) == len(frozen['stock_plan']['reads'])
                 and all(r['status'] == 'PASS' for r in rows) else 'SOURCE_PARTIAL', 'rows': rows}})
         elif command == {'discovery': True}:
-            if frozen['stock_plan']['contract'] == 'one-shot-kr8-source-acquisition-v1':
+            if (frozen['stock_plan']['contract'] == 'one-shot-kr8-source-acquisition-v1'
+                    or frozen['stock_plan']['contract'] == 'selected-original-stock-plan-v1'
+                    and frozen['stock_plan']['market'] == 'kr'):
                 raise ValueError('kr8_native_us_discovery_denied')
             if discovery_done:
                 raise ValueError('native_discovery_repeat_denied')

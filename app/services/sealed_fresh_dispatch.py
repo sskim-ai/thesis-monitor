@@ -246,6 +246,9 @@ def decode_request_plan(value):
     if kind == "current-scoped-source-request-plan-v1":
         from app.services.current_scoped_source_dispatch import CurrentScopedRequestPlan
         return CurrentScopedRequestPlan.model_validate(value)
+    if kind == "selected-original-source-request-plan-v1":
+        from app.services.selected_source_plan import SelectedRequestPlan
+        return SelectedRequestPlan.model_validate(value)
     return ProviderPlan.model_validate(value)
 
 

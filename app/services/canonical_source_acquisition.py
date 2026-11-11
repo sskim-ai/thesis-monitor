@@ -80,17 +80,25 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
         raise SourceSafetyStop('native_acquisition_generation_mismatch')
     from app.services.market_delta_acquisition import require_market_delta
     selected_phases = require_market_delta(frozen, dispatcher.plan)
-    kr_only = frozen.get('scope') == 'KR8_ONLY'
-    if kr_only:
+    from app.services.selected_source_plan import SCOPE, decode_stock_plan
+    selected = frozen.get('scope') == SCOPE
+    kr_only = frozen.get('scope') == 'KR8_ONLY' or selected and frozen.get('selected_market') == 'kr'
+    us_only = frozen.get('scope') == 'US14_ONLY' or selected and frozen.get('selected_market') == 'us'
+    if selected:
+        from app.services.selected_source_plan import SelectedRequestPlan
+        if (type(dispatcher.plan) is not SelectedRequestPlan
+                or dispatcher.plan.market != frozen.get('selected_market')
+                or decode_stock_plan(frozen).planning_only):
+            raise SourceSafetyStop('selected_current_dispatch_plan_required')
+    if kr_only and not selected:
         from scripts.kr8_source_scope import require_kr8_plan
         require_kr8_plan(frozen)
     if frozen.get('scope') == 'US14_ONLY':
         from scripts.us14_source_scope import require_us14_plan
         require_us14_plan(frozen)
     from app.services.completed_price_state import require_plan
-    from app.services.unified_stock_acquisition import StockPlan
     from app.services.sealed_completed_price import collect_one, documentation
-    close_slots = () if selected_phases is not None else require_plan(dispatcher.plan, StockPlan.model_validate(frozen['stock_plan']))
+    close_slots = () if selected_phases is not None else require_plan(dispatcher.plan, decode_stock_plan(frozen))
     if close_slots:
         documentation(root, frozen)
     sealed = SealedSourceTransport(dispatcher, inner, providers={d.provider for d in dispatcher.plan.descriptors})
@@ -271,7 +279,7 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
         if not kr_only:
             await phase('us-market', us_market)
         await phase('stock-native-replay', lambda: bridge.command({'replay-stocks': True}))
-        if frozen.get('scope') != 'US14_ONLY':
+        if not us_only:
             await phase('kr-market', kr_market)
         for ticker, plan in frozen['candidate']['financial_plans'].items():
             await phase('financial-'+ticker, lambda t=ticker, p=plan: financial(t, p))
