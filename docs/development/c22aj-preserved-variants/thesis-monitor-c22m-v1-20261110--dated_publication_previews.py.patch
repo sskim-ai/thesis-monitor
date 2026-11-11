@@ -1,0 +1,15 @@
+--- a/app/services/dated_publication_previews.py
++++ b/app/services/dated_publication_previews.py
+@@ -156 +156 @@
+-    from app.services.fresh_publication_replay import replay_fresh_publications, replay_selected_market_publications
++    from app.services.fresh_publication_replay import replay_fresh_publications
+@@ -176,4 +176 @@
+-    selected=capture.get('profile')=='dated-selected-market-publication-replay-v1'
+-    if capture.get('profile') not in (None,'dated-selected-market-publication-replay-v1'):
+-        raise ValueError('market_publication_profile_unknown')
+-    for provider in (('fred','ecos') if selected else ('fred','eia','ecos')):
++    for provider in ('fred','eia','ecos'):
+@@ -191,2 +188 @@
+-    replay_fn=replay_selected_market_publications if selected else replay_fresh_publications
+-    replay = replay_fn(run_id=run_ids.pop(),run_started_at=_aware(freeze['started_at']),
++    replay = replay_fresh_publications(run_id=run_ids.pop(),run_started_at=_aware(freeze['started_at']),

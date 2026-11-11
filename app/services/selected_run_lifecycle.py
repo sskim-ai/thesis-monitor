@@ -10,6 +10,8 @@ import json
 import os
 from pathlib import Path
 
+import httpx
+
 from app.services import prospective_class_c_owner as registration
 from app.services.unified_snapshot_contract import digest, encoded
 
@@ -19,7 +21,8 @@ STATES = ('NO_APPROVAL', 'APPROVED_FROZEN_RUN', 'REGISTRATION_CAPTURED',
 
 class SelectedRunLedger:
     def __init__(self, *, path, approval, master_id, children, provider_caps,
-                 max_http, max_models, database_identity):
+                 max_http, max_models, database_identity, onboarding=False, database_budget=None,
+                 wallclock_seconds_max=None, runtime_cap=None):
         decision = registration._approval(approval)
         if (not master_id or set(children) != {'us', 'kr'}
                 or len({c['generation'] for c in children.values()}) != 2
@@ -27,7 +30,7 @@ class SelectedRunLedger:
                 or any(not c['subjects'] or len(set(c['subjects'])) != len(c['subjects']) for c in children.values())
                 or sorted(t for c in children.values() for t in c['subjects']) != sorted(decision.subjects)
                 or any(type(n) is not int or n < 0 for n in (*provider_caps.values(), max_http, max_models))
-                or sum(provider_caps.values()) > max_http):
+                or (runtime_cap is None and sum(provider_caps.values()) > max_http)):
             raise ValueError('selected_frozen_run_scope_invalid')
         self.approval = approval
         self.path = Path(path)
@@ -39,12 +42,36 @@ class SelectedRunLedger:
             authorized_at=decision.effective_at.isoformat(), expires_at=decision.expires_at.isoformat(),
             children=deepcopy(children), provider_caps=dict(provider_caps), max_http=max_http,
             max_models=max_models, database_identity=database_identity, retry=0, send=False)
+        if onboarding:
+            from app.services.vnext_execution_profile import SOL_HIGH_V1
+            slots = {m: {t: ['CORE', 'DECISION'] for t in c['subjects']} for m,c in children.items()}
+            maximum = 2 * sum(len(c['subjects']) for c in children.values())
+            if maximum > max_models:
+                raise ValueError('selected_onboarding_model_reserve_exceeds_cap')
+            self.identity['onboarding'] = dict(slots=slots, max_models=maximum,
+                profile=SOL_HIGH_V1.contract, model=SOL_HIGH_V1.model, effort=SOL_HIGH_V1.effort)
+        if database_budget is not None:
+            if (not onboarding or not database_budget or (runtime_cap is None and sum(provider_caps.values()) != max_http) or any(
+                    type(n) is not int or n < 0 for n in database_budget.values())):
+                raise ValueError('selected_finite_database_budget_required')
+            self.identity['database_budget'] = dict(database_budget)
+        if wallclock_seconds_max is not None:
+            if type(wallclock_seconds_max) is not int or not 1 <= wallclock_seconds_max <= 86400:
+                raise ValueError('selected_finite_wallclock_max_required')
+            self.identity['wallclock_seconds_max'] = wallclock_seconds_max
+        if runtime_cap is not None:
+            if not runtime_cap.get('endpoints') or max_models>14:
+                raise ValueError('runtime_cap_endpoints_and_fourteen_model_max_required')
+            self.identity['runtime_cap'] = deepcopy(runtime_cap)
         self._event('OPEN')
         registration.bind_run_stop(approval,self.stop)
 
     def _external(self):
+        now = datetime.now(timezone.utc)
+        maximum = self.identity.get('wallclock_seconds_max')
+        if maximum is not None and now >= datetime.fromisoformat(self.identity['authorized_at'])+timedelta(seconds=maximum):
+            raise ValueError('selected_campaign_wallclock_exhausted')
         if self.approval is None:
-            now=datetime.now(timezone.utc)
             if not datetime.fromisoformat(self.identity['authorized_at'])<=now<datetime.fromisoformat(self.identity['expires_at']):
                 raise ValueError('selected_worker_frozen_approval_expired')
             return
@@ -86,7 +113,9 @@ class SelectedRunLedger:
                 db_connection_attempts=0, preopen_corrections=0, reserved_connection_unentered=False,
                 reserved_connection_continued=False,
                 plans={}, sources={}, captures=[], models={}, used={}, pending=None, completed=[],
-                http={}, http_total=0, model_total=0, db_select_reserved=0, db_select_actual=0)
+                http={}, http_total=0, source_http_total=0, model_total=0, db_select_reserved=0, db_select_actual=0,
+                onboarding_http_plans={}, onboarding_model_total=0, monitoring_model_total=0,
+                onboarding_accepted={}, onboarding_failed={}, database_used={}, wire_fingerprints=[],runtime=None)
             previous, count = None, 0
             for line in raw.splitlines():
                 row = json.loads(line)
@@ -109,6 +138,15 @@ class SelectedRunLedger:
     def _apply(self, s, event, v):
         children = self.identity['children']
         if event == 'OPEN': return
+        if event.startswith('PHYSICAL_'):
+            from app.services.campaign_runtime_cap import runtime_state,apply_runtime_event
+            if not self.identity.get('runtime_cap'):
+                raise ValueError('runtime_cap_not_enabled')
+            if s['runtime'] is None:s['runtime']=runtime_state()
+            apply_runtime_event(s['runtime'],event,v,self.identity)
+            s['http_total']=s['runtime']['total']
+            s['http']=dict(s['runtime']['providers'])
+            return
         if event == 'DB_AUDIT':
             if (not s['db_connection_attempts'] or v['connections'] != s['db_connection_attempts']
                     or not 0 <= v['completed'] <= v['attempted'] <= s['db_select_reserved']):
@@ -130,7 +168,56 @@ class SelectedRunLedger:
             return
         if s['state'] in ('STOPPED_NO_SEND', 'RENDERED_NO_SEND'):
             raise ValueError('selected_run_terminal_no_new_work')
-        if event == 'DB_INTENT':
+        if event == 'ONBOARDING_HTTP_PLAN':
+            m = v['market']
+            if (not self.identity.get('onboarding') or m not in children
+                    or m in s['onboarding_http_plans'] or s['http_total']
+                    or not v['logical_ids'] or len(set(v['logical_ids'])) != len(v['logical_ids'])):
+                raise ValueError('selected_onboarding_http_plan_not_frozen')
+            s['onboarding_http_plans'][m] = v
+        elif event == 'ONBOARDING_DB':
+            operation = v['operation']
+            maximum = self.identity.get('database_budget', {}).get(operation, 0)
+            used = s['database_used'].get(operation, 0)
+            if type(v['units']) is not int or v['units'] < 1 or used+v['units'] > maximum:
+                raise ValueError('selected_database_operation_budget_exhausted')
+            s['database_used'][operation] = used+v['units']
+        elif event == 'ONBOARDING_INTENT':
+            config = self.identity.get('onboarding', {})
+            m, ticker, stage, key = (v[k] for k in ('market', 'ticker', 'stage', 'key'))
+            subject = m+':'+ticker
+            slots = config.get('slots', {}).get(m, {}).get(ticker, ())
+            if (s['pending'] or key in s['used'] or stage not in slots
+                    or subject in s['onboarding_failed']
+                    or s['state'] not in ('APPROVED_FROZEN_RUN', 'REGISTRATION_CAPTURED')
+                    or s['onboarding_model_total'] >= config.get('max_models', 0)
+                    or s['model_total'] >= self.identity['max_models']
+                    or (stage == 'DECISION' and 'CORE' not in s['onboarding_accepted'].get(subject, {}))):
+                raise ValueError('selected_onboarding_duplicate_dependency_or_budget')
+            s['model_total'] += 1
+            s['onboarding_model_total'] += 1
+            s['used'][key] = v
+            s['pending'] = key
+        elif event == 'ONBOARDING_RESULT':
+            key = v['key']
+            call = s['used'].get(key, {})
+            if s['pending'] != key or not key.startswith('ONBOARDING:'):
+                raise ValueError('selected_onboarding_result_without_intent')
+            s['pending'] = None
+            s['completed'].append(key)
+            subject = call['market']+':'+call['ticker']
+            if v['ok']:
+                s['onboarding_accepted'].setdefault(subject, {})[call['stage']] = v['output_sha256']
+            else:
+                # Validation failure is subject-local; consumed slots never refill.
+                s['onboarding_failed'][subject] = v
+        elif event == 'ONBOARDING_SUBJECT_FAILED':
+            m, ticker = v['market'], v['ticker']
+            if (not self.identity.get('onboarding') or m not in children
+                    or ticker not in children[m]['subjects'] or s['pending']):
+                raise ValueError('selected_onboarding_failure_scope_invalid')
+            s['onboarding_failed'][m+':'+ticker] = v
+        elif event == 'DB_INTENT':
             if s['db_intent']: raise ValueError('selected_registration_already_attempted')
             s.update(db_intent=True, db_select_reserved=5)
         elif event == 'DB_OPEN':
@@ -152,7 +239,7 @@ class SelectedRunLedger:
                 db_select_actual=v['selects'], state='REGISTRATION_CAPTURED')
         elif event == 'PLAN':
             m = v['market']
-            if s['registration'] is None or m not in children or m in s['plans'] or s['http_total']:
+            if s['registration'] is None or m not in children or m in s['plans'] or s['source_http_total']:
                 raise ValueError('selected_plan_must_freeze_once_before_http')
             s['plans'][m] = v['sha256']
         elif event == 'CAPTURE':
@@ -169,10 +256,10 @@ class SelectedRunLedger:
             if set(s['sources']) == set(children): s['state'] = 'SOURCE_OWNED'
         elif event == 'MODEL_PLAN':
             m = v['market']
-            if set(s['sources']) != set(children) or m in s['models'] or s['model_total']:
+            if set(s['sources']) != set(children) or m in s['models'] or s['monitoring_model_total']:
                 raise ValueError('selected_model_source_or_freeze_gap')
             s['models'][m] = v
-            if sum(r['slots'] for r in s['models'].values()) > self.identity['max_models']:
+            if sum(r['slots'] for r in s['models'].values()) + self.identity.get('onboarding', {}).get('max_models', 0) > self.identity['max_models']:
                 raise ValueError('selected_model_plan_over_cap')
             if set(s['models']) == set(children): s['state'] = 'MODEL_BUDGETED'
         elif event == 'INTENT':
@@ -181,19 +268,34 @@ class SelectedRunLedger:
                 raise ValueError('selected_run_duplicate_or_parallel_intent')
             if kind == 'HTTP':
                 p = v['provider']
-                if (set(s['plans']) != set(children) or m in s['captures']
-                        or v['plan'] != s['plans'][m]
-                        or s['http_total'] >= self.identity['max_http']
-                        or s['http'].get(p, 0) >= self.identity['provider_caps'].get(p, 0)):
+                if v.get('phase') == 'ONBOARDING':
+                    plan = s['onboarding_http_plans'].get(m, {})
+                    scope_ok = (v['plan'] == plan.get('sha256') and v['logical_id'] in plan.get('logical_ids', ())
+                        and s['state'] in ('APPROVED_FROZEN_RUN', 'REGISTRATION_CAPTURED'))
+                else:
+                    scope_ok = (set(s['plans']) == set(children) and m not in s['captures']
+                        and v['plan'] == s['plans'][m])
+                if (not scope_ok or (not self.identity.get('runtime_cap') and (
+                        s['http_total'] >= self.identity['max_http']
+                        or s['http'].get(p, 0) >= self.identity['provider_caps'].get(p, 0)))):
                     raise ValueError('selected_physical_http_scope_or_budget')
-                s['http'][p] = s['http'].get(p, 0) + 1
-                s['http_total'] += 1
+                fingerprint = v.get('request_sha256')
+                if fingerprint and (m, fingerprint) in s['wire_fingerprints']:
+                    raise ValueError('selected_physical_request_already_attempted')
+                if fingerprint:
+                    s['wire_fingerprints'].append((m, fingerprint))
+                if not self.identity.get('runtime_cap'):
+                    s['http'][p] = s['http'].get(p, 0) + 1
+                    s['http_total'] += 1
+                if v.get('phase') != 'ONBOARDING':
+                    s['source_http_total'] += 1
             elif kind == 'MODEL':
                 if (s['state'] != 'MODEL_BUDGETED' or v['plan'] != s['models'][m]['sha256']
                         or v['slot'] not in s['models'][m]['slot_ids']
                         or s['model_total'] >= self.identity['max_models']):
                     raise ValueError('selected_model_scope_or_budget')
                 s['model_total'] += 1
+                s['monitoring_model_total'] += 1
             else: raise ValueError('selected_external_kind')
             s['used'][key] = v
             s['pending'] = key
@@ -204,7 +306,7 @@ class SelectedRunLedger:
             if not v['ok']: s['state'] = 'STOPPED_NO_SEND'
         elif event == 'RENDER':
             if (s['state'] != 'MODEL_BUDGETED' or s['pending']
-                    or s['model_total'] != sum(r['slots'] for r in s['models'].values())):
+                        or s['monitoring_model_total'] != sum(r['slots'] for r in s['models'].values())):
                 raise ValueError('selected_render_incomplete')
             s['state'] = 'RENDERED_NO_SEND'
         else: raise ValueError('selected_unknown_run_event')
@@ -276,18 +378,55 @@ class SelectedRunLedger:
             slot_ids=[s.slot_id for s in child.plan.slots])
 
     def before_http(self, *, market, provider, logical_id, plan_sha256):
-        self._external()
-        receipt=self.state()['registration_receipt']
-        if receipt is None or datetime.now(timezone.utc)>=datetime.fromisoformat(receipt['cutoff'])+timedelta(hours=1):
-            raise ValueError('selected_original_registration_http_window_expired')
+        self._external_http(require_registration=True)
         key = f'HTTP:{market}:{logical_id}'
         self._event('INTENT', key=key, kind='HTTP', market=market, provider=provider, plan=plan_sha256)
         return key
 
     def before_model(self, plan, slot):
         self._external()
+        if (self.state().get('runtime') or {}).get('first_external_failure') is not None:
+            raise ValueError('selected_external_failure_blocks_model')
         key = f'MODEL:{plan.cohort.run_id}:{slot["slot_id"]}'
         self._event('INTENT', key=key, kind='MODEL', market=slot['market'], slot=slot['slot_id'], plan=plan.sha256)
+        return key
+
+    def before_onboarding_model(self, *, market, ticker, stage, payload_sha256):
+        self._external()
+        if (self.state().get('runtime') or {}).get('first_external_failure') is not None:
+            raise ValueError('selected_external_failure_blocks_model')
+        key = f'ONBOARDING:{self.identity["children"][market]["generation"]}:{ticker}:{stage}'
+        self._event('ONBOARDING_INTENT', key=key, market=market, ticker=ticker,
+            stage=stage, payload_sha256=payload_sha256)
+        return key
+
+    def onboarding_model_result(self, key, *, ok, output_sha256, error_type=None):
+        self._event('ONBOARDING_RESULT', key=key, ok=ok is True,
+            output_sha256=output_sha256, error_type=error_type)
+
+    def fail_onboarding_subject(self, *, market, ticker, error_type):
+        self._event('ONBOARDING_SUBJECT_FAILED', market=market, ticker=ticker, error_type=error_type)
+
+    def bind_onboarding_http_plan(self, *, market, plan_sha256, logical_ids):
+        self._external()
+        self._event('ONBOARDING_HTTP_PLAN', market=market, sha256=plan_sha256, logical_ids=list(logical_ids))
+
+    def _external_http(self, *, require_registration):
+        self._external()
+        receipt = self.state()['registration_receipt']
+        if ((require_registration and receipt is None) or (receipt is not None and
+                datetime.now(timezone.utc) >= datetime.fromisoformat(receipt['cutoff'])+timedelta(hours=1))):
+            raise ValueError('selected_original_registration_http_window_expired')
+
+    def before_onboarding_database(self, operation, *, units=1):
+        self._external()
+        return self._event('ONBOARDING_DB', operation=operation, units=units)
+
+    def before_onboarding_http(self, *, market, provider, logical_id, plan_sha256, request_sha256=None):
+        self._external_http(require_registration=False)
+        key = f'HTTP:ONBOARDING:{market}:{logical_id}'
+        self._event('INTENT', key=key, kind='HTTP', phase='ONBOARDING', market=market,
+            provider=provider, plan=plan_sha256, logical_id=logical_id, request_sha256=request_sha256)
         return key
 
     def result(self, key, *, ok):
@@ -297,3 +436,56 @@ class SelectedRunLedger:
         result = master.combine(results)
         self._event('RENDER', messages_sha256=result['messages_sha256'])
         return result
+
+
+class OnboardingCampaignTransport(httpx.AsyncBaseTransport):
+    """Count onboarding wires through existing provider transport-injection ports."""
+    def __init__(self, *, ledger, market, plan_sha256, routes, inner):
+        frozen = ledger.state()['onboarding_http_plans'].get(market, {})
+        route_ids = [identity for r in routes for identity in self._ids(r)]
+        if (frozen.get('sha256') != plan_sha256
+                or set(route_ids) != set(frozen.get('logical_ids', []))
+                or len(route_ids) != len(frozen.get('logical_ids', []))):
+            raise ValueError('onboarding_http_exact_frozen_routes_required')
+        self.ledger, self.market, self.plan = ledger, market, plan_sha256
+        self.routes, self.inner = deepcopy(routes), inner
+
+    @staticmethod
+    def _ids(route):
+        maximum = route.get('maximum_attempts', 1)
+        if type(maximum) is not int or not 1 <= maximum <= 1000:
+            raise ValueError('onboarding_http_finite_route_cap_required')
+        return [route['logical_id'] if maximum == 1 else route['logical_id']+':'+str(i)
+                for i in range(maximum)]
+
+    async def handle_async_request(self, request):
+        matches = [route for route in self.routes if
+            (request.method, request.url.host) == (route['method'], route['host'])
+            and (request.url.path == route.get('path') or (
+                route.get('path_prefix') and request.url.path.startswith(route['path_prefix'])))
+            and all(request.url.params.get(key) == value for key,value in route.get('public_params', {}).items())]
+        if len(matches) != 1:
+            raise ValueError('onboarding_http_outside_frozen_plan')
+        route = matches[0]
+        used = self.ledger.state()['used']
+        identity = next((i for i in self._ids(route)
+            if f'HTTP:ONBOARDING:{self.market}:{i}' not in used), None)
+        if identity is None:
+            raise ValueError('onboarding_http_finite_route_exhausted')
+        # Persist public request identity, never credentials, headers or auth body.
+        from app.services.unified_run_artifacts import SECRET_KEY
+        public = sorted((k,v) for k,v in request.url.params.multi_items() if not SECRET_KEY.search(k))
+        fingerprint = digest((request.method,request.url.host,request.url.path,public))
+        key = self.ledger.before_onboarding_http(market=self.market, provider=route['provider'],
+            logical_id=identity, plan_sha256=self.plan, request_sha256=fingerprint)
+        try:
+            response = await self.inner.handle_async_request(request)
+        except BaseException:
+            self.ledger.result(key, ok=False)
+            raise
+        self.ledger.result(key, ok=200 <= response.status_code < 300)
+        return response
+
+    async def aclose(self):
+        # Existing short-lived provider clients do not own the campaign wire.
+        pass

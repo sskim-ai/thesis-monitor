@@ -1,0 +1,31 @@
+--- a/app/services/dated_split_research_consumer.py
++++ b/app/services/dated_split_research_consumer.py
+@@ -144 +144 @@
+-    _validate_shape_and_projection(message, view=view)
++    validate_message(message, view=view)
+@@ -148 +148 @@
+-def _validate_shape_and_projection(message, *, view):
++def validate_message(message, *, view):
+@@ -176,22 +175,0 @@
+-
+-
+-def validate_message(message, *, view, source_evidence=None):
+-    """Publication proof requires caller-loaded immutable seal members, not message-owned hashes."""
+-    _validate_shape_and_projection(message, view=view)
+-    if source_evidence is None:
+-        return dict(state='SOURCE_BOUND_PUBLICATION_NOT_PROVEN', publication_pass=False)
+-    evidence=deepcopy(source_evidence)
+-    receipt=evidence.pop('split_receipt',None)
+-    if (not receipt or receipt.get('state')!='ACCEPTED_PENDING_SUBSTANTIVE_REVIEW' or
+-            receipt.get('structural_semantic_acceptance') is not True or
+-            receipt.get('output_sha256')!=digest(evidence['split_raw']) or
+-            receipt.get('source_binding')!=json.loads(evidence['preview_raw'])['source_binding']):
+-        raise ValueError('original_split_acceptance_receipt_required')
+-    # The archive loader pins outer ZIP/member hashes. Never derive evidence from this message.
+-    expected=build_message(**evidence)
+-    if digest(encoded(view))!=expected['binding']['research_view_sha256']:
+-        raise ValueError('publication_source_view_mismatch')
+-    if encoded(message)!=encoded(expected):
+-        raise ValueError('source_bound_canonical_publication_mismatch')
+-    return dict(state='SOURCE_BOUND_PUBLICATION_PASS', publication_pass=True,
+-                canonical_sha256=digest(encoded(expected)), source_hashes=deepcopy(expected['sealed_hashes']))

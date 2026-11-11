@@ -1,7 +1,7 @@
 from pathlib import Path
 
 import pytest
-from pydantic import ValidationError
+from pydantic import SecretStr, ValidationError
 
 from app.config import Settings, get_settings
 from app.jobs.validate_env import main, validate_env_file
@@ -37,6 +37,112 @@ def test_known_krx_environment_setting_loads(tmp_path: Path) -> None:
     settings = Settings(_env_file=env_file)
 
     assert settings.krx_open_api_key == "dummy-key"
+
+
+def test_kis_credentials_are_optional() -> None:
+    settings = Settings(_env_file=None)
+
+    assert settings.kis_app_key is None
+    assert settings.kis_secret_app_key is None
+
+
+def test_kis_dotenv_credentials_are_secret_and_keep_kiwoom_settings(tmp_path: Path) -> None:
+    env_file = _write_env(
+        tmp_path / ".env",
+        [
+            "KIS_APP_KEY=synthetic-kis-app-key",
+            "KIS_SECRET_APP_KEY=synthetic-kis-secret-key",
+            "KIWOOM_APP_KEY=synthetic-kiwoom-app-key",
+            "KIWOOM_SECRET_KEY=synthetic-kiwoom-secret-key",
+        ],
+    )
+
+    settings = Settings(_env_file=env_file)
+
+    assert isinstance(settings.kis_app_key, SecretStr)
+    assert isinstance(settings.kis_secret_app_key, SecretStr)
+    assert settings.kis_app_key.get_secret_value() == "synthetic-kis-app-key"
+    assert settings.kis_secret_app_key.get_secret_value() == "synthetic-kis-secret-key"
+    assert settings.kiwoom_app_key == "synthetic-kiwoom-app-key"
+    assert settings.kiwoom_secret_key == "synthetic-kiwoom-secret-key"
+    for rendered in (repr(settings), str(settings), settings.model_dump_json()):
+        assert "synthetic-kis-app-key" not in rendered
+        assert "synthetic-kis-secret-key" not in rendered
+
+
+def test_kis_environment_credentials_load(monkeypatch) -> None:
+    monkeypatch.setenv("KIS_APP_KEY", "synthetic-environment-app-key")
+    monkeypatch.setenv("KIS_SECRET_APP_KEY", "synthetic-environment-secret-key")
+
+    settings = Settings(_env_file=None)
+
+    assert settings.kis_app_key.get_secret_value() == "synthetic-environment-app-key"
+    assert settings.kis_secret_app_key.get_secret_value() == "synthetic-environment-secret-key"
+
+
+def test_kis_credentials_do_not_leak_when_another_setting_is_invalid(tmp_path: Path) -> None:
+    env_file = _write_env(
+        tmp_path / ".env",
+        [
+            "KIS_APP_KEY=synthetic-error-app-key",
+            "KIS_SECRET_APP_KEY=synthetic-error-secret-key",
+            "DECISION_ENGINE_CANARY_ENABLED=true",
+        ],
+    )
+
+    with pytest.raises(ValidationError) as exc_info:
+        Settings(_env_file=env_file)
+
+    for rendered in (str(exc_info.value), repr(exc_info.value)):
+        assert "synthetic-error-app-key" not in rendered
+        assert "synthetic-error-secret-key" not in rendered
+    assert any("exact unique 2+2 subjects" in error["msg"] for error in exc_info.value.errors())
+
+
+def test_kis_credentials_do_not_hide_unknown_dotenv_keys(tmp_path: Path) -> None:
+    env_file = _write_env(
+        tmp_path / ".env",
+        [
+            "KIS_APP_KEY=synthetic-kis-app-key",
+            "KIS_SECRET_APP_KEY=synthetic-kis-secret-key",
+            "KIS_APP_KE=synthetic-unknown-key",
+        ],
+    )
+
+    with pytest.raises(ValidationError) as exc_info:
+        Settings(_env_file=env_file)
+
+    assert Settings.model_config["extra"] == "forbid"
+    assert any(error["type"] == "extra_forbidden" for error in exc_info.value.errors())
+    assert "synthetic-unknown-key" not in str(exc_info.value)
+
+
+def test_kis_env_validator_reports_errors_without_credential_values(
+    tmp_path: Path, monkeypatch, capsys
+) -> None:
+    env_file = _write_env(
+        tmp_path / ".env",
+        [
+            "KIS_APP_KEY=synthetic-validator-app-key",
+            "KIS_SECRET_APP_KEY=synthetic-validator-secret-key",
+            "KIS_APP_KE=synthetic-validator-unknown-key",
+        ],
+    )
+    monkeypatch.setattr("sys.argv", ["validate_env", "--env-file", str(env_file)])
+
+    with pytest.raises(SystemExit) as exc_info:
+        main()
+
+    output = capsys.readouterr()
+    assert exc_info.value.code == 1
+    assert "KIS_APP_KE" in output.out
+    for secret in (
+        "synthetic-validator-app-key",
+        "synthetic-validator-secret-key",
+        "synthetic-validator-unknown-key",
+    ):
+        assert secret not in output.out
+        assert secret not in output.err
 
 
 def test_known_market_cross_section_settings_load(tmp_path: Path) -> None:

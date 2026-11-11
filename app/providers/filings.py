@@ -564,7 +564,7 @@ def _extract_convertible_bond_facts(items: list[dict[str, str]]) -> list[str]:
     return facts
 
 
-async def _resolve_opendart_company(api_key: str, query: str) -> OpenDARTCompany | None:
+async def _resolve_opendart_company(api_key: str, query: str, *, transport=None) -> OpenDARTCompany | None:
     seed_corp_code = OPENDART_CORP_CODES.get(query.upper()) or OPENDART_CORP_CODES.get(query)
     if seed_corp_code:
         return OpenDARTCompany(
@@ -573,7 +573,7 @@ async def _resolve_opendart_company(api_key: str, query: str) -> OpenDARTCompany
             stock_code=query.replace(".KS", "").replace(".KQ", "") if query[:6].isdigit() else "",
         )
     try:
-        return await resolve_opendart_company(api_key, query)
+        return await resolve_opendart_company(api_key, query, **({'transport': transport} if transport is not None else {}))
     except (httpx.HTTPError, ValueError):
         return None
 
@@ -879,7 +879,8 @@ class OpenDARTProvider(FilingProvider):
             company = OpenDARTCompany(corp_code=self.unified_corp_code,
                                      corp_name=ticker, stock_code=ticker)
         else:
-            company = await _resolve_opendart_company(settings.opendart_api_key, ticker)
+            company = await _resolve_opendart_company(settings.opendart_api_key, ticker,
+                **({'transport': self.transport} if self.transport is not None else {}))
         if company is None:
             return []
         params = {"crtfc_key": settings.opendart_api_key, "corp_code": company.corp_code, "bgn_de": _yyyymmdd((self.as_of or date.today()) - timedelta(days=lookback_days)), "page_count": 20}

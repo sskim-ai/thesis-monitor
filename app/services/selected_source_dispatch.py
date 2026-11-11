@@ -71,7 +71,17 @@ class SelectedSourceDispatcher(SealedDispatcher):
                     key = parent.run_ledger.before_http(market=parent.plan.market, provider=descriptor.provider,
                         logical_id=logical, plan_sha256=parent.plan.plan_sha256)
                     try:
-                        response = await wire.handle_async_request(request)
+                        if parent.run_ledger.identity.get('runtime_cap'):
+                            from app.services.campaign_runtime_cap import MeteredAsyncTransport, CampaignOhlcvTransport
+                            if descriptor.provider=='ohlcv_analyst':
+                                metered=CampaignOhlcvTransport(binding=parent.run_ledger.worker_binding(),
+                                    market=parent.plan.market,subject=descriptor.subject,phase='SOURCE',inner=wire)
+                            else:
+                                metered=MeteredAsyncTransport(binding=parent.run_ledger.worker_binding(),
+                                    market=parent.plan.market,phase='SOURCE',owner='SelectedSourceDispatcher',inner=wire)
+                            response=await metered.handle_async_request(request)
+                        else:
+                            response = await wire.handle_async_request(request)
                     except BaseException:
                         parent.run_ledger.result(key, ok=False)
                         raise

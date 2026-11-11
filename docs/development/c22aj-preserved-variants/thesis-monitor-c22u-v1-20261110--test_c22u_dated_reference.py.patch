@@ -1,0 +1,71 @@
+--- /dev/null
++++ b/tests/test_c22u_dated_reference.py
+@@ -0,0 +1,68 @@
++from copy import deepcopy
++from datetime import date,datetime,timezone
++import hashlib,json
++from pathlib import Path
++import pytest
++from app.services.krx_dated_reference import replay_dated_reference,render_dated_reference,verify_dated_reference,source_availability_contract
++
++R=Path(__file__).resolve().parents[3]
++ARCHIVE=R/'maintenance/20261110-c22t-v1/C22T_V1_ACTUAL_KRX_TWO_GET_RESULT_20261110.zip'
++SHA='3f3af010fdcdbd775b020f0320164c8bf03563fd69a0d57dbf50f93661006060'
++HIST=datetime.fromisoformat('2026-11-10T08:10:00+09:00')
++VIEW=datetime.fromisoformat('2026-11-10T23:59:00+09:00')
++def args(root):return dict(archive=ARCHIVE,archive_sha256=SHA,staging_root=root,trade_date=date(2026,11,9),historical_cutoff=HIST,view_cutoff=VIEW)
++
++def test_real_385_row_source_recovers_exact_dated_ohlc_not_current(tmp_path):
++    doc=replay_dated_reference(**args(tmp_path/'import'))
++    assert doc['raw_inventory'][0]['rows']==385 and doc['raw_inventory'][0]['night']==82 and doc['raw_inventory'][0]['day']==303
++    assert doc['raw_inventory'][1]['rows']==0
++    d=doc['daily'];assert [d[k] for k in ('open','high','low','close')]==[789.55,810.70,786.25,795.50]
++    assert d['contract_code']=='A016C000' and d['contract_maturity']=='2026-12'
++    assert d['reference_price'] is d['change_pct'] is None and d['provider_change_display_eligible'] is False
++    assert doc['weekly']['return_pct'] is doc['monthly']['return_pct'] is None
++    text=render_dated_reference(doc);assert '795.50' in text and '11/10 현재 야간선물: 자료 부족' in text
++    assert verify_dated_reference(doc,**args(tmp_path/'verify'),text=text)['status']=='SOURCE_ARCHIVE_REPLAY_PASS'
++    receipt=json.loads((tmp_path/'import/IMPORT_RECEIPT.json').read_bytes())
++    assert receipt['source_mode']=='REPLAY_ORIGINAL_CAPTURE' and not receipt['live_incremental']
++
++@pytest.mark.parametrize('kind',['raw_archive_hash','value','timestamp','current_flag','whole_text'])
++def test_archive_numeric_clock_or_scope_tamper_rejected(tmp_path,kind):
++    if kind=='raw_archive_hash':
++        with pytest.raises(ValueError):replay_dated_reference(**{**args(tmp_path/'wrong'),'archive_sha256':'0'*64})
++        return
++    doc=replay_dated_reference(**args(tmp_path/'import'));text=render_dated_reference(doc)
++    if kind=='value':doc['daily']['close']=782.95
++    if kind=='timestamp':doc['original_received_at']='2026-11-10T08:00:00+09:00'
++    if kind=='current_flag':doc['current_directional']=True
++    if kind=='whole_text':text+='\n현재 매수 근거'
++    with pytest.raises(ValueError):verify_dated_reference(doc,**args(tmp_path/'verify'),text=text)
++
++def test_capture_completion_is_not_permanent_unusable_or_morning_availability(tmp_path):
++    doc=replay_dated_reference(**args(tmp_path/'import'));a=doc['availability']
++    assert not a['available_at_historical_cutoff'] and a['available_at_view_cutoff']
++    assert a['capture_later_than_request'] and a['provider_published_at'] is None
++    assert a['first_verified_eligible_observation_cutoff']==doc['original_received_at']
++    assert not a['PROVEN_08_10_CURRENT_NIGHT'] and not a['model_use']
++    early=replay_dated_reference(**{**args(tmp_path/'early'),'view_cutoff':HIST})
++    with pytest.raises(ValueError,match='after_view_cutoff'):render_dated_reference(early)
++
++def test_missing_1106_baseline_is_not_inferred_from_same_day_or_provider_delta(tmp_path):
++    doc=replay_dated_reference(**args(tmp_path/'import'))
++    assert doc['daily']['provider_reported_change']==12.55
++    assert doc['daily']['reference_price'] is None and doc['daily']['change_pct'] is None
++    text=render_dated_reference(doc)
++    assert '782.95' not in text and '775.85' not in text and '+12.55' not in text
++
++def test_publication_claim_requires_evidence_and_never_backdates_acquisition():
++    kwargs=dict(night_trade_date=date(2026,11,9),regular_reference_date=date(2026,11,6),
++        actual_received_at=datetime.fromisoformat('2026-11-10T17:51:00+09:00'),historical_assessment_cutoff=HIST,
++        requested_capture_cutoff=HIST,view_cutoff=VIEW,provider_published_at=datetime.fromisoformat('2026-11-10T08:00:00+09:00'))
++    with pytest.raises(ValueError,match='publication_proof'):source_availability_contract(**kwargs)
++    a=source_availability_contract(**kwargs,publication_evidence_sha256='a'*64)
++    assert not a['available_at_historical_cutoff'] and not a['PROVEN_08_10_CURRENT_NIGHT']
++
++def test_staging_existing_or_symlink_rejected_without_old_history_write(tmp_path):
++    (tmp_path/'exists').mkdir()
++    with pytest.raises(ValueError):replay_dated_reference(**args(tmp_path/'exists'))
++    (tmp_path/'link').symlink_to(tmp_path,target_is_directory=True)
++    with pytest.raises(ValueError):replay_dated_reference(**args(tmp_path/'link/import'))

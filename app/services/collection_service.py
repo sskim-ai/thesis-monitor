@@ -384,7 +384,9 @@ def _refresh_duplicate_event(duplicate: Event, event: Event) -> None:
 
 class CollectionService:
     def __init__(self, *, source_policy: UnifiedSourcePolicy | None = None,
-                 event_acquisitions: dict | None = None) -> None:
+                 event_acquisitions: dict | None = None,
+                 campaign_transport: httpx.AsyncBaseTransport | None = None,
+                 campaign_provider_names=None) -> None:
         settings = get_settings()
         self.source_policy = source_policy
         self.event_acquisitions = event_acquisitions or {}
@@ -402,6 +404,22 @@ class CollectionService:
         self.news_query_service = NewsQueryService()
         self.telemetry = ProviderTelemetryService()
         self.provider_status = {item.name: item for item in provider_statuses()}
+        self.campaign_transport = campaign_transport
+        if campaign_provider_names is not None:
+            if campaign_transport is None:
+                raise ValueError('campaign_provider_selection_requires_metered_transport')
+            self.providers=[p for p in self.providers if p.name in campaign_provider_names]
+        if campaign_transport is not None:
+            for provider in self.providers:
+                status=self.provider_status.get(provider.name)
+                if status is not None and not status.configured:
+                    continue
+                if not hasattr(provider, 'transport'):
+                    raise ValueError('onboarding_collector_provider_wire_unbound:'+provider.name)
+                provider.transport = campaign_transport
+                # A campaign does not silently follow news redirects.
+                if hasattr(provider, 'as_of') and isinstance(provider, NewsProvider):
+                    provider.as_of = datetime.now(timezone.utc).date()
 
     def _connect_event_data(self, session: Session, event: Event) -> None:
         self.dividend_service.ingest_event(session, event)
@@ -457,7 +475,7 @@ class CollectionService:
                 skip_reason=f"market_not_supported:{market}",
             )
             return []
-        attempts = max(1, settings.monitor_retry_attempts)
+        attempts = 1 if self.campaign_transport is not None else max(1, settings.monitor_retry_attempts)
         last_error: Exception | None = None
         for attempt in range(attempts):
             started_at = datetime.now(timezone.utc)
@@ -617,7 +635,10 @@ class CollectionService:
                     issuer_type,
                 )
             except Exception as exc:  # noqa: BLE001
-                logger.warning("Provider %s failed for %s: %s", provider.name, ticker, exc)
+                if self.campaign_transport is not None:
+                    logger.warning('Provider %s failed for %s: %s',provider.name,ticker,type(exc).__name__)
+                else:
+                    logger.warning("Provider %s failed for %s: %s", provider.name, ticker, exc)
                 continue
             for raw_event in raw_events:
                 if not raw_event.company_name:

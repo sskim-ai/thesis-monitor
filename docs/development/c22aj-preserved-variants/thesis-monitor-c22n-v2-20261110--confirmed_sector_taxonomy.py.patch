@@ -1,0 +1,57 @@
+--- a/app/services/confirmed_sector_taxonomy.py
++++ b/app/services/confirmed_sector_taxonomy.py
+@@ -28,9 +27,0 @@
+-PROVIDERS = {'us': 'ohlcv_analyst', 'kr': 'kiwoom_rest'}
+-AUX_GROUPS = {
+-    'KOSPI': {'002': 'SIZE', '003': 'SIZE', '004': 'SIZE', '604': 'STYLE', '605': 'STYLE'},
+-    'KOSDAQ': {'138': 'SIZE', '139': 'SIZE', '140': 'SIZE', '142': 'COMPANY_SEGMENT',
+-               '143': 'COMPANY_SEGMENT', '144': 'COMPANY_SEGMENT', '145': 'COMPANY_SEGMENT',
+-               '150': 'SIZE', '151': 'UNIVERSE'},
+-}
+-AUX_LABELS = {'SIZE': '규모별 지수(별도)', 'STYLE': '스타일 지수(별도)',
+-              'COMPANY_SEGMENT': '기업유형 지수(별도)', 'UNIVERSE': '구성범위 지수(별도)'}
+@@ -39 +29,0 @@
+-                display_revision='sector-display-consumer-v3', providers=PROVIDERS, auxiliary_groups=AUX_GROUPS,
+@@ -70,16 +59,0 @@
+-def auxiliary_label(market, venue, code):
+-    return '반도체 관심 업종(별도)' if market == 'us' else AUX_LABELS[AUX_GROUPS[venue][code]]
+-
+-
+-def relative_rank_text(text):
+-    return text.replace(' TOP3', ' 상대 강세 TOP3').replace(' BOTTOM3', ' 상대 약세 BOTTOM3')
+-
+-
+-def display_fact_classification(fact, market):
+-    """Display selection only; existing current/eligible/numeric checks still apply."""
+-    fields = fact['fields']
+-    if fields.get('provider', PROVIDERS[market]) != PROVIDERS[market]:
+-        raise ValueError('confirmed_sector_provider_mismatch')
+-    return classify_row(fields, market)
+-
+-
+@@ -113,3 +87 @@
+-        if row.get('provider', PROVIDERS[market]) != PROVIDERS[market]:
+-            raise ValueError('confirmed_sector_provider_mismatch')
+-        binding = dict(provider=PROVIDERS[market], venue=scope, raw_symbol=code,
++        binding = dict(provider='kiwoom_rest', venue=scope, raw_symbol=code,
+@@ -126,2 +98 @@
+-            label = auxiliary_label(market, scope, code)
+-            binding['auxiliary_group'] = 'SEMICONDUCTOR_WATCH' if market == 'us' else AUX_GROUPS[scope][code]
++            label = '반도체 관심 업종(별도)' if market == 'us' else '규모별 지수(별도)'
+@@ -143 +114 @@
+-    result['text'] = relative_rank_text(result['text']) + '\n'.join(x['text'] for x in auxiliary) + '\n'
++    result['text'] += '\n'.join(x['text'] for x in auxiliary) + '\n'
+@@ -145 +115,0 @@
+-    result['core_audit_scope'] = 'Canonical core only; complete output requires retained-output regeneration audit'
+@@ -147,11 +116,0 @@
+-
+-
+-def verify_retained_sector_output(output, **custody):
+-    """Rebuild from backend-selected custody, not a supplied PASS or rehash."""
+-    from app.services.dated_market_legacy_adapter import render_retained_component_sectors
+-    expected = render_retained_component_sectors(**custody, taxonomy_version=VERSION)
+-    if type(output) is not dict or digest(output) != digest(expected) or output.get('text') != expected['text']:
+-        raise ValueError('confirmed_sector_complete_output_mismatch')
+-    return dict(status='PASS', scope='CORE_AND_AUXILIARY_COMPLETE_BYTES_AND_BINDINGS',
+-                text_sha256=expected['text_sha256'], registry_sha256=REGISTRY_SHA256,
+-                source_only=True, full_market_parent=False, NO_SEND=True)
