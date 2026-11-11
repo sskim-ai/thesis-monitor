@@ -26,6 +26,13 @@ WIRE_CONTRACT = 'selected-original-source-request-plan-v1'
 COUNTS = dict(adjusted_daily=1000,adjusted_weekly=700,adjusted_monthly=300,unadjusted_weekly_valuation=700)
 
 
+class SelectedConsumerPolicy(ContractModel):
+    contract: Literal['selected-required-consumer-policy-v1'] = 'selected-required-consumer-policy-v1'
+    kr_investor_detail: Literal['OPTIONAL_NOT_CAPTURED'] = 'OPTIONAL_NOT_CAPTURED'
+    us_night: Literal['ORIGINAL_CURRENT_PROBE_ONLY'] = 'ORIGINAL_CURRENT_PROBE_ONLY'
+    kr_night: Literal['NOT_CONSUMED'] = 'NOT_CONSUMED'
+
+
 class SelectedStockPlan(ContractModel):
     contract: Literal['selected-original-stock-plan-v1'] = STOCK_CONTRACT
     market: Literal['us','kr']
@@ -82,7 +89,8 @@ def build_stock_plan(*,market,identities,at,generation,code_sha,counts,native=No
 
 
 def acquisition_plan(stock,identities,*,kr_max_pages,exact_financial_owner=False,
-                     auxiliary_security=None,auxiliary_identity_sha256=None,transient_retry_max=None):
+                     auxiliary_security=None,auxiliary_identity_sha256=None,transient_retry_max=None,
+                     consumer_policy=None):
     if (type(stock) is not SelectedStockPlan or set(identities)!=set(stock.subjects)
             or transient_retry_max!=0 or auxiliary_security is not None or auxiliary_identity_sha256 is not None):
         raise ValueError('selected_explicit_no_retry_scope_required')
@@ -97,6 +105,10 @@ def acquisition_plan(stock,identities,*,kr_max_pages,exact_financial_owner=False
     day=stock.frozen_at.astimezone(ZoneInfo('Asia/Seoul')).date()
     begin=day.replace(day=1)-timedelta(days=7)
     days=[(begin+timedelta(days=i)).isoformat() for i in range((day-begin).days+1)]
+    if consumer_policy is not None:
+        consumer_policy=SelectedConsumerPolicy.model_validate(consumer_policy)
+        kr=tuple(r for r in kr if r.api_id!='ka10066')
+        days=[(day-timedelta(days=i)).isoformat() for i in range(7)] if stock.market=='us' else []
     macro={'ecos':{'route':'KeyStatisticList','start':1,'end':100,'period_field':'CYCLE'}}
     if stock.market=='us':
         macro.update(fred={'series':list(FRED_SERIES),'limit':5,'sort_order':'desc','observation_end':stock.frozen_at.date().isoformat()},
@@ -108,6 +120,8 @@ def acquisition_plan(stock,identities,*,kr_max_pages,exact_financial_owner=False
         us_market_symbols=list(MARKET_SYMBOLS) if stock.market=='us' else [],
         night_query_dates=days,macro_queries=macro,dispatch_allowed=False,
         source_identity_sha256=digest(identities),source_use='NOT_ISSUED')
+    if consumer_policy is not None:
+        value['consumer_policy']=consumer_policy.model_dump(mode='json')
     return dict(value,plan_sha256=digest(value))
 
 

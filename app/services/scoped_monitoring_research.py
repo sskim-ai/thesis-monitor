@@ -58,9 +58,17 @@ def prepare_scoped_research_source(*, enabled=False, market, subjects, registrat
             or set(whole['packets'][market]['stocks']) != set(subjects)
             or set(local_seeds) != set(subjects) or set(valuation_contexts) != set(subjects)):
         raise ValueError('scoped_research_registered_source_coverage')
+    projector=project_production_market_context
+    if whole.get('seed',{}).get('contract')=='selected-original-source-run-binding-v1':
+        from app.services.selected_source_composition import project_market,SelectedSourceRunBinding
+        binding=SelectedSourceRunBinding.model_validate(whole['seed'])
+        if (binding.child_id!=generation or binding.market!=market or binding.subjects!=subjects
+                or binding.registration_receipt_sha256!=digest(reg)):
+            raise ValueError('selected_prepared_source_child_scope')
+        projector=project_market
     source = prepare_monitoring_source(whole=whole, local_seeds=local_seeds,
         valuation_contexts=valuation_contexts, generation=generation, coverage=coverage, census=census,
-        market_projector=project_production_market_context)
+        market_projector=projector)
     if market == 'kr':
         from app.services.kr_forward_valuation_context import KrForwardValuationView, calibration_context
         if forward_views is None or set(forward_views) != set(subjects):

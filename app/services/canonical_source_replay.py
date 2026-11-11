@@ -248,7 +248,7 @@ def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=N
                 inputs[ticker] = item
             except (ValueError, KeyError, TypeError, OSError) as exc:
                 errors[ticker] = dict(error_class=type(exc).__name__, reason=str(exc))
-    if 'SKHY' in inputs and '000660' in inputs:
+    if frozen.get('scope')!='SELECTED_ORIGINAL_RESEARCH_V1' and 'SKHY' in inputs and '000660' in inputs:
         source = inputs['000660']
         source_owner = dict(baseline=fresh_stock_baseline(source['technical_inputs']),
             local_seed=source['technical_inputs']['local_seed'], **source['financial_inputs'])
@@ -362,10 +362,12 @@ def market_inputs(root, frozen, outcome, policy):
     return result
 
 def publication_inputs(root, frozen, outcome, policy):
-    providers = ('ecos',) if frozen.get('scope') == 'KR8_ONLY' else ('fred', 'eia', 'ecos')
+    selected=frozen.get('scope')=='SELECTED_ORIGINAL_RESEARCH_V1'
+    kr=selected and frozen['selected_market']=='kr'
+    providers = ('ecos',) if frozen.get('scope') == 'KR8_ONLY' or kr else ('fred', 'eia', 'ecos')
     for provider in providers:
         captured_phase_value(root, frozen, outcome, provider)
-    night_value = captured_phase_value(root, frozen, outcome, 'night')
+    night_value = None if kr and not frozen['candidate']['night_query_dates'] else captured_phase_value(root, frozen, outcome, 'night')
     def captured(path, provider, acquisition=None):
         rows = [read(p) for p in sorted(path.glob('receipt-*.json'))]
         sealed = decode_request_plan(frozen['plan'])
@@ -387,6 +389,10 @@ def publication_inputs(root, frozen, outcome, policy):
         providers={p: captured(root/'publications'/p, p) for p in providers}, policy=policy)
     if frozen.get('scope') in {'KR8_ONLY','US14_ONLY'}:
         publications['market_scope'] = frozen['scope']
+    if selected:
+        publications['market_scope']='SELECTED_'+frozen['selected_market'].upper()
+    if night_value is None:
+        return dict(publications=publications,night=None)
     night_id = frozen['generation_id']+':night'
     probe = captured(root/'night/probe', 'krx_night_futures', night_id)
     history = captured(root/'night/history', 'krx_night_futures', night_id)

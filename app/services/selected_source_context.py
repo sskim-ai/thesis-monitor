@@ -17,11 +17,17 @@ from app.services.unified_stock_event_input import make_read
 
 def freeze_registered_child(*, registration_owner, policy, code_sha, native, native_owner_root,
                             config_identities, configured_kr_pages, listing_rows, kis_static_hashes,
-                            completed_close_documentation=None, official_identities=None, enabled=False):
+                            completed_close_documentation=None, official_identities=None,
+                            consumer_policy=None, master_id=None, ohlcv_source_url=None, enabled=False):
     if enabled is not True:
         raise ValueError('selected_source_context_default_off')
     document,receipt=registration._state(registration_owner)
     market,generation=receipt['market'],receipt['generation_id']
+    if consumer_policy is not None:
+        if not master_id or master_id==generation:
+            raise ValueError('selected_distinct_master_id_required')
+        if market=='us' and (not ohlcv_source_url or not completed_close_documentation):
+            raise ValueError('selected_original_market_route_and_close_documentation_required')
     registration.require_generation(registration_owner,generation)
     at=datetime.fromisoformat(receipt['cutoff'])
     identities={r['record']['ticker']:r['record']
@@ -37,6 +43,8 @@ def freeze_registered_child(*, registration_owner, policy, code_sha, native, nat
         configured_kr_pages=configured_kr_pages,kr_post_acquisition_completeness_approved=True,
         exact_financial_owner=True,valuation_market_types=routing_markets(identities,listing_rows=listing_rows),
         transient_retry_max=0)
+    if consumer_policy is not None:
+        compiler['selected_consumer_policy']=consumer_policy
     kis=build_kis_plan(generation=generation,as_of=at.isoformat(),
         securities={t:dict(s,currency='KRW') for t,s in identities.items()},static_hashes=kis_static_hashes) if market=='kr' else None
     compiled=compile_selected_plan(compiler_args=compiler,kis_plan=kis)
@@ -55,4 +63,6 @@ def freeze_registered_child(*, registration_owner, policy, code_sha, native, nat
         completed_close_documentation=completed_close_documentation,
         valuation_official_identities=official_identities or {},registration_receipt_sha256=digest(receipt),
         private_class_c_storage='MEMORY_ONLY',financial_use_granted=False)
+    if master_id is not None:frozen['master_id']=master_id
+    if ohlcv_source_url is not None:frozen['ohlcv_source_url']=ohlcv_source_url
     return frozen,compiler,kis,private_local

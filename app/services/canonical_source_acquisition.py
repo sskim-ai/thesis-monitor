@@ -163,8 +163,14 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
         at = now()
         durable_json(root/'markets/kr-query.json', {'observed_at': at.isoformat()}, exclusive=True)
         try:
-            value = await KiwoomKrMarketContextService(client, max_pages=frozen['kr_local_cap'],
-                completed_session_only=True).collect(session_date=observer.session_date, observed_at=at)
+            service=KiwoomKrMarketContextService
+            options={}
+            if selected and frozen['candidate'].get('consumer_policy'):
+                from app.services.selected_market_collection import SelectedKrMarketCollection
+                service=SelectedKrMarketCollection
+                options['consumer_policy']=frozen['candidate']['consumer_policy']
+            value = await service(client, max_pages=frozen['kr_local_cap'],
+                completed_session_only=True,**options).collect(session_date=observer.session_date, observed_at=at)
         except (SourceSafetyStop, SystemicStop):
             raise
         except Exception:
@@ -226,6 +232,8 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
         async with httpx.AsyncClient(transport=history, headers={'AUTH_KEY': settings.krx_open_api_key,
                 'User-Agent': USER_AGENT}, timeout=600) as client:
             for day in frozen['candidate']['night_query_dates']:
+                if selected and frozen['candidate'].get('consumer_policy'):
+                    break  # Original current probe only; no redundant chart-history backfill.
                 if day.replace('-', '') >= earliest:
                     continue
                 response = await client.get(KRX_FUTURES_DAILY_URL, params={'basDd': day.replace('-', '')})
@@ -285,7 +293,8 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
             await phase('financial-'+ticker, lambda t=ticker, p=plan: financial(t, p))
         for name in (('ecos',) if kr_only else PROVIDERS):
             await phase(name, lambda n=name: publication(n))
-        await phase('night', night)
+        if not selected or frozen['candidate']['night_query_dates']:
+            await phase('night', night)
         for read in frozen['news_reads']:
             await phase('event-'+read['subject'], lambda r=read: news(r))
         if frozen.get('valuation_slots'):
