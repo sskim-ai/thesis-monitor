@@ -27,7 +27,7 @@ def database_target(settings, *, runtime_directory):
     return path.absolute(), stat.st_dev, stat.st_ino
 
 
-def capture_markets(*, permission, approval, generations, policy, enabled=False):
+def capture_markets(*, permission, approval, generations, policy, enabled=False, connect=None, on_captured=None):
     if enabled is not True:
         raise ValueError('selected_registration_default_off')
     if not generations or not set(generations) <= {'us','kr'} or len(set(generations.values())) != len(generations):
@@ -35,8 +35,11 @@ def capture_markets(*, permission, approval, generations, policy, enabled=False)
     decision = original._approval(approval)
     if permission.event_id != decision.event_id or set(permission.subjects) != set(decision.subjects):
         raise ValueError('selected_registration_approval_scope_mismatch')
-    capture = capture_authorized_class_c(permission)
+    capture = (capture_authorized_class_c(permission) if connect is None
+        else capture_authorized_class_c(permission, connect=connect))
     _, receipt = captured_private_snapshot(capture)
+    if on_captured is not None:
+        on_captured(receipt)
     owners = {}
     try:
         for market, generation in generations.items():
@@ -47,6 +50,30 @@ def capture_markets(*, permission, approval, generations, policy, enabled=False)
             original.revoke_prospective_owner(owner)
         raise
     return capture, owners, receipt
+
+
+def capture_approved_markets(*, settings, runtime_directory, approval, generations,
+                             policy, ledger, enabled=False, connect=None):
+    """Derive the existing export permission from the ONE backend audit event."""
+    if enabled is not True:
+        raise ValueError('selected_registration_default_off')
+    from app.services.minimal_class_c_export import ExportPermission
+    decision = original._approval(approval)
+    path, device, inode = database_target(settings, runtime_directory=runtime_directory)
+    permission = ExportPermission(decision.event_id, True, path, device, inode, decision.subjects)
+    ledger.before_registration(approval=approval, permission=permission, generations=generations)
+    def original_connect(*args, **kwargs):
+        import sqlite3
+        ledger.before_database_open()
+        return (connect or sqlite3.connect)(*args, **kwargs)
+    try:
+        capture, owners, receipt = capture_markets(permission=permission, approval=approval,
+            generations=generations, policy=policy, enabled=True, connect=original_connect,
+            on_captured=ledger.registration_captured)
+        return capture, owners, receipt
+    except Exception:
+        ledger.stop('REGISTRATION_CAPTURE_OR_OWNER_REJECTED')
+        raise
 
 
 def local_seed(owner, *, stock, policy):

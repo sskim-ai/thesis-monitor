@@ -74,11 +74,12 @@ class FourPanelSolHighCallBudgetV1:
 class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
     """Explicit plan cap, shared across markets. The old experiment stays separate."""
     def __init__(self, slots=None, *, plan=None, approved_max_invocations=None, approved_plan_sha256=None,
-                 journal_path=None):
+                 journal_path=None, run_ledger=None):
         self.plan = plan
         self.journal = None
+        self.run_ledger, self.run_intents = run_ledger, {}
         if plan is None:
-            if approved_max_invocations is not None or approved_plan_sha256 is not None or journal_path is not None:
+            if approved_max_invocations is not None or approved_plan_sha256 is not None or journal_path is not None or run_ledger is not None:
                 raise ValueError('dynamic_model_plan_required')
             super().__init__(slots)
             self.maximum = len(self.slots)
@@ -109,6 +110,8 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
     def stop(self):
         self.stopped = True
         self._journal_state('STOP')
+        if self.run_ledger is not None:
+            self.run_ledger.stop('MODEL_STAGE_FAILED')
 
     def _verify_plan(self):
         self._journal_state('OPEN')
@@ -168,10 +171,17 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
                 or slot_scope['payload_sha256'] != payload_sha256 or slot_id in self.used
                 or len(self.used) >= self.maximum):
             raise ValueError('model_slot_scope_drift_used_or_budget_exhausted')
-        if self.journal is not None:
-            self._journal_state('CONSUME', slot_id=slot_id)
-        else:
-            self.used.add(slot_id)
+        if self.run_ledger is not None:
+            self.run_intents[slot_id] = self.run_ledger.before_model(self.plan, slot_scope)
+        try:
+            if self.journal is not None:
+                self._journal_state('CONSUME', slot_id=slot_id)
+            else:
+                self.used.add(slot_id)
+        except Exception:
+            if self.run_ledger is not None:
+                self.run_ledger.stop('MODEL_INTENT_NOT_DISPATCHED')
+            raise
         return len(self.used)
 
     def resolve_scope(self, panel, stage, payload_sha256, slot_scope=None):
@@ -192,6 +202,8 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
             self._journal_state('ACCEPT', slot_id=slot_id, output_sha256=output_sha256)
         else:
             self.accepted[slot_id] = output_sha256
+        if self.run_ledger is not None:
+            self.run_ledger.result(self.run_intents[slot_id], ok=True)
 
     def state(self):
         self._journal_state('OPEN')

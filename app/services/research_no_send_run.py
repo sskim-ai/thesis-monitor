@@ -142,7 +142,7 @@ class PreparedResearchBridge(ProductionRuntimeBridgeV1):
 
 
 def build_research_no_send_adapter(*, enabled=False, child, settings, binding, runtime_root,
-                                   journal_path, approved_max_invocations, approved_plan_sha256, clock):
+                                   journal_path, approved_max_invocations, approved_plan_sha256, clock, run_ledger=None):
     if enabled is not True:
         raise ValueError('research_no_send_factory_disabled')
     child.verify()
@@ -150,7 +150,7 @@ def build_research_no_send_adapter(*, enabled=False, child, settings, binding, r
     if Path(journal_path).absolute() != expected_journal.absolute():
         raise ValueError('research_fixed_cycle_journal_required')
     budget = SolHighCallBudget(plan=child.plan, approved_max_invocations=approved_max_invocations,
-        approved_plan_sha256=approved_plan_sha256, journal_path=journal_path)
+        approved_plan_sha256=approved_plan_sha256, journal_path=journal_path, run_ledger=run_ledger)
     secrets = tuple(v.get_secret_value() if hasattr(v,'get_secret_value') else str(v)
         for k,v in settings.model_dump().items() if v and SECRET_KEY.search(k))
     model = OfficialProductionModelTransport(binding=binding, runtime_root=runtime_root,

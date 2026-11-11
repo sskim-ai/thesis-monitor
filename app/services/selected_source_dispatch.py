@@ -16,7 +16,7 @@ from app.services.unified_live_source_transport import SourceSafetyStop
 class SelectedSourceDispatcher(SealedDispatcher):
     def __init__(self, *, plan, compiler_args, kis_plan, registration_owner, policy,
                  config_identities, credential_presence, repository_root, root,
-                 approved_plan_sha256, approved_provider_caps, guard, secrets=(), enabled=False):
+                 approved_plan_sha256, approved_provider_caps, guard, secrets=(), enabled=False, run_ledger=None):
         if enabled is not True:
             raise ValueError('selected_source_dispatch_default_off')
         self.plan = SelectedRequestPlan.model_validate(plan)
@@ -42,6 +42,9 @@ class SelectedSourceDispatcher(SealedDispatcher):
         if kis_plan is not None and credential_presence.get('kis') is not True:
             raise ValueError('selected_kis_credentials_required')
         self.registration_owner,self.stock,self.policy,self.guard=registration_owner,stock,policy,guard
+        self.run_ledger = run_ledger
+        if run_ledger is not None and run_ledger.state()['plans'].get(self.plan.market) != self.plan.plan_sha256:
+            raise ValueError('selected_shared_run_plan_not_bound')
         self._require_current()
         self.admission = dict(contract='selected-original-source-admission-v1',
             live_dispatch_allowed=True,plan_sha256=self.plan.plan_sha256,
@@ -55,8 +58,36 @@ class SelectedSourceDispatcher(SealedDispatcher):
 
     async def execute(self,*args,**kwargs):
         self._require_current()
-        final=await super().execute(*args,**kwargs)
+        ledger = getattr(self, 'run_ledger', None)
+        if ledger is not None:
+            parent, wire = self, kwargs['transport']
+            logical = args[0] if args else kwargs['logical_id']
+            descriptor = next(d for d in self.plan.descriptors if d.logical_request_id == logical)
+            class CountedTransport:
+                async def handle_async_request(self, request):
+                    parent._require_current()
+                    key = parent.run_ledger.before_http(market=parent.plan.market, provider=descriptor.provider,
+                        logical_id=logical, plan_sha256=parent.plan.plan_sha256)
+                    try:
+                        response = await wire.handle_async_request(request)
+                    except BaseException:
+                        parent.run_ledger.result(key, ok=False)
+                        raise
+                    parent.run_ledger.result(key, ok=response.status_code not in (401,403,429))
+                    return response
+            kwargs['transport'] = CountedTransport()
+        try:
+            final=await super().execute(*args,**kwargs)
+        except BaseException:
+            if ledger is not None:
+                ledger.stop('SOURCE_DISPATCH_FAILED')
+            raise
         if any(a['status']==429 or a.get('error') for a in final['attempts']):
             self.halted=True
+            if ledger is not None:
+                ledger.stop('SOURCE_QUOTA_OR_TRANSPORT_FAILED')
             raise SourceSafetyStop('selected_quota_or_uncertain_transport_stop')
+        if ledger is not None and descriptor.mandatory and final['status']!='PASS':
+            ledger.stop('MANDATORY_SOURCE_REJECTED')
+            raise SourceSafetyStop('selected_mandatory_source_rejected')
         return final

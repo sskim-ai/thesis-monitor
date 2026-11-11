@@ -20,7 +20,9 @@ CODE=('app/services/selected_source_composition.py','app/services/selected_sourc
     'app/services/selected_source_registration.py','app/services/selected_source_context.py',
     'app/services/selected_source_dispatch.py','app/services/selected_stock_replay.py',
     'app/services/selected_kis_sources.py','app/services/selected_market_collection.py',
-    'app/services/selected_source_preparation.py')
+    'app/services/selected_source_preparation.py','app/services/selected_run_lifecycle.py',
+    'app/services/scoped_monitoring_research.py','app/services/production_model_profile.py',
+    'app/services/research_no_send_run.py')
 
 
 def code_fingerprints():

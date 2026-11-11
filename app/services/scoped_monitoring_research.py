@@ -5,6 +5,7 @@ Existing registration capabilities and original preflights remain mandatory.
 """
 from copy import deepcopy
 import os
+from datetime import datetime, timezone
 
 from app.services import canonical_native_source_owner as original
 from app.services import prospective_class_c_owner as registration
@@ -15,16 +16,37 @@ from app.services.model_execution_plan import CohortSubject, FrozenCohort, _inst
 from app.services.unified_snapshot_contract import digest
 
 CONTRACT = 'scoped-original-monitoring-research-v1'
+ACCEPTANCE = 'same-run-admitted-research-source-v1'
+
+
+def _acceptance(row):
+    return dict(contract=ACCEPTANCE, generation_id=row['generation_id'],
+        source_generation_id=row['source']['source_generation_id'], market=row['market'],
+        subjects=list(row['subjects']), registration_sha256=row['registration_sha256'],
+        registration_capture_receipt_sha256=row['registration_capture_receipt_sha256'],
+        request_plan_sha256=row['request_plan_sha256'],
+        source_sha256=row['source_sha256'], outer_sha256=row['outer_sha256'],
+        accepted_at=row['accepted_at'], registration_cutoff=row['registration_cutoff'],
+        model_input_cutoffs={t:row['source']['stocks'][t]['packet']['generated_at'] for t in row['subjects']},
+        purpose='OFFLINE_READ_SAME_RUN_NOT_EXTERNAL_CALL_AUTHORITY')
 
 
 class ScopedPreparedResearchOwner(original.CanonicalPreparedSourceOwner):
     def _record(self):
         row = super()._record()
-        registration.require_generation(row['registration_owner'],row['generation_id'])
-        _, current = registration._state(row['registration_owner'])
-        if digest(current) != row['registration_sha256']:
-            raise ValueError('scoped_research_registration_changed')
+        if 'acceptance' not in row:
+            # Legacy in-process owners retain their original lifetime policy.
+            registration.require_generation(row['registration_owner'],row['generation_id'])
+            _, current = registration._state(row['registration_owner'])
+            if digest(current) != row['registration_sha256']:
+                raise ValueError('scoped_research_registration_changed')
+        elif (row['acceptance'] != _acceptance(row)
+                or digest(row['acceptance']) != row['acceptance_sha256']):
+            raise ValueError('scoped_research_admitted_source_drift')
         return row
+
+    def acceptance(self):
+        return deepcopy(self._record()['acceptance'])
 
     def source(self, market=None):
         row = self._record()
@@ -95,24 +117,34 @@ def prepare_scoped_research_source(*, enabled=False, market, subjects, registrat
             and prepared['initial_chain']['source_generation_id'] == source['source_generation_id']
             and prepared['initial_chain']['execution_generation_id'] == generation
             and prepared['view_receipt']['raw_source_sha256'] == digest(stock), 'original_subject_scope_required')
+    # Admission still requires the original live registration at this instant.
+    registration.require_generation(registration_owner, generation)
+    if digest(registration._state(registration_owner)[1]) != digest(reg):
+        raise ValueError('scoped_research_registration_changed_during_admission')
+    row = dict(source=deepcopy(source), source_sha256=digest(source),
+        outer_sha256=digest(whole), generation_id=generation, pid=os.getpid(), closed=False,
+        market=market, subjects=subjects, registration_sha256=digest(reg),
+        registration_capture_receipt_sha256=reg['capture_receipt_sha256'],
+        request_plan_sha256=whole['seed'].get('request_plan_sha256'),
+        registration_cutoff=reg['cutoff'], accepted_at=datetime.now(timezone.utc).isoformat())
+    row['acceptance'] = _acceptance(row)
+    row['acceptance_sha256'] = digest(row['acceptance'])
     handle = object.__new__(ScopedPreparedResearchOwner)
     with original._LOCK:
-        original._OWNERS[handle] = dict(source=deepcopy(source), source_sha256=digest(source),
-            outer_sha256=digest(whole), generation_id=generation, pid=os.getpid(), closed=False,
-            market=market, subjects=subjects, registration_sha256=digest(reg), registration_owner=registration_owner)
+        original._OWNERS[handle] = row
     relation = handle.relationship(market)
     cutoffs = {_instant(source['stocks'][t]['packet']['generated_at']) for t in subjects}
     if len(cutoffs) != 1:
         handle.close()
         raise ValueError('scoped_research_inconsistent_stock_cutoffs')
     cutoff = cutoffs.pop()
-    cohort = FrozenCohort(run_id=generation, source_generation=source['source_generation_id'],
-        assessment_date=source['markets'][market]['packet']['assessment_date'], effective_at=cutoff, cutoff=cutoff,
-        subjects=tuple(CohortSubject(market,t,reg['bindings'][t]['security_id'],cutoff,
-            relation['subject_sha256'][t]) for t in subjects),
-        source_owner_bindings=((market,digest(relation)),), feature_scope_sha256=digest(dict(
-            purpose=CONTRACT, market=market, subjects=subjects, registration_sha256=digest(reg))), planning_only=False)
     try:
+        cohort = FrozenCohort(run_id=generation, source_generation=source['source_generation_id'],
+            assessment_date=source['markets'][market]['packet']['assessment_date'], effective_at=cutoff, cutoff=cutoff,
+            subjects=tuple(CohortSubject(market,t,reg['bindings'][t]['security_id'],cutoff,
+                relation['subject_sha256'][t]) for t in subjects),
+            source_owner_bindings=((market,digest(relation)),), feature_scope_sha256=digest(dict(
+                purpose=CONTRACT, market=market, subjects=subjects, registration_sha256=digest(reg))), planning_only=False)
         cohort.verify_source_owner(handle)
     except Exception:
         handle.close()
