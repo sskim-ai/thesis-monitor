@@ -19,6 +19,8 @@ class SelectedSourceDispatcher(SealedDispatcher):
                  approved_plan_sha256, approved_provider_caps, guard, secrets=(), enabled=False, run_ledger=None):
         if enabled is not True:
             raise ValueError('selected_source_dispatch_default_off')
+        if run_ledger is None:
+            raise ValueError('selected_one_campaign_ledger_required')
         self.plan = SelectedRequestPlan.model_validate(plan)
         rebuilt = compile_selected_plan(compiler_args=compiler_args,kis_plan=kis_plan)
         stock = compiler_args['stock']

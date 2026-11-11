@@ -36,7 +36,7 @@ class SelectedConsumerPolicy(ContractModel):
 class SelectedStockPlan(ContractModel):
     contract: Literal['selected-original-stock-plan-v1'] = STOCK_CONTRACT
     market: Literal['us','kr']
-    subjects: tuple[str,...] = Field(min_length=1,max_length=22)
+    subjects: tuple[str,...] = Field(min_length=1,max_length=100)
     run_id: str
     acquisition_id: str
     frozen_at: datetime

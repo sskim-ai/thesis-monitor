@@ -71,6 +71,7 @@ class ProductionUniverseSnapshot:
     cutoff: datetime
     eligible_items: tuple[WatchlistItem, ...]
     excluded_subjects: tuple[dict[str, object], ...]
+    eligibility_audit: tuple[dict[str, object], ...] = ()
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -80,6 +81,7 @@ class ProductionUniverseSnapshot:
             "cutoff": self.cutoff.astimezone(UTC).isoformat(),
             "eligible_subjects": [item.ticker for item in self.eligible_items],
             "excluded_subjects": list(self.excluded_subjects),
+            "eligibility_audit": list(self.eligibility_audit),
         }
 
 
@@ -525,6 +527,67 @@ def deactivate_onboarding(item: WatchlistItem) -> None:
     item.onboarding_state = OnboardingState.INACTIVE
 
 
+def canonical_registration_eligibility(*, ticker, item, security, thesis, company, cutoff):
+    """One monitoring predicate, independent of cohort size and delivery mode.
+
+    This is the union of the existing universe, local identity/Thesis and
+    prospective activation checks. Source/provider and economic grants remain
+    separate downstream checks; no database or network access occurs here.
+    """
+    from app.services.market_session import US_EXCHANGES, KR_EXCHANGES
+    from app.services.security_identity_service import resolve_security_identity, IDENTITY_CONFLICT
+    from app.services.unified_snapshot_contract import digest
+    if cutoff.utcoffset() is None:
+        raise ValueError('canonical_registration_aware_cutoff_required')
+    def available(value):
+        return value is not None and value.replace(tzinfo=value.tzinfo or UTC) <= cutoff
+    present=dict(watchlist=item is not None,securitymaster=security is not None,
+        active_investmentthesis=thesis is not None and thesis.status=='active',company=company is not None)
+    market=market_scope_for_security(ticker,item.exchange or (security.exchange if security else None)) if item else None
+    flags={}; reasons=[]
+    def check(name, ok, reason):
+        flags[name]=bool(ok)
+        if not ok:reasons.append(reason)
+    check('watchlist_present',present['watchlist'],'MISSING_WATCHLIST')
+    if item:
+        check('monitoring_requested',item.monitoring_requested is True,'MONITORING_NOT_REQUESTED')
+        check('active',item.active is True,'INACTIVE_MONITORING')
+        check('onboarding_active',item.onboarding_state==OnboardingState.ACTIVE,'ONBOARDING_NOT_ACTIVE')
+        check('production_eligible',item.production_eligible is True,'PRODUCTION_NOT_ELIGIBLE')
+        check('activation_present',item.activated_at is not None,'MISSING_ACTIVATION_TIME')
+        check('activation_available',item.activated_at is None or available(item.activated_at),'ACTIVATED_AFTER_CUTOFF')
+        check('registration_available',available(item.created_at),'REGISTRATION_AFTER_CUTOFF')
+        check('first_session_reached',item.first_eligible_session is None or
+            item.first_eligible_session<=cutoff.astimezone(ZoneInfo('Asia/Seoul')).date(),'FIRST_ELIGIBLE_SESSION_NOT_REACHED')
+    check('security_present',present['securitymaster'],'MISSING_SECURITY_IDENTITY')
+    if item and security:
+        ready,_,_= _security_readiness(item,security,market)
+        check('security_required_fields',ready,'INVALID_SECURITY_IDENTITY')
+        aliases={'NYSEARCA':'NYSE ARCA','ARCA':'NYSE ARCA'}
+        exchanges=[' '.join(str(v or '').upper().replace('_',' ').split()) for v in (item.exchange,security.exchange)]
+        venues=US_EXCHANGES if market=='us' else KR_EXCHANGES if market=='kr' else ()
+        canonical={aliases.get(v,v) for v in exchanges}
+        check('market_agrees',all(v in venues for v in exchanges) and
+            (len(canonical)==1 or market=='kr' and 'KRX' in canonical),'MARKET_CLASSIFICATION_MISMATCH')
+        check('identity_nonconflicting',resolve_security_identity(company_name=item.company_name,
+            security_master=security)['identity_state']!=IDENTITY_CONFLICT,'SECURITY_IDENTITY_CONFLICT')
+        check('identity_available',available(security.updated_at),'SECURITY_IDENTITY_AFTER_CUTOFF')
+    check('active_thesis_present',present['active_investmentthesis'],'MISSING_ACTIVE_THESIS')
+    if thesis:
+        check('thesis_nonempty',bool(thesis.core_thesis.strip()),'EMPTY_ACTIVE_THESIS')
+        check('thesis_available',available(thesis.created_at),'THESIS_AFTER_CUTOFF')
+        check('thesis_subject_agrees',thesis.ticker==ticker,'THESIS_SUBJECT_MISMATCH')
+    if company:
+        check('company_available',available(company.created_at),'BUSINESS_METADATA_AFTER_CUTOFF')
+    rows={'watchlistitem':item,'securitymaster':security,'investmentthesis':thesis,'company':company}
+    return dict(contract='canonical-monitoring-registration-v1',ticker=ticker,detected_market=market,
+        row_present=present,flags=flags,canonical_eligible=not reasons,excluded_reasons=sorted(set(reasons)),
+        cutoff=cutoff.astimezone(UTC).isoformat(),
+        activated_at=item.activated_at.isoformat() if item and item.activated_at else None,
+        first_eligible_session=str(item.first_eligible_session) if item and item.first_eligible_session else None,
+        original_record_hashes={n:digest(r.model_dump(mode='json')) if r else None for n,r in rows.items()})
+
+
 def production_universe_snapshot(
     session: Session,
     market: Literal["kr", "us", "all"],
@@ -538,6 +601,7 @@ def production_universe_snapshot(
     items = list(session.exec(select(WatchlistItem).order_by(WatchlistItem.ticker)).all())
     eligible: list[WatchlistItem] = []
     excluded: list[dict[str, object]] = []
+    audits = []
     for item in items:
         security = session.exec(
             select(SecurityMaster).where(SecurityMaster.ticker == item.ticker)
@@ -548,25 +612,14 @@ def production_universe_snapshot(
         )
         if market != "all" and item_market != market:
             continue
-        reasons: list[str] = []
-        if not item.monitoring_requested:
-            reasons.append("monitoring_not_requested")
-        if not item.active:
-            reasons.append("monitoring_not_active")
-        if item.onboarding_state != OnboardingState.ACTIVE:
-            reasons.append("onboarding_not_active")
-        if not item.production_eligible:
-            reasons.append("production_not_eligible")
-        if item.activated_at is not None:
-            activated_at = item.activated_at
-            if activated_at.tzinfo is None:
-                activated_at = activated_at.replace(tzinfo=UTC)
-            if activated_at.astimezone(UTC) > cutoff_utc:
-                reasons.append("activated_after_packet_cutoff")
-        if item.first_eligible_session is not None:
-            cutoff_session = cutoff_utc.astimezone(ZoneInfo("Asia/Seoul")).date()
-            if item.first_eligible_session > cutoff_session:
-                reasons.append("first_eligible_session_not_reached")
+        result=canonical_registration_eligibility(ticker=item.ticker,item=item,security=security,
+            thesis=_latest_thesis(session,item.ticker),company=session.exec(select(Company).where(
+                Company.ticker==item.ticker)).first(),cutoff=cutoff_utc)
+        audits.append(result)
+        legacy={'INACTIVE_MONITORING':'monitoring_not_active','ONBOARDING_NOT_ACTIVE':'onboarding_not_active',
+            'PRODUCTION_NOT_ELIGIBLE':'production_not_eligible','MONITORING_NOT_REQUESTED':'monitoring_not_requested',
+            'ACTIVATED_AFTER_CUTOFF':'activated_after_packet_cutoff','FIRST_ELIGIBLE_SESSION_NOT_REACHED':'first_eligible_session_not_reached'}
+        reasons=[legacy.get(r,r) for r in result['excluded_reasons']]
         if reasons:
             excluded.append(
                 {
@@ -584,4 +637,5 @@ def production_universe_snapshot(
         cutoff=cutoff_utc,
         eligible_items=tuple(eligible),
         excluded_subjects=tuple(excluded),
+        eligibility_audit=tuple(audits),
     )

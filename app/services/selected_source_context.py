@@ -18,9 +18,11 @@ from app.services.unified_stock_event_input import make_read
 def freeze_registered_child(*, registration_owner, policy, code_sha, native, native_owner_root,
                             config_identities, configured_kr_pages, listing_rows, kis_static_hashes,
                             completed_close_documentation=None, official_identities=None,
-                            consumer_policy=None, master_id=None, ohlcv_source_url=None, enabled=False):
+                            consumer_policy=None, master_id=None, ohlcv_source_url=None, enabled=False, run_ledger=None):
     if enabled is not True:
         raise ValueError('selected_source_context_default_off')
+    if run_ledger is None:
+        raise ValueError('selected_one_campaign_ledger_required')
     document,receipt=registration._state(registration_owner)
     market,generation=receipt['market'],receipt['generation_id']
     if consumer_policy is not None:
@@ -65,4 +67,9 @@ def freeze_registered_child(*, registration_owner, policy, code_sha, native, nat
         private_class_c_storage='MEMORY_ONLY',financial_use_granted=False)
     if master_id is not None:frozen['master_id']=master_id
     if ohlcv_source_url is not None:frozen['ohlcv_source_url']=ohlcv_source_url
+    if run_ledger is not None:
+        child=run_ledger.identity['children'][market]
+        if child['generation']!=generation or tuple(child['subjects'])!=stock.subjects:
+            raise ValueError('selected_shared_budget_child_scope_changed')
+        frozen['shared_run_ledger']=run_ledger.worker_binding()
     return frozen,compiler,kis,private_local

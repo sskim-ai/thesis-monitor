@@ -17,11 +17,17 @@ from app.services.production_monitoring_session import ProductionMonitoringSessi
 from app.services.production_runtime_bridge import ProductionRuntimeBridgeV1
 from app.services.unified_run_artifacts import SECRET_KEY, durable_json, load_json
 from app.services.unified_runtime_v2 import CONTRACT, STAGES, validate_stage_v2
-from app.services.unified_snapshot_contract import digest
+from app.services.unified_snapshot_contract import ContractModel, digest
 from app.services.vnext_execution_profile import SOL_HIGH_V1
 
-TERMINAL = 'RESEARCH_NO_SEND_RENDER_TERMINAL'
+TERMINAL = 'RENDER_VERIFIED_NO_SEND'
 RESEARCH_STAGES = STAGES[:-1]
+
+
+class PreparedResearchEnvelope(ContractModel):
+    """Typed serialization of the already owner-verified snapshot, not a grant."""
+    generation_id: str
+    subjects: tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -129,7 +135,8 @@ class PreparedResearchBridge(ProductionRuntimeBridgeV1):
             generation_id=c.run_id, source=expected['collection']['monitoring_input'],
             source_generation_id=c.source_generation, frozen_cohort=c, cohort_source_owner=self.child.owner)
         self._restore_upstream(session, request)
-        return session, SimpleNamespace(production_envelope=SimpleNamespace(subjects=c.market_subjects[self.child.market]))
+        return session, SimpleNamespace(production_envelope=PreparedResearchEnvelope.model_validate(
+            expected['collection']['production_envelope']))
 
     async def policy(self, *args, **kwargs):
         raise ValueError('research_prepared_source_only_no_collection')

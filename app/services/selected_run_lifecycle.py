@@ -4,7 +4,7 @@ It counts intents before I/O. Source quality, account STOP/Lane and original
 Worker/Stage owners remain separate mandatory checks at their original ports.
 """
 from copy import deepcopy
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import fcntl
 import json
 import os
@@ -40,11 +40,41 @@ class SelectedRunLedger:
             children=deepcopy(children), provider_caps=dict(provider_caps), max_http=max_http,
             max_models=max_models, database_identity=database_identity, retry=0, send=False)
         self._event('OPEN')
+        registration.bind_run_stop(approval,self.stop)
 
     def _external(self):
+        if self.approval is None:
+            now=datetime.now(timezone.utc)
+            if not datetime.fromisoformat(self.identity['authorized_at'])<=now<datetime.fromisoformat(self.identity['expires_at']):
+                raise ValueError('selected_worker_frozen_approval_expired')
+            return
         decision = registration._approval(self.approval)
         if digest(decision.model_dump(mode='json')) != self.identity['approval_sha256']:
             raise ValueError('selected_run_approval_changed')
+
+    def worker_binding(self):
+        self._external()
+        if self.state()['state']=='STOPPED_NO_SEND':raise ValueError('selected_run_stopped')
+        return dict(path=str(self.path.absolute()),identity_sha256=digest(self.identity))
+
+    @classmethod
+    def attach_worker(cls, binding):
+        """Existing trusted worker frame pins this budget file; no new token.
+
+        Backend revoke appends STOP to this same locked file before completing.
+        The worker cannot issue approvals, refreeze plans or refill counters.
+        """
+        path=Path(binding['path'])
+        if not path.is_absolute() or any(p.is_symlink() for p in (path,*path.parents)) or not path.is_file():
+            raise ValueError('selected_worker_existing_budget_required')
+        with path.open('rb') as f:first=json.loads(f.readline())
+        if digest(first['identity'])!=binding['identity_sha256']:
+            raise ValueError('selected_worker_budget_identity_changed')
+        instance=object.__new__(cls)
+        instance.path,instance.identity,instance.approval=path,first['identity'],None
+        instance._external()
+        instance._event('OPEN')
+        return instance
 
     def _event(self, event, **value):
         with os.fdopen(os.open(self.path, os.O_RDWR | os.O_CREAT | os.O_APPEND | os.O_NOFOLLOW, 0o600), 'r+b') as f:
@@ -53,7 +83,8 @@ class SelectedRunLedger:
             if raw and not raw.endswith(b'\n'):
                 raise ValueError('selected_run_torn_intent_no_replay')
             state = dict(state='APPROVED_FROZEN_RUN', registration=None, registration_receipt=None, db_intent=False,
-                db_connection_attempts=0, preopen_corrections=0,
+                db_connection_attempts=0, preopen_corrections=0, reserved_connection_unentered=False,
+                reserved_connection_continued=False,
                 plans={}, sources={}, captures=[], models={}, used={}, pending=None, completed=[],
                 http={}, http_total=0, model_total=0, db_select_reserved=0, db_select_actual=0)
             previous, count = None, 0
@@ -89,12 +120,13 @@ class SelectedRunLedger:
             return
         if event == 'PREOPEN_CORRECTION':
             if (s['state'] != 'STOPPED_NO_SEND' or not s['db_intent'] or s['registration'] is not None
-                    or s['db_connection_attempts'] or s['preopen_corrections']
+                    or s['db_connection_attempts'] > int(v.get('reserved_argument_failure') is True) or s['preopen_corrections']
                     or v['observed_connections'] != 0 or v['observed_selects'] != 0):
                 raise ValueError('selected_cannot_repair_consumed_database_attempt')
             # No counter or intent is cleared. A local Python argument error
             # before connect is not a second physical database attempt.
-            s.update(state='APPROVED_FROZEN_RUN', preopen_corrections=1)
+            s.update(state='APPROVED_FROZEN_RUN', preopen_corrections=1,
+                reserved_connection_unentered=bool(s['db_connection_attempts']))
             return
         if s['state'] in ('STOPPED_NO_SEND', 'RENDERED_NO_SEND'):
             raise ValueError('selected_run_terminal_no_new_work')
@@ -105,6 +137,12 @@ class SelectedRunLedger:
             if not s['db_intent'] or s['db_connection_attempts'] or s['registration'] is not None:
                 raise ValueError('selected_database_connection_already_attempted')
             s['db_connection_attempts'] = 1
+        elif event == 'DB_OPEN_RESERVED_CONTINUATION':
+            if (s['state']!='APPROVED_FROZEN_RUN' or not s['reserved_connection_unentered']
+                    or s['reserved_connection_continued'] or s['registration'] is not None
+                    or s['db_connection_attempts']!=1):
+                raise ValueError('selected_reserved_connection_not_available')
+            s['reserved_connection_continued']=True
         elif event == 'REGISTRATION':
             if not s['db_intent'] or s['registration'] is not None or not 1 <= v['selects'] <= 5:
                 raise ValueError('selected_registration_receipt_gap')
@@ -186,18 +224,21 @@ class SelectedRunLedger:
             raise ValueError('selected_database_frozen_scope_changed')
         permission.require()
         state = self.state()
-        if state['preopen_corrections'] and state['state']=='APPROVED_FROZEN_RUN' and not state['db_connection_attempts']:
+        if state['preopen_corrections'] and state['state']=='APPROVED_FROZEN_RUN':
             return
         self._event('DB_INTENT')
 
     def before_database_open(self):
         self._external()
-        self._event('DB_OPEN')
+        state=self.state()
+        self._event('DB_OPEN_RESERVED_CONTINUATION' if state['reserved_connection_unentered'] else 'DB_OPEN')
 
-    def correct_preopen_wiring(self, *, evidence_sha256, observed_connections, observed_selects):
+    def correct_preopen_wiring(self, *, evidence_sha256, observed_connections, observed_selects,
+                              reserved_argument_failure=False):
         self._external()
         self._event('PREOPEN_CORRECTION', evidence_sha256=evidence_sha256,
-            observed_connections=observed_connections, observed_selects=observed_selects)
+            observed_connections=observed_connections, observed_selects=observed_selects,
+            reserved_argument_failure=reserved_argument_failure is True)
 
     def registration_captured(self, receipt):
         selects = sum(r['operation'] == 'SELECT' for r in receipt['query_trace'])
@@ -236,6 +277,9 @@ class SelectedRunLedger:
 
     def before_http(self, *, market, provider, logical_id, plan_sha256):
         self._external()
+        receipt=self.state()['registration_receipt']
+        if receipt is None or datetime.now(timezone.utc)>=datetime.fromisoformat(receipt['cutoff'])+timedelta(hours=1):
+            raise ValueError('selected_original_registration_http_window_expired')
         key = f'HTTP:{market}:{logical_id}'
         self._event('INTENT', key=key, kind='HTTP', market=market, provider=provider, plan=plan_sha256)
         return key

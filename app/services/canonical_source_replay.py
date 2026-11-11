@@ -231,6 +231,10 @@ def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=N
                         consume_bound_result(root=root/'dispatch', plan=sealed, logical_id=key, receipt_sha256=final['receipt_sha256'])
                 item = dict(technical_inputs=technical, financial_inputs=dict(plan=frozen['candidate']['financial_plans'][ticker],
                     acquisition=read(path/'owner-acquisition.json'), receipts=financial_receipts, directory=path, field_semantics=True), source_window=window)
+                # Both full and selected cohorts enter the same existing
+                # comparison owner. It replays raw/PIT/quality before issuing
+                # any business-use projection; the opt-in is not a use grant.
+                item['reported_comparison_business']=True
                 if frozen.get('valuation_slots'):
                     from app.services.provider_native_valuation_acquisition import replay_native
                     item['valuation_inputs'] = replay_native(root=root, frozen=frozen, outcome=outcome,

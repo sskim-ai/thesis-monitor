@@ -18,8 +18,11 @@ from app.services.unified_snapshot_contract import digest
 ROOT = Path(__file__).resolve().parents[2]
 
 
-async def acquire_kis_worker(*, root, frozen, plan, credentials, remaining):
+async def acquire_kis_worker(*, root, frozen, plan, credentials, remaining, run_ledger=None):
     path = root / "production-frozen-source-plan.json"
+    if frozen.get('scope')=='SELECTED_ORIGINAL_RESEARCH_V1':
+        if run_ledger is None or frozen.get('shared_run_ledger')!=run_ledger.worker_binding():
+            raise ValueError('selected_kis_shared_budget_required_before_worker')
     frame = dict(contract="production-kis-worker-authorization-v1", root=str(root),
         frozen_sha256=sha256_bytes(path.read_bytes()), plan_sha256=digest(plan), seconds_remaining=remaining,
         credentials=dict(app_key=credentials["kis"][0], app_secret=credentials["kis"][1]))
@@ -44,6 +47,7 @@ async def acquire_kis_worker(*, root, frozen, plan, credentials, remaining):
                    child_reaped=True, generation_id=frozen["generation_id"])
     durable_json(root / "kis-worker-exit.json", receipt, exclusive=True)
     if process.returncode != 0 or json.loads(stdout)["terminal"] != "KIS_FRESH_ACQUISITION_COMPLETE_REPLAY_REQUIRED":
+        if run_ledger is not None:run_ledger.stop('KIS_WORKER_FAILED')
         raise ValueError("production_kis_acquisition_failed")
 
 

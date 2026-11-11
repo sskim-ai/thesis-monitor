@@ -22,7 +22,11 @@ CODE=('app/services/selected_source_composition.py','app/services/selected_sourc
     'app/services/selected_kis_sources.py','app/services/selected_market_collection.py',
     'app/services/selected_source_preparation.py','app/services/selected_run_lifecycle.py',
     'app/services/scoped_monitoring_research.py','app/services/production_model_profile.py',
-    'app/services/research_no_send_run.py')
+    'app/services/research_no_send_run.py','app/services/onboarding_readiness_service.py',
+    'app/services/minimal_class_c_export.py','app/services/unified_persisted_projection.py',
+    'app/services/prospective_class_c_owner.py','app/services/production_source_transport.py',
+    'app/jobs/production_kis_worker.py','scripts/kr8_kis_integration.py',
+    'app/services/canonical_source_replay.py')
 
 
 def code_fingerprints():
@@ -36,7 +40,7 @@ class SelectedSourceRunBinding(SourceRunBinding):
     master_id: str=Field(min_length=1)
     child_id: str=Field(min_length=1)
     market: Literal['us','kr']
-    subjects: tuple[str,...]=Field(min_length=1,max_length=22)
+    subjects: tuple[str,...]=Field(min_length=1,max_length=100)
     target_session: str
     request_plan_sha256: str=Field(pattern=r'^[a-f0-9]{64}$')
     registration_receipt_sha256: str=Field(pattern=r'^[a-f0-9]{64}$')

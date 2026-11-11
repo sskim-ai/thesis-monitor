@@ -9,7 +9,7 @@ from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 from importlib.metadata import version
 import json
-from weakref import WeakKeyDictionary, ref
+from weakref import WeakKeyDictionary, WeakMethod, ref
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
@@ -47,6 +47,19 @@ class ProspectiveOwner:
 _APPROVALS: WeakKeyDictionary = WeakKeyDictionary()
 _OWNERS: WeakKeyDictionary = WeakKeyDictionary()
 _ISSUED_RUNS: WeakKeyDictionary = WeakKeyDictionary()
+_RUN_STOPS: WeakKeyDictionary = WeakKeyDictionary()
+
+
+def bind_run_stop(approval, stop):
+    """Attach local accounting cancellation, never issue another approval."""
+    _approval(approval)
+    _RUN_STOPS.setdefault(approval,[]).append(WeakMethod(stop))
+
+
+def _stop_runs(approval):
+    for target in _RUN_STOPS.get(approval,()):
+        stop=target()
+        if stop is not None:stop('ORIGINAL_BACKEND_AUTHORITY_REVOKED')
 
 
 class SourceIntakeOwner:
@@ -275,6 +288,7 @@ This is a control-plane capability issuance API, not a consent-discovery API.
 def revoke_approval(approval):
     if approval not in _APPROVALS:
         raise ValueError("prospective_live_operator_approval_required")
+    _stop_runs(approval)
     del _APPROVALS[approval]
 
 
@@ -323,8 +337,11 @@ def issue_prospective_owner(*, approval, capture, market, source_generation_id,
             raise ValueError("prospective_duplicate_run_source_changed")
         return handle, apply_prospective_owner(original, original=original, owner=handle)
     subjects = original["universe"]["eligible_subjects"]
-    if not subjects or not set(subjects) <= set(decision.subjects):
-        raise ValueError("prospective_subject_not_operator_authorized")
+    if not subjects:
+        raise ValueError('NO_ELIGIBLE_SUBJECT_FOR_MARKET')
+    if not set(subjects) <= set(decision.subjects):
+        raise ValueError('ELIGIBLE_SUBJECT_OUTSIDE_APPROVAL')
+    canonical={r['ticker']:r for r in original['universe']['eligibility_audit']}
     records = {t: {} for t in subjects}
     for component in original["roles"].values():
         for row in component["records"]:
@@ -336,10 +353,7 @@ def issue_prospective_owner(*, approval, capture, market, source_generation_id,
             raise ValueError("prospective_registration_identity_thesis_missing")
         watch, security, thesis = [rows[t]["record"] for t in
             ("watchlistitem", "securitymaster", "investmentthesis")]
-        if (not all(watch.get(k) is True for k in ("active", "monitoring_requested", "production_eligible"))
-                or watch["onboarding_state"] != "ACTIVE" or not watch["activated_at"]
-                or thesis["status"] != "active" or not thesis["core_thesis"].strip()
-                or not security["canonical_security_id"]):
+        if ticker not in canonical or canonical[ticker]['canonical_eligible'] is not True:
             raise ValueError("prospective_active_registration_and_thesis_required")
         bindings[ticker] = dict(security_id=security["canonical_security_id"], exchange=security["exchange"],
             thesis_version=thesis["version"], original_first_eligible_session=watch["first_eligible_session"],
@@ -391,6 +405,7 @@ def require_generation(owner, generation_id, *, purpose=SCOPE):
 
 def revoke_prospective_owner(owner):
     _state(owner)
+    _stop_runs(_OWNERS[owner][0])
     del _OWNERS[owner]
 
 

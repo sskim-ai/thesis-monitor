@@ -281,7 +281,8 @@ def semantic_inputs(static, hashes):
         action_docs=json.loads((static/'action-docs.json').read_bytes()))
 
 
-def acquire(root, *, plan, credentials, inventories, static, guard):
+def acquire(root, *, plan, credentials, inventories, static, guard,
+            physical_accounting=None, source_plan_sha256=None):
     """One fresh acquisition. Transport failures terminate; no fallback/retry."""
     subjects = _subjects(plan)
     inputs = semantic_inputs(static, plan['static_hashes'])
@@ -297,7 +298,17 @@ def acquire(root, *, plan, credentials, inventories, static, guard):
                 durable_bytes(root/f'physical-{self.attempts:03d}.intent.json',json.dumps(dict(
                     ordinal=self.attempts,plan_sha256=plan['receipt_sha256'],before_io=True,
                     started_at=base.now(),retries=0)).encode(),exclusive=True)
-            return super().handle_request(request)
+            key=None
+            if physical_accounting is not None:
+                key=physical_accounting.before_http(market='kr',provider='kis',
+                    logical_id='kis-wire:'+str(self.attempts),plan_sha256=source_plan_sha256)
+            try:
+                response=super().handle_request(request)
+            except BaseException:
+                if key is not None:physical_accounting.result(key,ok=False)
+                raise
+            if key is not None:physical_accounting.result(key,ok=response.status_code not in (401,403,429))
+            return response
     with httpx.Client(timeout=45, follow_redirects=False, transport=Guarded(retries=0)) as client:
         probe = FreshProbe(root, credentials, client, plan=plan)
         actions = None

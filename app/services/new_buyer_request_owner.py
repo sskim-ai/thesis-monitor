@@ -98,6 +98,25 @@ def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
     return sealed(request)
 
 
+def _required_order_only(schema):
+    """JSON Schema required is a set; preserve every other array and value."""
+    if not isinstance(schema,dict):return deepcopy(schema)
+    result=deepcopy(schema)
+    for key in ('properties','patternProperties','$defs','definitions','dependentSchemas'):
+        if key in schema:result[key]={k:_required_order_only(v) for k,v in schema[key].items()}
+    for key in ('anyOf','oneOf','allOf','prefixItems'):
+        if key in schema:result[key]=[_required_order_only(v) for v in schema[key]]
+    for key in ('items','additionalProperties','not','if','then','else','contains','propertyNames'):
+        if key in schema:result[key]=_required_order_only(schema[key])
+    if 'required' in schema:
+        values=schema['required']
+        if (not isinstance(values,list) or any(not isinstance(v,str) for v in values)
+                or len(values)!=len(set(values))):
+            raise ValueError('v2_required_schema_invariant')
+        result['required']=sorted(values)
+    return result
+
+
 def provider_payload(request, *, expected_request_sha256):
     from scripts.kis_eps_wire_calibration import verified
     verified(request,contract.CONTRACT)
@@ -107,7 +126,8 @@ def provider_payload(request, *, expected_request_sha256):
             or request['output_schema'] != contract.output_schema(provider['input'])):
         raise ValueError('v2_request_freeze_drift')
     wire, _ = project_provider_wire_schema(v1.obj(dict(new_buyer_shadow=request['output_schema'])))
-    if provider['response_schema'] != wire or scan_provider_structured_output_schema(wire)['status']!='PASS':
+    if (_required_order_only(provider['response_schema']) != _required_order_only(wire)
+            or scan_provider_structured_output_schema(wire)['status']!='PASS'):
         raise ValueError('v2_wire_freeze_drift')
     return deepcopy(provider)
 

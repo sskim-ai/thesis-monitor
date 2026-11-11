@@ -28,6 +28,15 @@ def run(frame):
     outcome = read(root / "acquisition-outcome.json")
     inventory = current_inventories(root, frozen, outcome)
     deadline = time.monotonic() + frame["seconds_remaining"]
+    accounting=None
+    if frozen.get('scope')=='SELECTED_ORIGINAL_RESEARCH_V1':
+        from app.services.selected_run_lifecycle import SelectedRunLedger
+        accounting=SelectedRunLedger.attach_worker(frozen['shared_run_ledger'])
+        child=accounting.identity['children']['kr']
+        original_plan=_source_plan(frozen)
+        if (child['generation']!=frozen['generation_id'] or tuple(child['subjects'])!=original_plan.subjects
+                or accounting.state()['plans'].get('kr')!=original_plan.plan_sha256):
+            raise ValueError('selected_kis_worker_shared_scope_changed')
 
     def guard():
         if (time.monotonic() >= deadline or sha256_bytes(frozen_path.read_bytes()) != frame["frozen_sha256"]
@@ -36,8 +45,10 @@ def run(frame):
 
     credentials = kis.base.Credentials(**frame["credentials"])
     frame["credentials"].clear()
+    extra={} if accounting is None else dict(physical_accounting=accounting,
+        source_plan_sha256=_source_plan(frozen).plan_sha256)
     return kis.acquire(root / "kis", plan=plan, credentials=credentials, inventories=inventory,
-                       static=root / "static/kis", guard=guard)
+                       static=root / "static/kis", guard=guard,**extra)
 
 
 def main():
