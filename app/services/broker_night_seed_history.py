@@ -203,7 +203,11 @@ def commit_seed(*, history_path, raw, available_at=None, revision_metadata=None)
                 if (meta.get("kind") != kind or not meta.get("reason") or meta.get("previous_revision_sha256") != previous
                         or not observed <= received <= at or received <= datetime.fromisoformat(old["first_system_available_at"])
                         or b["screenshot_sha256"] == old["screenshot_sha256"]
-                        or (progress and b["previous_same_timeframe_night_close"] != old["previous_same_timeframe_night_close"])):
+                        or (progress and (
+                            (b["previous_same_timeframe_night_close"] is None) != (old["previous_same_timeframe_night_close"] is None)
+                            or (b["previous_same_timeframe_night_close"] is not None
+                                and _number(b["previous_same_timeframe_night_close"]) != _number(old["previous_same_timeframe_night_close"]))
+                        ))):
                     raise ValueError("broker_seed_revision_metadata")
             except (KeyError, TypeError, ValueError):
                 conflicts.append(b);continue

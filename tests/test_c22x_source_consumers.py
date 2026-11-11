@@ -41,6 +41,7 @@ def test_legacy_57_noop_then_progress_versions_and_pit(tmp_path):
     assert h.commit_seed(history_path=p,raw=CSV.read_bytes(),available_at=AT)['unchanged']==57 and p.read_bytes()==before
     for tf in ('WEEKLY','MONTHLY'):
         raw,meta=update(p,tf)
+        if tf=='WEEKLY':raw=raw.replace(b',795.50,',b',795.5,')
         result=h.commit_seed(history_path=p,raw=raw,available_at=AT,revision_metadata=meta)
         assert result['new_revisions']==1 and result['inserted']==0
         assert h.commit_seed(history_path=p,raw=raw,available_at=AT,revision_metadata=meta)['status']=='NOOP'
