@@ -21,6 +21,7 @@ from app.services.unified_runtime_v2 import CONTRACT, STAGES, StageResultV2, val
 from app.services.unified_snapshot_contract import digest
 from app.services import new_buyer_base_contract as wire
 from app.services.production_model_profile import sol_high
+from app.services import new_buyer_request_owner as canonical_b2
 
 
 class SourceBackend(Protocol):
@@ -76,11 +77,17 @@ class ProductionRuntimeBridgeV1:
         payload = deepcopy(request['payload'])
         profile = getattr(self, 'execution_profile', None)
         scope = {}
+        budget = getattr(self.model, 'call_budget', None)
+        dynamic = profile is not None and budget is not None and budget.plan is not None
         if profile:
-            subjects = request['subjects']
-            if stage != 'MARKET' and len(subjects) != 1:
-                raise ValueError('sol_high_multi_subject_batch_outside_four_panel_plan')
-            scope['panel'] = session.market.upper() + '_MARKET' if stage == 'MARKET' else subjects[0]
+            if dynamic:
+                session.verify_model_build(stage, request)
+                scope['slot_scope'] = budget.bind_stage(stage, request)
+            else:
+                subjects = request['subjects']
+                if stage != 'MARKET' and len(subjects) != 1:
+                    raise ValueError('sol_high_multi_subject_batch_outside_four_panel_plan')
+                scope['panel'] = session.market.upper() + '_MARKET' if stage == 'MARKET' else subjects[0]
         for index in range(1, 2 if profile else 4):
             path = directory / ('attempt-'+str(index))
             receipt = dict(request_sha256=digest(payload), classification='INTENT', ordinal=index)
@@ -111,6 +118,9 @@ class ProductionRuntimeBridgeV1:
                             durable_json(path/'receipt.json', receipt, exclusive=True)
                             raise SemanticReject('production_semantic_reject_no_retry') from exc
                         receipt['classification'] = 'ACCEPTED'
+                        if dynamic:
+                            budget.record_acceptance(scope['slot_scope']['slot_id'],
+                                payload_sha256=digest(payload), output_sha256=receipt['raw_sha256'])
                         durable_json(path/'receipt.json', receipt, exclusive=True)
                         return dict(batch=request['batch'], subjects=list(request['subjects']), output=output,
                             payload_sha256=digest(payload), raw_sha256=receipt['raw_sha256'])
@@ -127,6 +137,10 @@ class ProductionRuntimeBridgeV1:
         self.sources.verify(collection)
         source = collection.packet['monitoring_input']
         native_args = {}
+        budget = getattr(self.model, 'call_budget', None)
+        if budget is not None and budget.plan is not None:
+            native_args.update(frozen_cohort=budget.plan.cohort,
+                              cohort_source_owner=self.model.cohort_source_owner)
         if self._native_owner_parents:
             parent = self._native_owner_parents.get(request['run_id'])
             if parent is None:
@@ -135,7 +149,7 @@ class ProductionRuntimeBridgeV1:
                 generation_id=collection.production_envelope.generation_id,
                 source_generation_id=source['source_generation_id'], snapshot_sha256=request['snapshot_sha256'])
             parent.verify_scope(**scope)
-            native_args = dict(authority_native_v2=True, native_owner_parent=parent, native_parent_scope=scope)
+            native_args.update(authority_native_v2=True, native_owner_parent=parent, native_parent_scope=scope)
         session = ProductionMonitoringSession(directory/'canonical', market=collection.market,
             generation_id=collection.production_envelope.generation_id, source=source,
             source_generation_id=source['source_generation_id'], **native_args)
@@ -181,7 +195,18 @@ class ProductionRuntimeBridgeV1:
                     owner_sha256=digest(session.fresh_stocks[ticker]), core_sha256=digest(session.cores[ticker]),
                     pass_a_sha256=digest(session.arows[ticker]), pass_b_sha256=digest(session.brows[ticker]))
                 auth = authorize_b2(item, **binding, execution_profile=self.execution_profile)
+                budget = getattr(self.model, 'call_budget', None)
+                b2_scope = None
+                if budget is not None and budget.plan is not None:
+                    payload = canonical_b2.provider_payload(item, expected_request_sha256=auth.request_sha256)
+                    b2_scope = budget.bind_stage('B2', dict(market=session.market, batch=None, subjects=[ticker],
+                        execution_generation_id=session.gen, source_generation_id=session.source_gen,
+                        payload=payload, payload_sha256=auth.request_sha256,
+                        original_authorization_sha256=digest(auth.model_dump(mode='json'))))
                 result = await execute_b2(item, auth, current_binding=binding, transport=self.model, directory=directory/ticker)
+                if b2_scope is not None:
+                    budget.record_acceptance(b2_scope['slot_id'], payload_sha256=auth.request_sha256,
+                                             output_sha256=result['attempts'][-1]['raw_sha256'])
                 rows[ticker] = dict(authorization=auth.model_dump(mode='json'), result=result)
             output = dict(rows=rows, generation_id=session.gen)
         else:

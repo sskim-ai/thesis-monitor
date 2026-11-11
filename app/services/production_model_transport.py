@@ -18,6 +18,7 @@ from app.services.production_model_profile import CONTRACT_V2, SolHighWirePolicy
 from app.services.vnext_execution_profile import SOL_HIGH_V1
 
 CONTRACT = "official-codex-production-transport-v1"
+CONTRACT_V3 = 'official-codex-production-transport-v3-dynamic-sol-high'
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -40,6 +41,7 @@ class ProductionWireRequest:
     prompt_sha256: str
     schema_sha256: str
     execution_policy: ProductionWirePolicy | SolHighWirePolicy = ProductionWirePolicy()
+    model_plan_scope: dict | None = None
 
 
 def request_profile(request):
@@ -53,7 +55,9 @@ def request_profile(request):
 
 def request_from_frame(frame):
     base = {'contract', 'directory', 'binding', 'request_id', 'prompt_sha256', 'schema_sha256'}
-    if frame.get('contract') == CONTRACT_V2 and set(frame) == base | {'execution_policy', 'authorization_sha256'}:
+    dynamic = frame.get('contract') == CONTRACT_V3
+    extras = {'execution_policy', 'authorization_sha256'} | ({'execution_plan', 'slot_scope'} if dynamic else set())
+    if frame.get('contract') in (CONTRACT_V2, CONTRACT_V3) and set(frame) == base | extras:
         policy = SolHighWirePolicy(**frame['execution_policy'])
         policy.validate()
         auth = Path(frame['directory']) / 'production-authorization.json'
@@ -65,12 +69,23 @@ def request_from_frame(frame):
             raise ValueError('production_worker_profile_drift')
         if (value.get('model'), value.get('effort'), value.get('timeout')) != (policy.model, policy.effort, policy.timeout_seconds):
             raise ValueError('production_worker_model_drift')
+        if dynamic:
+            from app.services.model_execution_plan import ModelExecutionPlan, validate_slot_scope
+            plan = ModelExecutionPlan.from_dict(frame['execution_plan'])
+            validate_slot_scope(plan, frame['slot_scope'])
+            if (value.get('slot_scope') != frame['slot_scope'] or value.get('execution_plan_sha256') != plan.sha256
+                    or value.get('payload_sha256') != frame['slot_scope']['payload_sha256']
+                    or value.get('planned_slots') != len(plan.slots)
+                    or type(value.get('maximum')) is not int or value['maximum'] < len(plan.slots)
+                    or not 1 <= value.get('physical_call', 0) <= value['maximum']):
+                raise ValueError('production_worker_dynamic_plan_or_budget_drift')
     elif frame.get('contract') == CONTRACT and set(frame) == base:
         policy = ProductionWirePolicy()
     else:
         raise ValueError('production_model_worker_contract')
     return ProductionWireRequest(binding_from_json(frame['binding']), frame['request_id'],
-        frame['prompt_sha256'], frame['schema_sha256'], policy)
+        frame['prompt_sha256'], frame['schema_sha256'], policy,
+        frame['slot_scope'] if dynamic else None)
 
 
 def binding_from_json(value):
@@ -97,12 +112,15 @@ def render_prompt(payload, stage):
 
 class OfficialProductionModelTransport:
     def __init__(self, *, binding, runtime_root, secrets=(), worker_factory=asyncio.create_subprocess_exec,
-                 execution_profile=None, call_budget=None):
+                 execution_profile=None, call_budget=None, cohort_source_owner=None):
         self.execution_profile = sol_high(execution_profile) if execution_profile is not None else None
         if ((self.execution_profile is not None and type(call_budget) is not SolHighCallBudget)
                 or (self.execution_profile is None and call_budget is not None)):
             raise ValueError('sol_high_explicit_shared_budget_required')
         self.call_budget = call_budget
+        self.cohort_source_owner = cohort_source_owner
+        if cohort_source_owner is not None and (call_budget is None or call_budget.plan is None):
+            raise ValueError('explicit_dynamic_model_plan_required')
         self.binding = binding_from_json(binding)
         self.binding_json = binding
         self.runtime_root = Path(runtime_root).resolve()
@@ -116,21 +134,34 @@ class OfficialProductionModelTransport:
         self.total = 0
 
     def bind_cycle(self, *, market, run_id):
+        if self.call_budget is not None and self.call_budget.plan is not None:
+            if market not in self.call_budget.plan.cohort.market_subjects or run_id != self.call_budget.plan.cohort.run_id:
+                raise ValueError('model_plan_run_or_market_drift')
+            self.cycle = (market, run_id)
+            # Diagnostics are cycle-local; the shared budget is deliberately untouched.
+            self.counts, self.total = {}, 0
+            return
         if market not in {"us", "kr"} or self.cycle is not None and self.cycle[1] == run_id:
             raise ValueError("production_model_cycle_binding")
         self.cycle = (market, run_id)
         self.counts, self.total = {}, 0
 
-    async def request(self, payload, *, model, effort, timeout, stage="B2", panel=None):
+    async def request(self, payload, *, model, effort, timeout, stage="B2", panel=None, slot_scope=None):
         reject_test_only_production(payload)
         expected = ('gpt-5.6-sol', 'xhigh', 600) if self.execution_profile is None else (
             self.execution_profile.model, self.execution_profile.effort, self.execution_profile.timeout_seconds)
         if (model, effort, timeout) != expected or self.cycle is None:
             raise ValueError("production_model_contract_not_bound")
         validate_binding(self.binding, str(self.binding.executable), profile=self.execution_profile)
-        identity = (stage, digest(payload))
+        dynamic = self.call_budget is not None and self.call_budget.plan is not None
+        payload_sha256 = digest(payload)
+        if dynamic:
+            slot_scope = self.call_budget.resolve_scope(panel, stage, payload_sha256, slot_scope)
+            if not isinstance(slot_scope, dict):
+                raise ValueError('frozen_model_slot_scope_required')
+        identity = (stage, slot_scope['slot_id']) if dynamic else (stage, payload_sha256)
         ordinal = self.counts.get(identity, 0) + 1
-        maximum = 90 if self.cycle[0] == "us" else 54
+        maximum = self.call_budget.maximum if self.execution_profile else (90 if self.cycle[0] == "us" else 54)
         if ordinal > (1 if self.execution_profile else 3) or self.total >= maximum:
             raise ValueError("production_model_call_budget_exhausted")
         prompt, schema = render_prompt(payload, stage), encoded(payload["response_schema"])
@@ -141,8 +172,12 @@ class OfficialProductionModelTransport:
         if self.execution_profile:
             if len(prompt) > 384 * 1024:
                 raise ValueError('sol_high_input_exceeds_384KiB')
-            physical_call = self.call_budget.consume(panel, stage, identity[1])
-            maximum = 6
+            if dynamic:
+                self.call_budget.plan.cohort.verify_source_owner(self.cohort_source_owner)
+                if not isinstance(slot_scope, dict) or slot_scope.get('market') != self.cycle[0]:
+                    raise ValueError('model_slot_market_cycle_drift')
+                contract = CONTRACT_V3
+            physical_call = self.call_budget.consume(panel, stage, payload_sha256, slot_scope=slot_scope)
         else:
             physical_call = self.total + 1
         self.counts[identity], self.total = ordinal, self.total + 1
@@ -155,15 +190,20 @@ class OfficialProductionModelTransport:
             request_id=path.name, prompt_sha256=sha256_bytes(prompt), schema_sha256=sha256_bytes(schema))
         authorization = dict(contract=contract,
             purpose=policy.purpose, run_id=self.cycle[1], market=self.cycle[0], stage=stage,
-            payload_sha256=identity[1], ordinal=ordinal, physical_call=physical_call, maximum=maximum,
+            payload_sha256=payload_sha256, ordinal=ordinal, physical_call=physical_call, maximum=maximum,
             model=model, effort=effort, timeout=timeout, semantic_retry_allowed=False,
             prompt_sha256=frame["prompt_sha256"], schema_sha256=frame["schema_sha256"])
         if self.execution_profile:
             authorization.update(request_id=frame['request_id'], panel=panel, execution_policy=asdict(policy))
+        if dynamic:
+            authorization.update(slot_scope=slot_scope, execution_plan_sha256=self.call_budget.plan.sha256,
+                planned_slots=len(self.call_budget.slots), remaining_invocations=self.call_budget.maximum-physical_call)
         durable_json(path / "production-authorization.json", authorization, exclusive=True)
         if self.execution_profile:
             frame.update(execution_policy=asdict(policy), authorization_sha256=sha256_bytes(
                 (path / 'production-authorization.json').read_bytes()))
+        if dynamic:
+            frame.update(execution_plan=self.call_budget.plan.to_dict(), slot_scope=slot_scope)
         env = {k: os.environ[k] for k in ("PATH", "HOME", "CODEX_HOME", "TMPDIR", "LANG") if k in os.environ}
         env.update(PYTHONPATH=str(ROOT), PYTHONDONTWRITEBYTECODE="1", THESIS_MONITOR_ENV_FILE="",
             DATABASE_URL="sqlite://", NOTIFICATION_DRY_RUN="true", ENABLE_LIVE_PROVIDERS="false",
@@ -209,4 +249,6 @@ class OfficialProductionModelTransport:
                     or proof.get('prompt_sha256') != frame['prompt_sha256']
                     or proof.get('schema_sha256') != frame['schema_sha256']):
                 raise ValueError('sol_high_worker_receipt_drift_or_output_limit')
+            if dynamic and proof.get('model_plan_scope') != slot_scope:
+                raise ValueError('sol_high_worker_slot_receipt_drift')
         return raw

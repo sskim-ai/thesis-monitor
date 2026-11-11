@@ -126,6 +126,8 @@ def invoke_official_bound(*, codex_bin, prompt, output, log, schema, cwd, timeou
     if profile is not None:
         receipt.update(command=command, prompt_sha256=request.prompt_sha256,
                        schema_sha256=request.schema_sha256, model_entitlement='UNKNOWN_UNTIL_APPROVED_CALL')
+        if request.model_plan_scope is not None:
+            receipt['model_plan_scope'] = request.model_plan_scope
     try:
         with log.open("xb") as events, stderr.open("xb") as errors:
             process = subprocess.run(

@@ -38,8 +38,8 @@ class ModelCallSlot:
     kind: str
 
 
-class SolHighCallBudget:
-    """One shared run budget; cycle changes never refill consumed slots."""
+class FourPanelSolHighCallBudgetV1:
+    """Frozen C22Y four-panel experiment, not the generic runtime budget."""
     def __init__(self, slots):
         self.slots = tuple(slots)
         if not 1 <= len(self.slots) <= 6 or len(set(self.slots)) != len(self.slots):
@@ -69,3 +69,102 @@ class SolHighCallBudget:
             raise ValueError('sol_high_call_budget_exhausted_or_unplanned')
         self.used.add(matches[0])
         return len(self.used)
+
+
+class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
+    """Explicit plan cap, shared across markets. The old experiment stays separate."""
+    def __init__(self, slots=None, *, plan=None, approved_max_invocations=None, approved_plan_sha256=None):
+        self.plan = plan
+        if plan is None:
+            if approved_max_invocations is not None or approved_plan_sha256 is not None:
+                raise ValueError('dynamic_model_plan_required')
+            super().__init__(slots)
+            self.maximum = len(self.slots)
+            return
+        from app.services.model_execution_plan import ModelExecutionPlan
+        if slots is not None or type(plan) is not ModelExecutionPlan:
+            raise ValueError('exact_model_execution_plan_required')
+        plan.validate()
+        if (type(approved_max_invocations) is not int or approved_max_invocations < len(plan.slots)
+                or approved_max_invocations < 0 or approved_plan_sha256 != plan.sha256):
+            raise ValueError('model_plan_not_within_approved_cap_or_hash')
+        self.approved_plan_sha256 = approved_plan_sha256
+        self.maximum = approved_max_invocations
+        self.slots = plan.slots
+        self.used, self.bound, self.accepted = set(), {}, {}
+
+    def _verify_plan(self):
+        if self.plan.sha256 != self.approved_plan_sha256:
+            raise ValueError('model_plan_changed_after_approval')
+        self.plan.validate()
+
+    def bind_stage(self, stage, request):
+        """One payload binding after original upstream acceptances, never at compile time."""
+        from app.services.unified_snapshot_contract import digest
+        self._verify_plan()
+        batch = request['batch']
+        if stage == 'MARKET':
+            if batch != 1:
+                raise ValueError('model_market_batch_invalid')
+            batch = None
+        matches = [s for s in self.slots if (s.market, s.stage, s.batch_id, s.subjects) ==
+                   (request['market'], stage, batch, tuple(request['subjects']))]
+        if len(matches) != 1:
+            raise ValueError('model_request_scope_outside_frozen_plan')
+        slot = matches[0]
+        if (slot.slot_id in self.bound or set(slot.dependencies) - set(self.accepted)
+                or request['source_generation_id'] != self.plan.cohort.source_generation
+                or request['execution_generation_id'] != self.plan.cohort.run_id
+                or digest(request['payload']) != request['payload_sha256']):
+            raise ValueError('model_payload_binding_or_upstream_acceptance_gap')
+        scope = dict(plan_sha256=self.plan.sha256, cohort_sha256=self.plan.cohort.sha256,
+            slot_id=slot.slot_id, market=slot.market, stage=slot.stage, batch_id=slot.batch_id,
+            subjects=list(slot.subjects), security_ids=list(slot.security_ids),
+            source_generation=slot.source_generation, execution_profile=slot.execution_profile,
+            payload_sha256=request['payload_sha256'], build_receipt_sha256=digest(request),
+            dependency_outputs={key: self.accepted[key] for key in slot.dependencies})
+        self.bound[slot.slot_id] = scope
+        return dict(scope, dependency_outputs=dict(scope['dependency_outputs']))
+
+    def consume(self, panel, stage, payload_sha256, *, slot_scope=None):
+        if self.plan is None:
+            if slot_scope is not None:
+                raise ValueError('dynamic_slot_on_legacy_four_panel_budget')
+            return super().consume(panel, stage, payload_sha256)
+        self._verify_plan()
+        # B2's original transport signature supplies the exact ticker. Its slot
+        # must already have been bound from the canonical B2 request by the Bridge.
+        if slot_scope is None and stage == 'B2':
+            rows = [s for s in self.bound.values() if s['stage'] == 'B2' and s['subjects'] == [panel]
+                    and s['payload_sha256'] == payload_sha256]
+            slot_scope = rows[0] if len(rows) == 1 else None
+        if not isinstance(slot_scope, dict):
+            raise ValueError('frozen_model_slot_scope_required')
+        slot_id = slot_scope.get('slot_id')
+        if (self.bound.get(slot_id) != slot_scope or slot_scope['stage'] != stage
+                or slot_scope['payload_sha256'] != payload_sha256 or slot_id in self.used
+                or len(self.used) >= self.maximum):
+            raise ValueError('model_slot_scope_drift_used_or_budget_exhausted')
+        self.used.add(slot_id)
+        return len(self.used)
+
+    def resolve_scope(self, panel, stage, payload_sha256, slot_scope=None):
+        if slot_scope is None and stage == 'B2':
+            rows = [s for s in self.bound.values() if s['stage'] == stage and s['subjects'] == [panel]
+                    and s['payload_sha256'] == payload_sha256]
+            return rows[0] if len(rows) == 1 else None
+        return slot_scope
+
+    def record_acceptance(self, slot_id, *, payload_sha256, output_sha256):
+        from app.services.model_execution_plan import _sha
+        self._verify_plan()
+        if (slot_id not in self.used or slot_id in self.accepted
+                or self.bound[slot_id]['payload_sha256'] != payload_sha256):
+            raise ValueError('model_slot_original_acceptance_binding_gap')
+        self.accepted[slot_id] = _sha(output_sha256)
+
+    def state(self):
+        return dict(approved_max_invocations=self.maximum, planned_slots=len(self.slots),
+                    consumed=len(self.used), remaining=self.maximum-len(self.used),
+                    remaining_planned_slots=len(self.slots)-len(self.used),
+                    plan_sha256=self.plan.sha256 if self.plan is not None else None)
