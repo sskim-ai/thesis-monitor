@@ -71,7 +71,8 @@ class KrxNightFuturesProvider:
         return materialize_night_probe(probe, history_directory=self.history_directory)
 
 
-def materialize_night_probe(probe: KrxNightFuturesProbeResult, *, history_directory: Path | None) -> MacroProviderResult:
+def materialize_night_probe(probe: KrxNightFuturesProbeResult, *, history_directory: Path | None,
+                            night_end_dates: bool = False) -> MacroProviderResult:
     """Existing typed history/DWM owner, with storage supplied explicitly for replay."""
     history_update = (persist_live_probe_history(probe) if history_directory is None
                       else persist_live_probe_history(probe, root=history_directory))
@@ -102,6 +103,7 @@ def materialize_night_probe(probe: KrxNightFuturesProbeResult, *, history_direct
             daily_change_pct=item.change_pct,
             daily_baseline_date=item.reference_date,
             daily_baseline_close=item.reference_price,
+            night_end_dates=night_end_dates,
         )
         observations.append(
             CollectedObservation(
@@ -128,6 +130,9 @@ def materialize_night_probe(probe: KrxNightFuturesProbeResult, *, history_direct
                     "session_basis_contract": ("night-futures-session-basis-v1"),
                     "session_type": item.session_type,
                     "session_date": item.session_date.isoformat(),
+                    "night_trade_date": item.session_date.isoformat(),
+                    "regular_reference_date": item.reference_date.isoformat(),
+                    "observation_time_kst": probe.fetched_at.astimezone(KST).isoformat(),
                     "trade_date": item.session_date.isoformat(),
                     "session_open": datetime.combine(
                         item.reference_date, time(18), tzinfo=KST

@@ -7,12 +7,19 @@ from app.services.sealed_fresh_dispatch import consume_bound_result
 from scripts import kr8_kis_integration as kis
 
 
+def _source_plan(frozen):
+    if frozen.get('scope') == 'SELECTED_ORIGINAL_RESEARCH_V1':
+        from app.services.selected_source_plan import SelectedRequestPlan
+        return SelectedRequestPlan.model_validate(frozen['plan'])
+    return ProductionRequestPlan.model_validate(frozen['plan'])
+
+
 def current_inventories(root, frozen, outcome):
-    plan = ProductionRequestPlan.model_validate(frozen["plan"])
+    plan = _source_plan(frozen)
     if plan.market != "kr":
         raise ValueError("production_kis_market_scope")
     result = {}
-    for code in kis.SUBJECTS:
+    for code in plan.subjects:
         path = root / "financial" / code
         candidates = [r for r in read(path / "owner-receipts.json") if r["stage"] == "discovery" and not r["failure_class"]]
         if len(candidates) != 1:
@@ -35,7 +42,7 @@ def current_inventories(root, frozen, outcome):
 
 
 def replay_current_kis(root, frozen, outcome, plan):
-    if kis.digest(plan) != ProductionRequestPlan.model_validate(frozen["plan"]).kis_plan_sha256:
+    if kis.digest(plan) != _source_plan(frozen).kis_plan_sha256:
         raise ValueError("production_kis_plan_binding")
     args = kis.semantic_inputs(root / "static/kis", plan["static_hashes"])
     inventories = current_inventories(root, frozen, outcome)

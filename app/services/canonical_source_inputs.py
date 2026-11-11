@@ -30,6 +30,13 @@ def build_source_replay_inputs(root, frozen, outcome, policy, *, binding_factory
                               stock_reader=stock_inputs, market_reader=market_inputs,
                               publication_reader=publication_inputs, cycle_owners=None, prospective_owners=None,
                               class_c_bridge=None):
+    if frozen.get('scope')=='SELECTED_ORIGINAL_RESEARCH_V1':
+        from app.services.selected_source_composition import SelectedSourceRunBinding,build_inputs
+        if (binding_factory is not SelectedSourceRunBinding or cycle_owners is not None
+                or class_c_bridge is not None or completed_close_sources is not None):
+            raise ValueError('selected_source_explicit_binding_and_memory_registration_required')
+        return build_inputs(root,frozen,outcome,policy,prospective_owners=prospective_owners,
+            master_id=frozen.get('master_id'))
     if class_c_bridge is not None:
         if cycle_owners is not None or prospective_owners is not None:
             raise ValueError('class_c_bridge_mixed_owner_route_denied')

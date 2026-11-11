@@ -9,7 +9,7 @@ from app.services.unified_aggregate_receipt import AggregateReceipt
 from app.services.unified_run_artifacts import durable_json, sha256_bytes
 from app.services.unified_snapshot_contract import digest, encoded
 from app.services.unified_source_composition import A, SourceInput, SourceRole
-from app.services.unified_stock_acquisition import StockPlan, decode_owned_role
+from app.services.unified_stock_acquisition import decode_owned_role
 from app.services.unified_stock_anomaly_scope import materialize_source_components
 import json
 
@@ -116,6 +116,12 @@ def validate_subject_view(plan, subjects):
 
 def current_local_seed(root, frozen, plan, market, policy, *, cycle_owner=None, prospective_owner=None, class_c_bridge=None):
     """Use the existing trusted freeze pin before interpreting local rows."""
+    from app.services.selected_source_plan import SCOPE
+    if frozen.get('scope') == SCOPE:
+        if cycle_owner is not None or class_c_bridge is not None or market != plan.market:
+            raise ValueError('selected_registration_original_memory_route_required')
+        from app.services.selected_source_registration import local_seed
+        return local_seed(prospective_owner, stock=plan, policy=policy)
     from app.services.unified_local_seed_bridge import admit_pinned_local_seed
     if class_c_bridge is not None:
         if cycle_owner is not None or prospective_owner is not None:
@@ -147,7 +153,8 @@ def current_local_seed(root, frozen, plan, market, policy, *, cycle_owner=None, 
         prospective_owner=prospective_owner)
 
 def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=None, prospective_owners=None, class_c_bridge=None):
-    plan = StockPlan.model_validate(frozen['stock_plan'])
+    from app.services.selected_source_plan import decode_stock_plan
+    plan = decode_stock_plan(frozen)
     if class_c_bridge is not None:
         if cycle_owners is not None or prospective_owners is not None:
             raise ValueError('class_c_bridge_mixed_owner_route_denied')
@@ -224,6 +231,10 @@ def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=N
                         consume_bound_result(root=root/'dispatch', plan=sealed, logical_id=key, receipt_sha256=final['receipt_sha256'])
                 item = dict(technical_inputs=technical, financial_inputs=dict(plan=frozen['candidate']['financial_plans'][ticker],
                     acquisition=read(path/'owner-acquisition.json'), receipts=financial_receipts, directory=path, field_semantics=True), source_window=window)
+                # Both full and selected cohorts enter the same existing
+                # comparison owner. It replays raw/PIT/quality before issuing
+                # any business-use projection; the opt-in is not a use grant.
+                item['reported_comparison_business']=True
                 if frozen.get('valuation_slots'):
                     from app.services.provider_native_valuation_acquisition import replay_native
                     item['valuation_inputs'] = replay_native(root=root, frozen=frozen, outcome=outcome,
@@ -241,7 +252,7 @@ def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=N
                 inputs[ticker] = item
             except (ValueError, KeyError, TypeError, OSError) as exc:
                 errors[ticker] = dict(error_class=type(exc).__name__, reason=str(exc))
-    if 'SKHY' in inputs and '000660' in inputs:
+    if frozen.get('scope')!='SELECTED_ORIGINAL_RESEARCH_V1' and 'SKHY' in inputs and '000660' in inputs:
         source = inputs['000660']
         source_owner = dict(baseline=fresh_stock_baseline(source['technical_inputs']),
             local_seed=source['technical_inputs']['local_seed'], **source['financial_inputs'])
@@ -355,10 +366,12 @@ def market_inputs(root, frozen, outcome, policy):
     return result
 
 def publication_inputs(root, frozen, outcome, policy):
-    providers = ('ecos',) if frozen.get('scope') == 'KR8_ONLY' else ('fred', 'eia', 'ecos')
+    selected=frozen.get('scope')=='SELECTED_ORIGINAL_RESEARCH_V1'
+    kr=selected and frozen['selected_market']=='kr'
+    providers = ('ecos',) if frozen.get('scope') == 'KR8_ONLY' or kr else ('fred', 'eia', 'ecos')
     for provider in providers:
         captured_phase_value(root, frozen, outcome, provider)
-    night_value = captured_phase_value(root, frozen, outcome, 'night')
+    night_value = None if kr and not frozen['candidate']['night_query_dates'] else captured_phase_value(root, frozen, outcome, 'night')
     def captured(path, provider, acquisition=None):
         rows = [read(p) for p in sorted(path.glob('receipt-*.json'))]
         sealed = decode_request_plan(frozen['plan'])
@@ -380,6 +393,10 @@ def publication_inputs(root, frozen, outcome, policy):
         providers={p: captured(root/'publications'/p, p) for p in providers}, policy=policy)
     if frozen.get('scope') in {'KR8_ONLY','US14_ONLY'}:
         publications['market_scope'] = frozen['scope']
+    if selected:
+        publications['market_scope']='SELECTED_'+frozen['selected_market'].upper()
+    if night_value is None:
+        return dict(publications=publications,night=None)
     night_id = frozen['generation_id']+':night'
     probe = captured(root/'night/probe', 'krx_night_futures', night_id)
     history = captured(root/'night/history', 'krx_night_futures', night_id)

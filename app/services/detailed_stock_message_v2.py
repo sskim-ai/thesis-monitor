@@ -4,7 +4,7 @@ from typing import Literal
 from app.services.detailed_stock_message_service import (
     DetailedStockMessagePlan, DetailedRow, _render_rows, _row, detailed_render,
 )
-from app.services.production_b2_execution import ProductionB2ExecutionAuthorizationV1
+from app.services.production_b2_execution import ProductionB2ExecutionAuthorizationV1, ProductionB2ExecutionAuthorizationV2
 from app.services.kr_forward_valuation_message import KrForwardMessagePlan, render as render_kr
 from app.services.unified_snapshot_contract import ContractModel, digest
 from app.services import new_buyer_v2_contract as b2
@@ -16,7 +16,7 @@ class DetailedStockMessagePlanV2(ContractModel):
     base: DetailedStockMessagePlan | KrForwardMessagePlan
     b2_request: dict
     b2_result: dict
-    authorization: ProductionB2ExecutionAuthorizationV1
+    authorization: ProductionB2ExecutionAuthorizationV2 | ProductionB2ExecutionAuthorizationV1
     rows: tuple[DetailedRow, ...]
     acceptance_sha256: str
 
@@ -88,5 +88,8 @@ def render_detailed_v2(packet, plan):
     if any(line.strip() in forbidden for line in text.splitlines()):
         raise ValueError("detailed_v2_removed_heading")
     base = plan.base.base if isinstance(plan.base, KrForwardMessagePlan) else plan.base
-    return {"text": text, "generation_id": base.execution_generation_id,
-            "plan_sha256": plan.acceptance_sha256, "content_sha256": digest(text), "status": "PASS"}
+    result = {"text": text, "generation_id": base.execution_generation_id,
+              "plan_sha256": plan.acceptance_sha256, "content_sha256": digest(text), "status": "PASS"}
+    if type(plan.authorization) is ProductionB2ExecutionAuthorizationV2:
+        result['NO_SEND'] = True
+    return result

@@ -29,7 +29,8 @@ def _secret_field(value: object) -> bool:
 
 
 async def capture_source_response(*, root: Path, identity: str, receipt: dict,
-                                  send: Callable[[], Awaitable[httpx.Response]]) -> httpx.Response:
+                                  send: Callable[[], Awaitable[httpx.Response]],
+                                  response_secrets: tuple[str, ...] = ()) -> httpx.Response:
     """Shared data-only wire capture. Callers never pass auth headers or auth bodies."""
     durable_json(root / f"{identity}.intent.json", receipt, exclusive=True)
     try:
@@ -52,7 +53,8 @@ async def capture_source_response(*, root: Path, identity: str, receipt: dict,
         secret_field = _secret_field(response.json())
     except ValueError:
         secret_field = False
-    if SECRET_VALUE.search(raw.decode("utf-8", errors="replace")) or secret_field:
+    if (SECRET_VALUE.search(raw.decode("utf-8", errors="replace")) or secret_field
+            or any(s.encode() in raw for s in response_secrets if s)):
         durable_json(root / f"{identity}.response.json", {
             **response_receipt, "artifact": None, "artifact_sha256": None,
             "outcome": "BODY_WITHHELD_SECRET_RISK",

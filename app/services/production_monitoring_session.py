@@ -35,7 +35,19 @@ class ProductionMonitoringSession:
 
     def __init__(self, root, *, market, generation_id, source, source_generation_id=None,
                  authority_native_v2=False, native_owner_parent=None, native_parent_scope=None,
-                 manual_native_v1=False, manual_source_owner=None):
+                 manual_native_v1=False, manual_source_owner=None, frozen_cohort=None, cohort_source_owner=None):
+        if frozen_cohort is not None:
+            from app.services.model_execution_plan import FrozenCohort
+            if type(frozen_cohort) is not FrozenCohort:
+                raise ValueError('frozen_canonical_cohort_required')
+            frozen_cohort.verify_source_owner(cohort_source_owner)
+            if (frozen_cohort.run_id, frozen_cohort.source_generation) != (generation_id, source_generation_id or generation_id):
+                raise ValueError('model_cohort_session_generation_drift')
+            if digest(cohort_source_owner.source(market)) != digest(source):
+                raise ValueError('model_cohort_original_consumed_source_drift')
+        elif cohort_source_owner is not None:
+            raise ValueError('explicit_frozen_cohort_required')
+        self._frozen_cohort, self._cohort_source_owner = frozen_cohort, cohort_source_owner
         if type(manual_native_v1) is not bool or bool(manual_source_owner is not None) != manual_native_v1:
             raise ValueError("EXPLICIT_MANUAL_SOURCE_GATE_REQUIRED")
         if manual_native_v1:
@@ -70,7 +82,7 @@ class ProductionMonitoringSession:
         self.prepared, self.fresh_stocks, self.projected = (deepcopy(source[k]) for k in ("prepared", "stocks", "markets"))
         if source["source_generation_id"] != self.source_gen or set(self.projected) != {market}:
             raise ValueError("production_monitoring_generation_or_market_drift")
-        if set(self.prepared) != set(UNIVERSE[market]) or set(self.fresh_stocks) != set(self.prepared):
+        if set(self.prepared) != set(self.cohort_subjects()) or set(self.fresh_stocks) != set(self.prepared):
             raise ValueError("production_monitoring_current_cohort_gap")
         for ticker, row in self.prepared.items():
             if (row["mode"] != "EVIDENCE_BASED"
@@ -90,6 +102,10 @@ class ProductionMonitoringSession:
         self._pending_output = None
 
     def _verify_native_source(self):
+        if self._frozen_cohort is not None:
+            self._frozen_cohort.verify_source_owner(self._cohort_source_owner)
+            if digest(self._cohort_source_owner.source(self.market)) != digest(self.source):
+                raise ValueError('model_cohort_original_consumed_source_drift')
         if self._manual_source_owner is not None:
             relationship = self._manual_source_owner.relationship(self.market)
             if (self.gen, self.source_gen) != (
@@ -166,10 +182,26 @@ class ProductionMonitoringSession:
         return result
 
     def batch_topology(self):
-        rows = [row for row in domain.owner._batch_topology() if row["market"] == self.market]
-        if sorted(t for row in rows for t in row["subjects"]) != sorted(UNIVERSE[self.market]):
+        rows = [row for row in domain.owner._batch_topology(cohort=self._frozen_cohort) if row["market"] == self.market]
+        if sorted(t for row in rows for t in row["subjects"]) != sorted(self.cohort_subjects()):
             raise ValueError("production_canonical_batch_topology_drift")
         return deepcopy(rows)
+
+    def cohort_subjects(self):
+        return UNIVERSE[self.market] if self._frozen_cohort is None else self._frozen_cohort.market_subjects.get(self.market, ())
+
+    def verify_model_build(self, stage, request):
+        self._verify_native_source()
+        if request not in self.captured.get(stage, ()):
+            raise ValueError('production_model_build_not_captured')
+        path = Path(request['directory'])
+        if (json.loads((path/'request-receipt.json').read_bytes()) != request
+                or digest(request['payload']) != request['payload_sha256']
+                or json.loads((path/'subject-context.json').read_bytes()) != request['payload']['input']
+                or json.loads((path/'provider-wire-schema.json').read_bytes()) != request['payload']['response_schema']
+                or digest(json.loads((path/'internal-semantic-schema.json').read_bytes())) != request['internal_schema_sha256']
+                or (path/'prompt.txt').read_text() != request['payload']['prompt']):
+            raise ValueError('production_model_build_receipt_or_source_drift')
 
     def valuation_context(self, ticker):
         return deepcopy(self.source["valuation_contexts"][ticker])
@@ -283,7 +315,7 @@ class ProductionMonitoringSession:
         self._verify_native_source()
         if self._manual_source_owner is not None:
             raise ValueError("MANUAL_NATIVE_B2_COVERAGE_CENSUS_NOT_AUTHORIZED")
-        if set(self.brows) != set(UNIVERSE[self.market]):
+        if set(self.brows) != set(self.cohort_subjects()):
             raise ValueError("production_b2_requires_complete_b")
         first = b1.build_request(settings=SimpleNamespace(newbuyer_qualified_valuation_shadow=True),
             context=shadow_request_context(self.bctx[ticker], self.fresh_stocks[ticker]),

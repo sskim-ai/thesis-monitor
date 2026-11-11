@@ -51,6 +51,9 @@ class NightFuturesItem:
     provider_raw_bas_dd: date
     reference_date_match: bool
     finality_valid: bool
+    night_trade_date: date | None = None
+    regular_reference_date: date | None = None
+    observation_time_kst: str | None = None
     contract_maturity: str | None = None
     timeframes: KrxNightTimeframes | None = None
 
@@ -354,6 +357,9 @@ def summarize_night_futures(
                 finality_valid=(
                     bool(row.get("finality_valid")) if "finality_valid" in row else True
                 ),
+                night_trade_date=_date_value(row.get('night_trade_date')),
+                regular_reference_date=_date_value(row.get('regular_reference_date')),
+                observation_time_kst=row.get('observation_time_kst'),
                 contract_maturity=(
                     str(row.get("contract_maturity") or row.get("expiry"))
                     if row.get("contract_maturity") or row.get("expiry")
@@ -378,7 +384,8 @@ def summarize_night_futures(
 
 def night_futures_context_row(item: NightFuturesItem) -> dict[str, object]:
     return {
-        **{key: value for key, value in item.__dict__.items() if key != "timeframes"},
+        **{key: value for key, value in item.__dict__.items() if key != "timeframes"
+           and not (key in {'night_trade_date','regular_reference_date','observation_time_kst'} and value is None)},
         "night_timeframes": (
             item.timeframes.model_dump(mode="json") if item.timeframes is not None else None
         ),

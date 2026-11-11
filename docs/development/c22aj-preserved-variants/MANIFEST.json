@@ -1,0 +1,70 @@
+{
+  "contract": "unmerged-source-variant-recovery-v1",
+  "variants": [
+    {
+      "worktree": "thesis-monitor-c22k-v2-20261110",
+      "path": "app/services/dated_split_research_consumer.py",
+      "original_sha256": "86c3549f0301bce6897d3ca0389a60b0588bd443cb4a7219260f444024ff4aec",
+      "canonical_base_sha256": "58b04e46d53ad1b83dbe755a78ec79e78510160a79557e84e058c5ba8b29877b",
+      "patch": "docs/development/c22aj-preserved-variants/thesis-monitor-c22k-v2-20261110--dated_split_research_consumer.py.patch",
+      "patch_sha256": "07e3a6d71627230a1b5eab93ce3d71f47cea9679d261f6c107a3a79b8fdd5d2d",
+      "runtime_imported": false,
+      "reason": "Superseded or unmerged historical WIP; retained reversibly without rolling back latest source",
+      "apply_flags": [
+        "--unidiff-zero"
+      ]
+    },
+    {
+      "worktree": "thesis-monitor-c22m-v1-20261110",
+      "path": "app/services/dated_publication_previews.py",
+      "original_sha256": "4a887c7ad470dc116915ca21cef66e72960bdcb9e01def083feb0f0c85b8729e",
+      "canonical_base_sha256": "d4348e729a2a4f6c5f4107440fe730cb4f157ed53580a07859dc82347349d353",
+      "patch": "docs/development/c22aj-preserved-variants/thesis-monitor-c22m-v1-20261110--dated_publication_previews.py.patch",
+      "patch_sha256": "2603c9afc38468baeb61bfa992f4af72667d0dfea2e9320670498c0364ae5cee",
+      "runtime_imported": false,
+      "reason": "Superseded or unmerged historical WIP; retained reversibly without rolling back latest source",
+      "apply_flags": [
+        "--unidiff-zero"
+      ]
+    },
+    {
+      "worktree": "thesis-monitor-c22n-v2-20261110",
+      "path": "app/services/confirmed_sector_taxonomy.py",
+      "original_sha256": "36e54bfa8918a53d6a308bfda1f84c84a78eb4dc755817b3be63768867523cae",
+      "canonical_base_sha256": "bd9145b7265a0412bce7943113b8be3c2d559df1b1d0bc6474acf7351e94a6f7",
+      "patch": "docs/development/c22aj-preserved-variants/thesis-monitor-c22n-v2-20261110--confirmed_sector_taxonomy.py.patch",
+      "patch_sha256": "a504f640adf0763fb61f586840e36786da407f93b2554da6af7c47d8ac46553b",
+      "runtime_imported": false,
+      "reason": "Superseded or unmerged historical WIP; retained reversibly without rolling back latest source",
+      "apply_flags": [
+        "--unidiff-zero"
+      ]
+    },
+    {
+      "worktree": "thesis-monitor-c22u-v1-20261110",
+      "path": "app/services/krx_dated_reference.py",
+      "original_sha256": "29b51d23cfe5b8d06930f95e247beab0f246bc589a51a142fa65f6fc4e58e2ea",
+      "canonical_base_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "patch": "docs/development/c22aj-preserved-variants/thesis-monitor-c22u-v1-20261110--krx_dated_reference.py.patch",
+      "patch_sha256": "b1e684133435bb35d7cd1dcf4556d6d5da7594077139f284c2fca5c4cb5784fe",
+      "runtime_imported": false,
+      "reason": "Superseded or unmerged historical WIP; retained reversibly without rolling back latest source",
+      "apply_flags": [
+        "--unidiff-zero"
+      ]
+    },
+    {
+      "worktree": "thesis-monitor-c22u-v1-20261110",
+      "path": "tests/test_c22u_dated_reference.py",
+      "original_sha256": "ed69acd2ead00fb9740a7f96f1cb3d5fc9b49d091c2c2f832b31221611efc960",
+      "canonical_base_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "patch": "docs/development/c22aj-preserved-variants/thesis-monitor-c22u-v1-20261110--test_c22u_dated_reference.py.patch",
+      "patch_sha256": "dfc233ba3b6217667a1e85b296f4c8ea1df2a898951cf3255f8e3dddc4ae4278",
+      "runtime_imported": false,
+      "reason": "Superseded or unmerged historical WIP; retained reversibly without rolling back latest source",
+      "apply_flags": [
+        "--unidiff-zero"
+      ]
+    }
+  ]
+}

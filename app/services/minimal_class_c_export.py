@@ -7,6 +7,7 @@ supplied by the operator, never by model JSON.
 Private original rows must not be included in public reports.
 """
 from dataclasses import dataclass
+from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
 import sqlite3
@@ -158,6 +159,7 @@ class CapturedClassC:
 
 
 _CAPTURES = WeakKeyDictionary()
+_PROJECTIONS = WeakKeyDictionary()
 
 
 def capture_authorized_class_c(permission: ExportPermission, *, connect=None):
@@ -183,8 +185,58 @@ def project_captured_export(handle, *, market: str, session_key: str, policy: Un
     if digest(rows) != receipt['original_rows_sha256'] or any(
             not {r['ticker'] for r in values} <= set(subjects) for values in rows.values()):
         raise ValueError('class_c_capture_binding_changed')
-    return project_authorized_rows(rows, market=market, session_key=session_key,
-        cutoff=datetime.fromisoformat(receipt['cutoff']), policy=policy, cycle_owner=cycle_owner)
+    # Private, original in-process projection is judged once per frozen market.
+    # Public JSON cannot insert cache entries or reconstruct the capture handle.
+    files=(Path(__file__),Path(__file__).with_name('onboarding_readiness_service.py'),
+        Path(__file__).with_name('unified_persisted_projection.py'))
+    pins={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
+    key=(market,session_key,digest(sorted(policy.allowed_providers)),id(cycle_owner))
+    cache=_PROJECTIONS.setdefault(handle,{})
+    if key in cache:
+        previous,value=cache[key]
+        if previous!=pins:raise ValueError('class_c_projection_implementation_changed')
+        return deepcopy(value)
+    value=project_authorized_rows(rows,market=market,session_key=session_key,
+        cutoff=datetime.fromisoformat(receipt['cutoff']),policy=policy,cycle_owner=cycle_owner)
+    cache[key]=(pins,deepcopy(value))
+    return value
+
+
+def registration_eligibility_audit(capture, *, approved_subjects, market_subjects, policy, sessions):
+    """Safe diagnostics from the SAME captured rows and canonical projections."""
+    from app.services.onboarding_readiness_service import canonical_registration_eligibility
+    raw,receipt=captured_private_snapshot(capture)
+    rows=json.loads(raw)
+    indices={t:{r['ticker']:MODELS[t].model_validate(r) for r in values} for t,values in rows.items()}
+    projections={m:project_captured_export(capture,market=m,session_key=sessions[m],policy=policy)
+        for m in market_subjects}
+    by_ticker={r['ticker']:r for p in projections.values() for r in p['universe']['eligibility_audit']}
+    audit=[]
+    for ticker in sorted(approved_subjects):
+        row=by_ticker.get(ticker)
+        if row is None:
+            row=canonical_registration_eligibility(ticker=ticker,item=indices['watchlistitem'].get(ticker),
+                security=indices['securitymaster'].get(ticker),thesis=indices['investmentthesis'].get(ticker),
+                company=indices['company'].get(ticker),cutoff=datetime.fromisoformat(receipt['cutoff']))
+        expected=[m for m,ts in market_subjects.items() if ticker in ts]
+        detected=row['detected_market']
+        scope_denials=['MARKET_CLASSIFICATION_MISMATCH'] if detected is not None and expected!=[detected] else []
+        audit.append(dict(row,requested=True,requested_markets=expected,scope_denials=scope_denials,
+            market_classification_state='OBSERVED' if detected is not None else 'NOT_OBSERVED_MISSING_REGISTRATION'))
+    markets={}
+    for m,p in projections.items():
+        eligible=p['universe']['eligible_subjects']
+        issues=[]
+        if not eligible:issues.append('NO_ELIGIBLE_SUBJECT_FOR_MARKET')
+        if not set(eligible)<=set(approved_subjects):issues.append('ELIGIBLE_SUBJECT_OUTSIDE_APPROVAL')
+        if set(market_subjects[m])!=set(eligible):issues.append('SELECTED_CANONICAL_MEMBERSHIP_MISMATCH')
+        markets[m]=dict(requested=list(market_subjects[m]),eligible=eligible,
+            excluded=p['universe']['excluded_subjects'],scope_denials=issues,
+            original_source_role_denials=[{k:d[k] for k in ('role','ticker','reason') if k in d}
+                for d in p['denials']])
+    return dict(contract='canonical-registration-eligibility-audit-v1',approval_subjects=sorted(approved_subjects),
+        captured_at=receipt['cutoff'],capture_receipt_sha256=digest(receipt),original_rows_sha256=receipt['original_rows_sha256'],
+        subjects=audit,markets=markets,private_thesis_exported=False,source_or_economic_grant=False)
 
 
 def project_authorized_rows(rows, *, market: str, session_key: str,

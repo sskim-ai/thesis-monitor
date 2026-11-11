@@ -209,7 +209,18 @@ def aggregate_flow_reference(result, *, session):
     from app.services.kiwoom_kr_market_context_service import KiwoomMarketContextCollection
     if type(result) is not KiwoomMarketContextCollection or str(result.audit.session_date)!=session:
         raise ValueError('aggregate_only_original_collection_and_session')
-    rows=result.cross_section.market_flows;seen=set()
+    rows=result.cross_section.market_flows
+    validate_aggregate_flow_rows(rows, session=session)
+    return dict(contract='kiwoom-aggregate-flows-reference-v1',scope='AGGREGATE_ONLY_SOURCE_REFERENCE',
+        session=session,market_flows=[r.model_dump(mode='json') for r in rows],
+        concentration=[],concentration_eligible=False,full_market_parent=False,economic_use=False,
+        blocked_concentration_markets=result.audit.blocked_concentration_markets,
+        reconciliations=[r.model_dump(mode='json') for r in result.audit.reconciliation])
+
+
+def validate_aggregate_flow_rows(rows, *, session):
+    """Shared numeric/identity checks, without issuing any collection rights."""
+    seen=set()
     for row in rows:
         key=(row.market,row.actor)
         if (key in seen or row.market not in {'KOSPI','KOSDAQ'} or row.actor not in {'foreign','institution','retail'}
@@ -220,8 +231,3 @@ def aggregate_flow_reference(result, *, session):
         seen.add(key)
     if seen!={(m,a) for m in ('KOSPI','KOSDAQ') for a in ('foreign','institution','retail')}:
         raise ValueError('aggregate_only_complete_actor_market_set')
-    return dict(contract='kiwoom-aggregate-flows-reference-v1',scope='AGGREGATE_ONLY_SOURCE_REFERENCE',
-        session=session,market_flows=[r.model_dump(mode='json') for r in rows],
-        concentration=[],concentration_eligible=False,full_market_parent=False,economic_use=False,
-        blocked_concentration_markets=result.audit.blocked_concentration_markets,
-        reconciliations=[r.model_dump(mode='json') for r in result.audit.reconciliation])

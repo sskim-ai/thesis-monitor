@@ -82,6 +82,86 @@ class CycleOwner:
 _OWNERS: WeakKeyDictionary = WeakKeyDictionary()
 
 
+def capture_reconciler_activation(session, item, *, market, writer_at, explicit_override=None):
+    """Called after the original reconciler's final commit; rows stay private.
+
+    This records a newly observed writer, never reconstructs an older activation
+    from a current SQL row. The source export is separately captured at cutoff.
+    """
+    from sqlmodel import select
+    from app.models.security import SecurityMaster
+    from app.models.company import Company
+    from app.models.thesis import InvestmentThesis
+    from app.services.onboarding_reconciler_service import _next_cycle_date
+
+    if (writer_at.utcoffset() is None or session.new or session.dirty or session.deleted
+            or not item.active or not item.production_eligible or item.onboarding_state != 'ACTIVE'):
+        raise ValueError('cycle_committed_original_activation_required')
+    activation = item.activated_at
+    if activation is not None and activation.tzinfo is None:
+        from datetime import timezone
+        activation = activation.replace(tzinfo=timezone.utc)
+    cycle = explicit_override or _next_cycle_date(market, writer_at)
+    if activation != writer_at or item.first_eligible_session != cycle:
+        raise ValueError('cycle_new_writer_time_or_original_date_mismatch')
+    security = session.exec(select(SecurityMaster).where(SecurityMaster.ticker == item.ticker)).one()
+    thesis = session.exec(select(InvestmentThesis).where(InvestmentThesis.ticker == item.ticker,
+        InvestmentThesis.status == 'active').order_by(InvestmentThesis.version.desc())).first()
+    company = session.exec(select(Company).where(Company.ticker == item.ticker)).one()
+    if thesis is None or not security.canonical_security_id:
+        raise ValueError('cycle_original_four_records_required')
+    hashes = {row.__tablename__: digest(row.model_dump(mode='json')) for row in (item, security, thesis, company)}
+    material = dict(writer='resume_onboarding_subject', writer_at=writer_at.isoformat(),
+        market=market, ticker=item.ticker, record_hashes=hashes, original_cycle=cycle.isoformat())
+    result = CycleEvent(ticker=item.ticker, security_id=security.canonical_security_id,
+        thesis_version=thesis.version, record_hashes=hashes, original_cycle=cycle,
+        mode='RECONCILER_DEFAULT' if explicit_override is None else 'RECONCILER_EXPLICIT_OVERRIDE',
+        writer_at=writer_at, explicit_override=explicit_override,
+        original_writer_event_sha256=digest(material))
+    session.info.setdefault('original_reconciler_cycle_events', {})[item.ticker] = result
+    return result
+
+
+def issue_reconciler_cycle_owner(session, *, source_rows, market, target_session,
+        cutoff, scheduled_at, scheduled_run_event_sha256, source_generation_id,
+        execution_generation_id, policy):
+    """Bind observed original writer events to the existing CycleOwner loader.
+
+    The caller supplies the original run event, not a synthetic accepted flag.
+    A manual time cannot masquerade as a scheduled slot. No stored date changes.
+    """
+    from app.services.minimal_class_c_export import project_authorized_rows
+
+    rows = json.loads(source_rows)
+    original = project_authorized_rows(rows, market=market,
+        session_key=target_session.isoformat(), cutoff=cutoff, policy=policy)
+    subjects = original['universe']['eligible_subjects']
+    observed = session.info.get('original_reconciler_cycle_events', {})
+    if not subjects or set(subjects)-set(observed):
+        raise ValueError('cycle_original_observed_writer_events_missing')
+    freeze = CycleFreeze(generation_id=execution_generation_id, source_generation_id=source_generation_id,
+        source_export_sha256=hashlib.sha256(source_rows).hexdigest(), source_projection_sha256=digest(original),
+        identity_policy_sha256=digest(sorted(policy.allowed_providers)), calendar_version=version('exchange-calendars'),
+        target_session=target_session, source_cutoff=cutoff, market=market, cutoff=cutoff,
+        scheduled_at=scheduled_at, scheduled_run_event_sha256=scheduled_run_event_sha256,
+        policy_fingerprints=policy_fingerprints(), events=tuple(observed[t] for t in subjects))
+    # Prove the actual run clock before issuing any usable handle.
+    _clock(freeze, target_session)
+    from app.services.unified_snapshot_contract import encoded
+    raw = encoded(freeze.model_dump(mode='json'))
+    owner = load_pinned_cycle_owner(raw, expected_sha256=hashlib.sha256(raw).hexdigest(),
+        source_rows=source_rows, source_generation_id=source_generation_id,
+        execution_generation_id=execution_generation_id, policy=policy)
+    try:
+        accepted = apply_cycle_owner(original, original=original, owner=owner)
+        if accepted['denials'] or accepted['cycle_owner_receipt']['approved'] != subjects:
+            raise ValueError('cycle_original_writer_source_mapping_ineligible')
+    except BaseException:
+        revoke_cycle_owner(owner)
+        raise
+    return owner, accepted
+
+
 def load_pinned_cycle_owner(
     raw: bytes,
     *,

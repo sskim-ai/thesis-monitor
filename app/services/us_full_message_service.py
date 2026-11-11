@@ -226,7 +226,8 @@ def _treasury_curve_block(
             lines.append(f"• {label}: 관측쌍 검증 실패")
             return
         date_label = observed[5:].replace("-", "/")
-        lines.append(f"• {label}: {level:.2f}% · {delta_bp:+.0f}bp ({date_label} 관측)")
+        from app.services.dated_macro_display_claims import yield_line
+        lines.append('• ' + yield_line(label, level, delta_bp, observed, previous_date))
         fact_ids.append(_fact_id(fact))
         observation_dates.append(observed)
 
@@ -300,6 +301,9 @@ def render_us_full_market_message(
     context: object,
     *,
     next_checks: Iterable[str] = (),
+    broker_seed_history_path=None,
+    broker_seed_cutoff=None,
+    broker_contract_maturity=None,
 ) -> UsFullMessageRender:
     facts = _facts(context)
     by_series = {_series(fact): fact for fact in facts if _series(fact)}
@@ -415,6 +419,14 @@ def render_us_full_market_message(
             night_lines.append(f"• {label} {_format_pct(value)}")
             night_fact_ids.append(str(row["fact_id"]))
 
+    broker_reference = None
+    if broker_seed_history_path is not None:
+        if broker_seed_cutoff is None or broker_contract_maturity is None:
+            raise ValueError('broker_night_explicit_cutoff_and_maturity_required')
+        from app.services.broker_night_us_consumer import us_broker_night_reference
+        broker_reference = us_broker_night_reference(history_path=broker_seed_history_path,
+            cutoff=broker_seed_cutoff,contract_maturity=broker_contract_maturity)
+
     macro_lines: list[str] = []
     treasury_block = _treasury_curve_block(by_series)
     treasury_fact_ids: tuple[str, ...] = ()
@@ -487,6 +499,10 @@ def render_us_full_market_message(
             night_heading += f" · 기준 {night_date[5:].replace('-', '/')}"
         blocks.append(night_heading + "\n" + "\n".join(night_lines))
         section_order.append("NIGHT_FUTURES")
+    elif broker_reference is not None:
+        blocks.append(broker_reference['text'])
+        night_fact_ids.extend(broker_reference['reference_fact_ids'])
+        section_order.append('BROKER_NIGHT_REFERENCE')
     if macro_lines:
         blocks.append("🌐 보조 시장환경\n" + "\n".join(macro_lines))
         section_order.append("MACRO_CONTEXT")

@@ -105,8 +105,13 @@ def project_local_seed(session: Session, *, market: str, session_key: str,
                 denials.append({"role": "security_identity", "ticker": item.ticker,
                                 "reason": "identity_ineligible_at_cutoff", "details": details})
             else:
-                policy.require(security.identity_provider)
-                identity_rows.append(security)
+                if policy.permits(security.identity_provider):
+                    identity_rows.append(security)
+                else:
+                    # Preserve registration diagnostics, not provider authority.
+                    # The original required role remains ineligible below.
+                    denials.append({"role": "security_identity", "ticker": item.ticker,
+                        "reason": "identity_provider_not_permitted"})
             thesis = session.exec(select(InvestmentThesis).where(
                 InvestmentThesis.ticker == item.ticker, InvestmentThesis.status == "active")
                 .order_by(InvestmentThesis.version.desc())).first()

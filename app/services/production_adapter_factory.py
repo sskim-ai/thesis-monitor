@@ -14,6 +14,12 @@ from app.services.unified_snapshot_contract import digest
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def build_research_adapter(*, enabled=False, **kwargs):
+    """Explicit prepared-source NO-SEND entry; never selected by production-v1."""
+    from app.services.research_no_send_run import build_research_no_send_adapter
+    return build_research_no_send_adapter(enabled=enabled, **kwargs)
+
+
 def _configuration(path, expected):
     if not path or not expected:
         raise RuntimeError("production_full_source_backend_not_qualified:explicit_configuration_missing")

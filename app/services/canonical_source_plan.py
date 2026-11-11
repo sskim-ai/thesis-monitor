@@ -27,7 +27,7 @@ def kiwoom_request(api, route, body):
 def compile_slots(*, stock, identities, news_reads, config_identities,
                  configured_kr_pages, kr_post_acquisition_completeness_approved, exact_financial_owner=False,
                  valuation_market_types=None, auxiliary_security=None, auxiliary_identity_sha256=None,
-                 transient_retry_max=None):
+                 transient_retry_max=None, selected_research_v1=False, selected_consumer_policy=None):
     if transient_retry_max is not None and (type(transient_retry_max) is not int or not 0 <= transient_retry_max <= 2):
         raise ValueError('finite_transient_retry_policy_required')
     if kr_post_acquisition_completeness_approved is not True:
@@ -35,9 +35,18 @@ def compile_slots(*, stock, identities, news_reads, config_identities,
     if configured_kr_pages < 1:
         raise ValueError('kr_configured_page_cap_invalid')
     local_kr_cap = min(configured_kr_pages, MAX_KR_REQUEST_PAGES)
-    candidate = acquisition_plan(stock, identities, kr_max_pages=local_kr_cap, exact_financial_owner=exact_financial_owner,
+    builder = acquisition_plan
+    if selected_research_v1 is True:
+        from app.services.selected_source_plan import acquisition_plan as selected_builder
+        builder = selected_builder
+    elif selected_research_v1 is not False or getattr(stock, 'contract', '') == 'selected-original-stock-plan-v1':
+        raise ValueError('selected_explicit_compiler_required')
+    if selected_consumer_policy is not None and selected_research_v1 is not True:
+        raise ValueError('selected_consumer_policy_scope_required')
+    candidate = builder(stock, identities, kr_max_pages=local_kr_cap, exact_financial_owner=exact_financial_owner,
         auxiliary_security=auxiliary_security, auxiliary_identity_sha256=auxiliary_identity_sha256,
-        transient_retry_max=transient_retry_max)
+        transient_retry_max=transient_retry_max,
+        **({'consumer_policy':selected_consumer_policy} if selected_consumer_policy is not None else {}))
     descriptors, owners, roles, page_proof = [], {}, {}, []
     def add(key, provider, role, market, subject, operation, request, *, mandatory=True,
             binding=None, pages=1, retries=2):

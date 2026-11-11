@@ -1,18 +1,21 @@
 """Typed official final-night context. Never a generic market-row override."""
 
-from datetime import date
+from datetime import date, datetime, time
 from math import isclose, isfinite
 import re
 
-from app.services.market_session import preceding_exchange_session_date
+from app.services.market_session import us_market_session
 from app.services.night_futures import (
     NIGHT_COMPARISON_SEMANTIC, NIGHT_FUTURES_FACT_IDS, _validated_timeframes,
 )
-from app.services.night_futures_session_mapping_service import US_MORNING_NIGHT_REFERENCE_DATE_CONTRACT
+from app.services.night_futures_session_mapping_service import (
+    US_MORNING_NIGHT_REFERENCE_DATE_CONTRACT, KST,
+    resolve_us_morning_night_reference_date,
+)
 from app.services.night_futures_product_scope import SERIES
 
 
-CONTRACT = "official-krx-night-market-consumption-v1"
+CONTRACT = "official-krx-night-market-consumption-v2-end-date"
 ENDPOINT = "https://data-dbg.krx.co.kr/svc/apis/drv/fut_bydd_trd"
 
 
@@ -36,8 +39,19 @@ def night_market_eligibility(row, *, market, assessment_date, completed_session_
         completed = date.fromisoformat(str(completed_session_date))
         session = date.fromisoformat(str(row["session_date"]))
         reference = date.fromisoformat(str(row["reference_date"]))
-        expected = preceding_exchange_session_date("XKRX", assessed)
-        if market != "us" or completed >= assessed or session != expected:
+        observed = datetime.fromisoformat(str(row["observation_time_kst"]))
+        if observed.utcoffset() is None:
+            raise ValueError("night_aware_observation_required")
+        observed = observed.astimezone(KST)
+        mapping = resolve_us_morning_night_reference_date(observed, us_regular_session_date=completed)
+        if mapping is None:
+            raise ValueError("night_date_mapping_unavailable")
+        expected = mapping.night_trade_date
+        if (market != "us" or completed >= assessed or observed.date() != assessed
+                or completed != us_market_session(observed).latest_completed_regular_session_date
+                or observed.timetz().replace(tzinfo=None) < time(6)
+                or session != expected or str(row.get("night_trade_date")) != str(expected)
+                or str(row.get("regular_reference_date")) != str(mapping.regular_reference_date)):
             errors.append("night_target_session_unresolved")
         if (row.get("source") != ENDPOINT or row.get("exchange") != "XKRX"
                 or row.get("reference_date_contract") != US_MORNING_NIGHT_REFERENCE_DATE_CONTRACT
@@ -46,7 +60,7 @@ def night_market_eligibility(row, *, market, assessment_date, completed_session_
                 or str(row.get("expected_reference_date")) != str(expected)
                 or str(row.get("provider_raw_bas_dd")) != str(session)
                 or row.get("comparison_semantic") != NIGHT_COMPARISON_SEMANTIC
-                or reference != preceding_exchange_session_date("XKRX", session)
+                or reference != mapping.regular_reference_date
                 or row.get("fact_id") != NIGHT_FUTURES_FACT_IDS.get(row.get("series_code"))
                 or row.get("state") != "CURRENT_DIRECTIONAL"):
             errors.append("night_official_identity_or_finality_unverified")

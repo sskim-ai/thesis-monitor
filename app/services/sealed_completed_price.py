@@ -8,7 +8,6 @@ from app.services.completed_price_state import require_plan, required_slot
 from app.services.kiwoom_completed_close_owner import OFFICIAL_SPEC_SHA256
 from app.services.sealed_fresh_dispatch import decode_request_plan
 from app.services.unified_run_artifacts import sha256_bytes
-from app.services.unified_stock_acquisition import StockPlan
 
 
 def documentation(root, frozen):
@@ -47,7 +46,8 @@ async def collect_one(*, slot, settings, sealed):
 
 def replay_source(*, root, frozen, outcome, read):
     plan = decode_request_plan(frozen['plan'])
-    require_plan(plan, StockPlan.model_validate(frozen['stock_plan']))
+    from app.services.selected_source_plan import decode_stock_plan
+    require_plan(plan, decode_stock_plan(frozen))
     d = required_slot(plan, read)
     final = outcome['logical_results'].get(d.logical_request_id)
     if final is None:

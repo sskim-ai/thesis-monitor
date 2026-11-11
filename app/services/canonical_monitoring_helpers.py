@@ -4,10 +4,15 @@ from copy import deepcopy
 from app.services.unified_stock_acquisition import UNIVERSE as POPULATION
 from app.services.canonical_monitoring_io import require
 
-def _batch_topology() -> list[dict[str, object]]:
+def _batch_topology(*, cohort=None) -> list[dict[str, object]]:
+    if cohort is not None:
+        from app.services.model_execution_plan import FrozenCohort
+        require(type(cohort) is FrozenCohort, 'frozen_canonical_cohort_required')
+    population = POPULATION if cohort is None else cohort.market_subjects
     rows: list[dict[str, object]] = []
-    for market in ("us", "kr"):
-        subjects = POPULATION[market]
+    for market in (m for m in ('us', 'kr') if m in population):
+        subjects = list(population[market])
+        require(len(subjects) == len(set(subjects)), 'canonical_cohort_duplicate_subject')
         for offset in range(0, len(subjects), 3):
             rows.append(
                 {
@@ -16,7 +21,8 @@ def _batch_topology() -> list[dict[str, object]]:
                     "subjects": subjects[offset : offset + 3],
                 }
             )
-    require(len(rows) == 8, "batch_topology_not_8")
+    require(all([t for r in rows if r['market'] == m for t in r['subjects']] == list(ts)
+                for m, ts in population.items()), 'canonical_batch_coverage_drift')
     return rows
 
 def _source_context(ticker: str, row: Mapping[str, object]) -> dict[str, object]:

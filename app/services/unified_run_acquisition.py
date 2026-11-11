@@ -60,7 +60,7 @@ class RunAcquisitionObserver:
         self._used, self._open = True, True
 
     async def get(self, client: httpx.AsyncClient, route: str, *, params: dict | None = None,
-                  credential_params: dict | None = None) -> httpx.Response:
+                  credential_params: dict | None = None, response_secrets: tuple[str, ...] = ()) -> httpx.Response:
         if not self._open:
             raise ValueError("run_acquisition_not_open")
         selected = [RunRead.model_validate(r) for r in json.loads(self._plan)
@@ -83,7 +83,7 @@ class RunAcquisitionObserver:
                    "requested_at": datetime.now(timezone.utc).isoformat()}
         try:
             response = await capture_source_response(root=self.root, identity=identity,
-                receipt=receipt, send=lambda: client.get(route,
+                receipt=receipt, response_secrets=response_secrets, send=lambda: client.get(route,
                     params={**(params or {}), **(credential_params or {})}, follow_redirects=False))
         finally:
             path = self.root / f"{identity}.response.json"

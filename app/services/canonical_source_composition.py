@@ -82,7 +82,12 @@ def compose_source_owners(*, seed: SourceRunBinding, market_inputs, stock_inputs
     """All external artifact resolvers are already owned by compose_attempt."""
     universe = seed.universe
     auxiliary = None
-    if seed.us_only:
+    from app.services.selected_source_composition import SelectedSourceRunBinding,validate_composition,GRAPH
+    selected=type(seed) is SelectedSourceRunBinding
+    if selected:
+        validate_composition(seed,stock_inputs=stock_inputs,market_inputs=market_inputs,
+            composition_metadata=composition_metadata,fresh_context_inputs=fresh_context_inputs)
+    if seed.us_only and not selected:
         if fresh_context_inputs is None or fresh_context_inputs['publications'].get('market_scope') != 'US14_ONLY':
             raise ValueError('us14_publication_scope_required')
         if set(stock_inputs) != set(UNIVERSE['us']):
@@ -93,7 +98,7 @@ def compose_source_owners(*, seed: SourceRunBinding, market_inputs, stock_inputs
         auxiliary = auxiliary_issuer_binding(stock_inputs)
         if digest(auxiliary) != seed.auxiliary_issuer_set_sha256:
             raise ValueError('us14_auxiliary_seed_binding_mismatch')
-    if seed.kr_only:
+    if seed.kr_only and not selected:
         if fresh_context_inputs is None or fresh_context_inputs['publications'].get('market_scope') != 'KR8_ONLY':
             raise ValueError('kr8_publication_scope_required')
     if (digest(version_set) != seed.class_c_version_set_sha256 or
@@ -241,13 +246,15 @@ def compose_source_owners(*, seed: SourceRunBinding, market_inputs, stock_inputs
         from app.services.unified_sealed_context import replay_night
         pub, night_source = (fresh_context_inputs[k] for k in ('publications', 'night'))
         for inputs in (pub, night_source):
+            if inputs is None and selected and seed.kr_only:
+                continue
             validate_fresh_context_generation(inputs,parent_run_id=seed.parent_run_id,
                 started_at=seed.started_at,source_policy_sha256=seed.source_policy_sha256)
         publications = replay_fresh_publications(**pub)
-        night = replay_night(**night_source)
+        night = None if selected and seed.kr_only and night_source is None else replay_night(**night_source)
         if (digest(publications) != seed.run_acquisitions.get('publications')
-                or night['value_sha256'] != seed.run_acquisitions.get('night')
-                or digest({'probe': night['original_receipts'], 'history': night.get('history_receipts', [])})
+                or (digest(None) if night is None else night['value_sha256']) != seed.run_acquisitions.get('night')
+                or (digest(None) if night is None else digest({'probe': night['original_receipts'], 'history': night.get('history_receipts', [])}))
                    != seed.night_publication_receipt_sha256):
             raise ValueError('fresh_context_run_binding_mismatch')
     if publication_inputs is not None or night_inputs is not None:
@@ -271,7 +278,7 @@ def compose_source_owners(*, seed: SourceRunBinding, market_inputs, stock_inputs
                 or night["original_run_id"] != seed.parent_run_id
                 or night["value_sha256"] != seed.run_acquisitions.get("night")):
             raise ValueError("night_run_seed_binding_mismatch")
-    graph = {"contract": "full-source-authority-graph-v1", "run_seed_sha256": seed.sha256,
+    graph = {"contract": GRAPH if selected else "full-source-authority-graph-v1", "run_seed_sha256": seed.sha256,
         "markets": markets, "stocks": authorities, "issuer_bridge": issuer_bridge,
         "class_c": version_set, "optional_denials": optional_denials,
         "persisted_business_events": persisted_events, "publication_context": publications, "night": night}

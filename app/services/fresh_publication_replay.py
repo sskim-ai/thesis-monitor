@@ -82,13 +82,13 @@ def replay_fresh_publications(*, run_id, run_started_at, acquisition_cutoff, as_
     times = (run_started_at, acquisition_cutoff, as_of)
     if any(t.utcoffset() is None for t in times) or not run_started_at <= as_of <= acquisition_cutoff:
         raise ValueError('fresh_publication_generation_time_invalid')
-    if market_scope not in {'ALL22', 'KR8_ONLY', 'US14_ONLY'}:
+    if market_scope not in {'ALL22', 'KR8_ONLY', 'US14_ONLY','SELECTED_US','SELECTED_KR'}:
         raise ValueError('fresh_publication_market_scope_unknown')
     if type(_selected_market_fields) is not bool:
         raise ValueError('publication_selection_requires_explicit_boolean')
     if _selected_market_fields and market_scope != 'ALL22':
         raise ValueError('selected_publication_scope_mismatch')
-    expected = {'fred','ecos'} if _selected_market_fields else {'ecos'} if market_scope == 'KR8_ONLY' else set(PROVIDERS)
+    expected = {'fred','ecos'} if _selected_market_fields else {'ecos'} if market_scope in {'KR8_ONLY','SELECTED_KR'} else set(PROVIDERS)
     if set(providers) != expected:
         raise ValueError('fresh_publication_exact_provider_set_required')
 

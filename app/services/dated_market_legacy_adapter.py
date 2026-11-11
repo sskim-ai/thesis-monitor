@@ -76,7 +76,7 @@ def verify_component_sector_text(text, reference):
     return expected['text_sha256']
 
 
-def render_retained_component_sectors(*, archive_path, archive_sha256, reference_path, market, enabled=False):
+def render_retained_component_sectors(*, archive_path, archive_sha256, reference_path, market, enabled=False, taxonomy_version=None):
     """Backend-selected C22M custody seal; reuse its Cold, not a supplied PASS.
 
     Hash selection belongs to the local composition root, never a model ledger
@@ -110,7 +110,13 @@ def render_retained_component_sectors(*, archive_path, archive_sha256, reference
             or reference['value_sha256']!=bundle['owner_proof']['value_sha256']
             or digest(reference['value'])!=reference['value_sha256']):
         raise ValueError('dated_legacy_reference_original_value_binding')
-    result=_render_component_sectors(reference)
+    if taxonomy_version is None:
+        result=_render_component_sectors(reference)
+    elif taxonomy_version == 'sector-universe-user-confirmed-v2':
+        from app.services.confirmed_sector_taxonomy import render_confirmed_sectors
+        result=render_confirmed_sectors(reference)
+    else:
+        raise ValueError('dated_sector_unknown_version')
     result.update(scope='SOURCE_VERIFIED_FIELD_PREVIEW_ONLY',custody_seal_sha256=archive_sha256)
     return result
 

@@ -35,12 +35,13 @@ def runtime_code_identity():
 
 class CanonicalProductionSourceBackend:
     def __init__(self, *, settings, configuration, implementation_sha, clock, transport=None,
-                 context_factory=freeze_current_context):
+                 context_factory=freeze_current_context,run_ledger=None,registration_owner=None,source_policy=None):
         self.settings = settings
         self.configuration = ProductionSourceConfiguration.model_validate(configuration)
         self.implementation_sha = implementation_sha
         self.clock = clock
-        self.transport = transport or NativeProductionSourceTransport(settings)
+        self.transport = transport or NativeProductionSourceTransport(settings,run_ledger=run_ledger,
+            registration_owner=registration_owner,source_policy=source_policy)
         self.context_factory = context_factory
         self.code_identity = runtime_code_identity()
         self.configuration_identity = digest(dict(configuration=self.configuration.identity,

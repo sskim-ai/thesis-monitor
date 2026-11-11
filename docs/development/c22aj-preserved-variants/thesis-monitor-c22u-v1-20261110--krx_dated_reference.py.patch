@@ -1,0 +1,151 @@
+--- /dev/null
++++ b/app/services/krx_dated_reference.py
+@@ -0,0 +1,148 @@
++"""Sealed daily KRX bytes -> dated OHLC reference, never current-night authority."""
++from datetime import date,datetime
++import hashlib,json,re
++from pathlib import Path
++import zipfile
++
++from app.jobs.probe_krx_night_futures import _rows,KRX_FUTURES_DAILY_URL
++from app.services.krx_night_history_service import persist_krx_response,resolve_near_month
++from app.services.market_session import preceding_exchange_session_date
++from app.services.unified_aggregate_receipt import AggregateReceipt,verify_aggregate
++from app.services.unified_source_policy import UnifiedSourcePolicy
++from app.services.unified_run_artifacts import durable_json
++from app.services.unified_snapshot_contract import digest
++
++CONTRACT='krx-daily-publication-availability-v1'
++REFERENCE='krx-sealed-dated-ohlc-reference-v1'
++sha=lambda b:hashlib.sha256(b).hexdigest()
++
++
++def source_availability_contract(*,night_trade_date,regular_reference_date,actual_received_at,
++        historical_assessment_cutoff,requested_capture_cutoff,view_cutoff,
++        provider_published_at=None,publication_evidence_sha256=None):
++    clocks=[actual_received_at,historical_assessment_cutoff,requested_capture_cutoff,view_cutoff]
++    if any(t.utcoffset() is None for t in clocks):raise ValueError('availability_aware_clocks_required')
++    if regular_reference_date!=preceding_exchange_session_date('XKRX',night_trade_date):
++        raise ValueError('availability_regular_reference_mismatch')
++    if provider_published_at is not None:
++        if (provider_published_at.utcoffset() is None or provider_published_at>actual_received_at
++                or not re.fullmatch('[0-9a-f]{64}',str(publication_evidence_sha256 or ''))):
++            raise ValueError('availability_publication_proof_required')
++    return dict(contract=CONTRACT,night_trade_date=str(night_trade_date),regular_reference_date=str(regular_reference_date),
++        actual_received_at=actual_received_at.isoformat(),historical_assessment_cutoff=historical_assessment_cutoff.isoformat(),
++        requested_capture_cutoff=requested_capture_cutoff.isoformat(),view_cutoff=view_cutoff.isoformat(),
++        provider_published_at=provider_published_at.isoformat() if provider_published_at else None,
++        publication_evidence_sha256=publication_evidence_sha256,
++        first_verified_eligible_observation_cutoff=actual_received_at.isoformat(),
++        available_at_historical_cutoff=actual_received_at<=historical_assessment_cutoff,
++        available_at_view_cutoff=actual_received_at<=view_cutoff,
++        capture_later_than_request=actual_received_at>requested_capture_cutoff,
++        endpoint_capability='HISTORICAL_DAILY_REFERENCE',PROVEN_08_10_CURRENT_NIGHT=False,
++        current_directional=False,model_use=False,full_market_parent=False)
++
++
++def verified_archive(archive,expected_sha):
++    p=Path(archive)
++    if any(x.is_symlink() for x in (p,*p.parents)) or sha(p.read_bytes())!=expected_sha:
++        raise ValueError('dated_reference_archive_binding')
++    with zipfile.ZipFile(p) as z:
++        if z.testzip() is not None:raise ValueError('dated_reference_CRC')
++        pins=json.loads(z.read('MANIFEST.json'))['files'];files={}
++        for n,pin in pins.items():
++            path=Path(n)
++            if path.is_absolute() or '..' in path.parts:raise ValueError('dated_reference_unsafe_member')
++            b=z.read(n)
++            if len(b)!=pin['bytes'] or sha(b)!=pin['sha256']:raise ValueError('dated_reference_member_hash')
++            files[n]=b
++    # Recheck the original transitive receipt, not merely the outer ZIP checksum.
++    from tempfile import TemporaryDirectory
++    with TemporaryDirectory(prefix='krx-dated-custody-', dir='/private/tmp') as temporary:
++        root=Path(temporary)
++        for n,b in files.items():
++            if n.startswith('actual-source/'):
++                child=root/n.removeprefix('actual-source/');child.parent.mkdir(parents=True,exist_ok=True);child.write_bytes(b)
++        receipt=AggregateReceipt.model_validate_json((root/'aggregate.json').read_bytes())
++        graph=verify_aggregate(root,receipt,policy=UnifiedSourcePolicy(frozenset(('krx_night_futures',))),cutoff=receipt.received_at)
++        plan=json.loads(graph.plan)
++        if (receipt.owner!='krx-exact-date-source-only-v1' or plan['execution_mode']!='LIVE'
++                or len(plan['exact_dates'])!=2 or sorted(set(plan['exact_dates']))!=plan['exact_dates']):
++            raise ValueError('dated_reference_original_acquisition_identity')
++        if len(graph.child_receipts)!=2:raise ValueError('dated_reference_exact_original_children')
++        normalized=json.loads(graph.normalized)
++        if sha(normalized['text'].encode())!=normalized['text_sha256']:raise ValueError('dated_reference_original_text_hash')
++    return files,receipt
++
++
++def replay_dated_reference(*,archive,archive_sha256,staging_root,trade_date,historical_cutoff,view_cutoff):
++    root=Path(staging_root)
++    if root.exists() or any(p.is_symlink() for p in (root,*root.parents)):
++        raise ValueError('dated_reference_new_plain_staging_required')
++    files,aggregate=verified_archive(archive,archive_sha256)
++    plan=json.loads(files['actual-source/source-only-plan.json'])
++    matching=[];capture_inventory=[]
++    for i in (1,2):
++        r=json.loads(files[f'actual-source/read-{i:04d}.response.json'])
++        raw=files['actual-source/'+r['artifact']];payload=json.loads(raw);rows=_rows(payload)
++        if (r['request']['method']!='GET' or r['request']['route']!=KRX_FUTURES_DAILY_URL
++                or r['artifact_sha256']!=sha(raw) or r['http_status']!=200):
++            raise ValueError('dated_reference_original_request')
++        d=datetime.strptime(r['request']['params']['basDd'],'%Y%m%d').date()
++        if any(str(row.get('BAS_DD'))!=d.strftime('%Y%m%d') for row in rows):
++            raise ValueError('dated_reference_raw_date')
++        capture_inventory.append(dict(query_date=str(d),rows=len(rows),night=sum(row.get('MKT_NM')=='야간' for row in rows),
++            day=sum(row.get('MKT_NM')=='정규' for row in rows),raw_sha256=sha(raw),bytes=len(raw),
++            actual_received_at=r['received_at']))
++        if d==trade_date:matching.append((r,raw,payload))
++    if len(matching)!=1:raise ValueError('dated_reference_original_date_missing')
++    r,raw,payload=matching[0];received=datetime.fromisoformat(r['received_at'])
++    receipt,normalized,count=persist_krx_response(root=root,query_date=trade_date,fetched_at=received,http_status=200,raw_body=raw)
++    selected=resolve_near_month(tuple(b for b in normalized.bars if b.instrument_root=='KOSPI200'),reference_date=trade_date)
++    if selected is None or selected.quality!='VALID':raise ValueError('dated_reference_no_valid_ohlc')
++    expected_reference=preceding_exchange_session_date('XKRX',trade_date)
++    available=source_availability_contract(night_trade_date=trade_date,regular_reference_date=expected_reference,
++        actual_received_at=received,historical_assessment_cutoff=historical_cutoff,
++        requested_capture_cutoff=datetime.fromisoformat(plan['cutoff']),view_cutoff=view_cutoff)
++    daily=dict(status='DATED_OHLC_AVAILABLE',source_market_date=str(trade_date),series_code=selected.series_code,
++        contract_code=selected.contract_code,contract_maturity=selected.contract_maturity,
++        open=selected.open,high=selected.high,low=selected.low,close=selected.close,
++        raw_sha256=selected.source_raw_sha256,normalized_fingerprint=selected.normalized_fingerprint,
++        reference_price=None,change_value=None,change_pct=None,
++        provider_reported_change=selected.official_change,provider_change_display_eligible=False,
++        provider_change_semantics='UNVERIFIED_WITHOUT_ORIGINAL_PRIOR_DAY_CLOSE',
++        current_directional=False)
++    doc=dict(contract=REFERENCE,source_mode='REPLAY_ORIGINAL_CAPTURE',archive_sha256=archive_sha256,
++        original_aggregate_sha256=aggregate.aggregate_sha256,original_receipt_sha256=digest(r),original_received_at=r['received_at'],
++        raw_inventory=capture_inventory,availability=available,daily=daily,
++        weekly=dict(status='UNAVAILABLE',return_pct=None,reason='SAME_CONTRACT_PERIOD_HISTORY_AND_BASELINE_NOT_PROVEN'),
++        monthly=dict(status='UNAVAILABLE',return_pct=None,reason='SAME_CONTRACT_PERIOD_HISTORY_AND_BASELINE_NOT_PROVEN'),
++        target_current_night=dict(trade_date=plan['exact_dates'][-1],status=(
++            'UNAVAILABLE_EMPTY_RESPONSE' if capture_inventory[-1]['rows']==0 else 'NOT_QUALIFIED_AS_CURRENT'),close=None),
++        full_market_parent=False,model_use=False,current_directional=False,NO_SEND=True,default_enabled=False,Strict_READY='0/22')
++    durable_json(root/'IMPORT_RECEIPT.json',dict(source_mode='REPLAY_ORIGINAL_CAPTURE',original_archive_sha256=archive_sha256,
++        original_received_at=r['received_at'],original_raw_sha256=sha(raw),stored_bars=count,live_incremental=False,operating_DB_write=False),exclusive=True)
++    return doc
++
++
++def render_dated_reference(doc):
++    if (doc.get('contract')!=REFERENCE or doc.get('source_mode')!='REPLAY_ORIGINAL_CAPTURE'
++            or doc.get('current_directional') is not False or doc.get('full_market_parent') is not False
++            or doc.get('model_use') is not False or doc.get('NO_SEND') is not True):
++        raise ValueError('dated_reference_display_scope')
++    d=doc['daily']
++    if not doc['availability']['available_at_view_cutoff']:
++        raise ValueError('dated_reference_after_view_cutoff')
++    current=doc['target_current_night']['trade_date'][5:].replace('-','/')
++    return (f"KRX 역사 참고 · 원본 BAS_DD {d['source_market_date']} 야간표시\nSOURCE-ONLY · NO-SEND\n"
++        f"KOSPI200 {d['contract_maturity']} ({d['contract_code']})\n"
++        f"시가 {d['open']:,.2f} · 고가 {d['high']:,.2f} · 저가 {d['low']:,.2f} · 종가 {d['close']:,.2f}\n"
++        f"실제 원본 수신: {doc['original_received_at']}\n"
++        "직전 정규장 원본 기준종가 미확보: 등락률 미산출.\n주봉: 자료 부족.\n월봉: 자료 부족.\n"
++        f"{current} 현재 야간선물: 자료 부족. 위 역사 종가를 현재 값으로 사용하지 않습니다.\n")
++
++
++def verify_dated_reference(doc,*,archive,archive_sha256,staging_root,trade_date,historical_cutoff,view_cutoff,text):
++    expected=replay_dated_reference(archive=archive,archive_sha256=archive_sha256,staging_root=staging_root,
++        trade_date=trade_date,historical_cutoff=historical_cutoff,view_cutoff=view_cutoff)
++    if digest(doc)!=digest(expected) or text!=render_dated_reference(expected):raise ValueError('dated_reference_complete_raw_to_text_mismatch')
++    return dict(status='SOURCE_ARCHIVE_REPLAY_PASS',text_sha256=sha(text.encode()),
++        current_night_qualified=False,financial_HTTP=0,model_use=False,full_market_parent=False)

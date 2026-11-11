@@ -4,12 +4,13 @@ from datetime import date
 from math import isclose
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.macro.providers.market import MARKET_SYMBOLS
 from app.services.market_numeric_claim_service import digest, number, numeric_catalog
 from app.services.macro_source_time import CONTRACT as TIME_CONTRACT
 from app.services.market_display_view import MarketUserDisplayView, verify_display_view
+from app.services.dated_macro_display_claims import MacroCaptureSelection
 
 CONTRACT = 'market-selected-display-v1'
 US_SECTORS = tuple(k for k, v in MARKET_SYMBOLS.items() if v == 'sector')
@@ -52,9 +53,20 @@ class MarketDisplayPlan(BaseModel):
     eligible_refs: tuple[str, ...]
     items: tuple[DisplayItem, ...]
     display_view: MarketUserDisplayView | None = None
+    sector_taxonomy_version: Literal['sector-universe-user-confirmed-v2'] | None = Field(default=None, exclude_if=lambda v: v is None)
+    macro_display_capture: MacroCaptureSelection | None = Field(default=None, exclude_if=lambda v: v is None)
 
 
-def build_display_plan(source, *, market, assessment_date, eligible_refs, display_view=None):
+def build_display_plan(source, *, market, assessment_date, eligible_refs, display_view=None, sector_taxonomy_version=None, macro_display_capture=None):
+    macro_claims = {}
+    if macro_display_capture is not None:
+        # A pinned archive is not a current Parent/run/cutoff authorization.
+        raise ValueError('sealed_macro_capture_offline_source_only_not_current_owner')
+    if sector_taxonomy_version not in (None, 'sector-universe-user-confirmed-v2'):
+        raise ValueError('display_sector_taxonomy_version')
+    confirmed = sector_taxonomy_version is not None
+    if confirmed:
+        from app.services.confirmed_sector_taxonomy import display_fact_classification, auxiliary_label, relative_rank_text, REGISTRY_SHA256, PROVIDERS
     session = source.get('session') or {}
     completed = session.get('latest_completed_regular_session_date')
     if (market not in {'us', 'kr'} or date.fromisoformat(completed) > date.fromisoformat(assessment_date)
@@ -172,13 +184,27 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
         label = fields.get('label', series)
         text = f"{label}: {binding.value:,.2f}{suffix} ({fact['as_of_date']} 관측)" if valid else None
         bindings = [binding] if valid else []
+        derived = macro_claims.get(series)
+        if valid and derived is not None:
+            if (derived['raw_sha256'] != publication['response_sha256'] or derived['level'] != fields[key]
+                    or derived['observation_date'] != fact['as_of_date']
+                    or derived['query_as_of'] != publication['query_as_of']):
+                raise ValueError('display_macro_original_fact_binding')
+            if series in {'DGS3','DGS5','DGS10','DGS30'}:
+                from app.services.dated_macro_display_claims import yield_line
+                text = yield_line(label, derived['level'], derived['delta_bp'], derived['observation_date'], derived['previous_observation_date'])
+            elif series in {'DCOILWTICO','DTWEXBGS','VIXCLS'}:
+                delta = f"{derived['change_pct']:+.2f}%" if derived['change_pct'] is not None else '변동률 자료 부족'
+                previous = derived['previous_observation_date'] or '자료 부족'
+                text += f' · {delta} (직전 {previous} 대비)'
         if valid and series == 'USDKRW':
             change = bind(fact, 'change_pct', {'pct', 'percent'})
             if change and fields.get('today_signal_eligible') is True:
                 bindings.append(change)
                 text += f' · {change.value:+.2f}%'
         add('fx' if series == 'USDKRW' else 'macro', label, [fact] if valid else [], bindings, text=text,
-            proof={'publication_context_sha256': digest(publication)} if valid else {})
+            proof={'publication_context_sha256': digest(publication), **({'display_only_derived_claim_id':derived['claim_id'],
+                'derived_registry_sha256':digest(derived['numeric_registry']), 'direction_eligible':False} if derived else {})} if valid else {})
 
     if market == 'us':
         for series in US_MACRO:
@@ -203,6 +229,18 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
                 if not identity or identity in identities:
                     raise ValueError('ambiguous_display_sector:' + venue)
                 identities.add(identity)
+                if confirmed:
+                    category, reason = display_fact_classification(fact, market)
+                    if category not in {'US_BROAD_SECTOR', 'KR_DETAILED_INDUSTRY'}:
+                        if category in {'US_SEMICONDUCTOR_WATCH', 'KR_SIZE_STYLE_INDEX'}:
+                            if market == 'kr' and (fields.get('listed_count') is None or fields['listed_count'] <= 0):
+                                continue
+                            label = auxiliary_label(market, venue, identity)
+                            add('sector_auxiliary', venue + ' ' + label, [fact], [binding],
+                                text=f"{venue} {label} {fields.get('sector') or identity}: {binding.value:+.2f}% · {completed}",
+                                proof=dict(provider=PROVIDERS[market], registry_sha256=REGISTRY_SHA256,
+                                    source_fact_sha256=digest(fact), category=category, reason=reason))
+                        continue
                 candidates.append((fact, binding))
         ordered = sorted(candidates, key=lambda pair: (-pair[1].value, pair[0]['fact_id']))
         proof = dict(venue=venue, session=completed,
@@ -215,7 +253,7 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
                 continue
             values = [f"{f['fields'].get('sector') or f['fields'].get('label')}: {b.value:+.2f}%" for f, b in selected]
             add('sectors', venue + ' ' + ranking, [f for f, _ in selected], [b for _, b in selected],
-                text=venue + ' ' + ranking + ' · ' + ' / '.join(values), proof=proof)
+                text=(relative_rank_text(venue + ' ' + ranking) if confirmed else venue + ' ' + ranking) + ' · ' + ' / '.join(values), proof=proof)
 
     if market == 'kr':
         macro('USDKRW')
@@ -231,12 +269,13 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
             unavailable_text='한국 야간선물 · KOSPI200\n일: 자료 부족\n주: 자료 부족\n월: 자료 부족')
     return MarketDisplayPlan(market=market, assessment_date=assessment_date, completed_session=completed,
         internal_source_sha256=digest(source), eligible_refs=tuple(sorted(eligible_refs)), items=tuple(items),
-        display_view=display_view)
+        display_view=display_view, sector_taxonomy_version=sector_taxonomy_version, macro_display_capture=macro_display_capture)
 
 
 def render_display_plan(plan, source, narrative):
     expected = build_display_plan(source, market=plan.market, assessment_date=plan.assessment_date,
-                                  eligible_refs=plan.eligible_refs, display_view=plan.display_view)
+                                  eligible_refs=plan.eligible_refs, display_view=plan.display_view,
+                                  sector_taxonomy_version=plan.sector_taxonomy_version, macro_display_capture=plan.macro_display_capture)
     if plan != expected:
         raise ValueError('selected_market_display_binding_mismatch')
     if any(char.isnumeric() for char in narrative):

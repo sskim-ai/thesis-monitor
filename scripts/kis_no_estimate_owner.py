@@ -127,7 +127,11 @@ def _result(base, decision, reason, **changes):
 
 def assess(*, code, generation, plan, raw, receipt, request, positive_eps=None):
     """Replay exact frozen inputs. Missing binding raises; malformed payload stays a gap."""
-    verified(plan, PLAN)
+    if plan.get('contract')=='selected-original-kis-source-v1':
+        from app.services.selected_kis_sources import validate_plan
+        validate_plan(plan)
+    else:
+        verified(plan, PLAN)
     security = plan.get("securities", {}).get(code, {})
     if (not isinstance(code, str) or not re.fullmatch(r"[0-9]{6}", code)
             or not generation or generation != plan.get("generation_id")
