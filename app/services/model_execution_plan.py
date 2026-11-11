@@ -90,7 +90,8 @@ class FrozenCohort:
     def verify_source_owner(self, owner):
         """Only the existing original live owner can admit a runtime cohort."""
         from app.services.canonical_native_source_owner import CanonicalPreparedSourceOwner
-        if self.planning_only or type(owner) is not CanonicalPreparedSourceOwner:
+        from app.services.scoped_monitoring_research import ScopedPreparedResearchOwner
+        if self.planning_only or type(owner) not in (CanonicalPreparedSourceOwner, ScopedPreparedResearchOwner):
             raise ValueError('TYPED_GAP_REGISTERED_COHORT_SOURCE_OWNER_REQUIRED')
         for market, subjects in self.market_subjects.items():
             relation = owner.relationship(market)

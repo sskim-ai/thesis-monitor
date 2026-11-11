@@ -73,10 +73,12 @@ class FourPanelSolHighCallBudgetV1:
 
 class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
     """Explicit plan cap, shared across markets. The old experiment stays separate."""
-    def __init__(self, slots=None, *, plan=None, approved_max_invocations=None, approved_plan_sha256=None):
+    def __init__(self, slots=None, *, plan=None, approved_max_invocations=None, approved_plan_sha256=None,
+                 journal_path=None):
         self.plan = plan
+        self.journal = None
         if plan is None:
-            if approved_max_invocations is not None or approved_plan_sha256 is not None:
+            if approved_max_invocations is not None or approved_plan_sha256 is not None or journal_path is not None:
                 raise ValueError('dynamic_model_plan_required')
             super().__init__(slots)
             self.maximum = len(self.slots)
@@ -92,8 +94,26 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
         self.maximum = approved_max_invocations
         self.slots = plan.slots
         self.used, self.bound, self.accepted = set(), {}, {}
+        self.stopped = False
+        if journal_path is not None:
+            from app.services.model_invocation_journal import ModelInvocationJournal
+            self.journal = ModelInvocationJournal(journal_path, plan_sha256=plan.sha256, maximum=self.maximum)
+            self._journal_state('OPEN')
+
+    def _journal_state(self, event, **value):
+        if self.journal is not None:
+            state = self.journal.transact(event, **value)
+            self.used, self.bound, self.accepted, self.stopped = (
+                state[k] for k in ('used', 'bound', 'accepted', 'stopped'))
+
+    def stop(self):
+        self.stopped = True
+        self._journal_state('STOP')
 
     def _verify_plan(self):
+        self._journal_state('OPEN')
+        if self.stopped:
+            raise ValueError('model_failed_cycle_no_more_calls')
         if self.plan.sha256 != self.approved_plan_sha256:
             raise ValueError('model_plan_changed_after_approval')
         self.plan.validate()
@@ -123,7 +143,10 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
             source_generation=slot.source_generation, execution_profile=slot.execution_profile,
             payload_sha256=request['payload_sha256'], build_receipt_sha256=digest(request),
             dependency_outputs={key: self.accepted[key] for key in slot.dependencies})
-        self.bound[slot.slot_id] = scope
+        if self.journal is not None:
+            self._journal_state('BIND', slot_id=slot.slot_id, scope=scope)
+        else:
+            self.bound[slot.slot_id] = scope
         return dict(scope, dependency_outputs=dict(scope['dependency_outputs']))
 
     def consume(self, panel, stage, payload_sha256, *, slot_scope=None):
@@ -145,7 +168,10 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
                 or slot_scope['payload_sha256'] != payload_sha256 or slot_id in self.used
                 or len(self.used) >= self.maximum):
             raise ValueError('model_slot_scope_drift_used_or_budget_exhausted')
-        self.used.add(slot_id)
+        if self.journal is not None:
+            self._journal_state('CONSUME', slot_id=slot_id)
+        else:
+            self.used.add(slot_id)
         return len(self.used)
 
     def resolve_scope(self, panel, stage, payload_sha256, slot_scope=None):
@@ -161,9 +187,14 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
         if (slot_id not in self.used or slot_id in self.accepted
                 or self.bound[slot_id]['payload_sha256'] != payload_sha256):
             raise ValueError('model_slot_original_acceptance_binding_gap')
-        self.accepted[slot_id] = _sha(output_sha256)
+        output_sha256 = _sha(output_sha256)
+        if self.journal is not None:
+            self._journal_state('ACCEPT', slot_id=slot_id, output_sha256=output_sha256)
+        else:
+            self.accepted[slot_id] = output_sha256
 
     def state(self):
+        self._journal_state('OPEN')
         return dict(approved_max_invocations=self.maximum, planned_slots=len(self.slots),
                     consumed=len(self.used), remaining=self.maximum-len(self.used),
                     remaining_planned_slots=len(self.slots)-len(self.used),

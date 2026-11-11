@@ -153,6 +153,10 @@ class ProductionRuntimeBridgeV1:
         session = ProductionMonitoringSession(directory/'canonical', market=collection.market,
             generation_id=collection.production_envelope.generation_id, source=source,
             source_generation_id=source['source_generation_id'], **native_args)
+        self._restore_upstream(session, request)
+        return session, collection
+
+    def _restore_upstream(self, session, request):
         for stage in STAGES[:STAGES.index(request['stage'])]:
             if stage not in {'MARKET', 'CORE', 'A', 'B'}:
                 continue
@@ -165,7 +169,6 @@ class ProductionRuntimeBridgeV1:
                         or row['payload_sha256'] != digest(item['payload'])):
                     raise ValueError('production_upstream_payload_drift')
                 session.accept(stage, item, row['output'])
-        return session, collection
 
     async def stage(self, request, directory):
         reject_test_only_production(request)
