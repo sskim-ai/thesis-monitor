@@ -74,6 +74,10 @@ def prepare_scoped_research_source(*, enabled=False, market, subjects, registrat
             source['forward_views'][ticker] = view.model_dump(mode='json')
     elif forward_views:
         raise ValueError('scoped_research_unexpected_kr_forward_views')
+    else:
+        from app.services.provider_valuation_calibration_context import calibration_context
+        if any(calibration_context(source['stocks'][t]['valuation_view']) != valuation_contexts[t] for t in subjects):
+            raise ValueError('scoped_research_provider_valuation_calibration_drift')
     for ticker in subjects:
         stock, prepared = source['stocks'][ticker], source['prepared'][ticker]
         verified_owned_packet_view(stock)
