@@ -14,6 +14,8 @@ import subprocess
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from app.services.production_model_profile import sol_high
+
 SUPPORTED_VERSION = "codex-cli 0.155.1"
 RELEASE_TAG = "rust-v0.155.1"
 PACKAGE_SHA256 = "e6e08717da9e35b72332eff753527fe79a9ae876081033c5c6820a8e5f58b943"
@@ -47,6 +49,20 @@ COMMAND_PREFIX = (
     "gpt-5.6-sol",
     *(argument for control in CONFIG_CONTROLS for argument in ("-c", control)),
 )
+
+
+def command_prefix(profile=None):
+    if profile is None:
+        return COMMAND_PREFIX
+    profile = sol_high(profile)
+    # Keep every qualified isolation control; only the explicit profile differs.
+    return tuple(profile.model if arg == 'gpt-5.6-sol' else
+                 f'model_reasoning_effort="{profile.effort}"'
+                 if arg == 'model_reasoning_effort="xhigh"' else arg
+                 for arg in COMMAND_PREFIX)
+
+
+QUALIFICATION_V2 = 'official-codex-install-qualification-v2-sol-high'
 OVERRIDE_VARIABLES = (
     "OPENAI_API_KEY",
     "CODEX_API_KEY",
@@ -114,7 +130,8 @@ class OfficialShadowRequest:
     execution_policy: OfficialShadowExecutionPolicy = OfficialShadowExecutionPolicy()
 
 
-def validate_binding(binding: OfficialCodexBinding, codex_bin: str) -> None:
+def validate_binding(binding: OfficialCodexBinding, codex_bin: str, *, profile=None) -> None:
+    prefix = command_prefix(profile)
     path = binding.executable
     _require(path.is_absolute() and str(path) == codex_bin, "OFFICIAL_EXECUTABLE_MISMATCH")
     _require(binding.installation_verified, "OFFICIAL_INSTALLATION_UNVERIFIED")
@@ -146,7 +163,7 @@ def validate_binding(binding: OfficialCodexBinding, codex_bin: str) -> None:
         raise OfficialShadowError("OFFICIAL_QUALIFICATION_INVALID") from exc
     _require(isinstance(receipt, dict), "OFFICIAL_QUALIFICATION_INVALID")
     _require(
-        receipt.get("contract") == QUALIFICATION_CONTRACT
+        receipt.get("contract") == (QUALIFICATION_CONTRACT if profile is None else QUALIFICATION_V2)
         and receipt.get("release_tag") == RELEASE_TAG
         and receipt.get("package_sha256") == PACKAGE_SHA256
         and receipt.get("checksum_manifest_sha256") == CHECKSUM_MANIFEST_SHA256
@@ -164,10 +181,16 @@ def validate_binding(binding: OfficialCodexBinding, codex_bin: str) -> None:
     )
     _require(
         receipt.get("config_schema_sha256") == CONFIG_SCHEMA_SHA256
-        and receipt.get("command_prefix") == list(COMMAND_PREFIX)
+        and receipt.get("command_prefix") == list(prefix)
         and receipt.get("required_tail_flags") == ["--output-schema", "-o", "-"],
         "OFFICIAL_REQUIRED_CONTROL_UNVERIFIED",
     )
+    if profile is not None:
+        _require(receipt.get('execution_profile') == profile.model_request()
+                 and receipt.get('profile_contract') == profile.contract
+                 and receipt.get('options_review_status') == 'LOCAL_OPTIONS_REVIEWED'
+                 and receipt.get('model_entitlement') == 'UNKNOWN_UNTIL_APPROVED_CALL',
+                 'OFFICIAL_SOL_PROFILE_REVIEW_REQUIRED')
     _require(
         not any(os.environ.get(key) for key in OVERRIDE_VARIABLES),
         "AUTH_OR_PROVIDER_OVERRIDE_PRESENT",

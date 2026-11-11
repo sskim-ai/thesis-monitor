@@ -9,15 +9,34 @@ import subprocess
 from dataclasses import asdict
 
 from app.services.official_codex_shadow_transport_service import (
-    COMMAND_PREFIX, OfficialShadowError, _require, validate_binding,
+    command_prefix, OfficialShadowError, _require, validate_binding,
     file_sha256, classify_input_events,
 )
+
+
+def _availability_failure(raw):
+    """Classify exact machine error codes only; never export provider error text."""
+    unavailable = {'model_not_found', 'model_not_available', 'usage_limit_reached', 'quota_exceeded', 'insufficient_quota'}
+    for line in raw.splitlines():
+        try:
+            value = json.loads(line)
+        except (ValueError, UnicodeError):
+            continue
+        if not isinstance(value, dict):
+            continue
+        error = value.get('error')
+        if isinstance(error, dict) and any(isinstance(error.get(key), str) and error[key] in unavailable
+                                           for key in ('code', 'type')):
+            return 'MODEL_ENTITLEMENT_OR_QUOTA_UNAVAILABLE'
+    return 'PROCESS_NONZERO'
 
 
 def invoke_official_bound(*, codex_bin, prompt, output, log, schema, cwd, timeout,
                           state_namespace, request, receipt_contract):
     """Execute only a separately authorized production request."""
-    validate_binding(request.binding, codex_bin)
+    from app.services.production_model_transport import request_profile
+    profile = request_profile(request)
+    validate_binding(request.binding, codex_bin, profile=profile)
     request.execution_policy.validate()
     _require(
         type(timeout) is int
@@ -64,7 +83,7 @@ def invoke_official_bound(*, codex_bin, prompt, output, log, schema, cwd, timeou
     )
     command = [
         codex_bin,
-        *COMMAND_PREFIX,
+        *command_prefix(profile),
         "--output-schema",
         str(schema),
         "-o",
@@ -104,6 +123,9 @@ def invoke_official_bound(*, codex_bin, prompt, output, log, schema, cwd, timeou
             ).encode()
         ).hexdigest(),
     }
+    if profile is not None:
+        receipt.update(command=command, prompt_sha256=request.prompt_sha256,
+                       schema_sha256=request.schema_sha256, model_entitlement='UNKNOWN_UNTIL_APPROVED_CALL')
     try:
         with log.open("xb") as events, stderr.open("xb") as errors:
             process = subprocess.run(
@@ -120,7 +142,8 @@ def invoke_official_bound(*, codex_bin, prompt, output, log, schema, cwd, timeou
     except OSError as exc:
         raise OfficialShadowError("PROCESS_START_FAILED") from exc
     if process.returncode != 0:
-        raise OfficialShadowError("PROCESS_NONZERO", process_started=True)
+        code = _availability_failure(log.read_bytes()) if profile is not None else 'PROCESS_NONZERO'
+        raise OfficialShadowError(code, process_started=True)
     if file_sha256(prompt) != request.prompt_sha256 or file_sha256(schema) != request.schema_sha256:
         raise OfficialShadowError("INPUT_CHANGED_DURING_INVOCATION", process_started=True)
     if not output.is_file() or output.is_symlink() or not output.stat().st_size:

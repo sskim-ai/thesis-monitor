@@ -8,7 +8,7 @@ from app.services.detailed_stock_message_v2 import build_detailed_plan_v2, rende
 from app.services.kr_forward_valuation_context import calibration_context
 from app.services.kr_forward_valuation_message import build_plan as build_kr_plan
 from app.services.market_display_plan import build_display_plan
-from app.services.production_b2_execution import ProductionB2ExecutionAuthorizationV1
+from app.services.production_b2_execution import parse_authorization
 from app.services.unavailable_price_valuation import parse_view
 from app.services.unified_snapshot_contract import digest
 from scripts import m12ds_r4_r4_market as market_owner
@@ -44,7 +44,7 @@ def market_message(session, *, sector_taxonomy_version=None, macro_display_captu
         text=render_daily_digest(None, accepted_market=plan), plan_sha256=digest(plan.model_dump(mode='json')))
 
 
-def stock_message(session, ticker, b2_row):
+def stock_message(session, ticker, b2_row, *, execution_profile=None):
     source = session.fresh_stocks[ticker]
     packet = DecisionEvidencePacket.model_validate(source['evidence_packet'])
     base = build_detailed_plan(packet=packet, accepted=stock_plan(session, ticker, packet), source_stock=source,
@@ -56,5 +56,5 @@ def stock_message(session, ticker, b2_row):
         base = build_kr_plan(packet, base, forward)
     request = session.b2_request(ticker)
     plan = build_detailed_plan_v2(packet=packet, base=base, b2_request=request,
-        b2_result=b2_row['result'], authorization=ProductionB2ExecutionAuthorizationV1.model_validate(b2_row['authorization']))
+        b2_result=b2_row['result'], authorization=parse_authorization(b2_row['authorization'], execution_profile=execution_profile))
     return dict(message_id=ticker, **render_detailed_v2(packet, plan))

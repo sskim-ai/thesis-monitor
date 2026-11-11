@@ -24,6 +24,7 @@ def _unique_schema_object(pairs):
 
 def preflight_official_input(*, prompt, schema, cwd, request):
     """Reject fixture content before credential/worker/output side effects."""
+    request.execution_policy.validate()
     _require(cwd.is_absolute() and cwd.is_dir() and not cwd.is_symlink(), "INPUT_CWD_INVALID")
     _require(
         not any((parent / ".git").exists() for parent in (cwd, *cwd.parents)),

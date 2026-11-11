@@ -6,17 +6,15 @@ import sys
 from app.services.official_codex_shadow_transport_service import OfficialShadowError
 from app.services.official_codex_production_executor import invoke_official_bound
 from app.services.official_transport_input_preflight import PREFLIGHT_REJECT_EXIT, preflight_official_input
-from app.services.production_model_transport import CONTRACT, ProductionWireRequest, binding_from_json
+from app.services.production_model_transport import request_from_frame
 from app.services.unified_run_artifacts import durable_json
 
 
 def main():
     frame = json.loads(sys.stdin.buffer.read())
-    if set(frame) != {"contract", "directory", "binding", "request_id", "prompt_sha256", "schema_sha256"} or frame["contract"] != CONTRACT:
-        raise ValueError("production_model_worker_contract")
+    request = request_from_frame(frame)
     path = Path(frame["directory"])
-    binding = binding_from_json(frame["binding"])
-    request = ProductionWireRequest(binding, frame["request_id"], frame["prompt_sha256"], frame["schema_sha256"])
+    binding = request.binding
     try:
         preflight_official_input(prompt=path / "approved-input/prompt.txt",
             schema=path / "approved-input/provider-wire-schema.json", cwd=path / "approved-input", request=request)
@@ -25,8 +23,8 @@ def main():
     try:
         receipt = invoke_official_bound(codex_bin=str(binding.executable), prompt=path / "approved-input/prompt.txt",
             schema=path / "approved-input/provider-wire-schema.json", output=path / "raw-output.json",
-            log=path / "events.jsonl", cwd=path / "approved-input", timeout=600,
-            state_namespace=request.request_id, request=request, receipt_contract=CONTRACT)
+            log=path / "events.jsonl", cwd=path / "approved-input", timeout=request.execution_policy.timeout_seconds,
+            state_namespace=request.request_id, request=request, receipt_contract=frame['contract'])
     except OfficialShadowError as exc:
         receipt = dict(status="FAIL", error_code=exc.code, process_started=exc.process_started)
     except Exception as exc:

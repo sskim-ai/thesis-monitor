@@ -17,6 +17,8 @@ from app.services import new_buyer_base_contract as wire_contract
 from app.services import new_buyer_v2_contract as economic_contract
 from app.services import new_buyer_v2_policy as economic_policy
 from app.services import new_buyer_request_owner as canonical
+from app.services.production_model_profile import sol_high
+from app.services.vnext_execution_profile import SOL_HIGH_V1
 
 SHA = r"^[a-f0-9]{64}$"
 
@@ -54,8 +56,32 @@ class ProductionB2ExecutionAuthorizationV1(ContractModel):
     delivery_handoff: Literal["SEPARATE_EXPLICIT_DELIVERY_AUTHORIZATION"] = "SEPARATE_EXPLICIT_DELIVERY_AUTHORIZATION"
 
 
+class ProductionB2ExecutionAuthorizationV2(ProductionB2ExecutionAuthorizationV1):
+    contract: Literal['production-b2-execution-authorization-v2-sol-high'] = 'production-b2-execution-authorization-v2-sol-high'
+    execution_purpose: Literal['NO_SEND_RESEARCH'] = 'NO_SEND_RESEARCH'
+    execution_profile: Literal['SOL_61_HIGH_EXECUTION_V1'] = SOL_HIGH_V1.contract
+    model: Literal['gpt-6.1-sol'] = SOL_HIGH_V1.model
+    effort: Literal['high'] = SOL_HIGH_V1.effort
+    transport_form_retries: Literal[0] = 0
+
+
+def parse_authorization(value, *, execution_profile=None):
+    if execution_profile is None:
+        return ProductionB2ExecutionAuthorizationV1.model_validate(value)
+    sol_high(execution_profile)
+    return ProductionB2ExecutionAuthorizationV2.model_validate(value)
+
+
 def authorize_b2(request, *, generation_id, source_envelope_sha256, owner_sha256,
-                 core_sha256, pass_a_sha256, pass_b_sha256, retries=2, source_generation_id=None):
+                 core_sha256, pass_a_sha256, pass_b_sha256, retries=None, source_generation_id=None,
+                 execution_profile=None):
+    cls = ProductionB2ExecutionAuthorizationV1
+    if execution_profile is not None:
+        sol_high(execution_profile)
+        cls = ProductionB2ExecutionAuthorizationV2
+        if retries not in (None, 0):
+            raise ValueError('sol_high_b2_retry_forbidden')
+    retries = (2 if execution_profile is None else 0) if retries is None else retries
     payload = canonical.provider_payload(request, expected_request_sha256=request["request_sha256"])
     current = payload["input"]
     authority = current["authority_digests"]
@@ -65,7 +91,7 @@ def authorize_b2(request, *, generation_id, source_envelope_sha256, owner_sha256
             or authority.get("pass_a") != pass_a_sha256
             or authority.get("accepted_b") != pass_b_sha256):
         raise ValueError("production_b2_current_authority_mismatch")
-    return ProductionB2ExecutionAuthorizationV1(
+    return cls(
         generation_id=generation_id, source_generation_id=source_generation_id,
         ticker=current["ticker"], security_id=current["security_id"],
         request_sha256=digest(payload), prompt_sha256=digest(payload["prompt"]),
@@ -78,10 +104,13 @@ def authorize_b2(request, *, generation_id, source_envelope_sha256, owner_sha256
 
 def verify_authorization(request, authorization, *, generation_id, source_envelope_sha256,
                          owner_sha256, core_sha256, pass_a_sha256, pass_b_sha256, source_generation_id=None):
+    if type(authorization) not in (ProductionB2ExecutionAuthorizationV1, ProductionB2ExecutionAuthorizationV2):
+        raise ValueError('production_b2_authorization_type')
     expected = authorize_b2(request, generation_id=generation_id,
         source_envelope_sha256=source_envelope_sha256, owner_sha256=owner_sha256,
         core_sha256=core_sha256, pass_a_sha256=pass_a_sha256, pass_b_sha256=pass_b_sha256,
-        retries=authorization.transport_form_retries, source_generation_id=source_generation_id)
+        retries=authorization.transport_form_retries, source_generation_id=source_generation_id,
+        execution_profile=SOL_HIGH_V1 if type(authorization) is ProductionB2ExecutionAuthorizationV2 else None)
     if expected != authorization:
         raise ValueError("production_b2_detached_authorization_drift")
 
@@ -116,8 +145,9 @@ async def execute_b2(request, authorization, *, current_binding, transport: Mode
         durable_json(attempt / "intent.json", row, exclusive=True)
         parsed = None
         try:
+            scope = dict(stage='B2', panel=authorization.ticker) if type(authorization) is ProductionB2ExecutionAuthorizationV2 else {}
             raw = await asyncio.wait_for(transport.request(deepcopy(payload), model=authorization.model,
-                effort=authorization.effort, timeout=authorization.timeout_seconds), authorization.timeout_seconds)
+                effort=authorization.effort, timeout=authorization.timeout_seconds, **scope), authorization.timeout_seconds)
         except (ModelTransportError, TimeoutError) as exc:
             row.update(classification="TRANSPORT_FAILURE", error_type=type(exc).__name__)
         else:
