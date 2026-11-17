@@ -1,7 +1,9 @@
 """Request completeness is distinct from downstream value qualification."""
 from collections import Counter
+from datetime import datetime, timedelta
 import json
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from app.services.production_source_plan import ProductionRequestPlan
 from app.services.sealed_fresh_dispatch import _binding_parent, consume_bound_result
@@ -38,7 +40,7 @@ def row_count_proofs(root, frozen, outcome):
     for request in frozen.get("us_market_reads", []):
         value = outcome["logical_results"].get(request["role"])
         if value and value["status"] == "PASS":
-            path = root / "dispatch" / value["attempts"][-1]["artifact"]
+            path = root / "dispatch/raw" / request["role"] / "source.body"
             if sha256_bytes(path.read_bytes()) != value["raw_sha256"]:
                 raise ValueError("production_market_raw_proof_invalid")
             raw = read(path)
@@ -50,12 +52,17 @@ def row_count_proofs(root, frozen, outcome):
 
 def slot_dispositions(root, frozen, outcome):
     root = Path(root)
-    plan = ProductionRequestPlan.model_validate(frozen["plan"])
+    if frozen.get('scope') == 'SELECTED_ORIGINAL_RESEARCH_V1':
+        from app.services.selected_source_plan import SelectedRequestPlan
+        plan = SelectedRequestPlan.model_validate(frozen['plan'])
+    else:
+        plan = ProductionRequestPlan.model_validate(frozen["plan"])
     finals = {read(p)["logical_request_id"]: read(p) for p in (root / "dispatch/receipts").glob("*/final.json")}
     proofs = row_count_proofs(root, frozen, outcome)
     descriptors = {d.logical_request_id: d for d in plan.descriptors}
     if set(finals) - set(descriptors):
         raise ValueError("production_undeclared_source_receipt")
+    night_tail = _verified_night_probe_tail(root, frozen, outcome, plan, finals)
     states = {}
 
     def classify(key):
@@ -94,6 +101,8 @@ def slot_dispositions(root, frozen, outcome):
                 value = "NOT_ACTIVATED_FROZEN_NATIVE_ROW_TARGET_SATISFIED"
         else:
             value = "MISSING_REQUIRED_ATTEMPT" if descriptor.mandatory else "NOT_ACTIVATED_OPTIONAL_SLOT"
+            if key in night_tail:
+                value = "NOT_ACTIVATED_VERIFIED_NIGHT_PROBE_TERMINAL"
         states[key] = value
         return value
 
@@ -101,11 +110,98 @@ def slot_dispositions(root, frozen, outcome):
         role=d.consumer_role, mandatory=d.mandatory, disposition=classify(d.logical_request_id),
         row_count_proof=proofs.get(d.consumer_role), receipt_sha256=finals.get(d.logical_request_id, {}).get("receipt_sha256"))
         for d in plan.descriptors]
+    for row in rows:
+        if row['logical_request_id'] in night_tail:
+            row['night_probe_terminal_proof'] = night_tail[row['logical_request_id']]
     unresolved = {"MISSING_REQUIRED_ATTEMPT", "SYSTEMIC_STOP", "ACTIVATION_UNRESOLVED"}
     return dict(contract="production-source-slot-dispositions-v1", generation_id=plan.generation_id,
         plan_sha256=plan.plan_sha256, status="FAIL" if any(r["disposition"] in unresolved for r in rows) else "PASS",
         rows=rows, counts=dict(Counter(r["disposition"] for r in rows)),
         acquired_body_does_not_claim_value_qualification=True)
+
+
+def _verified_night_probe_tail(root, frozen, outcome, plan, finals):
+    """Replay the bounded original probe; success closes only its unopened tail."""
+    candidate = frozen.get('candidate', {})
+    phase = outcome.get('phases', {}).get('night', {})
+    if (frozen.get('scope') != 'SELECTED_ORIGINAL_RESEARCH_V1' or frozen.get('selected_market') != 'us'
+            or 'systemic_stop' in outcome.get('phases', {}) or phase.get('status') != 'CAPTURED_NOT_QUALIFIED'
+            or candidate.get('consumer_policy', {}).get('us_night') != 'ORIGINAL_CURRENT_PROBE_ONLY'):
+        return {}
+    from app.jobs.probe_krx_night_futures import KRX_FUTURES_DAILY_URL
+    from app.services.production_source_context import POLICY
+    from app.services.unified_sealed_context import replay_night
+
+    def plain(path):
+        return path.is_file() and not any(p.is_symlink() for p in (path, *path.parents))
+
+    try:
+        start = datetime.fromisoformat(frozen['frozen_at'])
+        day = start.astimezone(ZoneInfo('Asia/Seoul')).date()
+        dates = [(day-timedelta(days=i)).isoformat() for i in range(7)]
+        keys = ['night:KOSPI200:'+d for d in dates]
+        descriptors = {d.logical_request_id:d for d in plan.descriptors}
+        if (start != plan.frozen_at or plan.market != 'us' or plan.generation_id != frozen['generation_id']
+                or candidate['night_query_dates'] != dates or frozen['query_kst_date'] != day.isoformat()):
+            return {}
+        for key, date in zip(keys, dates, strict=True):
+            d = descriptors[key]
+            wire = json.loads(d.request_json)
+            if (d.provider != 'krx_night_futures' or d.subject != 'KOSPI200' or d.market != 'kr'
+                    or d.consumer_role != key or d.endpoint_operation != 'fut_bydd_trd' or d.response_binding
+                    or wire['method'] != 'GET' or wire['url'] != KRX_FUTURES_DAILY_URL+'?basDd='+date.replace('-','')):
+                return {}
+        prefix = [key for key in keys if key in finals]
+        if not 0 < len(prefix) < len(keys) or prefix != keys[:len(prefix)]:
+            return {}
+        tail = keys[len(prefix):]
+        for key in tail:
+            path = root/'dispatch/receipts'/key
+            raw = root/'dispatch'/descriptors[key].raw_path
+            if (key in outcome['logical_results'] or path.exists() or path.is_symlink()
+                    or raw.exists() or raw.is_symlink()):
+                return {}
+        query, phase_path = root/'night/query.json', root/'phase-night.json'
+        paths = sorted((root/'night/probe').glob('receipt-*.json'))
+        if (len(paths) != len(prefix) or (root/'night/history').exists() or (root/'night/history').is_symlink()
+                or not all(plain(p) for p in [query,phase_path,*paths])
+                or read(query) != {'observed_at':frozen['frozen_at']} or read(phase_path) != phase):
+            return {}
+        previous = start
+        acquisition = plan.generation_id+':night'
+        receipts, bodies, hashes = [], {}, {}
+        for key, path in zip(prefix, paths, strict=True):
+            row, final = read(path), finals[key]
+            if (outcome['logical_results'][key] != final or final['status'] != 'PASS'
+                    or len(final['attempts']) != 1 or final['attempts'][0]['status'] != 200
+                    or final['attempts'][0]['raw_sha256'] != final['raw_sha256']
+                    or row['sealed_logical_id'] != key or row['sealed_final_receipt_sha256'] != final['receipt_sha256']
+                    or row['artifact'] != descriptors[key].raw_path or row['artifact_sha256'] != final['raw_sha256']
+                    or row['requested_at'] != final['attempts'][0]['started_at']
+                    or row['received_at'] != final['attempts'][0]['finished_at']):
+                return {}
+            begin,end = (datetime.fromisoformat(row[k]) for k in ('requested_at','received_at'))
+            if not previous <= begin <= end:
+                return {}
+            previous = end
+            consume_bound_result(root=root/'dispatch',plan=plan,logical_id=key,receipt_sha256=final['receipt_sha256'])
+            artifact = row['artifact']
+            receipts.append(dict(row,acquisition_id=acquisition))
+            bodies[artifact] = (root/'dispatch'/artifact).read_bytes()
+            hashes[artifact] = final['raw_sha256']
+        proof = replay_night(receipts=receipts,bodies=bodies,body_hashes=hashes,observed_at=start,
+            run_id=plan.generation_id,acquisition_id=acquisition,expected_value_sha256=digest(phase['value']),
+            policy=POLICY,run_started_at=start,acquisition_cutoff=datetime.fromisoformat(outcome['completed_at']))
+        telemetry = proof['value']['telemetry']
+        if (telemetry['status'] != 'ok' or telemetry['night_session_usable'] is not True
+                or telemetry['queried_dates'] != dates[:len(prefix)] or not proof['value']['observations']
+                or not any(r['product']=='KOSPI200' for r in telemetry['products'])):
+            return {}
+        return dict.fromkeys(tail, dict(value_sha256=proof['value_sha256'],
+            prefix_receipt_sha256=[finals[k]['receipt_sha256'] for k in prefix]))
+    except (ValueError, KeyError, TypeError, OSError):
+        # Incomplete or inconsistent evidence does not close mandatory slots.
+        return {}
 
 
 def corpus_index(root):

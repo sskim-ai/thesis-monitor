@@ -78,9 +78,14 @@ def field_completeness(selection, documents, complete):
     states={r['state'] for r in rows.values()}
     value=dict(contract='fpi-metric-independent-completeness-v1', fields=rows,
         partial_field_consumption_allowed=(bool(states & {'QUALIFIED_CURRENT_PRIOR_PAIR'})
-            and states <= {'QUALIFIED_CURRENT_PRIOR_PAIR','SOURCE_COMPLETE_NO_QUALIFIED_FIELD'}
-            and (len(states)==1 or complete['bounded_plan_complete'])
             and complete.get('current_generation_eligible', True)),
+        field_claim_limits={metric:dict(
+            reported_comparison=row['state']=='QUALIFIED_CURRENT_PRIOR_PAIR',
+            growth_claim=row['state']=='QUALIFIED_CURRENT_PRIOR_PAIR',
+            sibling_denials_do_not_revoke_this_field=True,
+            zero_imputation=False, valuation_or_per_share_grant=False,
+            unavailable_reasons=row['selection'].get('denial_reasons', []))
+            for metric,row in rows.items()},
         document_source_sha256=digest(documents))
     value['receipt_sha256']=digest(value)
     return value

@@ -57,9 +57,10 @@ def _records(rows: list, *, fields: set[str] | None = None) -> list[dict]:
 
 
 def project_local_seed(session: Session, *, market: str, session_key: str,
-                       cutoff: datetime, policy: UnifiedSourcePolicy, cycle_owner=None) -> dict:
+                       cutoff: datetime, policy: UnifiedSourcePolicy, cycle_owner=None,
+                       execution=None, regular_assignments=None, monitoring_only=False) -> dict:
     """Canonical universe/security/thesis owner reads; no ensure/refresh/write."""
-    if cutoff.utcoffset() is None or market not in {"us", "kr"}:
+    if cutoff.utcoffset() is None or market not in {"us", "kr"} or (monitoring_only and cycle_owner is not None):
         raise ValueError("explicit_market_cutoff_required")
     if session.new or session.dirty or session.deleted:
         raise ValueError("clean_read_session_required")
@@ -71,7 +72,8 @@ def project_local_seed(session: Session, *, market: str, session_key: str,
         raise ValueError("local_session_eligibility_unproven")
     with session.no_autoflush:
         universe = production_universe_snapshot(session, market, cutoff=cutoff,
-                                                session_key=session_key)
+            session_key=session_key,execution=execution,regular_assignments=regular_assignments,
+            monitoring_only=monitoring_only)
         items = list(universe.eligible_items)
         item_records = _records(items, fields={"id", "ticker", "company_name", "exchange",
             "monitoring_requested", "active", "onboarding_state", "production_eligible",

@@ -15,6 +15,101 @@ from app.services.unified_snapshot_contract import digest, encoded
 from app.services.unified_stock_owner import assemble_stock
 
 
+def assemble_onboarding_financial_stock(*, financial_inputs, stock_metadata, generated_at,
+                                       technical_context=None):
+    """Original raw financial owners for onboarding, without an operating Source.
+
+    Identity/Thesis metadata is not a fact producer. Only replayed financial
+    comparisons enter the catalog; normal Source registration remains separate.
+    """
+    from app.services.selected_financial_owner import select, validate
+    from app.services.reported_business_projection import _BUILDER_PERMIT, issue
+
+    fin = dict(financial_inputs)
+    allowed = {'plan', 'acquisition', 'directory', 'receipts', 'field_semantics',
+               'issuer_business', 'statement_basis_policy', 'basis_execution_generation',
+               'current_financial_parent', 'current_purpose_intake'}
+    if set(fin) - allowed:
+        raise ValueError('fresh_financial_input_owner_unrecognized')
+    plan = fin['plan']
+    reject_current_carryin(plan)
+    if (fin.get('statement_basis_policy') is not None
+            and fin.get('basis_execution_generation') != plan['run_id']):
+        raise ValueError('fresh_statement_basis_execution_generation_mismatch')
+    if (set(stock_metadata) != {'ticker', 'company_name', 'thesis_version', 'thesis'}
+            or stock_metadata['ticker'] != plan['ticker']):
+        raise ValueError('onboarding_financial_metadata_not_fact_catalog')
+    projected = datetime.fromisoformat(generated_at)
+    started = datetime.fromisoformat(plan['cutoff'])
+    if projected.utcoffset() is None or started.utcoffset() is None or projected < started:
+        raise ValueError('onboarding_financial_generation_time_mismatch')
+    for receipt in fin['receipts']:
+        begin, end = (datetime.fromisoformat(receipt[key]) for key in ('started_at', 'finished_at'))
+        if begin.utcoffset() is None or end.utcoffset() is None or not started <= begin <= end <= projected:
+            raise ValueError('onboarding_financial_receipt_outside_generation')
+    options = {key: fin[key] for key in ('field_semantics', 'statement_basis_policy',
+        'basis_execution_generation', 'current_purpose_intake') if key in fin}
+    if fin.get('current_financial_parent') is not None:
+        from app.services.current_financial_purpose_intake import project_current
+        projection = project_current(fin['current_financial_parent'], plan=plan,
+            acquisition=fin['acquisition'], directory=fin['directory'], receipts=fin['receipts'], **options)
+    else:
+        projection = financial.project(plan, fin['acquisition'], fin['directory'], fin['receipts'], **options)
+    facts, denied = financial.reported_comparisons(plan, projection)
+    bridge = origin = None
+    if fin.get('issuer_business') is not None:
+        if facts:
+            raise ValueError('issuer_business_native_comparison_already_owned')
+        bridge, facts, origin = financial._issuer_business_facts(plan, fin['issuer_business'])
+    selected = select(plan=plan, acquisition=fin['acquisition'], projection=projection, facts=facts,
+        bridge=bridge, origin=origin, legacy_issuer_inputs=fin.get('issuer_business'),
+        current_financial_parent=fin.get('current_financial_parent'),
+        current_purpose_intake=fin.get('current_purpose_intake'))
+    field_state = selected['field_completeness']
+    if (not facts or denied or (field_state and not field_state['partial_field_consumption_allowed'])
+            or projection.get('acquisition_denial_reconciliation', {}).get(
+                'effective_denials', fin['acquisition'].get('denials', []))):
+        raise ValueError('onboarding_typed_financial_source_unavailable')
+    # Non-direct issuer projections retain the original issuer-only limitations.
+    source_projection = origin['projection'] if origin is not None else projection
+    source_ticker = bridge['underlying_ticker'] if bridge is not None else plan['ticker']
+    validate(selected, projection=source_projection, facts=facts, bridge=bridge,
+        current_financial_parent=fin.get('current_financial_parent'),
+        current_purpose_intake=fin.get('current_purpose_intake'))
+    quality = derive_fresh(projection=source_projection, facts=facts, ticker=plan['ticker'],
+        security_id=plan['security']['canonical_security_id'], run_id=plan['run_id'],
+        source_ticker=source_ticker, bridge=bridge)
+    if quality['receipt']['state'] == 'unknown':
+        raise ValueError('onboarding_financial_quality_unknown')
+    stock = deepcopy(stock_metadata)
+    if technical_context is not None:
+        if (type(technical_context) is not PacketOwnedTechnicalContext
+                or technical_context.ticker != plan['ticker'] or technical_context.market != plan['market']
+                or datetime.fromisoformat(technical_context.as_of) > projected):
+            raise ValueError('onboarding_technical_context_identity_or_time_mismatch')
+        stock['technical_context'] = technical_context.model_dump(mode='json')
+    stock['fact_catalog'] = deepcopy(facts)
+    if quality['fact'] is not None:
+        stock['fact_catalog'].append(quality['fact'])
+    stock['numeric_registry'] = financial.build_shadow_numeric_registry(stock['fact_catalog'])
+    if any(not row['registered'] for row in stock['numeric_registry']):
+        raise ValueError('onboarding_financial_numeric_registry_unregistered')
+    packet = dict(packet_id=plan['run_id']+':onboarding', market=plan['market'],
+        generated_at=generated_at, assessment_date=projected.date().isoformat(), stocks=[stock],
+        source_time_domains=dict(scope='ONBOARDING_FINANCIAL_EVIDENCE_NOT_OPERATING_SOURCE',
+            run_id=plan['run_id'], started_at=plan['cutoff'], financial_plan_sha256=digest(plan),
+            business_window=dict(run_id=plan['run_id'], collection_started_at=plan['cutoff'],
+                source_query_cutoff=generated_at, business_availability_cutoff=generated_at)))
+    stock['reported_business_projection'] = issue(stock=stock, packet=packet, facts=facts,
+        plan=plan, acquisition=fin['acquisition'], projection=source_projection, selected_owner=selected,
+        quality=quality, bridge=bridge, financial_inputs=fin, _permit=_BUILDER_PERMIT)
+    evidence = build_decision_evidence_packet(packet=packet, stock=stock)
+    owned = build_owned_evidence_packet(evidence, stock=stock)
+    return dict(packet=packet, evidence_packet=evidence.model_dump(mode='json'),
+        ownership=owned.model_dump(mode='json'), projection=projection, selected_financial_owner=selected,
+        status='PASS', production_dispatch_enabled=False, operating_source_granted=False)
+
+
 def fresh_stock_baseline(technical_inputs):
     """Canonical JSON order at the opt-in fresh boundary, not legacy outputs.
 
@@ -67,9 +162,16 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
     # existing projector. Additionally enforce availability in this generation.
     for receipt in fin['receipts']:
         times = [datetime.fromisoformat(receipt[key]) for key in ('started_at', 'finished_at')]
-        if any(at.utcoffset() is None for at in times) or not plan.frozen_at <= times[0] <= times[1]:
+        if 'retained_sec_origin' in receipt:
+            from app.services.sealed_financial_reader import verify_retained_financial_use
+            selected_at = verify_retained_financial_use(fp,fin['directory'],receipt)
+            if not times[0] <= times[1] < plan.frozen_at <= selected_at:
+                raise ValueError('fresh_retained_sec_selection_time_mismatch')
+        elif any(at.utcoffset() is None for at in times) or not plan.frozen_at <= times[0] <= times[1]:
             raise ValueError('fresh_financial_receipt_predates_generation')
-        if window is not None and times[1] > window.business_availability_cutoff:
+        else:
+            selected_at = times[1]
+        if window is not None and selected_at > window.business_availability_cutoff:
             raise ValueError('financial_response_after_business_availability')
     if window is not None:
         for receipt in tech['receipts'].values():
@@ -122,7 +224,8 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
         event = replay_carrier(event_inputs, plan=plan, ticker=fp['ticker'],
             security=fp['security'], policy=tech['policy'])
         cutoff = event['receipt']['window']['business_availability_cutoff']
-        if any(datetime.fromisoformat(r['finished_at']) > datetime.fromisoformat(cutoff) for r in fin['receipts']):
+        if any(datetime.fromisoformat(r.get('selected_at',r['finished_at'])) > datetime.fromisoformat(cutoff)
+               for r in fin['receipts']):
             raise ValueError('financial_response_after_business_availability')
         stock['evidence'] = event['evidence']
         stock['fact_catalog'].extend(event['facts'])

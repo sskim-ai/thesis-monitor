@@ -79,7 +79,10 @@ class SelectedSourceDispatcher(SealedDispatcher):
                             else:
                                 metered=MeteredAsyncTransport(binding=parent.run_ledger.worker_binding(),
                                     market=parent.plan.market,phase='SOURCE',owner='SelectedSourceDispatcher',inner=wire)
-                            response=await metered.handle_async_request(request)
+                            if descriptor.endpoint_operation=='usa20590':
+                                response=await _completed_close_on_lane(metered,request)
+                            else:
+                                response=await metered.handle_async_request(request)
                         else:
                             response = await wire.handle_async_request(request)
                     except BaseException:
@@ -103,3 +106,18 @@ class SelectedSourceDispatcher(SealedDispatcher):
             ledger.stop('MANDATORY_SOURCE_REJECTED')
             raise SourceSafetyStop('selected_mandatory_source_rejected')
         return final
+
+
+async def _completed_close_on_lane(transport, request):
+    # The native OHLCV worker already holds the host lane for its RPC.
+    # usa20590 comes directly from the parent, so it needs the lane here.
+    from app.services.kiwoom_global_lane import configured_lane, validate_envelope
+
+    lane = configured_lane()
+    if lane is None:
+        raise SourceSafetyStop('selected_completed_close_original_lane_required')
+    async with lane.slot():
+        response = await transport.handle_async_request(request)
+        response.request = request  # Direct transports do not attach the client request.
+        validate_envelope(response)
+        return response

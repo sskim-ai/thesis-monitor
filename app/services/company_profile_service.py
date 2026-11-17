@@ -316,6 +316,14 @@ class SecCompanyProfileSource:
             response = await client.get(f"https://data.sec.gov/submissions/CIK{cik}.json")
             response.raise_for_status()
             payload = response.json()
+        return self.from_submissions(item, payload, cik=cik)
+
+    @staticmethod
+    def from_submissions(item: WatchlistItem, payload: dict, *, cik: str) -> OfficialProfile | None:
+        """Same parser for HTTP and receipt-verified retained SEC submissions."""
+        raw_cik = str(payload.get('cik') or '')
+        if not raw_cik.isdigit() or raw_cik.zfill(10) != str(cik).zfill(10):
+            return None
         tickers = {str(value).upper() for value in payload.get("tickers", [])}
         if item.ticker.upper() not in tickers:
             return None
@@ -329,7 +337,7 @@ class SecCompanyProfileSource:
             ticker=item.ticker,
             company_name=item.company_name,
             market="us",
-            source=self.name,
+            source=SecCompanyProfileSource.name,
             official_industry_code=sic,
             official_industry_description=str(payload.get("sicDescription") or "").strip() or None,
             source_as_of=source_as_of,

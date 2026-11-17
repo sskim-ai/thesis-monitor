@@ -338,8 +338,11 @@ def _raw(directory, artifact, receipts):
 
 def verify_capture(plan, acquisition, directory, receipts):
     logical = {}
+    physical = 0
     for receipt in receipts:
-        if receipt['plan_sha256'] != digest(plan) or not 1 <= receipt['attempt'] <= 3:
+        retained = 'retained_sec_origin' in receipt
+        if (receipt['plan_sha256'] != digest(plan)
+                or (receipt['attempt'] != 0 if retained else not 1 <= receipt['attempt'] <= 3)):
             raise ValueError('receipt_plan_or_attempt_mismatch')
         name = receipt['logical_id'].split(':')[-1]
         frozen = json.loads((directory / (name + '.plan.json')).read_bytes())
@@ -348,10 +351,17 @@ def verify_capture(plan, acquisition, directory, receipts):
                 or frozen.get('filing') != receipt.get('filing')):
             raise ValueError('receipt_request_binding_mismatch')
         attempts = logical.setdefault(receipt['logical_id'], [])
-        if receipt['attempt'] != len(attempts)+1 or (attempts and attempts[-1]['request_sha256'] != receipt['request_sha256']):
+        if retained:
+            from app.services.sealed_financial_reader import verify_retained_financial_use
+            verify_retained_financial_use(plan,directory,receipt)
+        else:
+            physical += 1
+        if ((attempts and (retained or 'retained_sec_origin' in attempts[-1]
+                           or attempts[-1]['request_sha256'] != receipt['request_sha256']))
+                or (not retained and receipt['attempt'] != len(attempts)+1)):
             raise ValueError('receipt_retry_identity_mismatch')
         attempts.append(receipt)
-    if len(logical) > plan['maximum_logical_requests'] or len(receipts) > plan['maximum_HTTP_attempts']:
+    if len(logical) > plan['maximum_logical_requests'] or physical > plan['maximum_HTTP_attempts']:
         raise ValueError('receipt_budget_exceeded')
     discovery = [r for r in receipts if r['stage']=='discovery' and not r['failure_class']]
     if plan['provider']=='sec_edgar':

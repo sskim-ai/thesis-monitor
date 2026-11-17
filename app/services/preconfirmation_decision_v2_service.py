@@ -5,7 +5,7 @@ from collections import Counter
 from enum import StrEnum
 from typing import Literal
 
-from pydantic import Field, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from app.services.cross_market_decision_engine_service import (
     Confidence,
@@ -21,6 +21,7 @@ from app.services.evidence_maturity_pricing_service import (
     DriverEvidenceMaturityV2,
     EvidenceMaturity,
     MarketExpectationAssessment,
+    MarketExpectation,
     MaturityProvenanceStatus,
     OverallMaturityAssessment,
     PricingRequirement,
@@ -91,6 +92,30 @@ class PostconfirmationHoldExplanation(FrozenModel):
     price_repricing: EvidenceClaim
 
 
+class Stage2MarketExpectationAssessment(MarketExpectationAssessment):
+    basis: EvidenceClaim | None
+    unavailable_reason: Literal['NO_ELIGIBLE_EXPECTATION_SOURCE'] | None = None
+
+    @model_validator(mode='after')
+    def uncited_unknown_only(self):
+        if self.basis is None:
+            if self.level != MarketExpectation.UNKNOWN or self.unavailable_reason is None:
+                raise ValueError('uncited_expectation_requires_typed_unknown')
+        elif self.unavailable_reason is not None:
+            raise ValueError('cited_expectation_cannot_claim_no_source')
+        return self
+
+
+class Stage2PricingRequirementAssessment(PricingRequirementAssessment):
+    expectation_basis: EvidenceClaim | None
+
+    @model_validator(mode='after')
+    def uncited_pricing_is_unknown(self):
+        if self.expectation_basis is None and self.requirement != PricingRequirement.UNKNOWN:
+            raise ValueError('uncited_expectation_pricing_must_be_unknown')
+        return self
+
+
 class PreconfirmationDecisionCandidate(FrozenModel):
     ticker: str
     fundamental_core_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
@@ -109,8 +134,8 @@ class PreconfirmationDecisionCandidate(FrozenModel):
     factual_safety_basis: EvidenceClaim
     driver_maturity: tuple[DriverEvidenceMaturity, ...] = Field(min_length=1, max_length=6)
     overall_maturity: OverallMaturityAssessment
-    market_expectation: MarketExpectationAssessment
-    pricing_requirement: PricingRequirementAssessment
+    market_expectation: Stage2MarketExpectationAssessment
+    pricing_requirement: Stage2PricingRequirementAssessment
     scenarios: ScenarioSet
     asymmetry: AsymmetryAssessment
     confirmation_cost: ConfirmationCostAssessment
@@ -126,6 +151,13 @@ class PreconfirmationDecisionCandidate(FrozenModel):
     unknowns: tuple[EvidenceClaim, ...] = Field(min_length=1, max_length=3)
     upgrade_condition: EvidenceClaim
     downgrade_condition: EvidenceClaim
+
+    @field_validator('market_expectation', 'pricing_requirement', mode='before')
+    @classmethod
+    def existing_assessment_objects(cls, value):
+        if isinstance(value, (MarketExpectationAssessment, PricingRequirementAssessment)):
+            return value.model_dump()
+        return value
 
     @model_validator(mode="after")
     def explanation_flags_match_shapes(self) -> PreconfirmationDecisionCandidate:
@@ -331,7 +363,7 @@ def candidate_claims(
     if candidate.postconfirmation_hold_explanation is not None:
         explanation = candidate.postconfirmation_hold_explanation
         claims.extend((explanation.business_proof, explanation.price_repricing))
-    return tuple(claims)
+    return tuple(claim for claim in claims if claim is not None)
 
 
 def stage2_owned_candidate_claims(
@@ -380,7 +412,7 @@ def stage2_owned_candidate_claims(
     if candidate.postconfirmation_hold_explanation is not None:
         explanation = candidate.postconfirmation_hold_explanation
         claims.extend((explanation.business_proof, explanation.price_repricing))
-    return tuple(claims)
+    return tuple(claim for claim in claims if claim is not None)
 
 
 def _claim_categories(
@@ -390,9 +422,17 @@ def _claim_categories(
     return {
         refs[ref_id].category
         for claim in claims
+        if claim is not None
         for ref_id in claim.evidence_refs
         if ref_id in refs
     }
+
+
+def eligible_stage2_expectation_refs(packet: DecisionEvidencePacket) -> frozenset[str]:
+    """Only an original admitted economic expectation can support a market level."""
+    return frozenset(row.ref_id for row in packet.evidence
+        if row.category == EvidenceCategory.EXPECTATIONS and row.source_use is not None
+        and row.source_use.core_current_fact and not row.source_use.prospective_only)
 
 
 def _validate_preconfirmation_candidate(
@@ -510,9 +550,17 @@ def _validate_preconfirmation_candidate(
             if row_date is not None and assessment_date is not None and row_date > assessment_date:
                 errors.append(f"future_maturity_evidence:{row.driver}")
 
-    expectation_categories = _claim_categories(packet, (candidate.market_expectation.basis,))
-    if EvidenceCategory.EXPECTATIONS not in expectation_categories:
-        errors.append("market_expectation_without_expectation_evidence")
+    eligible_expectations = eligible_stage2_expectation_refs(packet)
+    expectation = candidate.market_expectation
+    pricing = candidate.pricing_requirement
+    if eligible_expectations:
+        for basis in (expectation.basis, pricing.expectation_basis):
+            if basis is None or not set(basis.evidence_refs) & eligible_expectations:
+                errors.append('market_expectation_without_expectation_evidence')
+    elif (expectation.level != MarketExpectation.UNKNOWN or expectation.basis is not None
+            or expectation.unavailable_reason != 'NO_ELIGIBLE_EXPECTATION_SOURCE'
+            or pricing.requirement != PricingRequirement.UNKNOWN or pricing.expectation_basis is not None):
+        errors.append('expectation_source_unavailable_requires_uncited_unknown')
 
     pricing_claims = (
         candidate.pricing_requirement.basis,

@@ -83,17 +83,20 @@ def us_market_aggregate_owner(*, role: SourceRole, source_url: str,
 def kiwoom_aggregate_owner(*, role: SourceRole, observed_at: datetime, max_pages: int,
                            max_requests_per_page: int, policy: UnifiedSourcePolicy,
                            consumer_complete: bool = False,
-                           aggregate_flows_only: bool = False) -> OwnerAdapter:
+                           aggregate_flows_only: bool = False,
+                           selected_reads=None) -> OwnerAdapter:
     from app.providers.kiwoom_rest_client import KiwoomCallStats, KiwoomRestResponse, payload_sha256
     from app.services.kiwoom_kr_market_context_service import (
-        KiwoomKrMarketContextService, kiwoom_market_reads,
+        KiwoomKrMarketContextService, kiwoom_market_reads, validate_market_reads,
     )
 
     if (role.market, role.provider, role.acquisition_class) != ("kr", "kiwoom_rest", "ATTEMPT_FRESH"):
         raise ValueError("kiwoom_aggregate_role_mismatch")
     session = date.fromisoformat(role.session)
-    reads = kiwoom_market_reads(session_date=session, max_pages=max_pages,
+    reads = (kiwoom_market_reads(session_date=session, max_pages=max_pages,
                                max_requests_per_page=max_requests_per_page)
+        if selected_reads is None else validate_market_reads(selected_reads, session_date=session,
+            max_pages=max_pages, max_requests_per_page=max_requests_per_page))
     if observed_at.utcoffset() is None:
         raise ValueError("source_timezone_required")
     if consumer_complete and role.key != "kr_local_indices_sectors_breadth":
@@ -171,7 +174,7 @@ def kiwoom_aggregate_owner(*, role: SourceRole, observed_at: datetime, max_pages
             raise ValueError("offline_sync_replay_required")
         client = ReplayClient()
         result = asyncio.run(KiwoomKrMarketContextService(client, max_pages=max_pages,
-            completed_session_only=plan.get("completed_session_only", False)).collect(
+            completed_session_only=plan.get("completed_session_only", False), reads=reads).collect(
             session_date=session, observed_at=observed_at))
         if client.index != len(graph.child_receipts):
             raise ValueError("kiwoom_owner_unconsumed_children")
@@ -180,7 +183,9 @@ def kiwoom_aggregate_owner(*, role: SourceRole, observed_at: datetime, max_pages
             value = aggregate_flow_reference(result, session=role.session)
         elif role.key == "kr_local_indices_sectors_breadth":
             value = {k: value[k] for k in ("indices", "sectors", "breadth", "breadth_by_scope")}
-        elif role.key == "kr_market_investor_flows" and not result.audit.blocked_concentration_markets:
+        elif role.key == "kr_market_investor_flows" and (
+                not result.audit.blocked_concentration_markets or not any(r.api_id == "ka10066" for r in reads)):
+            validate_aggregate_flow_rows(result.cross_section.market_flows, session=role.session)
             value = {k: value[k] for k in ("market_flows", "concentration")}
         else:
             raise ValueError("kiwoom_role_output_ineligible")

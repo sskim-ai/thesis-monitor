@@ -31,7 +31,11 @@ def apply_runtime_event(state,event,value,identity):
         caps=identity['runtime_cap']
         provider=value['provider']
         key=value['attempt_id']
+        if (market:=identity.get('fresh_timeout_retry_market')) and (
+                value['market']!=market or value['phase']!='SOURCE'):
+            raise ValueError('PHYSICAL_FRESH_TIMEOUT_RETRY_MARKET_SCOPE')
         if (key in state['attempts'] or provider in state['stopped_providers']
+                or (identity.get('staged_markets') and state['pending'])
                 or state['first_external_failure'] is not None
                 or state['total']>=identity['max_http']
                 or state['providers'].get(provider,0)>=identity['provider_caps'].get(provider,0)):
@@ -84,6 +88,11 @@ class RuntimeCap:
             identity=None
             terminal=False
             capture_cutoff=None
+            market_capture_cutoffs={}
+            pending_markets=[]
+            rendered_markets=set()
+            frozen_plans=set()
+            closed_source=set()
             for sequence,line in enumerate(raw.splitlines()):
                 row=json.loads(line)
                 pin=row.pop('sha256')
@@ -92,7 +101,15 @@ class RuntimeCap:
                         or row['sequence']!=sequence or row['previous']!=previous or digest(row)!=pin):
                     raise ValueError('CAMPAIGN_JOURNAL_CHAIN_DRIFT')
                 if row['event'] in ('STOP','RENDER'):terminal=True
-                if row['event']=='REGISTRATION':capture_cutoff=row['value']['receipt']['cutoff']
+                if row['event']=='DB_INTENT':pending_markets=row['value'].get('markets',list(identity['children']))
+                if row['event']=='REGISTRATION':
+                    capture_cutoff=row['value']['receipt']['cutoff']
+                    market_capture_cutoffs.update({m:capture_cutoff for m in pending_markets})
+                if row['event']=='PLAN':frozen_plans.add(row['value']['market'])
+                if row['event']=='CAPTURE':closed_source.add(row['value']['market'])
+                if identity.get('staged_markets') and row['event'] in ('RENDER_MARKET','MARKET_FAILED'):
+                    rendered_markets.add(row['value']['market'])
+                    if rendered_markets==set(identity['children']):terminal=True
                 if row['event'].startswith('PHYSICAL_'):
                     apply_runtime_event(state,row['event'],row['value'],identity)
                 previous=pin
@@ -106,6 +123,13 @@ class RuntimeCap:
                 if (terminal or not datetime.fromisoformat(identity['authorized_at'])<=now<
                         datetime.fromisoformat(identity['expires_at'])):
                     raise ValueError('CAMPAIGN_EXPIRED_OR_STOPPED')
+                if identity.get('staged_markets'):
+                    capture_cutoff=market_capture_cutoffs.get(value['market']) if value['phase']=='SOURCE' else None
+                    if value['phase']=='SOURCE' and capture_cutoff is None:
+                        raise ValueError('CAMPAIGN_CURRENT_MARKET_CAPTURE_REQUIRED')
+                if identity.get('fresh_timeout_retry_market') and (
+                        value['market'] not in frozen_plans or value['market'] in closed_source):
+                    raise ValueError('CAMPAIGN_FROZEN_OPEN_SOURCE_REQUIRED')
                 if capture_cutoff and now>=datetime.fromisoformat(capture_cutoff)+timedelta(hours=1):
                     raise ValueError('CAMPAIGN_ORIGINAL_CAPTURE_WINDOW_EXPIRED')
                 maximum=identity.get('wallclock_seconds_max')

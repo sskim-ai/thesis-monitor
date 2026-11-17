@@ -174,12 +174,21 @@ class KiwoomReceiptObserver:
             self.policy.check_lineage(values)
         local_ok = collection is not None and not mandatory_incomplete and denial is None
         flow_ok = local_ok and not incomplete and not collection.audit.blocked_concentration_markets
+        aggregate_ok = False
+        if local_ok:
+            from app.services.unified_aggregate_owners import validate_aggregate_flow_rows
+            try:
+                validate_aggregate_flow_rows(collection.cross_section.market_flows,
+                    session=self.session_date.isoformat())
+                aggregate_ok = True
+            except ValueError:
+                pass
         role_values = {
             "kr_local_indices_sectors_breadth": (
                 {k: values[k] for k in ("indices", "sectors", "breadth", "breadth_by_scope")}
                 if local_ok else None),
             "kr_market_investor_flows": (
-                {k: values[k] for k in ("market_flows", "concentration")} if flow_ok else None),
+                {k: values[k] for k in ("market_flows", "concentration")} if aggregate_ok else None),
         }
         durable_json(self.root / "normalization.json", {
             "run_id": self.run_id, "attempt_id": self.attempt_id,
@@ -192,6 +201,12 @@ class KiwoomReceiptObserver:
                 "status": "AVAILABLE" if value is not None else "FAILED_CLOSED" if
                 role == "kr_local_indices_sectors_breadth" else "OPTIONAL_UNAVAILABLE"}
                 for role, value in role_values.items()},
+            "field_claim_limits": {
+                "aggregate_flows": "AVAILABLE" if aggregate_ok else "UNAVAILABLE",
+                "concentration": "AVAILABLE" if flow_ok else "UNAVAILABLE",
+                "detail_request": "REQUESTED" if any(r.api_id == "ka10066" for r in self.reads) else "NOT_REQUESTED",
+                "missing_detail_is_data_corruption": False,
+            },
             "owner_audit": collection.audit.model_dump(mode="json") if collection else None,
             "validator_contracts": ["kiwoom-kr-market-context-v1", "kr-market-flow-reconciliation-v1"],
             "qualification": "OWNER_INTERFACE_ONLY_NOT_SOURCE_ADAPTER",

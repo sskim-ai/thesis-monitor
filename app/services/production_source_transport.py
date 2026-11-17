@@ -59,7 +59,7 @@ class NativeProductionSourceTransport:
         self.kis_worker = kis_worker
         self.run_ledger,self.registration_owner,self.source_policy=run_ledger,registration_owner,source_policy
 
-    async def collect(self, *, root, frozen, compiler, kis_plan, credentials, deadline):
+    async def collect(self, *, root, frozen, compiler, kis_plan, credentials, deadline, retained_sec=None):
         plan_path = root / "production-frozen-source-plan.json"
         initial = sha256_bytes(plan_path.read_bytes())
 
@@ -71,6 +71,12 @@ class NativeProductionSourceTransport:
             config_identities=frozen['config_identities'],credential_presence={k:all(v) for k,v in credentials.items()},
             repository_root=ROOT,secrets=tuple(v for values in credentials.values() for v in values if v!='NO_CREDENTIAL_REQUIRED'))
         selected=frozen.get('scope')=='SELECTED_ORIGINAL_RESEARCH_V1'
+        retained_pins = {t:sorted((entry['proof']['pin'] for entry in items.values()),key=digest)
+                         for t,items in (retained_sec or {}).items() if items}
+        if (retained_pins != frozen.get('retained_sec_documents',{}) or (retained_pins and
+                (not selected or frozen.get('selected_market')!='us'
+                 or set(retained_pins)-set(frozen['candidate']['financial_plans'])))):
+            raise ValueError('production_retained_sec_frozen_scope_mismatch')
         if selected:
             if self.run_ledger is None or self.registration_owner is None or self.source_policy is None:
                 raise ValueError('selected_original_transport_ledger_and_registration_required')
@@ -87,13 +93,14 @@ class NativeProductionSourceTransport:
             dispatcher=ProductionSourceDispatcher(**options)
 
         await acquire_all(root=root, frozen=frozen, settings=self.settings, dispatcher=dispatcher,
-            inner=self.http_transport_factory(), policy=POLICY, guard=guard)
+            inner=self.http_transport_factory(), policy=POLICY, guard=guard, **(
+                dict(retained_sec=retained_sec) if retained_pins else {}))
         outcome = read(root / "acquisition-outcome.json")
         if "systemic_stop" in outcome["phases"]:
             raise ValueError("production_source_systemic_stop")
         if kis_plan is not None:
             guard()
             await self.kis_worker(root=root, frozen=frozen, plan=kis_plan, credentials=credentials,
-                                  remaining=deadline - time.monotonic(),
+                                  remaining=min(600, deadline - time.monotonic()),
                                   **({'run_ledger':self.run_ledger} if selected else {}))
         return outcome

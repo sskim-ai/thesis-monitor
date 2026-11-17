@@ -52,7 +52,8 @@ class SealedNativeBridge(httpx.AsyncBaseTransport):
                     self.process = await asyncio.create_subprocess_exec(sys.executable, '-m', 'scripts.r9_rev11_native_worker',
                         '--owner-root', str(self.owner_root), '--input', str(self.input_path), '--sha256', self.input_sha256,
                         '--output', str(self.output), stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE,
-                        stderr=asyncio.subprocess.PIPE, limit=64 * 1024 * 1024)
+                        stderr=asyncio.subprocess.PIPE, limit=64 * 1024 * 1024,
+                        cwd=Path(__file__).resolve().parents[2])
                 else:
                     self.process = await self._test_worker.launch(
                         owner_root=self.owner_root, input_path=self.input_path,

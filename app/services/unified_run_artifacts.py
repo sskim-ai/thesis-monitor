@@ -19,7 +19,13 @@ def sha256_bytes(value: bytes) -> str:
 
 
 def durable_bytes(path: Path, content: bytes, *, exclusive: bool = False,
-                  directory_fd: int | None = None) -> None:
+                  directory_fd: int | None = None, role: str | None = None) -> None:
+    from app.services.research_artifact_budget import active_budget
+    budget = active_budget()
+    if budget is not None:
+        if directory_fd is not None:
+            raise ValueError('research_artifact_unclassified_anchored_write')
+        budget.before_write(path, len(content), role=role)
     if directory_fd is not None:
         if Path(path).name != str(path) or str(path) in {"", ".", ".."}:
             raise ValueError("anchored_artifact_basename_required")

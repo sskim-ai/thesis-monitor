@@ -18,6 +18,49 @@ WATCH_DEFINITION_FIELDS = (
     'registration_requested_at', 'created_at',
 )
 
+SECURITY_DEFINITION_FIELDS = (
+    'ticker', 'canonical_company_id', 'canonical_security_id', 'exchange', 'country',
+    'security_type', 'share_class', 'issuer_type', 'ordinary_share_identifier',
+    'adr_identifier', 'adr_ratio',
+)
+
+
+def _missing_subjects(prepared, target, subjects):
+    """Existing runtime enrichment is preserved, never copied from the donor."""
+    missing, audit = [], []
+    for ticker in subjects:
+        source = {table: [r for r in rows if r['ticker'] == ticker]
+                  for table, rows in prepared.items()}
+        current = {table: [r for r in rows if r['ticker'] == ticker]
+                   for table, rows in target.items()}
+        reasons = []
+        if not any(current.values()):
+            missing.append(ticker)
+            status = 'MISSING_DEFINITION'
+        else:
+            if any(not rows for rows in current.values()):
+                reasons.append('PARTIAL_EXISTING_REGISTRATION')
+            for table, fields in (
+                    ('watchlistitem', (*WATCH_DEFINITION_FIELDS, 'monitoring_requested')),
+                    ('securitymaster', SECURITY_DEFINITION_FIELDS),
+                    ('company', ('ticker', 'company_name', 'exchange', 'created_at'))):
+                if current[table]:
+                    old, donor = (_logical(table, rows[0])
+                                  for rows in (current[table], source[table]))
+                    if any(old[field] != donor[field] for field in fields):
+                        reasons.append(table.upper() + '_DEFINITION_MISMATCH')
+            if ({_key('investmentthesis', r): _logical('investmentthesis', r)
+                 for r in current['investmentthesis']} !=
+                    {_key('investmentthesis', r): _logical('investmentthesis', r)
+                     for r in source['investmentthesis']}):
+                reasons.append('THESIS_HISTORY_MISMATCH')
+            status = 'REGISTRY_CONFLICT' if reasons else 'PRESERVED_EXISTING_NOOP'
+        audit.append(dict(ticker=ticker, status=status, reasons=reasons,
+            donor_rows={t: len(v) for t, v in source.items()},
+            canonical_rows={t: len(v) for t, v in current.items()},
+            donor_definition_sha256=_digest(source), canonical_rows_sha256=_digest(current)))
+    return tuple(missing), audit
+
 
 def _digest(value):
     raw = json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(',', ':')).encode()
@@ -120,15 +163,21 @@ def _read_target(connection, prepared, subjects):
 
 
 def import_registration_definitions(connection, rows, *, subjects,
-                                    max_versions_per_subject, enabled=False):
+                                    max_versions_per_subject, enabled=False,
+                                    missing_subjects_only=False):
     """One BEGIN IMMEDIATE/COMMIT; exact match is NOOP, mismatch rolls back.
 
     `enabled` is an ordinary execution switch, not permission issuance. The
     caller must already hold the explicit task read/write approval. Destination
     IDs are allocated by SQLite; donor IDs are recorded only in the mapping.
+    The opt-in missing-subject mode leaves complete existing subjects unchanged,
+    reports conflicts without writing them, and atomically inserts only wholly
+    absent definitions. It never fills a partial live subject or reactivates one.
     """
     if enabled is not True:
         raise ValueError('registration_import_default_off')
+    if type(missing_subjects_only) is not bool:
+        raise ValueError('registration_import_missing_mode_boolean_required')
     prepared = prepare_registration_definitions(rows, subjects=subjects,
         max_versions_per_subject=max_versions_per_subject)
     if connection.in_transaction:
@@ -144,8 +193,18 @@ def import_registration_definitions(connection, rows, *, subjects,
         if trigger is not None:
             raise ValueError('registration_import_target_triggers_require_review')
         target = _read_target(connection, prepared, subjects)
+        complete_prepared = prepared
+        original_target = deepcopy(target)
+        reconciliation = []
+        write_subjects = set(subjects)
+        if missing_subjects_only:
+            write_subjects, reconciliation = _missing_subjects(prepared, target, subjects)
+            write_subjects = set(write_subjects)
+            prepared = {table: [r for r in records if r['ticker'] in write_subjects]
+                        for table, records in prepared.items()}
         for table, records in prepared.items():
-            existing = {_key(table, row): row for row in target[table]}
+            existing = {_key(table, row): row for row in target[table]
+                        if row['ticker'] in write_subjects}
             keys = {_key(table, row) for row in records}
             if set(existing) - keys:
                 raise ValueError('registration_import_unexpected_existing_version')
@@ -170,18 +229,28 @@ def import_registration_definitions(connection, rows, *, subjects,
                     version=row.get('version'), source_id=row['id'], destination_id=new_id,
                     status='INSERTED_PENDING' if old is None else 'EXACT_NOOP',
                     original_definition_sha256=_digest(_logical(table, row))))
-        after = _read_target(connection, prepared, subjects)
+        after = _read_target(connection, complete_prepared, subjects)
         for table, records in prepared.items():
             expected = {_key(table, row): _logical(table, row) for row in records}
+            if missing_subjects_only:
+                expected.update({_key(table, row): _logical(table, row)
+                    for row in original_target[table] if row['ticker'] not in write_subjects})
             actual = {_key(table, row): _logical(table, row) for row in after[table]}
             if actual != expected:
                 raise ValueError('registration_import_transaction_readback_mismatch')
+            if missing_subjects_only and [r for r in after[table] if r['ticker'] not in write_subjects] != [
+                    r for r in original_target[table] if r['ticker'] not in write_subjects]:
+                raise ValueError('registration_import_preserved_subject_changed')
         connection.execute('COMMIT')
     except BaseException:
         if connection.in_transaction:
             connection.execute('ROLLBACK')
         raise
-    return dict(contract='original-model-registration-definition-import-v1',
+    result = dict(contract='original-model-registration-definition-import-v1',
         subjects=list(subjects), inserted=dict(inserted), inserted_rows=sum(inserted.values()),
         mappings=mappings, SELECT=9, commits=1, updates=0, deletes=0,
         activation_granted=False, source_or_economic_grant=False, private_definitions_exported=False)
+    if missing_subjects_only:
+        result.update(mode='MISSING_SUBJECTS_ONLY', reconciliation=reconciliation,
+                      conflicts=[r['ticker'] for r in reconciliation if r['status'] == 'REGISTRY_CONFLICT'])
+    return result

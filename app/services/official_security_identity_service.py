@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import date, datetime, timezone
+from fractions import Fraction
 from html import unescape
 import json
 import re
@@ -150,8 +151,29 @@ def parse_sec_cover_page_identity(
     filing_accession: str,
     filing_date: str,
     cik: str | None = None,
+    source_form: str | None = None,
+) -> OfficialSecurityIdentityEvidence:
+    return _parse_sec_cover_page_identity(html, ticker=ticker, source_url=source_url,
+        filing_accession=filing_accession, filing_date=filing_date, cik=cik, source_form=source_form)
+
+
+def _parse_sec_cover_page_identity(
+    html: str, *, ticker: str, source_url: str, filing_accession: str,
+    filing_date: str, cik: str | None, source_form: str | None,
+    annual_ads_footnote: bool = False,
 ) -> OfficialSecurityIdentityEvidence:
     contexts = _inline_xbrl_facts(html)
+    if source_form is not None:
+        def fact_values(key: str) -> set[str]:
+            return {row[key] for row in contexts.values() if row.get(key)}
+
+        if not cik or fact_values("EntityCentralIndexKey") != {cik}:
+            raise ValueError("official_cover_cik_mismatch")
+        if fact_values("DocumentType") != {source_form}:
+            raise ValueError("official_cover_document_type_mismatch")
+        if len(fact_values("EntityRegistrantName")) != 1:
+            raise ValueError("official_cover_issuer_not_unique")
+        date.fromisoformat(filing_date)
     matches = [
         fields
         for fields in contexts.values()
@@ -198,7 +220,11 @@ def parse_sec_cover_page_identity(
         raise ValueError("official_cover_security_not_unique")
     fields = matches[0]
     title = fields["Security12bTitle"]
-    security_type, issuer_type, share_class = _normalized_security_type(title)
+    annual_ads = annual_ads_footnote and re.search(r"\bcommon shares\b", title, re.I)
+    if annual_ads:
+        security_type, issuer_type, share_class = "ordinary_shares", "foreign_private_issuer", None
+    else:
+        security_type, issuer_type, share_class = _normalized_security_type(title)
     issuer_name = next(
         (
             item.get("EntityRegistrantName", "")
@@ -217,7 +243,7 @@ def parse_sec_cover_page_identity(
         issuer_type=issuer_type,
         exchange=_exchange_code(fields["SecurityExchangeName"]),
         source_url=source_url,
-        source_form="SEC cover page",
+        source_form=source_form or "SEC cover page",
         filing_accession=filing_accession,
         as_of_date=filing_date,
         source_reference=f"SEC accession {filing_accession}",
@@ -227,32 +253,87 @@ def parse_sec_cover_page_identity(
     )
 
 
+_CARDINALS = {word: i for i, word in enumerate(
+    "zero one two three four five six seven eight nine ten eleven twelve thirteen "
+    "fourteen fifteen sixteen seventeen eighteen nineteen".split()
+)}
+_TENS = {word: 10 * i for i, word in enumerate(
+    "twenty thirty forty fifty sixty seventy eighty ninety".split(), 2
+)}
+_FRACTION_DENOMINATORS = dict(half=2, third=3, fourth=4, fifth=5, sixth=6,
+    seventh=7, eighth=8, ninth=9, tenth=10, twentieth=20)
+
+
+def _ratio_number(value: str) -> Fraction:
+    value = value.lower().strip()
+    if re.fullmatch(r"[+-]?\d{1,8}(?:\s*/\s*\d{1,8})?", value):
+        try:
+            return Fraction(re.sub(r"\s+", "", value))
+        except ZeroDivisionError as exc:
+            raise ValueError("official_ads_ratio_invalid") from exc
+    parts = re.split(r"[ -]+", value)
+    if len(parts) == 2 and parts[0] == "one" and parts[1] in _FRACTION_DENOMINATORS:
+        return Fraction(1, _FRACTION_DENOMINATORS[parts[1]])
+    if value in _CARDINALS:
+        return Fraction(_CARDINALS[value])
+    if parts[0] in _TENS and (len(parts) == 1 or len(parts) == 2
+            and 0 < _CARDINALS.get(parts[1], 0) < 10):
+        return Fraction(_TENS[parts[0]] + (_CARDINALS[parts[1]] if len(parts) == 2 else 0))
+    raise ValueError("official_ads_ratio_invalid")
+
+
 def _ads_ratio(text: str) -> float | None:
-    word_fractions = {
-        "one-half": 0.5,
-        "one-third": 1 / 3,
-        "one-fourth": 0.25,
-        "one-fifth": 0.2,
-        "one-tenth": 0.1,
-        "one-twentieth": 0.05,
+    matches = re.finditer(
+        r"\bEach\s+(?:ADS|American\s+Depositary\s+Share)(?:\s+\(ADS\))?\s+represents?\s+"
+        r"(?P<amount>[\w+/-]+(?:[ /-][\w/-]+){0,4}?)"
+        r"(?:\s+\((?P<check>[+-]?\d{1,8}(?:\s*/\s*\d{1,8})?)\))?\s+"
+        r"(?:of\s+(?:a|one)\s+)?(?:common\s+shares?|shares?\s+of\s+(?:our\s+)?common\s+stock)\b",
+        text, re.I,
+    )
+    values = set()
+    for match in matches:
+        ratio = _ratio_number(match["amount"])
+        if ratio <= 0 or (match["check"] and _ratio_number(match["check"]) != ratio):
+            raise ValueError("official_ads_ratio_invalid")
+        values.add(ratio)
+    if len(values) > 1:
+        raise ValueError("official_ads_ratio_conflict")
+    return float(next(iter(values))) if values else None
+
+
+def parse_sec_annual_ads_identity(
+    html: str, *, ticker: str, source_url: str, filing_accession: str,
+    filing_date: str, cik: str,
+) -> OfficialSecurityIdentityEvidence:
+    cover = _parse_sec_cover_page_identity(html, ticker=ticker, source_url=source_url,
+        filing_accession=filing_accession, filing_date=filing_date, cik=cik,
+        source_form="20-F", annual_ads_footnote=True)
+    text = _clean_text(html)
+    # Some covers tag the underlying class; its footnote identifies what trades.
+    if cover.security_type != "ads":
+        before_contents = re.split(r"\bTABLE OF CONTENTS\b", text, maxsplit=1, flags=re.I)[0]
+        if not re.search(r"not for trading,? but only in connection with the listing"
+                r".{0,150}American Depositary Shares.{0,60}representing such Common Shares",
+                before_contents, re.I):
+            raise ValueError("official_annual_cover_ads_basis_missing")
+    exchanges = {
+        _exchange_code(m.group(1))
+        for m in re.finditer(
+            rf"\bADSs? have been listed on the (NYSE|New York Stock Exchange|Nasdaq)"
+            rf" under the symbol [^\w]{{0,2}}{re.escape(ticker)}\b", text, re.I)
     }
-    match = re.search(
-        r"Each\s+ADS\s+represents\s+(one-(?:half|third|fourth|fifth|tenth|twentieth))"
-        r"\s+of\s+a\s+(?:share\s+of\s+(?:our\s+)?common\s+stock|common\s+share)",
-        text,
-        re.I,
-    )
-    if match:
-        return word_fractions[match.group(1).lower()]
-    match = re.search(
-        r"Each\s+ADS\s+represents\s+(\d+)\s*/\s*(\d+)\s+of\s+a\s+"
-        r"(?:share\s+of\s+(?:our\s+)?common\s+stock|common\s+share)",
-        text,
-        re.I,
-    )
-    if match and int(match.group(2)):
-        return int(match.group(1)) / int(match.group(2))
-    return None
+    if exchanges != {cover.exchange}:
+        raise ValueError("official_annual_ads_listing_mismatch")
+    ratio = _ads_ratio(text)
+    symbols = set(re.findall(
+        r"\bcommon shares have been listed on the Taiwan Stock Exchange under the symbol [^\w]{0,2}(\d{4,6})\b",
+        text, re.I))
+    if len(symbols) > 1:
+        raise ValueError("official_annual_underlying_conflict")
+    return replace(cover, issuer_type="adr", security_type="ads",
+        security_title="American Depositary Shares", adr_identifier=ticker.upper(),
+        ordinary_share_identifier=f"TWSE:{next(iter(symbols))}" if symbols else None,
+        adr_ratio=ratio, adr_ratio_direction=ADR_RATIO_DIRECTION if ratio is not None else None)
 
 
 def parse_sec_ads_prospectus_identity(

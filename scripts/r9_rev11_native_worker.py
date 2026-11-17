@@ -58,8 +58,10 @@ def main(*, test_bootstrap=None):
     from app.services.ohlcv_service import OhlcvService
     from app.services.symbol_resolver import SymbolResolver
     if test_bootstrap is None:
-        settings = Settings(_env_file=args.owner_root / '.env')
-        configuration = stock_worker.owner_configuration(args.owner_root, settings)
+        settings_file = owner_contract.get('settings_env_file')
+        settings = Settings(_env_file=stock_worker.settings_path(args.owner_root, settings_file))
+        configuration = stock_worker.owner_configuration(args.owner_root, settings,
+            settings_env_file=settings_file)
     else:
         settings = test_bootstrap.settings(Settings)
         configuration = test_bootstrap.owner_configuration(settings)
@@ -94,7 +96,10 @@ def main(*, test_bootstrap=None):
             normalized = super()._normalize_rows(rows, max(count, len(rows)))
             return select_completed_daily_rows(normalized, target_session=target, count=count)
 
-    service = OhlcvService(SymbolResolver(settings.sector_map_path),
+    sector_map = settings.sector_map_path
+    if test_bootstrap is None and not Path(sector_map).is_absolute():
+        sector_map = args.owner_root / sector_map
+    service = OhlcvService(SymbolResolver(sector_map),
         CompletedMarketProvider(owner.KiwoomClient(bounded, owner.KiwoomAuth(bounded))))
     class Client:
         def __enter__(self):

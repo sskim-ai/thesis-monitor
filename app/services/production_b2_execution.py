@@ -132,7 +132,9 @@ async def execute_b2(request, authorization, *, current_binding, transport: Mode
     frozen = deepcopy(request)
     payload = canonical.provider_payload(frozen, expected_request_sha256=authorization.request_sha256)
     durable_json(directory / "authorization.json", authorization.model_dump(mode="json"), exclusive=True)
-    durable_json(directory / "request.json", frozen, exclusive=True)
+    from app.services.research_artifact_budget import artifact_role
+    with artifact_role('scratch'):
+        durable_json(directory / "request.json", frozen, exclusive=True)
     attempts = []
     for ordinal in range(1, authorization.transport_form_retries + 2):
         verify_authorization(frozen, authorization, **current_binding)
@@ -145,11 +147,19 @@ async def execute_b2(request, authorization, *, current_binding, transport: Mode
         durable_json(attempt / "intent.json", row, exclusive=True)
         parsed = None
         try:
+            from app.services.research_no_send_run import current_stage_timer
             scope = dict(stage='B2', panel=authorization.ticker) if type(authorization) is ProductionB2ExecutionAuthorizationV2 else {}
-            raw = await asyncio.wait_for(transport.request(deepcopy(payload), model=authorization.model,
-                effort=authorization.effort, timeout=authorization.timeout_seconds, **scope), authorization.timeout_seconds)
+            call = transport.request(deepcopy(payload), model=authorization.model,
+                effort=authorization.effort, timeout=authorization.timeout_seconds, **scope)
+            raw = await call if current_stage_timer() is not None else await asyncio.wait_for(call, authorization.timeout_seconds)
         except (ModelTransportError, TimeoutError) as exc:
             row.update(classification="TRANSPORT_FAILURE", error_type=type(exc).__name__)
+            if type(authorization) is ProductionB2ExecutionAuthorizationV2:
+                attempts.append(row)
+                durable_json(attempt / "receipt.json", row, exclusive=True)
+                if isinstance(exc, TimeoutError):
+                    raise ModelTransportError("RECONCILIATION_REQUIRED") from exc
+                raise
         else:
             if not isinstance(raw, bytes):
                 raise TypeError("production_transport_raw_bytes_required")

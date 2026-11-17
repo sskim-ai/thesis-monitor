@@ -122,41 +122,36 @@ class SecurityMasterService:
         )
         row.company_name = company_name
         row.legal_name = row.legal_name or company_name
-        if identity_source_tier(row.identity_provider, row.identity_quality) not in {
+        verified_identity = identity_source_tier(row.identity_provider, row.identity_quality) in {
             TIER_A_AUTHORITATIVE,
             TIER_B_DETERMINISTIC_REFERENCE,
-        }:
+        }
+        if not verified_identity:
             row.exchange = exchange
-        elif row.exchange is None:
-            row.exchange = exchange
-        row.country = country
-        row.issuer_type = _issuer_type(item, ticker, existing)
-        row.ordinary_share_identifier = (
-            item.ordinary_share_identifier if item else row.ordinary_share_identifier
-        )
-        row.adr_ratio = item.adr_ratio if item else row.adr_ratio
-        depositary_evidence = (
-            row.issuer_type == "adr"
-            or (
-                row.security_type.lower().replace("-", "_").replace(" ", "_")
-                in {"adr", "ads", "depositary_receipt", "depositary_security"}
-                and row.issuer_type not in {"domestic_us", "krx"}
+            row.country = country
+            row.issuer_type = _issuer_type(item, ticker, existing)
+            row.ordinary_share_identifier = (
+                item.ordinary_share_identifier if item else row.ordinary_share_identifier
             )
-            or bool(row.adr_ratio and row.ordinary_share_identifier)
-        )
-        row.adr_identifier = ticker if depositary_evidence else None
+            row.adr_ratio = item.adr_ratio if item else row.adr_ratio
+            depositary_evidence = (
+                row.issuer_type == "adr"
+                or (
+                    row.security_type.lower().replace("-", "_").replace(" ", "_")
+                    in {"adr", "ads", "depositary_receipt", "depositary_security"}
+                    and row.issuer_type not in {"domestic_us", "krx"}
+                )
+                or bool(row.adr_ratio and row.ordinary_share_identifier)
+            )
+            row.adr_identifier = ticker if depositary_evidence else None
+            row.identity_quality = (
+                "inferred" if exchange and company_name != ticker else "partial"
+            )
         row.aliases = json.dumps(aliases, ensure_ascii=False)
         row.search_aliases = json.dumps(search_aliases, ensure_ascii=False)
         row.known_products = json.dumps(
             list(SECURITY_PRODUCTS.get(ticker, ())), ensure_ascii=False
         )
-        if identity_source_tier(row.identity_provider, row.identity_quality) not in {
-            TIER_A_AUTHORITATIVE,
-            TIER_B_DETERMINISTIC_REFERENCE,
-        }:
-            row.identity_quality = (
-                "inferred" if exchange and company_name != ticker else "partial"
-            )
         row.updated_at = datetime.now(timezone.utc)
         session.add(row)
         session.flush()

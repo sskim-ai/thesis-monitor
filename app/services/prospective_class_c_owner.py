@@ -46,6 +46,7 @@ class ProspectiveOwner:
 
 _APPROVALS: WeakKeyDictionary = WeakKeyDictionary()
 _OWNERS: WeakKeyDictionary = WeakKeyDictionary()
+_OWNER_CAPTURES: WeakKeyDictionary = WeakKeyDictionary()
 _ISSUED_RUNS: WeakKeyDictionary = WeakKeyDictionary()
 _RUN_STOPS: WeakKeyDictionary = WeakKeyDictionary()
 
@@ -317,19 +318,35 @@ def completed_clock(market, cutoff):
 
 
 def issue_prospective_owner(*, approval, capture, market, source_generation_id,
-                            generation_id, policy, purpose=SCOPE):
+                            generation_id, policy, purpose=SCOPE, subjects=None,
+                            execution=None, regular_assignments=None,reference_capture=None,retained_capture_sha256=None,
+                            monitoring_only=False):
     decision = _approval(approval)
     raw, capture_receipt = captured_private_snapshot(capture)
-    cutoff = datetime.fromisoformat(capture_receipt["cutoff"])
+    from app.services.minimal_class_c_export import captured_source_cutoff
+    captured_at = datetime.fromisoformat(capture_receipt["cutoff"])
+    cutoff = datetime.fromisoformat(captured_source_cutoff(capture,reference_capture=reference_capture,
+        retained_capture_sha256=retained_capture_sha256))
+    # A new approval authorizes consumption now, never collection in the past.
+    # The trusted campaign supplies the prior receipt's frozen hash separately.
+    retained_use=reference_capture is not None and retained_capture_sha256 is not None
     if (purpose != SCOPE or not source_generation_id or not generation_id
-            or not decision.effective_at <= cutoff <= _now()
-            or _now() - cutoff > timedelta(hours=1)):
+            or not decision.effective_at <= captured_at <= _now()
+            or (not retained_use and not decision.effective_at <= cutoff <= _now())
+            or cutoff>captured_at
+            or _now() - captured_at > timedelta(hours=1)):
         raise ValueError("prospective_scope_or_current_capture_required")
     clock = completed_clock(market, cutoff)
-    original = project_captured_export(capture, market=market, session_key=clock["target"], policy=policy)
+    requested_subjects=subjects
+    original = project_captured_export(capture, market=market, session_key=clock["target"], policy=policy,
+        **(dict(subjects=subjects) if subjects is not None else {}),
+        execution=execution,regular_assignments=regular_assignments,reference_capture=reference_capture,
+        retained_capture_sha256=retained_capture_sha256,monitoring_only=monitoring_only)
+    if requested_subjects is not None and set(original['universe']['eligible_subjects'])!=set(requested_subjects):
+        raise ValueError('prospective_selected_subject_not_currently_eligible')
     run_key = (generation_id, market)
     existing = _ISSUED_RUNS.setdefault(approval, {}).get(run_key)
-    if existing is not None:
+    if existing is not None and existing() is not None:
         handle = existing()
         previous, previous_receipt = _state(handle)
         if (previous != original or previous_receipt["source_generation_id"] != source_generation_id
@@ -363,7 +380,7 @@ def issue_prospective_owner(*, approval, capture, market, source_generation_id,
 
     receipt = dict(contract=CONTRACT, purpose=purpose, approval_event=decision.event_id,
         approval_sha256=digest(decision.model_dump(mode="json")), effective_at=decision.effective_at.isoformat(),
-        expires_at=min(decision.expires_at, cutoff + timedelta(hours=1)).isoformat(),
+        expires_at=min(decision.expires_at, captured_at + timedelta(hours=1)).isoformat(),
         cutoff=cutoff.isoformat(), issued_at=_now().isoformat(), source_generation_id=source_generation_id,
         generation_id=generation_id, source_export_sha256=sha256(raw).hexdigest(),
         capture_receipt_sha256=digest(capture_receipt), source_projection_sha256=digest(original),
@@ -371,8 +388,21 @@ def issue_prospective_owner(*, approval, capture, market, source_generation_id,
         policy_fingerprints=policy_fingerprints(), owner_sha256=sha256(Path(__file__).read_bytes()).hexdigest(),
         identity_policy_sha256=digest(sorted(policy.allowed_providers)),
         schema_sha256=digest(ApprovalDecision.model_json_schema()), scope="MEMBERSHIP_ONLY_NOT_D01_D02")
+    if requested_subjects is not None:receipt['selected_subjects']=sorted(requested_subjects)
+    if monitoring_only is True:receipt['monitoring_only']=True
+    if execution is not None:
+        receipt['execution']=execution
+        receipt['regular_assignments']=regular_assignments
+    if reference_capture is not None:
+        receipt['reference_capture']=reference_capture
+        receipt['actual_current_capture_at']=captured_at.isoformat()
+        receipt['retained_registration_rows_unchanged']=True
+        if retained_use:
+            receipt['retained_capture_sha256']=retained_capture_sha256
+            receipt['retained_consumption_authorized_at']=decision.effective_at.isoformat()
     handle = ProspectiveOwner()
     _OWNERS[handle] = (approval, json.dumps(original), json.dumps(receipt))
+    _OWNER_CAPTURES[handle] = capture
     _ISSUED_RUNS[approval][run_key] = ref(handle)
     return handle, apply_prospective_owner(original, original=original, owner=handle)
 
@@ -407,6 +437,29 @@ def revoke_prospective_owner(owner):
     _state(owner)
     _stop_runs(_OWNERS[owner][0])
     del _OWNERS[owner]
+    _OWNER_CAPTURES.pop(owner, None)
+
+
+def replay_captured_local_seed(owner, *, policy):
+    """Replay the same authorized capture, not lossy market-projected rows."""
+    authenticated, receipt = _state(owner)
+    capture = _OWNER_CAPTURES.get(owner)
+    if capture is None:
+        raise ValueError('prospective_original_capture_required')
+    raw, captured = captured_private_snapshot(capture)
+    from hashlib import sha256
+    if (sha256(raw).hexdigest() != receipt['source_export_sha256']
+            or digest(captured) != receipt['capture_receipt_sha256']):
+        raise ValueError('prospective_original_capture_changed')
+    projected = project_captured_export(capture, market=receipt['market'],
+        session_key=receipt['calendar']['target'], policy=policy,
+        **(dict(subjects=receipt['selected_subjects']) if 'selected_subjects' in receipt else {}),
+        execution=receipt.get('execution'),regular_assignments=receipt.get('regular_assignments'),
+        reference_capture=receipt.get('reference_capture'),retained_capture_sha256=receipt.get('retained_capture_sha256'),
+        monitoring_only=receipt.get('monitoring_only',False))
+    if projected != authenticated:
+        raise ValueError('prospective_captured_selection_changed')
+    return projected
 
 
 def apply_prospective_owner(document, *, original, owner):

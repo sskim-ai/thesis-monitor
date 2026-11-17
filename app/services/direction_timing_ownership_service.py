@@ -738,6 +738,9 @@ def build_owned_evidence_packet(
                     raise ValueError("fundamental_financial_source_required")
                 validate_canonical_time(fact, ref.model_dump(mode="json"), ticker=packet.ticker)
                 adapted = adapt_fact_catalog_financial_context(fact, financial_rows)
+                from app.services.cross_market_decision_engine_service import _category_for_fact
+                if ref.category != _category_for_fact(fact):
+                    raise ValueError('fundamental_financial_category_mismatch')
                 financial_identity, _ = canonical_identity_from_fact_catalog(fact)
                 if (adapted.context is None or ref.financial_context !=
                         type(ref.financial_context).model_validate(adapted.context)

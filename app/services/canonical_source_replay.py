@@ -1,5 +1,6 @@
 """Canonical current raw/normalized/owner replay without proof-run seeds."""
 from datetime import date, datetime
+from pathlib import Path
 from app.services.bounded_financial_stock_owner import assemble as assemble_financial
 from app.services.fresh_financial_stock_owner import fresh_stock_baseline
 from app.services.sealed_fresh_dispatch import consume_bound_result, decode_request_plan
@@ -227,6 +228,10 @@ def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=N
                     final = results[key]
                     if (receipt['sealed_generation_id'] != plan.run_id or receipt['sealed_final_receipt_sha256'] != final['receipt_sha256']):
                         raise ValueError('financial_sealed_receipt_mismatch')
+                    retained = final.get('retained_sec_origin')
+                    if (retained != receipt.get('retained_sec_origin') or (retained is not None
+                            and retained not in frozen.get('retained_sec_documents',{}).get(ticker,()))):
+                        raise ValueError('financial_retained_sec_not_in_frozen_sources')
                     if final['status'] == 'PASS':
                         consume_bound_result(root=root/'dispatch', plan=sealed, logical_id=key, receipt_sha256=final['receipt_sha256'])
                 item = dict(technical_inputs=technical, financial_inputs=dict(plan=frozen['candidate']['financial_plans'][ticker],
@@ -316,11 +321,169 @@ def aggregate(root, role, value):
             durable_json(path, obj, exclusive=True)
     return receipt
 
+
+def replay_retained_kr_market(root, frozen, outcome, policy):
+    """Re-normalize original sealed responses; no new HTTP or receipt rewrite.
+
+    A failed collector phase is retained as failed. This result is a dated
+    derivative of independently verified wire bytes, not a fresh capture.
+    """
+    from app.providers.kiwoom_rest_client import KiwoomCallStats, KiwoomRestResponse, payload_sha256
+    from app.services.kiwoom_kr_market_context_service import (
+        KiwoomKrMarketContextService, validate_market_reads, kiwoom_market_reads)
+    from app.services.unified_kiwoom_observer import KiwoomRead
+    import asyncio
+    session = date.fromisoformat(frozen['sessions']['kr'])
+    at = datetime.fromisoformat(read(root/'markets/kr-query.json')['observed_at'])
+    reads = validate_market_reads(tuple(KiwoomRead.model_validate(r)
+        for r in frozen['candidate']['kr_market_reads']), session_date=session,
+        max_pages=frozen['kr_local_cap'], max_requests_per_page=1)
+    plan = decode_request_plan(frozen['plan'])
+    descriptors = {d.consumer_role.removeprefix('kr_market:'):d for d in plan.descriptors
+        if d.consumer_role.startswith('kr_market:') and d.page_ordinal == 1}
+    if set(descriptors) != {r.key for r in reads}:
+        raise ValueError('retained_market_exact_frozen_roles_required')
+    evidence = []
+
+    class RetainedClient:
+        source_observer = None
+        max_retries = 0
+        stats = KiwoomCallStats(0,0,0,0)
+
+        async def request(self, *, endpoint, api_id, body, continuation=False, next_key=''):
+            matches = [r for r in reads if (r.endpoint,r.api_id,r.body)==(endpoint,api_id,body)]
+            if len(matches)!=1 or continuation or next_key:
+                raise ValueError('retained_market_unplanned_request_or_cursor')
+            r=matches[0]
+            if any(e['read_key']==r.key for e in evidence):
+                raise ValueError('retained_market_duplicate_read')
+            d=descriptors[r.key]
+            final=outcome['logical_results'][d.logical_request_id]
+            consume_bound_result(root=root/'dispatch',plan=plan,logical_id=d.logical_request_id,
+                receipt_sha256=final['receipt_sha256'])
+            wire=json.loads(d.request_json)
+            if (wire['method']!='POST' or json.loads(wire['body'])!=body
+                    or dict(wire['headers']).get('api-id')!=api_id):
+                raise ValueError('retained_market_original_request_mismatch')
+            raw=(root/'dispatch'/d.raw_path).read_bytes()
+            payload=json.loads(raw)
+            policy.check_lineage(payload)
+            if int(payload.get('return_code',0))!=0:
+                raise ValueError('retained_market_provider_rejected')
+            headers=final['response_headers']
+            more=headers.get('cont-yn')=='Y'
+            cursor=headers.get('next-key','')
+            if more and not cursor:
+                raise ValueError('retained_market_missing_continuation_cursor')
+            evidence.append(dict(read_key=r.key,api_id=api_id,role=r.role,mandatory=r.mandatory,
+                raw_sha256=sha256_bytes(raw),original_receipt_sha256=final['receipt_sha256'],
+                requested_at=final['started_at'],received_at=final['finished_at'],
+                original_generation_id=plan.generation_id,continuation=more,
+                cursor_sha256=sha256_bytes(cursor.encode())))
+            return KiwoomRestResponse(api_id,payload,more,cursor,payload_sha256(payload))
+
+    result=asyncio.run(KiwoomKrMarketContextService(RetainedClient(),max_pages=frozen['kr_local_cap'],
+        completed_session_only=True,reads=reads).collect(session_date=session,observed_at=at))
+    if len(evidence)!=len(reads):
+        raise ValueError('retained_market_unconsumed_response')
+    full=kiwoom_market_reads(session_date=session,max_pages=frozen['kr_local_cap'],max_requests_per_page=1)
+    return result,dict(contract='sealed-market-derived-normalization-v1',
+        source_generation_id=plan.generation_id,original_observed_at=at.isoformat(),session=session.isoformat(),
+        source_plan_sha256=plan.plan_sha256,original_response_evidence=evidence,
+        expected_keys=[r.key for r in reads],consumed_keys=[e['read_key'] for e in evidence],
+        omitted_optional_keys=[r.key for r in full if r not in reads],
+        detail='NOT_REQUESTED' if not any(r.api_id=='ka10066' for r in reads) else 'REQUESTED',
+        concentration_eligible=not result.audit.blocked_concentration_markets,
+        financial_HTTP=0,models=0,original_failed_phase_rewritten=False,
+        fresh_capture=False,current_whole_Market_Parent=False,
+        normalized_sha256=digest(result.cross_section.model_dump(mode='json')))
+
+
+def materialize_retained_kr_market(root, frozen, outcome, policy, derived_root):
+    """Dated derivative graph over verified original egress, never new egress."""
+    from app.services.unified_aggregate_receipt import verify_aggregate
+    from app.services.kiwoom_consumed_page_contract import qualify
+    from app.services.unified_kiwoom_observer import KiwoomRead
+    from app.services.unified_aggregate_owners import validate_aggregate_flow_rows
+    result,origin=replay_retained_kr_market(root,frozen,outcome,policy)
+    derived_root.mkdir(parents=True,exist_ok=False)
+    original_plan=(root/'markets/kr/plan.json').read_bytes()
+    with (derived_root/'plan.json').open('xb') as stream:stream.write(original_plan)
+    plan=decode_request_plan(frozen['plan'])
+    for ordinal,row in enumerate(origin['original_response_evidence'],1):
+        d=next(d for d in plan.descriptors if d.consumer_role=='kr_market:'+row['read_key'] and d.page_ordinal==1)
+        final=outcome['logical_results'][d.logical_request_id]
+        name=f'read-{ordinal:04d}'
+        raw=(root/'dispatch'/d.raw_path).read_bytes()
+        with (derived_root/(name+'.body')).open('xb') as stream:stream.write(raw)
+        request=dict(method='POST',route=next(r.endpoint for r in
+            (KiwoomRead.model_validate(x) for x in frozen['candidate']['kr_market_reads']) if r.key==row['read_key']),
+            api_id=row['api_id'],body=json.loads(json.loads(d.request_json)['body']),page=1,
+            continuation=False,cursor_sha256=sha256_bytes(b''))
+        receipt=dict(run_id=plan.generation_id,attempt_id=json.loads(original_plan)['attempt_id'],
+            acquisition_class='ATTEMPT_FRESH',ordinal=ordinal,role_ordinal=1,
+            role=next(r['role'] for r in frozen['candidate']['kr_market_reads'] if r['key']==row['read_key']),
+            read_key=row['read_key'],market='kr',provider='kiwoom_rest',session=frozen['sessions']['kr'],
+            request=request,request_sha256=digest(request),requested_at=row['requested_at'],received_at=row['received_at'],
+            outcome='HTTP_RESPONSE',http_status=final['attempts'][-1]['status'],artifact=name+'.body',
+            artifact_sha256=row['raw_sha256'],derived_from_original_sealed_receipt=row['original_receipt_sha256'])
+        durable_json(derived_root/(name+'.response.json'),receipt,exclusive=True)
+        durable_json(derived_root/(name+'.page.json'),dict(response_receipt_sha256=digest(receipt),
+            raw_sha256=row['raw_sha256'],identity=name,page=1,continuation=row['continuation'],
+            next_cursor_sha256=row['cursor_sha256']),exclusive=True)
+    role=SourceRole(key='kr_local_indices_sectors_breadth',owner='kiwoom_pages',market='kr',symbol='*',
+        provider='kiwoom_rest',basis='query_time',session=frozen['sessions']['kr'],acquisition_class=A,mandatory=True)
+    cross=result.cross_section.model_dump(mode='json')
+    value={k:cross[k] for k in ('indices','sectors','breadth','breadth_by_scope')}
+    receipt=aggregate(derived_root,role,value)
+    at=datetime.fromisoformat(origin['original_observed_at'])
+    cutoff=datetime.fromisoformat(outcome['completed_at'])
+    graph=verify_aggregate(derived_root,receipt,policy=policy,cutoff=cutoff,completion_observed_at=at)
+    proof=qualify(graph,observed_at=at)
+    owner=kiwoom_aggregate_owner(role=role,observed_at=at,max_pages=frozen['kr_local_cap'],
+        max_requests_per_page=1,policy=policy,consumer_complete=True,
+        selected_reads=tuple(KiwoomRead.model_validate(r) for r in frozen['candidate']['kr_market_reads']))
+    projection=owner.project_aggregate_and_validate(graph,cutoff)
+    if projection.value!=value:raise ValueError('retained_market_derived_value_mismatch')
+    aggregate_flows=False
+    try:
+        validate_aggregate_flow_rows(result.cross_section.market_flows,session=role.session)
+        aggregate_flows=True
+    except ValueError:
+        pass
+    durable_json(derived_root/'normalization.json',dict(mandatory_complete=proof['mandatory_complete'],
+        consumer_completion=proof,roles={role.key:dict(value=value,status='AVAILABLE')},
+        field_claim_limits=dict(aggregate_flows='AVAILABLE' if aggregate_flows else 'UNAVAILABLE',
+            concentration='UNAVAILABLE',detail='NOT_REQUESTED'),owner_audit=result.audit.model_dump(mode='json')),exclusive=True)
+    from datetime import timezone
+    record=dict(**origin,derived_at=datetime.now(timezone.utc).isoformat(),
+        origin_root=str(root),original_outcome_sha256=digest(outcome),
+        original_failed_phase_sha256=sha256_bytes((root/'phase-kr-market.json').read_bytes()),
+        original_source_plan_sha256=digest(frozen['plan']),aggregate_receipt_sha256=digest(receipt.model_dump(mode='json')),
+        derivative_graph_verified=True,original_aggregate_owner_replayed=True,
+        validator_files={str(p.name):sha256_bytes(p.read_bytes()) for p in (
+            Path(__file__),Path(__file__).with_name('unified_aggregate_owners.py'),
+            Path(__file__).with_name('kiwoom_kr_market_context_service.py'))})
+    durable_json(derived_root/'DERIVATION.json',record,exclusive=True)
+    return record
+
 def market_inputs(root, frozen, outcome, policy):
     result = {}
     for market in frozen['sessions']:
-        require_captured_phase(root, frozen, outcome, market+'-market')
         path = root/'markets'/market
+        retained=frozen.get('retained_kr_market') if market=='kr' else None
+        if retained is not None:
+            from pathlib import Path
+            path=Path(retained['path'])
+            proof=read(path/'DERIVATION.json')
+            if (sha256_bytes((path/'DERIVATION.json').read_bytes())!=retained['sha256']
+                    or proof['origin_root']!=str(root) or proof['original_outcome_sha256']!=digest(outcome)
+                    or proof['original_source_plan_sha256']!=digest(frozen['plan'])
+                    or proof['original_failed_phase_sha256']!=sha256_bytes((root/'phase-kr-market.json').read_bytes())
+                    or proof['source_generation_id']!=frozen['generation_id']):
+                raise ValueError('retained_market_derivation_origin_mismatch')
+        else:
+            require_captured_phase(root, frozen, outcome, market+'-market')
         try:
             at = datetime.fromisoformat(read(root/'markets'/f'{market}-query.json')['observed_at'])
         except (ValueError, KeyError, TypeError) as exc:
@@ -354,8 +517,11 @@ def market_inputs(root, frozen, outcome, policy):
             if not n['mandatory_complete']:
                 raise ValueError('SOURCE_PARTIAL:kr_market_consumer_incomplete')
             value = n['roles'][role.key]['value']
+            from app.services.unified_kiwoom_observer import KiwoomRead
+            selected_reads = tuple(KiwoomRead.model_validate(r) for r in frozen['candidate']['kr_market_reads'])
             owner = kiwoom_aggregate_owner(role=role, observed_at=at, max_pages=frozen['kr_local_cap'],
-                max_requests_per_page=1, policy=policy, consumer_complete=True)
+                max_requests_per_page=1, policy=policy, consumer_complete=True,
+                selected_reads=selected_reads)
         receipt = aggregate(path, role, value)
         item = SourceInput(role=role.key, run_id=receipt.run_id, attempt_id=receipt.attempt_id, acquisition_class=A,
             requested_at=receipt.requested_at, received_at=receipt.received_at, artifact=receipt.artifact,

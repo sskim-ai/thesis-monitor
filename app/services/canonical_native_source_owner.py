@@ -68,10 +68,14 @@ class CanonicalPreparedSourceOwner:
     def resolve_subject(self, ticker):
         row = self._record()
         _require(ticker in row["source"]["stocks"], "subject_not_owned")
+        market = row["source"]["stocks"][ticker]["market"]
+        return self._subject(row, ticker, self.relationship(market))
+
+    @staticmethod
+    def _subject(row, ticker, relationship):
         stock = row["source"]["stocks"][ticker]
         prepared = row["source"]["prepared"][ticker]
         market = stock["market"]
-        relationship = self.relationship(market)
         return dict(stock=deepcopy(stock), prepared=deepcopy(prepared),
             source_authority=deepcopy(prepared["source_authority"]), market=market,
             generation_id=row["generation_id"],

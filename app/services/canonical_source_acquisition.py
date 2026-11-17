@@ -58,17 +58,17 @@ class PublicationCapture(httpx.AsyncBaseTransport):
         return response
 
 
-async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guard, test_worker=None):
+async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guard, test_worker=None, retained_sec=None):
     from app.services.test_only_native_runtime import NativeWorkerTestCapability
     try:
         return await _acquire_all(root=root, frozen=frozen, settings=settings, dispatcher=dispatcher,
-            inner=inner, policy=policy, guard=guard, test_worker=test_worker)
+            inner=inner, policy=policy, guard=guard, test_worker=test_worker, retained_sec=retained_sec)
     finally:
         if type(test_worker) is NativeWorkerTestCapability:
             test_worker.revoke()
 
 
-async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guard, test_worker=None):
+async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guard, test_worker=None, retained_sec=None):
     """Freeze, then enter once; every HTTP attempt belongs to the one dispatcher."""
     guard()
     from app.services.test_only_native_runtime import is_test_scope, native_test_input
@@ -199,6 +199,7 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
     async def financial(ticker, plan):
         path = root/'financial'/ticker
         reader = SealedFinancialReader(plan, path, dispatcher=dispatcher, transport=sealed.inner, guard=guard,
+            retained_sec=(retained_sec or {}).get(ticker),
             api_key=settings.opendart_api_key if plan['market'] == 'kr' else None,
             user_agent=settings.sec_user_agent if plan['market'] == 'us' else None)
         try:

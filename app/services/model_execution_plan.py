@@ -94,14 +94,17 @@ class FrozenCohort:
         if self.planning_only or type(owner) not in (CanonicalPreparedSourceOwner, ScopedPreparedResearchOwner):
             raise ValueError('TYPED_GAP_REGISTERED_COHORT_SOURCE_OWNER_REQUIRED')
         for market, subjects in self.market_subjects.items():
-            relation = owner.relationship(market)
+            if type(owner) is ScopedPreparedResearchOwner:
+                relation, resolved = owner.resolve_cohort(market)
+            else:
+                relation, resolved = owner.relationship(market), None
             if (digest(relation) != dict(self.source_owner_bindings)[market]
                     or relation['generation_id'] != self.run_id
                     or relation['source_generation_id'] != self.source_generation
                     or set(relation['subjects']) != set(subjects)):
                 raise ValueError('model_cohort_original_owner_scope_drift')
             for row in (r for r in self.subjects if r.market == market):
-                original = owner.resolve_subject(row.ticker)
+                original = resolved[row.ticker] if resolved is not None else owner.resolve_subject(row.ticker)
                 # Canonical identities must come from the verified source, not UI tickers.
                 def identities(value):
                     if isinstance(value, dict):

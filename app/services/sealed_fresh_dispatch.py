@@ -330,7 +330,8 @@ The live source controller has no route here until the *whole* plan is admitted.
                 previous = row.response_binding.parents[0] if row.response_binding else None
         return resolved, receipts, selected
 
-    async def execute(self, logical_id, request, *, transport, normalize):
+    async def execute(self, logical_id, request, *, transport, normalize, reuse_us_market_origin=None,
+                      retained_sec_document=None):
         if self.halted:
             raise SourceSafetyStop('systemic_stop_latched')
         if encoded(json.loads((self.root / 'plan.json').read_bytes())) != encoded(self.plan.model_dump(mode='json')):
@@ -355,6 +356,47 @@ The live source controller has no route here until the *whole* plan is admitted.
             resolved_request_sha256=sha256_bytes(resolved.encode()), parent_receipts=parents)
         self._save(base / 'plan.json', dict(binding, descriptor=d.model_dump(mode='json')))
         self._save(base / 'resolved-request.json', dict(binding, request=json.loads(resolved), selected=selected))
+        if reuse_us_market_origin is not None or retained_sec_document is not None:
+            if retained_sec_document is not None:
+                if reuse_us_market_origin is not None:
+                    raise SourceSafetyStop('multiple_retained_response_origins')
+                from app.services.sealed_financial_reader import verify_retained_sec_document
+                proof, raw = retained_sec_document
+                finished = stamp()
+                original = verify_retained_sec_document(d, json.loads(resolved), selected, proof, raw,
+                    frozen_at=self.plan.frozen_at, selected_at=finished,
+                    discovery_finished_at=self.results[d.response_binding.parents[0]]['finished_at'])
+                extra = dict(retained_sec_origin=proof['pin'], retrieval_time=original['finished_at'],
+                             response_headers={})
+                self._save(base / 'retained-sec-origin.json', proof)
+            else:
+                origin, receipt, raw = _market_page_origin(self.root, self.plan, d, reuse_us_market_origin,
+                    resolved_sha256=binding['resolved_request_sha256'])
+                finished = stamp()
+                extra = dict(reused_wire=dict(logical_id=origin.logical_request_id,
+                    receipt_sha256=receipt['receipt_sha256']), retrieval_time=receipt['retrieval_time'],
+                    response_headers=receipt['response_headers'])
+            normalized = normalize(raw)
+            if (set(normalized) != {'value', 'source_period', 'consumer_complete'}
+                    or not normalized['source_period'] or normalized['consumer_complete'] is not True
+                    or _secret_field(normalized) or any(s in encoded(normalized).decode() for s in self.secrets)):
+                raise SourceSafetyStop('retained_response_normalization_failed')
+            if any(secret.encode() in raw for secret in self.secrets):
+                raise SourceSafetyStop('retained_response_secret_echo')
+            self._save(d.raw_path, raw, raw=True)
+            raw_sha256 = sha256_bytes(raw)
+            norm = dict(binding, status='PASS', source_sha256=raw_sha256,
+                        owner=d.normalizer, owner_sha256=d.owner_sha256, **normalized)
+            role = dict(binding, status='PASS', normalization_sha256=digest(norm), source_sha256=raw_sha256)
+            self._save(base / 'normalization.json', norm)
+            self._save(base / 'role-binding.json', role)
+            final = dict(binding, status='PASS', attempts=[], raw_sha256=raw_sha256,
+                normalization_sha256=digest(norm), role_binding_sha256=digest(role),
+                source_period=normalized['source_period'], finished_at=finished, **extra)
+            final['receipt_sha256'] = digest(final)
+            self._save(base / 'final.json', final)
+            self.results[logical_id] = final
+            return final
         started = stamp()
         self._save(base / 'start.json', dict(binding, started_at=started))
         final = dict(binding, started_at=started, status='FAILED', attempts=[], raw_sha256=None)
@@ -499,6 +541,37 @@ The live source controller has no route here until the *whole* plan is admitted.
         return final
 
 
+def _market_page_origin(root, plan, destination, reference, *, resolved_sha256):
+    """Only a physical page for the same selected US stock may feed Market."""
+    ticker = destination.subject
+    if not isinstance(reference, dict) or set(reference) != {'logical_id', 'receipt_sha256'}:
+        raise ValueError('consumer_us_market_reuse_scope_mismatch')
+    origin = next((d for d in plan.descriptors if d.logical_request_id == reference['logical_id']), None)
+    if (origin is None or plan.contract != 'selected-original-source-request-plan-v1' or plan.market != 'us'
+            or origin.market != destination.market or destination.market != 'us'
+            or origin.provider != destination.provider or destination.provider != 'kiwoom'
+            or origin.subject != ticker or origin.consumer_role != f'stock:us:{ticker}:adjusted_daily'
+            or destination.consumer_role != 'us_market:' + ticker
+            or origin.endpoint_operation != destination.endpoint_operation or destination.endpoint_operation != 'usa06012'
+            or origin.page_ordinal != destination.page_ordinal or origin.target_period != destination.target_period
+            or origin.config_identity_sha256 != destination.config_identity_sha256):
+        raise ValueError('consumer_us_market_reuse_scope_mismatch')
+    path = Path(root) / 'receipts' / origin.logical_request_id / 'final.json'
+    if any(p.is_symlink() for p in (path, *path.parents)):
+        raise ValueError('consumer_us_market_reuse_symlink')
+    receipt = json.loads(path.read_bytes())
+    if (receipt.get('status') != 'PASS' or 'reused_wire' in receipt or len(receipt.get('attempts',())) != 1
+            or receipt['attempts'][0].get('status') != 200
+            or receipt.get('resolved_request_sha256') != resolved_sha256):
+        raise ValueError('consumer_us_market_reuse_origin_mismatch')
+    consume_bound_result(root=root, plan=plan, logical_id=origin.logical_request_id,
+                         receipt_sha256=reference['receipt_sha256'])
+    raw = (Path(root) / origin.raw_path).read_bytes()
+    if sha256_bytes(raw) != receipt['raw_sha256']:
+        raise ValueError('consumer_us_market_reuse_origin_bytes_changed')
+    return origin, receipt, raw
+
+
 def _binding_parent(root, plan, key, receipt_sha256):
     base = Path(root) / 'receipts' / key
     if any(p.is_symlink() for p in (base, *base.parents)):
@@ -570,10 +643,28 @@ def consume_bound_result(*, root, plan, logical_id, receipt_sha256):
     if (encoded(resolved['request']).decode() != expected_wire
             or final['resolved_request_sha256'] != sha256_bytes(expected_wire.encode())):
         raise ValueError('consumer_resolved_wire_mismatch')
+    if 'reused_wire' in final:
+        _, origin, _ = _market_page_origin(root, plan, descriptor, final['reused_wire'],
+                                          resolved_sha256=final['resolved_request_sha256'])
+        if final['attempts'] or any(final[k] != origin[k] for k in ('raw_sha256','retrieval_time','response_headers')):
+            raise ValueError('consumer_us_market_reuse_origin_mismatch')
     raw_path = Path(root) / descriptor.raw_path
     if any(p.is_symlink() for p in (raw_path, *raw_path.parents)):
         raise ValueError('consumer_raw_symlink_denied')
     raw = raw_path.read_bytes()
+    if 'retained_sec_origin' in final:
+        from app.services.sealed_financial_reader import verify_retained_sec_document
+        proof = read(base / 'retained-sec-origin.json')
+        if descriptor.response_binding is None:
+            raise ValueError('retained_sec_requires_current_selection')
+        discovery = read(Path(root) / 'receipts' / descriptor.response_binding.parents[0] / 'final.json')
+        original = verify_retained_sec_document(descriptor, resolved['request'], resolved['selected'], proof, raw,
+            frozen_at=plan.frozen_at, selected_at=final['finished_at'], discovery_finished_at=discovery['finished_at'])
+        if (final['attempts'] or 'reused_wire' in final or final['response_headers']
+                or final['retained_sec_origin'] != proof['pin']
+                or final['retrieval_time'] != original['finished_at']
+                or len(discovery['attempts']) != 1 or discovery['attempts'][0]['status'] != 200):
+            raise ValueError('retained_sec_dispatch_lineage_mismatch')
     norm, role = read(base / 'normalization.json'), read(base / 'role-binding.json')
     if (sha256_bytes(raw) != final['raw_sha256'] or digest(norm) != final['normalization_sha256']
             or digest(role) != final['role_binding_sha256']

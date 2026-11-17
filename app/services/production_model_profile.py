@@ -74,12 +74,26 @@ class FourPanelSolHighCallBudgetV1:
 class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
     """Explicit plan cap, shared across markets. The old experiment stays separate."""
     def __init__(self, slots=None, *, plan=None, approved_max_invocations=None, approved_plan_sha256=None,
-                 journal_path=None, run_ledger=None):
+                 journal_path=None, run_ledger=None, market_origin=None, timeout_retry_cap=0):
         self.plan = plan
         self.journal = None
+        self.market_origin = market_origin
+        self.inherited, self.inherited_market_slot = {}, None
         self.run_ledger, self.run_intents = run_ledger, {}
+        self.timeout_retry_cap = timeout_retry_cap
+        self.exhausted, self.timeouts, self.attempts = set(), {}, {}
+        self.physical_calls = self.retry_used = 0
+        self.active_attempts = {}
+        if (type(timeout_retry_cap) is not int or timeout_retry_cap not in (0,1,2)
+                or timeout_retry_cap and (plan is None or journal_path is None or run_ledger is None
+                    or market_origin is not None or run_ledger.identity.get('timeout_retry_cap') != timeout_retry_cap
+                    or run_ledger.identity.get('max_models') != approved_max_invocations
+                    or plan.topology != 'CANONICAL_PRODUCTION'
+                    or list(plan.cohort.market_subjects) != ['us']
+                    or approved_max_invocations != len(plan.slots)+timeout_retry_cap)):
+            raise ValueError('model_timeout_retry_requires_approved_new_us_campaign')
         if plan is None:
-            if approved_max_invocations is not None or approved_plan_sha256 is not None or journal_path is not None or run_ledger is not None:
+            if approved_max_invocations is not None or approved_plan_sha256 is not None or journal_path is not None or run_ledger is not None or market_origin is not None:
                 raise ValueError('dynamic_model_plan_required')
             super().__init__(slots)
             self.maximum = len(self.slots)
@@ -88,7 +102,13 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
         if slots is not None or type(plan) is not ModelExecutionPlan:
             raise ValueError('exact_model_execution_plan_required')
         plan.validate()
-        if (type(approved_max_invocations) is not int or approved_max_invocations < len(plan.slots)
+        if market_origin is not None:
+            from app.services.accepted_market_replay import AcceptedMarketOrigin
+            markets = [s for s in plan.slots if s.stage == 'MARKET']
+            if type(market_origin) is not AcceptedMarketOrigin or journal_path is None or len(markets) != 1 or markets[0].market != 'kr':
+                raise ValueError('model_market_inheritance_requires_single_kr_plan_and_journal')
+            self.inherited_market_slot = markets[0].slot_id
+        if (type(approved_max_invocations) is not int or approved_max_invocations < len(plan.slots)-bool(market_origin)
                 or approved_max_invocations < 0 or approved_plan_sha256 != plan.sha256):
             raise ValueError('model_plan_not_within_approved_cap_or_hash')
         self.approved_plan_sha256 = approved_plan_sha256
@@ -98,20 +118,36 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
         self.stopped = False
         if journal_path is not None:
             from app.services.model_invocation_journal import ModelInvocationJournal
-            self.journal = ModelInvocationJournal(journal_path, plan_sha256=plan.sha256, maximum=self.maximum)
+            self.journal = ModelInvocationJournal(journal_path, plan_sha256=plan.sha256, maximum=self.maximum,
+                inherited_market_slot=self.inherited_market_slot, retry_cap=timeout_retry_cap)
             self._journal_state('OPEN')
+            if timeout_retry_cap and self.physical_calls:
+                raise ValueError('model_timeout_campaign_restart_not_allowed')
 
     def _journal_state(self, event, **value):
         if self.journal is not None:
             state = self.journal.transact(event, **value)
-            self.used, self.bound, self.accepted, self.stopped = (
-                state[k] for k in ('used', 'bound', 'accepted', 'stopped'))
+            self.used, self.bound, self.accepted, self.inherited, self.stopped = (
+                state[k] for k in ('used', 'bound', 'accepted', 'inherited', 'stopped'))
+            self.exhausted, self.timeouts, self.attempts, self.physical_calls, self.retry_used = (
+                state[k] for k in ('exhausted','timeouts','attempts','physical_calls','retry_used'))
 
-    def stop(self):
+    def stop(self, *, global_stop=True):
         self.stopped = True
         self._journal_state('STOP')
         if self.run_ledger is not None:
-            self.run_ledger.stop('MODEL_STAGE_FAILED')
+            if global_stop:
+                self.run_ledger.stop('MODEL_STAGE_FAILED')
+            else:
+                pending=self.run_ledger.state()['pending']
+                if pending is not None:
+                    if pending not in self.run_intents.values():
+                        raise ValueError('model_local_rejection_wrong_intent')
+                    self.run_ledger.reject_model_output(pending)
+                elif self.plan is not None:
+                    market=next(iter(self.plan.cohort.market_subjects))
+                    if market not in self.run_ledger.state()['failed_markets']:
+                        self.run_ledger.market_failed(market,'CANONICAL_OUTPUT_VALIDATION_REJECTED')
 
     def _verify_plan(self):
         self._journal_state('OPEN')
@@ -152,7 +188,7 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
             self.bound[slot.slot_id] = scope
         return dict(scope, dependency_outputs=dict(scope['dependency_outputs']))
 
-    def consume(self, panel, stage, payload_sha256, *, slot_scope=None):
+    def consume(self, panel, stage, payload_sha256, *, slot_scope=None, attempt=None):
         if self.plan is None:
             if slot_scope is not None:
                 raise ValueError('dynamic_slot_on_legacy_four_panel_budget')
@@ -167,22 +203,71 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
         if not isinstance(slot_scope, dict):
             raise ValueError('frozen_model_slot_scope_required')
         slot_id = slot_scope.get('slot_id')
+        retry = attempt is not None and attempt['ordinal'] == 2
         if (self.bound.get(slot_id) != slot_scope or slot_scope['stage'] != stage
-                or slot_scope['payload_sha256'] != payload_sha256 or slot_id in self.used
-                or len(self.used) >= self.maximum):
+                or (self.inherited_market_slot is not None and (
+                    slot_id == self.inherited_market_slot or self.inherited_market_slot not in self.inherited))
+                or slot_scope['payload_sha256'] != payload_sha256
+                or bool(self.timeout_retry_cap) != (attempt is not None)
+                or self.timeout_retry_cap and retry and slot_id not in self.active_attempts
+                or (slot_id in self.used) != retry
+                or max(len(self.used),self.physical_calls) >= self.maximum):
             raise ValueError('model_slot_scope_drift_used_or_budget_exhausted')
         if self.run_ledger is not None:
-            self.run_intents[slot_id] = self.run_ledger.before_model(self.plan, slot_scope)
+            kwargs = dict(attempt=attempt) if attempt is not None else {}
+            self.run_intents[slot_id] = self.run_ledger.before_model(self.plan, slot_scope, **kwargs)
         try:
             if self.journal is not None:
-                self._journal_state('CONSUME', slot_id=slot_id)
+                kwargs = dict(attempt=attempt) if attempt is not None else {}
+                self._journal_state('RETRY_ATTEMPT' if retry else 'CONSUME', slot_id=slot_id, **kwargs)
             else:
                 self.used.add(slot_id)
         except Exception:
             if self.run_ledger is not None:
                 self.run_ledger.stop('MODEL_INTENT_NOT_DISPATCHED')
             raise
+        if attempt is not None:
+            self.active_attempts[slot_id] = attempt
+            return self.physical_calls
         return len(self.used)
+
+    def confirmed_timeout(self, slot_id, proof):
+        self._verify_plan()
+        if not self.timeout_retry_cap or self.active_attempts.get(slot_id) != self.attempts[slot_id][-1]:
+            raise ValueError('model_timeout_recovery_not_in_active_process')
+        self._journal_state('TIMEOUT_CONFIRMED', slot_id=slot_id, proof=proof)
+        try:
+            self.run_ledger.model_confirmed_timeout(self.run_intents[slot_id], proof)
+        except Exception:
+            self.stop()
+            raise
+        fresh = self.run_ledger.identity.get('fresh_timeout_retry_market')
+        if (len(self.attempts[slot_id]) == 1 and self.retry_used < self.timeout_retry_cap
+                and (not fresh or self.bound[slot_id]['stage'] == 'B2')):
+            return True
+        if self.bound[slot_id]['stage'] == 'B2':
+            self._journal_state('RETRY_EXHAUSTED', slot_id=slot_id)
+            try:
+                self.run_ledger.model_b2_timeout_exhausted(self.bound[slot_id])
+            except Exception:
+                self.stop()
+                raise
+        return False
+
+    def inherit_market(self, *, session, item, snapshot):
+        from app.services.accepted_market_replay import verify_market_replay
+
+        self._verify_plan()
+        if self.market_origin is None or self.used or self.accepted or self.bound:
+            raise ValueError('model_market_inheritance_not_new_cycle')
+        session.verify_model_build('MARKET', item)
+        row, lineage = verify_market_replay(self.market_origin, snapshot=snapshot, session=session, item=item)
+        session.accept('MARKET', item, row['output'])
+        scope = self.bind_stage('MARKET', item)
+        self._journal_state('INHERIT_MARKET', slot_id=scope['slot_id'], lineage=lineage)
+        if self.run_ledger is not None:
+            self.run_ledger.inherit_market(self.plan, scope, lineage)
+        return row
 
     def resolve_scope(self, panel, stage, payload_sha256, slot_scope=None):
         if slot_scope is None and stage == 'B2':
@@ -199,7 +284,8 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
             raise ValueError('model_slot_original_acceptance_binding_gap')
         output_sha256 = _sha(output_sha256)
         if self.journal is not None:
-            self._journal_state('ACCEPT', slot_id=slot_id, output_sha256=output_sha256)
+            extra = dict(attempt_id=self.active_attempts[slot_id]['attempt_id']) if self.timeout_retry_cap else {}
+            self._journal_state('ACCEPT', slot_id=slot_id, output_sha256=output_sha256, **extra)
         else:
             self.accepted[slot_id] = output_sha256
         if self.run_ledger is not None:
@@ -207,7 +293,11 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
 
     def state(self):
         self._journal_state('OPEN')
-        return dict(approved_max_invocations=self.maximum, planned_slots=len(self.slots),
-                    consumed=len(self.used), remaining=self.maximum-len(self.used),
-                    remaining_planned_slots=len(self.slots)-len(self.used),
-                    plan_sha256=self.plan.sha256 if self.plan is not None else None)
+        result = dict(approved_max_invocations=self.maximum, planned_slots=len(self.slots),
+                      consumed=len(self.used), remaining=self.maximum-len(self.used),
+                      inherited=len(self.inherited), remaining_planned_slots=len(self.slots)-len(self.used)-len(self.inherited),
+                      plan_sha256=self.plan.sha256 if self.plan is not None else None)
+        if self.timeout_retry_cap:
+            result.update(physical_attempts=self.physical_calls, remaining=self.maximum-self.physical_calls,
+                          timeout_retries=self.retry_used, unissued=len(self.exhausted))
+        return result

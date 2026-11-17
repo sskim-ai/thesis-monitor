@@ -72,7 +72,9 @@ def auxiliary_label(market, venue, code):
 
 
 def relative_rank_text(text):
-    return text.replace(' TOP3', ' 상대 강세 TOP3').replace(' BOTTOM3', ' 상대 약세 BOTTOM3')
+    for rank, label in (('TOP3','상대 강세'),('BOTTOM3','상대 약세')):
+        text = text.replace(f' {label} {rank}',f' {rank}').replace(f' {rank}',f' {label} {rank}')
+    return text
 
 
 def display_fact_classification(fact, market):

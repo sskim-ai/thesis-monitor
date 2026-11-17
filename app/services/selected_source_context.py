@@ -66,9 +66,11 @@ def freeze_registered_child(*, registration_owner, policy, code_sha, native, nat
         valuation_official_identities=official_identities or {},registration_receipt_sha256=digest(receipt),
         private_class_c_storage='MEMORY_ONLY',financial_use_granted=False)
     if master_id is not None:frozen['master_id']=master_id
+    if receipt.get('execution') is not None:frozen['execution_event']=receipt['execution']
     if ohlcv_source_url is not None:frozen['ohlcv_source_url']=ohlcv_source_url
     if run_ledger is not None:
-        child=run_ledger.identity['children'][market]
+        child=(run_ledger.selected_child(market) if run_ledger.identity.get('staged_markets')
+               else run_ledger.identity['children'][market])
         if child['generation']!=generation or tuple(child['subjects'])!=stock.subjects:
             raise ValueError('selected_shared_budget_child_scope_changed')
         frozen['shared_run_ledger']=run_ledger.worker_binding()

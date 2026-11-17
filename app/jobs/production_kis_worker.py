@@ -32,7 +32,8 @@ def run(frame):
     if frozen.get('scope')=='SELECTED_ORIGINAL_RESEARCH_V1':
         from app.services.selected_run_lifecycle import SelectedRunLedger
         accounting=SelectedRunLedger.attach_worker(frozen['shared_run_ledger'])
-        child=accounting.identity['children']['kr']
+        child=(accounting.selected_child('kr') if accounting.identity.get('staged_markets')
+               else accounting.identity['children']['kr'])
         original_plan=_source_plan(frozen)
         if (child['generation']!=frozen['generation_id'] or tuple(child['subjects'])!=original_plan.subjects
                 or accounting.state()['plans'].get('kr')!=original_plan.plan_sha256):

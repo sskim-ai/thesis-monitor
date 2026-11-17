@@ -1,6 +1,6 @@
 """Visibility-only market selection, bound to the unchanged internal fact catalog."""
 
-from datetime import date
+from datetime import date, datetime
 from math import isclose
 from typing import Literal
 
@@ -11,6 +11,11 @@ from app.services.market_numeric_claim_service import digest, number, numeric_ca
 from app.services.macro_source_time import CONTRACT as TIME_CONTRACT
 from app.services.market_display_view import MarketUserDisplayView, verify_display_view
 from app.services.dated_macro_display_claims import MacroCaptureSelection
+from app.services.daily_sector_observations import detailed_count, sector_observations
+from app.services.kr_close_fx import (
+    FX_LABELS, KrCloseFxItem, KrCloseFxObservation, RetainedEcosFxCapture, format_dated_fx, retained_ecos_fx_display, retained_fx_display,
+)
+from app.services.unified_source_policy import UnifiedSourcePolicy
 
 CONTRACT = 'market-selected-display-v1'
 US_SECTORS = tuple(k for k, v in MARKET_SYMBOLS.items() if v == 'sector')
@@ -55,18 +60,24 @@ class MarketDisplayPlan(BaseModel):
     display_view: MarketUserDisplayView | None = None
     sector_taxonomy_version: Literal['sector-universe-user-confirmed-v2'] | None = Field(default=None, exclude_if=lambda v: v is None)
     macro_display_capture: MacroCaptureSelection | None = Field(default=None, exclude_if=lambda v: v is None)
+    sector_observation_audit: tuple[dict, ...] = Field(default=(), exclude_if=lambda v: not v)
+    fx_observations: tuple[KrCloseFxObservation, ...] = Field(default=(), exclude_if=lambda v: not v)
+    fx_provider_scope: tuple[str, ...] = Field(default=(), exclude_if=lambda v: not v)
+    fx_cutoff: datetime | None = Field(default=None, exclude_if=lambda v: v is None)
+    ecos_fx_body: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    ecos_fx_prior: tuple[RetainedEcosFxCapture, ...] = Field(default=(), exclude_if=lambda v: not v)
 
 
-def build_display_plan(source, *, market, assessment_date, eligible_refs, display_view=None, sector_taxonomy_version=None, macro_display_capture=None):
+def build_display_plan(source, *, market, assessment_date, eligible_refs, display_view=None,
+                       sector_taxonomy_version=None, macro_display_capture=None,
+                       fx_observations=(), fx_source_policy=None, fx_cutoff=None,ecos_fx_body=None,ecos_fx_prior=()):
     macro_claims = {}
     if macro_display_capture is not None:
         # A pinned archive is not a current Parent/run/cutoff authorization.
         raise ValueError('sealed_macro_capture_offline_source_only_not_current_owner')
     if sector_taxonomy_version not in (None, 'sector-universe-user-confirmed-v2'):
         raise ValueError('display_sector_taxonomy_version')
-    confirmed = sector_taxonomy_version is not None
-    if confirmed:
-        from app.services.confirmed_sector_taxonomy import display_fact_classification, auxiliary_label, relative_rank_text, REGISTRY_SHA256, PROVIDERS
+    from app.services.confirmed_sector_taxonomy import auxiliary_label, relative_rank_text, REGISTRY_SHA256, PROVIDERS
     session = source.get('session') or {}
     completed = session.get('latest_completed_regular_session_date')
     if (market not in {'us', 'kr'} or date.fromisoformat(completed) > date.fromisoformat(assessment_date)
@@ -75,13 +86,18 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
         raise ValueError('display_session_mismatch')
     facts = source.get('fact_catalog') or []
     by_id = {f['fact_id']: f for f in facts}
-    if len(by_id) != len(facts):
+    sector_refs = {f['fact_id'] for f in facts if f['fact_type'] in {'market_cross_section_sector','market_sector'}}
+    nonsectors = [f['fact_id'] for f in facts if f['fact_type'] not in {'market_cross_section_sector','market_sector'}]
+    if len(set(nonsectors)) != len(nonsectors) or set(nonsectors) & sector_refs:
         raise ValueError('display_duplicate_fact')
     registry = {}
+    bad_sector_registry = set()
     for row in source.get('numeric_registry') or []:
         key = (row['fact_id'], row['field_path'])
         if key in registry:
-            raise ValueError('display_duplicate_registry_key')
+            if key[0] not in sector_refs:
+                raise ValueError('display_duplicate_registry_key')
+            bad_sector_registry.add(key)
         registry[key] = row
     eligible = set(eligible_refs)
     display_fields = None
@@ -95,14 +111,44 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
         bound_alias_fields = {(b.canonical_ref, b.semantic_field) for b in display_view.identity_bindings}
         eligible = set(display_view.eligible_refs)
     items = []
+    retained_fx = {}
+    fx_scope = ()
+    fx_observations = tuple(fx_observations)
+    if fx_observations:
+        if market != 'kr' or not isinstance(fx_source_policy,UnifiedSourcePolicy) or fx_cutoff is None:
+            raise ValueError('retained_fx_requires_explicit_source_policy_and_cutoff')
+        if display_view is not None and fx_cutoff > datetime.fromisoformat(display_view.origin.query_as_of):
+            raise ValueError('retained_fx_after_original_source_cutoff')
+        fx_scope = tuple(sorted(fx_source_policy.allowed_providers))
+        fx_observations = tuple(r for r in fx_observations if fx_source_policy.permits(r.provider))
+        retained_fx = retained_fx_display(fx_observations,completed=completed,cutoff=fx_cutoff,source_policy=fx_source_policy)
+    if not fx_observations:
+        fx_scope,fx_cutoff = (),None
+    ecos_fx_prior = tuple(ecos_fx_prior)
+    if ecos_fx_prior and ecos_fx_body is None:
+        raise ValueError('retained_ecos_fx_current_capture_required')
+    if ecos_fx_body is not None:
+        if market!='kr' or display_view is None or not isinstance(fx_source_policy,UnifiedSourcePolicy):
+            raise ValueError('retained_ecos_fx_requires_verified_display_origin_and_policy')
+        matches = [f for f in facts if f['fields'].get('series_code')=='USDKRW']
+        if len(matches)!=1:
+            raise ValueError('retained_ecos_fx_usd_anchor_missing')
+        anchor = matches[0]
+        origin = display_view.origin.publication_origins.get(anchor['fact_id'],{})
+        extras = retained_ecos_fx_display(ecos_fx_body,publication=anchor['fields']['publication_context'],
+            source_hashes=origin.get('source_hashes',()),anchor_value=anchor['fields']['value'],source_policy=fx_source_policy,
+            prior_captures=ecos_fx_prior)
+        retained_fx.update({k:v for k,v in extras.items() if k not in retained_fx})
+        fx_scope = tuple(sorted(fx_source_policy.allowed_providers))
 
-    def bind(fact, field, units):
+    def bind(fact, field, units, *, observation=False):
         fields = fact['fields']
         row = registry.get((fact['fact_id'], 'fields.' + field), {})
-        if (fact['fact_id'] not in eligible or not number(fields.get(field))
+        if (not number(fields.get(field))
+                or (not observation and (fact['fact_id'] not in eligible
                 or (display_fields is not None and 'fields.' + field not in display_fields.get(fact['fact_id'], set()))
-                or row.get('registered') is not True or (row.get('prose_allowed') is not True
-                    and (fact['fact_id'], 'fields.' + field) not in bound_alias_fields)
+                or (row.get('prose_allowed') is not True and (fact['fact_id'], 'fields.' + field) not in bound_alias_fields)))
+                or row.get('registered') is not True
                 or row.get('scope') not in {'market', 'both'} or row.get('unit') not in units
                 or row.get('value') != fields[field]):
             return None
@@ -167,7 +213,7 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
             ('price_usd_per_barrel', {'USD_per_barrel'}, 'USD/배럴') if series == 'DCOILWTICO' else
             ('level', {'index', 'points', 'point'}, '') if series in {'VIXCLS', 'DTWEXBGS'} else
             ('level_pct', {'pct', 'percent'}, '%'))
-        binding = bind(fact, key, units) if fact else None
+        binding = bind(fact, key, units, observation=series=='USDKRW') if fact else None
         valid = bool(fact and binding and publication.get('contract') == TIME_CONTRACT
             and publication.get('latest_available_at_query_time') is True
             and publication.get('display_eligible') is True
@@ -179,7 +225,8 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
             and (series != 'USDKRW' or publication.get('observation_precision') == 'daily'))
         if valid and series == 'USDKRW':
             from app.services.latest_published_fx import validate_context
-            valid = validate_context(publication, observation_date=fact['as_of_date'],
+            # A published FX observation need not share the equity close date.
+            valid = fields.get('provider')=='ecos' and validate_context(publication, observation_date=fact['as_of_date'],
                 response_hashes={publication['response_sha256']}, query_as_of=publication['query_as_of'])
         label = fields.get('label', series)
         text = f"{label}: {binding.value:,.2f}{suffix} ({fact['as_of_date']} 관측)" if valid else None
@@ -198,10 +245,7 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
                 previous = derived['previous_observation_date'] or '자료 부족'
                 text += f' · {delta} (직전 {previous} 대비)'
         if valid and series == 'USDKRW':
-            change = bind(fact, 'change_pct', {'pct', 'percent'})
-            if change and fields.get('today_signal_eligible') is True:
-                bindings.append(change)
-                text += f' · {change.value:+.2f}%'
+            text = format_dated_fx(KrCloseFxItem('USDKRW','원/달러',binding.value,observation_date=fact['as_of_date']))
         add('fx' if series == 'USDKRW' else 'macro', label, [fact] if valid else [], bindings, text=text,
             proof={'publication_context_sha256': digest(publication), **({'display_only_derived_claim_id':derived['claim_id'],
                 'derived_registry_sha256':digest(derived['numeric_registry']), 'direction_eligible':False} if derived else {})} if valid else {})
@@ -211,52 +255,49 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
             macro(series)
     add('judgment', '시장 판단', text='', formatter='accepted-numeric-free-narrative')
 
+    observed, sector_audit = sector_observations(facts, registry, market=market,
+        completed=completed, bad_registry=bad_sector_registry)
     for venue in (('US',) if market == 'us' else ('KOSPI', 'KOSDAQ')):
         candidates = []
-        identities = set()
-        for fact in facts:
-            fields = fact['fields']
-            correct_scope = (fact['fact_type'] == 'market_sector' and fields.get('series_code') in US_SECTORS
-                             if market == 'us' else fact['fact_type'] == 'market_cross_section_sector'
-                             and fields.get('market_scope') == venue
-                             and fields.get('taxonomy') == 'kiwoom-sector-index-v1'
-                             and fields.get('metric_role') in {'sector_price_proxy', 'actual_sector_breadth'})
-            if not correct_scope or not current(fact):
+        for v, code, category, fact, row in observed:
+            if v != venue:
                 continue
-            binding = bind(fact, 'return_pct', {'pct', 'percent'})
-            if binding:
-                identity = fields.get('series_code') if market == 'us' else fields.get('sector_code')
-                if not identity or identity in identities:
-                    raise ValueError('ambiguous_display_sector:' + venue)
-                identities.add(identity)
-                if confirmed:
-                    category, reason = display_fact_classification(fact, market)
-                    if category not in {'US_BROAD_SECTOR', 'KR_DETAILED_INDUSTRY'}:
-                        if category in {'US_SEMICONDUCTOR_WATCH', 'KR_SIZE_STYLE_INDEX'}:
-                            if market == 'kr' and (fields.get('listed_count') is None or fields['listed_count'] <= 0):
-                                continue
-                            label = auxiliary_label(market, venue, identity)
-                            add('sector_auxiliary', venue + ' ' + label, [fact], [binding],
-                                text=f"{venue} {label} {fields.get('sector') or identity}: {binding.value:+.2f}% · {completed}",
-                                proof=dict(provider=PROVIDERS[market], registry_sha256=REGISTRY_SHA256,
-                                    source_fact_sha256=digest(fact), category=category, reason=reason))
-                        continue
-                candidates.append((fact, binding))
-        ordered = sorted(candidates, key=lambda pair: (-pair[1].value, pair[0]['fact_id']))
+            binding = DisplayBinding(fact_id=fact['fact_id'],field_path='fields.return_pct',
+                value=row['value'],unit=row['unit'],registry_row_sha256=digest(row),fact_sha256=digest(fact))
+            if category in {'KR_DETAILED_INDUSTRY','US_BROAD_SECTOR'}:
+                candidates.append((code,fact,binding))
+            elif category == 'US_SEMICONDUCTOR_WATCH' or sector_taxonomy_version is not None:
+                label = auxiliary_label(market, venue, code)
+                add('sector_auxiliary',venue+' '+label,[fact],[binding],
+                    text=f"{venue} {label} {fact['fields'].get('sector') or code}: {binding.value:+.2f}% · {completed}",
+                    proof=dict(provider=PROVIDERS[market],registry_sha256=REGISTRY_SHA256,category=category,observation_only=True))
+        partial = len(candidates) < detailed_count(venue)
         proof = dict(venue=venue, session=completed,
             taxonomy='configured-sector-etf-proxies' if market == 'us' else 'kiwoom-sector-index-v1',
-            qualified_universe_fact_ids=sorted(f['fact_id'] for f, _ in ordered),
-            tie_break='canonical_fact_id_ascending')
-        for ranking, selected in (('TOP3', ordered[:3]), ('BOTTOM3', sorted(ordered[-3:], key=lambda x: (x[1].value, x[0]['fact_id'])))):
-            if len(ordered) < 6:
-                add('sectors', venue + ' ' + ranking, proof=proof)
+            observed_universe_fact_ids=sorted(f['fact_id'] for _, f, _ in candidates),
+            partial=partial, tie_break='sector_code_ascending', directional_authority_added=False)
+        for ranking, sign in (('TOP3',-1),('BOTTOM3',1)):
+            label = relative_rank_text(venue+' '+ranking)
+            selected = sorted(candidates,key=lambda x:(sign*x[2].value,x[0]))[:3]
+            if not selected:
+                add('sectors',label,proof=proof,unavailable_text=label+': 관측값 미확보')
                 continue
-            values = [f"{f['fields'].get('sector') or f['fields'].get('label')}: {b.value:+.2f}%" for f, b in selected]
-            add('sectors', venue + ' ' + ranking, [f for f, _ in selected], [b for _, b in selected],
-                text=(relative_rank_text(venue + ' ' + ranking) if confirmed else venue + ' ' + ranking) + ' · ' + ' / '.join(values), proof=proof)
+            values = [f"{f['fields'].get('sector') or f['fields'].get('label') or code}: {b.value:+.2f}%" for code,f,b in selected]
+            add('sectors',label,[f for _,f,_ in selected],[b for _,_,b in selected],
+                text=label+(' (확보 업종 기준)' if partial else '')+' · '+' / '.join(values),proof=proof)
 
     if market == 'kr':
-        macro('USDKRW')
+        add('fx_note','환율 관측',text='시장 해석은 당시 입력 기준이며, 환율은 별도 관측값입니다.',formatter='display-only-note')
+        for series,label in FX_LABELS.items():
+            if series in retained_fx:
+                item,proof = retained_fx[series]
+                anchor = unique_series('USDKRW') if series=='USDKRW_KR_CLOSE' and 'raw_response_sha256' in proof else None
+                basis = ' · ECOS 매매기준율' if proof.get('series_basis')=='ECOS_REFERENCE_RATE' else ''
+                add('fx',label,[anchor] if anchor else [],text=format_dated_fx(item)+basis,proof=proof,formatter='dated-fx-observation')
+            elif series=='USDKRW_KR_CLOSE':
+                macro('USDKRW')
+            else:
+                add('fx',label,unavailable_text=label+': 관측값 미확보')
     else:
         catalog = numeric_catalog(source, market=market, assessment_date=assessment_date, eligible_refs=eligible_refs)
         night = [c for c in catalog['claims'] if c['claim_type'] == 'OFFICIAL_NIGHT']
@@ -269,13 +310,18 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
             unavailable_text='한국 야간선물 · KOSPI200\n일: 자료 부족\n주: 자료 부족\n월: 자료 부족')
     return MarketDisplayPlan(market=market, assessment_date=assessment_date, completed_session=completed,
         internal_source_sha256=digest(source), eligible_refs=tuple(sorted(eligible_refs)), items=tuple(items),
-        display_view=display_view, sector_taxonomy_version=sector_taxonomy_version, macro_display_capture=macro_display_capture)
+        display_view=display_view, sector_taxonomy_version=sector_taxonomy_version, macro_display_capture=macro_display_capture,
+        sector_observation_audit=tuple(sector_audit),fx_observations=fx_observations,
+        fx_provider_scope=fx_scope,fx_cutoff=fx_cutoff,ecos_fx_body=ecos_fx_body,ecos_fx_prior=ecos_fx_prior)
 
 
 def render_display_plan(plan, source, narrative):
     expected = build_display_plan(source, market=plan.market, assessment_date=plan.assessment_date,
                                   eligible_refs=plan.eligible_refs, display_view=plan.display_view,
-                                  sector_taxonomy_version=plan.sector_taxonomy_version, macro_display_capture=plan.macro_display_capture)
+                                  sector_taxonomy_version=plan.sector_taxonomy_version, macro_display_capture=plan.macro_display_capture,
+                                  fx_observations=plan.fx_observations,fx_cutoff=plan.fx_cutoff,
+                                  ecos_fx_body=plan.ecos_fx_body,ecos_fx_prior=plan.ecos_fx_prior,
+                                  fx_source_policy=UnifiedSourcePolicy(frozenset(plan.fx_provider_scope)) if plan.fx_provider_scope else None)
     if plan != expected:
         raise ValueError('selected_market_display_binding_mismatch')
     if any(char.isnumeric() for char in narrative):

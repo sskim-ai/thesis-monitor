@@ -1,4 +1,5 @@
 import asyncio
+from copy import deepcopy
 from datetime import date,datetime,timezone
 import hashlib,json
 from pathlib import Path
@@ -6,6 +7,97 @@ import httpx
 import pytest
 from tests.test_c22s_source_only import capture,rows,CUTOFF,DATES,ROOT
 from app.services.krx_source_only import issue_source_only_parent,collect_source_only
+
+
+@pytest.mark.parametrize('variant', ['ok','http_failure','gap','order','no_pair','history_policy',
+    'wrong_market','wrong_generation','wrong_product','wrong_url','tamper','attempted_tail','systemic_stop'])
+def test_selected_night_probe_only_closes_verified_unopened_tail(tmp_path,monkeypatch,variant):
+    from datetime import timedelta
+    from types import SimpleNamespace
+    from urllib.parse import urlsplit
+    from pydantic import TypeAdapter
+    from app.jobs.probe_krx_night_futures import fetch_live_probe,KRX_FUTURES_DAILY_URL
+    from app.macro.providers.base import MacroProviderResult
+    from app.macro.providers.krx import materialize_night_probe
+    from app.services.production_source_seal import _verified_night_probe_tail
+
+    cutoff = datetime.fromisoformat('2026-11-10T15:10:00+09:00')
+    dates = [(cutoff.date()-timedelta(days=i)).isoformat() for i in range(7)]
+    ids = ['night:KOSPI200:'+d for d in dates]
+    generation = 'synthetic-terminal-tail'
+    descriptors = [SimpleNamespace(logical_request_id=key,provider='krx_night_futures',subject='KOSPI200',
+        market='kr',consumer_role=key,endpoint_operation='fut_bydd_trd',response_binding=None,
+        raw_path=f'raw/{key}/source.body',request_json=json.dumps(dict(method='GET',
+            url=KRX_FUTURES_DAILY_URL+'?basDd='+day.replace('-','')))) for key,day in zip(ids,dates)]
+    plan = SimpleNamespace(frozen_at=cutoff,market='us',generation_id=generation,descriptors=descriptors)
+    frozen = dict(scope='SELECTED_ORIGINAL_RESEARCH_V1',selected_market='us',generation_id=generation,
+        frozen_at=cutoff.isoformat(),query_kst_date=dates[0],
+        candidate=dict(night_query_dates=dates,consumer_policy=dict(us_night='ORIGINAL_CURRENT_PROBE_ONLY')))
+    finals, receipts = {}, []
+
+    def write(path,value):
+        path.parent.mkdir(parents=True,exist_ok=True)
+        path.write_text(json.dumps(value))
+
+    def send(request):
+        day=request.url.params['basDd']
+        index=len(receipts)
+        key=ids[index]
+        night=index==0 and variant!='no_pair'
+        response=httpx.Response(200,json={'OutBlock_1':[rows(day,'야간' if night else '정규',
+            '101.00' if night else '100.00')]})
+        artifact=descriptors[index].raw_path
+        path=tmp_path/'dispatch'/artifact
+        path.parent.mkdir(parents=True,exist_ok=True)
+        path.write_bytes(response.content)
+        raw_hash=hashlib.sha256(response.content).hexdigest()
+        stamp=(cutoff+timedelta(seconds=index+1)).isoformat()
+        finals[key]=dict(status='PASS',raw_sha256=raw_hash,receipt_sha256=f'fixture-{index}',
+            attempts=[dict(status=200,started_at=stamp,finished_at=stamp,raw_sha256=raw_hash)])
+        receipts.append(dict(sealed_logical_id=key,sealed_final_receipt_sha256=f'fixture-{index}',
+            artifact=artifact,artifact_sha256=raw_hash,requested_at=stamp,received_at=stamp,
+            run_id=generation,provider='krx_night_futures',outcome='HTTP_RESPONSE',http_status=200,
+            request=dict(method=request.method,route=str(request.url.copy_with(query=None)),params=dict(request.url.params))))
+        return response
+
+    probe=asyncio.run(fetch_live_probe(run_date=cutoff.date(),observation_time=cutoff,api_key='dummy',
+        transport=httpx.MockTransport(send),max_lookback_days=2))
+    probe.live_source=True
+    value=TypeAdapter(MacroProviderResult).dump_python(materialize_night_probe(probe,history_directory=tmp_path/'history'),mode='json')
+    phase=dict(status='CAPTURED_NOT_QUALIFIED',value=value)
+    outcome=dict(logical_results=deepcopy(finals),phases=dict(night=phase),completed_at=(cutoff+timedelta(seconds=7)).isoformat())
+    if variant=='http_failure':
+        finals[ids[1]]['attempts'][0]['status']=503
+        outcome['logical_results']=deepcopy(finals)
+    elif variant=='gap':
+        finals[ids[2]]=finals.pop(ids[1])
+    elif variant=='order':
+        receipts.reverse()
+    elif variant=='history_policy':
+        frozen['candidate']['consumer_policy']['us_night']='BACKFILL_REQUIRED'
+    elif variant=='wrong_market':
+        frozen['selected_market']='kr'
+    elif variant=='wrong_generation':
+        frozen['generation_id']='other'
+    elif variant=='wrong_product':
+        descriptors[1].subject='KOSDAQ150'
+    elif variant=='wrong_url':
+        descriptors[1].request_json=descriptors[1].request_json.replace(urlsplit(KRX_FUTURES_DAILY_URL).hostname,'other.invalid')
+    elif variant=='tamper':
+        (tmp_path/'dispatch'/descriptors[1].raw_path).write_bytes(b'{}')
+    elif variant=='attempted_tail':
+        write(tmp_path/'dispatch/receipts'/ids[2]/'attempt-1.start.json',{})
+    elif variant=='systemic_stop':
+        outcome['phases']['systemic_stop']={}
+    for index,receipt in enumerate(receipts):
+        write(tmp_path/f'night/probe/receipt-{index:03}.json',receipt)
+    write(tmp_path/'night/query.json',{'observed_at':cutoff.isoformat()})
+    write(tmp_path/'phase-night.json',phase)
+    # The sealed receipt owner itself is unchanged and exercised by the real
+    # retained corpus; only the synthetic dispatch envelope is stubbed here.
+    monkeypatch.setattr('app.services.production_source_seal.consume_bound_result',lambda **_:None)
+    result=_verified_night_probe_tail(tmp_path,frozen,outcome,plan,finals)
+    assert set(result)==(set(ids[2:]) if variant=='ok' else set())
 
 
 def test_first_required_raw_identity_failure_does_not_send_second(tmp_path):

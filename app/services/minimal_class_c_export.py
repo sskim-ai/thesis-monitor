@@ -35,6 +35,41 @@ COLUMNS = {
     'investmentthesis': tuple('id ticker version core_thesis time_horizon thesis_drivers validation_metrics market_expectations valuation_framework multiple_expansion_signals multiple_compression_signals strengthen_signals weaken_signals invalidation_signals price_rules macro_exposures status source created_at'.split()),
 }
 
+LEGACY_PRIVATE_EXPORT_BYTES = 8 * 1024 * 1024
+MAX_PRIVATE_EXPORT_BYTES = 64 * 1024 * 1024
+
+
+def validate_export_limit(value):
+    if type(value) is not int or not 1 <= value <= MAX_PRIVATE_EXPORT_BYTES:
+        raise ValueError('class_c_finite_private_export_limit_required')
+    return value
+
+
+def _export_sizes(rows, raw):
+    """Only byte counts and column names leave this measurement, never values."""
+    tables = {}
+    for table, records in rows.items():
+        fields = {}
+        max_row = 0
+        for row in records:
+            max_row = max(max_row, len(encoded(row)))
+            for column, value in row.items():
+                size = len(encoded(value))
+                field = fields.setdefault(column, dict(serialized_value_bytes=0,
+                    serialized_entry_bytes=0, max_cell_bytes=0))
+                field['serialized_value_bytes'] += size
+                field['serialized_entry_bytes'] += len(encoded(column)) + 1 + size
+                field['max_cell_bytes'] = max(field['max_cell_bytes'], size)
+        size = len(encoded(records))
+        tables[table] = dict(rows=len(records), serialized_bytes=size,
+            max_row_bytes=max_row, fields=fields,
+            structural_bytes=size-sum(v['serialized_entry_bytes'] for v in fields.values()))
+    return dict(uncompressed_utf8_bytes=len(raw), tables=tables,
+        root_structural_bytes=len(raw)-sum(t['serialized_bytes'] for t in tables.values()),
+        original_rows_sha256=hashlib.sha256(raw).hexdigest(),
+        schema_sha256=digest(COLUMNS),
+        serializer_sha256=hashlib.sha256(Path(__file__).with_name('unified_snapshot_contract.py').read_bytes()).hexdigest())
+
 
 @dataclass(frozen=True)
 class ExportPermission:
@@ -45,10 +80,12 @@ class ExportPermission:
     device: int
     inode: int
     subjects: tuple[str, ...]
+    max_private_export_bytes: int = LEGACY_PRIVATE_EXPORT_BYTES
 
     def require(self):
         if not self.approved or not self.event_id:
             raise PermissionError('class_c_explicit_read_authorization_required')
+        validate_export_limit(self.max_private_export_bytes)
         if not self.subjects or len(self.subjects) != len(set(self.subjects)) or len(self.subjects) > 100:
             raise ValueError('class_c_bounded_cohort_required')
         if any(not isinstance(t, str) or not t or len(t) > 32 for t in self.subjects):
@@ -86,7 +123,7 @@ class QueryBoundary:
         return sqlite3.SQLITE_OK if allowed else sqlite3.SQLITE_DENY
 
 
-def read_authorized_rows(permission: ExportPermission, *, connect=None):
+def read_authorized_rows(permission: ExportPermission, *, connect=None, diagnostics=None):
     permission.require()  # Must fail before even opening a connection.
     if any(set(COLUMNS[t]) != set(m.model_fields) for t, m in MODELS.items()):
         raise ValueError('class_c_model_column_scope_changed')
@@ -95,6 +132,10 @@ def read_authorized_rows(permission: ExportPermission, *, connect=None):
     trace = []
     rows, metadata = {}, {}
     start = datetime.now(timezone.utc)
+    started = time.monotonic()
+    measurement = dict(status='READ_STARTED', subjects=list(permission.subjects),
+        max_private_export_bytes=permission.max_private_export_bytes,
+        sqlite_mode='ro', query_only=False, total_changes=0)
     deadline = time.monotonic() + 15
     connection = (connect or sqlite3.connect)(permission.database.as_uri() + '?mode=ro', uri=True,
                          isolation_level=None, timeout=3)
@@ -105,6 +146,7 @@ def read_authorized_rows(permission: ExportPermission, *, connect=None):
         connection.set_progress_handler(lambda: int(time.monotonic() > deadline), 1000)
         connection.execute('PRAGMA query_only=ON')
         assert connection.execute('PRAGMA query_only').fetchone() == (1,)
+        measurement['query_only'] = True
         boundary.boot = False
         connection.execute('BEGIN')
         assert connection.in_transaction
@@ -133,11 +175,15 @@ def read_authorized_rows(permission: ExportPermission, *, connect=None):
         statements.append(sql)
         active_counts = dict(connection.execute(sql, permission.subjects).fetchall())
         metadata['investmentthesis']['older_active_versions_not_exported'] = sum(max(0,n-1) for n in active_counts.values())
-        if len(encoded(rows)) > 8*1024*1024:
+        raw = encoded(rows)
+        measurement.update(_export_sizes(rows, raw))
+        if len(raw) > permission.max_private_export_bytes:
+            measurement.update(status='REJECTED', error_code='class_c_private_export_size_limit')
             raise ValueError('class_c_private_export_size_limit')
         permission.require()
         assert connection.in_transaction and connection.total_changes == 0 and not boundary.denied
         end = datetime.now(timezone.utc)
+        measurement['status'] = 'ACCEPTED'
         return rows, dict(contract='minimal-class-c-readonly-v1', permission_event=permission.event_id,
             source_identity=dict(device=permission.device,inode=permission.inode),
             snapshot_started_at=start.isoformat(), snapshot_finished_at=end.isoformat(),
@@ -146,10 +192,17 @@ def read_authorized_rows(permission: ExportPermission, *, connect=None):
             sqlite_mode='ro', query_only=True, total_changes=0, tables=metadata,
             observed_column_reads=sorted(boundary.reads), denied_queries=boundary.denied,
             statement_templates=statements, query_trace=trace, generation_retroactive=False,
-            whole_database_copy=False, wal_copy=False, original_rows_sha256=digest(rows))
+            whole_database_copy=False, wal_copy=False, original_rows_sha256=hashlib.sha256(raw).hexdigest(),
+            private_export=measurement)
     finally:
         if connection.in_transaction:
             connection.execute('ROLLBACK')
+        measurement.update(elapsed_seconds=time.monotonic()-started,
+            SELECT=sum(t['operation']=='SELECT' for t in trace),
+            ROLLBACK=sum(t['operation']=='ROLLBACK' for t in trace),
+            total_changes=connection.total_changes, in_transaction_after_rollback=connection.in_transaction)
+        if diagnostics is not None:
+            diagnostics.update(deepcopy(measurement))
         connection.close()
 
 
@@ -162,8 +215,8 @@ _CAPTURES = WeakKeyDictionary()
 _PROJECTIONS = WeakKeyDictionary()
 
 
-def capture_authorized_class_c(permission: ExportPermission, *, connect=None):
-    rows, receipt = read_authorized_rows(permission, connect=connect)
+def capture_authorized_class_c(permission: ExportPermission, *, connect=None, diagnostics=None):
+    rows, receipt = read_authorized_rows(permission, connect=connect, diagnostics=diagnostics)
     handle = CapturedClassC()
     _CAPTURES[handle] = (encoded(rows), encoded(receipt), permission.subjects)
     return handle
@@ -178,37 +231,75 @@ def captured_private_snapshot(handle):
 
 
 def project_captured_export(handle, *, market: str, session_key: str, policy: UnifiedSourcePolicy,
-                            cycle_owner=None):
+                            cycle_owner=None, subjects=None, execution=None, regular_assignments=None,
+                            reference_capture=None,retained_capture_sha256=None,monitoring_only=False):
     raw, receipt = captured_private_snapshot(handle)
     rows = json.loads(raw)
-    subjects = _CAPTURES[handle][2]
+    approved_subjects = _CAPTURES[handle][2]
     if digest(rows) != receipt['original_rows_sha256'] or any(
-            not {r['ticker'] for r in values} <= set(subjects) for values in rows.values()):
+            not {r['ticker'] for r in values} <= set(approved_subjects) for values in rows.values()):
         raise ValueError('class_c_capture_binding_changed')
+    if subjects is not None:
+        if not subjects or len(set(subjects))!=len(subjects) or not set(subjects)<=set(approved_subjects):
+            raise ValueError('class_c_selected_subjects_outside_capture')
+        rows={t:[r for r in values if r['ticker'] in subjects] for t,values in rows.items()}
     # Private, original in-process projection is judged once per frozen market.
     # Public JSON cannot insert cache entries or reconstruct the capture handle.
     files=(Path(__file__),Path(__file__).with_name('onboarding_readiness_service.py'),
         Path(__file__).with_name('unified_persisted_projection.py'))
     pins={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in files}
-    key=(market,session_key,digest(sorted(policy.allowed_providers)),id(cycle_owner))
+    source_cutoff = captured_source_cutoff(handle, reference_capture=reference_capture,
+        retained_capture_sha256=retained_capture_sha256)
+    key=(market,session_key,digest(sorted(policy.allowed_providers)),id(cycle_owner),
+         tuple(sorted(subjects)) if subjects is not None else None,digest(execution),digest(regular_assignments),
+         source_cutoff,monitoring_only)
     cache=_PROJECTIONS.setdefault(handle,{})
     if key in cache:
         previous,value=cache[key]
         if previous!=pins:raise ValueError('class_c_projection_implementation_changed')
         return deepcopy(value)
     value=project_authorized_rows(rows,market=market,session_key=session_key,
-        cutoff=datetime.fromisoformat(receipt['cutoff']),policy=policy,cycle_owner=cycle_owner)
+        cutoff=datetime.fromisoformat(source_cutoff),policy=policy,cycle_owner=cycle_owner,
+        execution=execution,regular_assignments=regular_assignments,monitoring_only=monitoring_only)
     cache[key]=(pins,deepcopy(value))
     return value
 
 
-def registration_eligibility_audit(capture, *, approved_subjects, market_subjects, policy, sessions):
+def captured_source_cutoff(handle, *, reference_capture=None,retained_capture_sha256=None):
+    """An unchanged, newly read capture may reconsume its dated original rows.
+
+    The current capture time is never changed. A retained reference can only
+    select an older source cutoff after exact complete-row and schema parity.
+    The caller must bind the retained receipt to its previously verified seal.
+    """
+    _,current=captured_private_snapshot(handle)
+    if reference_capture is None:
+        if retained_capture_sha256 is not None:raise ValueError('retained_capture_missing')
+        return current['cutoff']
+    prior=reference_capture
+    explicitly_pinned=(retained_capture_sha256 is not None and digest(prior)==retained_capture_sha256)
+    if retained_capture_sha256 is not None and not explicitly_pinned:
+        raise ValueError('retained_registration_receipt_pin_changed')
+    if (prior.get('contract')!=current['contract'] or prior.get('source_identity')!=current['source_identity']
+            or (prior.get('permission_event')!=current['permission_event'] and not explicitly_pinned)
+            or prior.get('original_rows_sha256')!=current['original_rows_sha256']
+            or prior.get('sqlite_mode')!='ro' or prior.get('total_changes')!=0
+            or any(prior.get('private_export',{}).get(k)!=current.get('private_export',{}).get(k)
+                for k in ('schema_sha256','serializer_sha256'))
+            or not datetime.fromisoformat(prior['snapshot_finished_at'])<=datetime.fromisoformat(current['snapshot_started_at'])):
+        raise ValueError('retained_registration_exact_original_rows_required')
+    return prior['cutoff']
+
+
+def registration_eligibility_audit(capture, *, approved_subjects, market_subjects, policy, sessions,
+                                 execution=None, regular_assignments=None, monitoring_only=False):
     """Safe diagnostics from the SAME captured rows and canonical projections."""
     from app.services.onboarding_readiness_service import canonical_registration_eligibility
     raw,receipt=captured_private_snapshot(capture)
     rows=json.loads(raw)
     indices={t:{r['ticker']:MODELS[t].model_validate(r) for r in values} for t,values in rows.items()}
-    projections={m:project_captured_export(capture,market=m,session_key=sessions[m],policy=policy)
+    projections={m:project_captured_export(capture,market=m,session_key=sessions[m],policy=policy,
+        execution=execution,regular_assignments=regular_assignments,monitoring_only=monitoring_only)
         for m in market_subjects}
     by_ticker={r['ticker']:r for p in projections.values() for r in p['universe']['eligibility_audit']}
     audit=[]
@@ -217,7 +308,9 @@ def registration_eligibility_audit(capture, *, approved_subjects, market_subject
         if row is None:
             row=canonical_registration_eligibility(ticker=ticker,item=indices['watchlistitem'].get(ticker),
                 security=indices['securitymaster'].get(ticker),thesis=indices['investmentthesis'].get(ticker),
-                company=indices['company'].get(ticker),cutoff=datetime.fromisoformat(receipt['cutoff']))
+                company=indices['company'].get(ticker),cutoff=datetime.fromisoformat(receipt['cutoff']),
+                execution=execution,regular_assignment=(regular_assignments or {}).get(ticker),
+                monitoring_only=monitoring_only)
         expected=[m for m,ts in market_subjects.items() if ticker in ts]
         detected=row['detected_market']
         scope_denials=['MARKET_CLASSIFICATION_MISMATCH'] if detected is not None and expected!=[detected] else []
@@ -240,7 +333,8 @@ def registration_eligibility_audit(capture, *, approved_subjects, market_subject
 
 
 def project_authorized_rows(rows, *, market: str, session_key: str,
-                            cutoff: datetime, policy: UnifiedSourcePolicy, cycle_owner=None):
+                            cutoff: datetime, policy: UnifiedSourcePolicy, cycle_owner=None,
+                            execution=None, regular_assignments=None, monitoring_only=False):
     """Structural projection only, NOT source authentication; use the capture gate."""
     if set(rows) != set(MODELS):
         raise ValueError('class_c_exact_four_tables_required')
@@ -281,7 +375,8 @@ def project_authorized_rows(rows, *, market: str, session_key: str,
                         raise ValueError('class_c_original_identity_duplicate')
                     originals[key] = digest(original)
             result = project_local_seed(session,market=market,session_key=session_key,cutoff=cutoff,
-                policy=policy,cycle_owner=cycle_owner)
+                policy=policy,cycle_owner=cycle_owner,execution=execution,regular_assignments=regular_assignments,
+                monitoring_only=monitoring_only)
             for role in result['roles'].values():
                 for record in role['records']:
                     if originals[(record['table'],record['record_id'])] != record['original_record_sha256']:

@@ -207,17 +207,136 @@ def build_onboarding_decision_evidence_packet(
     )
 
 
-def _signed_in_codex_bin() -> str:
-    candidates = (
-        os.environ.get("CODEX_CLI_BIN"),
-        "/Applications/ChatGPT.app/Contents/Resources/codex",
-        shutil.which("codex"),
-        "/Users/sskim/Applications/Codex.app/Contents/Resources/codex",
+def build_onboarding_decision_context(
+    session: Session,
+    item: WatchlistItem,
+    evidence: Mapping[str, object],
+    *,
+    financial_source_inputs: Mapping[str, object] | None = None,
+):
+    """Replay the existing financial producer, not a caller's catalog or grant."""
+    packet = build_onboarding_decision_evidence_packet(session, item, evidence)
+    source_packet = {
+        "packet_id": packet.packet_id,
+        "market": packet.market,
+        "assessment_date": packet.assessment_date,
+        "stocks": [{"ticker": item.ticker}],
+    }
+    if financial_source_inputs is not None:
+        from app.services.cross_market_decision_engine_service import build_decision_evidence_packet
+        from app.services.fresh_financial_stock_owner import (
+            assemble_fresh_stock, assemble_onboarding_financial_stock,
+        )
+        from app.services.onboarding_evidence_service import validate_initial_evidence
+        from app.services.packet_owned_technical_context_service import PacketOwnedTechnicalContext
+
+        # A previously saved result/envelope is not an input to this boundary.
+        allowed = {
+            "technical_inputs", "financial_inputs", "valuation_inputs", "event_inputs",
+            "source_window", "reported_comparison_context", "reported_comparison_business",
+            "technical_reference_inputs",
+        }
+        if set(financial_source_inputs) - allowed:
+            raise ValueError("onboarding_financial_original_inputs_required")
+        reference_technical = None
+        if set(financial_source_inputs) <= {"financial_inputs", "technical_reference_inputs"}:
+            if evidence.get('dated_reference_price') is not None:
+                from app.services.dated_chart_reference import technical_context_from_references
+                reference_technical = technical_context_from_references(evidence,
+                    ticker=item.ticker, market=packet.market,
+                    period_sources=financial_source_inputs.get('technical_reference_inputs'))
+            thesis = session.exec(select(InvestmentThesis).where(
+                InvestmentThesis.ticker == item.ticker, InvestmentThesis.status == "active",
+            ).order_by(InvestmentThesis.version.desc())).first()
+            if thesis is None:
+                raise ValueError("investment_logic_missing")
+            result = assemble_onboarding_financial_stock(
+                financial_inputs=financial_source_inputs["financial_inputs"],
+                stock_metadata=dict(ticker=item.ticker, company_name=item.company_name,
+                    thesis_version=thesis.version, thesis={
+                        "core_thesis": thesis.core_thesis, "time_horizon": thesis.time_horizon,
+                        **{key: json.loads(getattr(thesis, key)) for key in (
+                            "validation_metrics", "strengthen_signals", "weaken_signals", "invalidation_signals")},
+                    }), generated_at=str(evidence["as_of"]), technical_context=reference_technical,
+            )
+        else:
+            subjects = financial_source_inputs.get("technical_inputs", {}).get(
+                "local_seed", {}).get("universe", {}).get("eligible_subjects", ())
+            if list(subjects) != [item.ticker]:
+                raise ValueError("onboarding_financial_subject_scope_mismatch")
+            result = assemble_fresh_stock(**{key: value for key, value in financial_source_inputs.items()
+                if key != 'technical_reference_inputs'})
+        if result["status"] != "PASS":
+            raise ValueError("onboarding_financial_source_incomplete")
+        source_packet = result["packet"]
+        stocks = source_packet.get("stocks", ())
+        if len(stocks) != 1 or stocks[0].get("ticker") != item.ticker:
+            raise ValueError("onboarding_financial_subject_scope_mismatch")
+        stock = stocks[0]
+        if (source_packet.get("market") != packet.market
+                or source_packet.get("assessment_date") != packet.assessment_date
+                or stock.get("thesis_version") != evidence.get("thesis_version")):
+            raise ValueError("onboarding_financial_identity_or_period_mismatch")
+        thesis = session.exec(
+            select(InvestmentThesis).where(
+                InvestmentThesis.ticker == item.ticker, InvestmentThesis.status == "active",
+            ).order_by(InvestmentThesis.version.desc())
+        ).first()
+        if thesis is None or thesis.version != stock["thesis_version"]:
+            raise ValueError("onboarding_financial_thesis_version_mismatch")
+        expected_thesis = {
+            "core_thesis": thesis.core_thesis,
+            **{key: json.loads(getattr(thesis, key)) for key in (
+                "validation_metrics", "strengthen_signals", "weaken_signals", "invalidation_signals",
+            )},
+        }
+        if evidence.get("current_thesis") != expected_thesis:
+            raise ValueError("onboarding_financial_thesis_mismatch")
+        valid, reason = validate_initial_evidence(
+            evidence, ticker=item.ticker, thesis_version=stock["thesis_version"],
+        )
+        if not valid:
+            raise ValueError(reason)
+        for key, value in evidence.get("current_thesis", {}).items():
+            if stock.get("thesis", {}).get(key) != value:
+                raise ValueError("onboarding_financial_thesis_mismatch")
+        cutoff = datetime.fromisoformat(str(evidence["as_of"]))
+        projected = datetime.fromisoformat(str(source_packet["generated_at"]))
+        if cutoff.utcoffset() is None or projected.utcoffset() is None or projected > cutoff:
+            raise ValueError("onboarding_financial_projection_after_evidence")
+        technical = stock.get("technical_context")
+        if technical is not None:
+            technical = PacketOwnedTechnicalContext.model_validate(technical)
+        financial = build_decision_evidence_packet(packet=source_packet, stock=stock,
+            technical_context=technical)
+        # Keep general initial evidence as audit/timing, without rebinding it.
+        # Authenticate the complete producer output before projecting its roles.
+        from app.services.direction_timing_ownership_service import (
+            EvidenceDomain, TIMING_DOMAINS, build_owned_evidence_packet,
+        )
+        owned = build_owned_evidence_packet(financial, stock=stock)
+        refs = tuple(row.ref for row in owned.evidence if row.ref.source_use is not None and (
+            row.ref.source_use.core_current_fact or row.domain in TIMING_DOMAINS
+            or row.domain == EvidenceDomain.DATA_QUALITY_LIMIT or row.ref.source_use.prospective_only))
+        if not any(ref.source_use.core_current_fact for ref in refs):
+            raise ValueError("onboarding_typed_financial_source_unavailable")
+        merged = (*packet.evidence, *refs)
+        if len({ref.ref_id for ref in merged}) != len(merged):
+            raise ValueError("onboarding_financial_duplicate_reference")
+        packet = packet.model_copy(update={
+            "packet_id": financial.packet_id,
+            "evidence": merged,
+            "evidence_sha256": _canonical_sha([ref.model_dump(mode="json") for ref in merged]),
+        })
+    claim_id = f"onboarding-{packet.evidence_sha256[:20]}"
+    return build_accepted_v2_production_context(
+        packet=source_packet, claim_id=claim_id, evidence_packets=(packet,),
     )
-    for candidate in candidates:
-        if candidate and Path(candidate).is_file() and os.access(candidate, os.X_OK):
-            return str(candidate)
-    raise ValueError("signed_in_codex_cli_missing")
+
+
+def _signed_in_codex_bin(runtime_binding=None) -> str:
+    from app.services.codex_runtime_binding import resolve_codex_executable
+    return resolve_codex_executable(runtime_binding)
 
 
 def _invoke_signed_in_codex(
@@ -229,17 +348,24 @@ def _invoke_signed_in_codex(
     timeout: int,
     state_namespace: str,
     execution_profile=None,
+    runtime_binding=None,
 ) -> None:
     prompt = prompt.resolve()
     output = output.resolve()
     log = log.resolve()
     schema = schema.resolve()
-    runtime_state = prepare_codex_runtime_state(
-        Path(get_settings().data_dir).resolve() / "codex_runtime_state" / "onboarding",
-        namespace=state_namespace,
-    )
+    runtime_root=Path(get_settings().data_dir).resolve()/"codex_runtime_state"/"onboarding"
+    if runtime_binding is not None:
+        from app.services.codex_runtime_binding import binding_from_json,validate_binding,invocation_environment
+        bound=binding_from_json(runtime_binding) if isinstance(runtime_binding,dict) else runtime_binding
+        validate_binding(bound,str(bound.executable),profile=execution_profile)
+        environment=invocation_environment(bound,root=runtime_root,namespace=state_namespace+':'+output.name)
+    else:
+        runtime_state=prepare_codex_runtime_state(runtime_root,namespace=state_namespace)
+        environment=runtime_state.environment()
+    executable=_signed_in_codex_bin(runtime_binding) if runtime_binding is not None else _signed_in_codex_bin()
     command = [
-        _signed_in_codex_bin(),
+        executable,
         "exec",
         "--ephemeral",
         "--ignore-user-config",
@@ -263,13 +389,13 @@ def _invoke_signed_in_codex(
         profile = sol_high(execution_profile)
         if timeout != profile.timeout_seconds:
             raise ValueError('onboarding_campaign_timeout_profile_mismatch')
-        command = [_signed_in_codex_bin(), *command_prefix(profile),
+        command = [executable, *command_prefix(profile),
             '--output-schema', str(schema), '-o', str(output), '-']
     with prompt.open(encoding="utf-8") as stdin, log.open("w", encoding="utf-8") as stdout:
         process = subprocess.run(
             command,
             cwd=prompt.parent,
-            env=runtime_state.environment(),
+            env=environment,
             stdin=stdin,
             stdout=stdout,
             stderr=subprocess.STDOUT,
@@ -289,25 +415,18 @@ def _generate_onboarding_accepted_decision(
     timeout: int,
     data_dir: str | Path | None = None,
     campaign_execution=None,
+    financial_source_inputs: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
     def invoke(stage, **kwargs):
         if campaign_execution is not None:
             return campaign_execution.invoke(stage=stage, **kwargs)
         return _invoke_signed_in_codex(**kwargs)
 
-    packet = build_onboarding_decision_evidence_packet(session, item, evidence)
-    claim_id = f"onboarding-{packet.evidence_sha256[:20]}"
-    packet_shell = {
-        "packet_id": packet.packet_id,
-        "market": packet.market,
-        "assessment_date": packet.assessment_date,
-        "stocks": [{"ticker": item.ticker}],
-    }
-    context = build_accepted_v2_production_context(
-        packet=packet_shell,
-        claim_id=claim_id,
-        evidence_packets=(packet,),
+    context = build_onboarding_decision_context(
+        session, item, evidence, financial_source_inputs=financial_source_inputs,
     )
+    packet = context.evidence_packets[0]
+    claim_id = context.claim_id
     root = Path(data_dir or get_settings().data_dir) / "onboarding" / item.ticker
     paths = {
         "context": root / f"{claim_id}.context.json",
@@ -588,17 +707,38 @@ class _CampaignOnboardingExecution:
                 ready=False), stream, indent=2)
 
 
+def _validate_campaign_financial_source(ledger, item, financial_source_inputs):
+    market = 'kr' if item.ticker.isdigit() else 'us'
+    child = ledger.identity['children'][market]
+    financial = financial_source_inputs.get('financial_inputs', {})
+    plan = financial.get('plan', {})
+    if plan.get('run_id') == child['generation']:
+        return
+    # Existing campaign metadata can pin retained raw, never an old execution key.
+    expected = dict(source_generation=plan.get('run_id'), plan_sha256=_canonical_sha(plan),
+        receipts_sha256=_canonical_sha(financial.get('receipts')),
+        acquisition_sha256=_canonical_sha(financial.get('acquisition')),
+        use='DATED_ONBOARDING_EVIDENCE_NOT_OPERATING_SOURCE')
+    if child.get('retained_onboarding_source') != expected:
+        raise ValueError('onboarding_financial_campaign_generation_mismatch')
+
+
 def generate_onboarding_accepted_decision(session, item, evidence, *, timeout,
                                           data_dir=None, execution_profile=None,
-                                          campaign_ledger=None):
+                                          campaign_ledger=None, financial_source_inputs=None):
     """Legacy defaults are unchanged; C22AG opts into Sol/High and no repair."""
+    if financial_source_inputs is not None and (execution_profile is None or campaign_ledger is None):
+        raise ValueError('onboarding_financial_campaign_execution_required')
     execution = None
     if execution_profile is not None or campaign_ledger is not None:
         execution = _CampaignOnboardingExecution(ledger=campaign_ledger, profile=execution_profile,
             item=item, timeout=timeout, data_dir=data_dir)
     try:
+        if financial_source_inputs is not None:
+            _validate_campaign_financial_source(campaign_ledger, item, financial_source_inputs)
         return _generate_onboarding_accepted_decision(session, item, evidence, timeout=timeout,
-            data_dir=data_dir, campaign_execution=execution)
+            data_dir=data_dir, campaign_execution=execution,
+            financial_source_inputs=financial_source_inputs)
     except BaseException as error:
         if execution is not None:
             execution.fail(error)

@@ -8,7 +8,7 @@ from app.services.unified_snapshot_contract import digest
 from scripts.fresh_source_only_export import source_only_fresh_stock
 
 
-def prepare_monitoring_subject(*, stock, authority, local_seed, generation):
+def prepare_monitoring_subject(*, stock, authority, local_seed, generation, allow_partial_evidence=False):
     """Use the production owner/preflight for one subject, without a cohort.
 
     A report-only LaneSourcePacket is not a stock-owner envelope. This boundary
@@ -19,19 +19,21 @@ def prepare_monitoring_subject(*, stock, authority, local_seed, generation):
         stock, authority, local_seed, generation=generation,
         cutoff=stock["packet"]["generated_at"],
     )
-    require(readiness["status"] == "PASS" and data["mode"] == "EVIDENCE_BASED",
+    modes=("EVIDENCE_BASED","UNKNOWN_LIMIT") if allow_partial_evidence is True else ("EVIDENCE_BASED",)
+    require(readiness["status"] == "PASS" and data["mode"] in modes,
             "STRICT_NATIVE_SOURCE_PREFLIGHT_GAP:" + stock["ticker"])
     return readiness, data
 
 
 def prepare_monitoring_source(*, whole, local_seeds, valuation_contexts, generation,
-                              coverage, census, market_projector=project_production_market_context):
+                              coverage, census, market_projector=project_production_market_context,
+                              allow_partial_evidence=False):
     prepared, stocks = {}, {}
     for market, packet in whole["packets"].items():
         for ticker, stock in packet["stocks"].items():
             authority = whole["authority_graph"]["stocks"][ticker]
             _, data = prepare_monitoring_subject(stock=stock, authority=authority,
-                local_seed=local_seeds[ticker], generation=generation)
+                local_seed=local_seeds[ticker], generation=generation,allow_partial_evidence=allow_partial_evidence)
             prepared[ticker], stocks[ticker] = data, deepcopy(stock)
     markets = {market: market_projector(packet, whole["seed"], whole["authority_graph"],
         expected_authority_sha256=whole["authority_graph_sha256"])

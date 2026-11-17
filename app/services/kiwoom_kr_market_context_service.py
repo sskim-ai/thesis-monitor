@@ -313,6 +313,17 @@ def kiwoom_market_reads(*, session_date: date, max_pages: int,
     return tuple(reads)
 
 
+def validate_market_reads(reads, *, session_date, max_pages, max_requests_per_page):
+    """Only the canonical full set or its explicit no-detail consumer set."""
+    reads = tuple(reads)
+    full = kiwoom_market_reads(session_date=session_date, max_pages=max_pages,
+        max_requests_per_page=max_requests_per_page)
+    selected = tuple(r for r in full if r.api_id != "ka10066")
+    if reads not in (full, selected):
+        raise ValueError("kiwoom_market_role_set_mismatch")
+    return reads
+
+
 class KiwoomKrMarketContextService:
     def __init__(
         self,
@@ -320,10 +331,12 @@ class KiwoomKrMarketContextService:
         *,
         max_pages: int | None = None,
         completed_session_only: bool = False,
+        reads: tuple[KiwoomRead, ...] | None = None,
     ) -> None:
         self.client = client
         self.max_pages = max_pages or get_settings().kiwoom_rest_max_pages
         self.completed_session_only = completed_session_only
+        self.reads = reads
         self._archive_rows: list[dict[str, object]] = []
 
     async def _request(
@@ -462,12 +475,17 @@ class KiwoomKrMarketContextService:
         self, *, session_date: date, observed_at: datetime,
     ) -> KiwoomMarketContextCollection:
         observer = getattr(self.client, "source_observer", None)
+        declared = self.reads if self.reads is not None else (
+            observer.reads if observer is not None else kiwoom_market_reads(
+                session_date=session_date, max_pages=self.max_pages,
+                max_requests_per_page=getattr(self.client, "max_retries", 0) + 1))
+        self._selected_reads = validate_market_reads(declared, session_date=session_date,
+            max_pages=self.max_pages,
+            max_requests_per_page=getattr(self.client, "max_retries", 0) + 1)
         if observer is not None:
             if observer.completed_session_only != self.completed_session_only:
                 raise ValueError("kr_market_session_role_contract_mismatch")
-            expected = kiwoom_market_reads(session_date=session_date, max_pages=self.max_pages,
-                max_requests_per_page=self.client.max_retries + 1)
-            if observer.reads != expected:
+            if observer.reads != self._selected_reads:
                 raise ValueError("kiwoom_whole_market_plan_required")
             observer.begin(session_date, observed_at)
             self._archive_rows = []
@@ -549,6 +567,9 @@ class KiwoomKrMarketContextService:
         page_sets: dict[str, _PageSet] = {}
         page_errors: dict[str, str] = {}
         for market, spec in MARKETS.items():
+            if not any(r.key == f"{market}:ka10066" for r in self._selected_reads):
+                page_errors[market] = "DETAIL_NOT_REQUESTED"
+                continue
             try:
                 page_sets[market] = await self._ka10066_pages(
                     market_code=spec["ka10066_market"]

@@ -245,6 +245,7 @@ def numeric_alias_audit(context, source):
         'indices': {'close': 'close', 'return_pct': 'return_pct'},
         'sectors': {'return_pct': 'return_pct', 'listed_count': 'listed_count'},
         'size_context': {'return_pct': 'return_pct'},
+        'market_flows': {'net_flow': 'net_buy_amount'},
         'breadth': {'advancers': 'advance_count', 'decliners': 'decline_count',
                     'unchanged': 'unchanged_count', 'eligible_count': 'eligible_count'},
     }
@@ -257,6 +258,8 @@ def numeric_alias_audit(context, source):
                        and f['fields']['symbol'] == payload['symbol']]
         elif kind == 'breadth':
             matches = [f for f in catalog if f['fact_id'] == 'market:breadth:kr:counts']
+        elif kind == 'market_flows':
+            matches = [f for f in catalog if f['fact_type']=='market_flow' and f['fields'].get('source_ref')==ref]
         else:
             matches = [f for f in catalog if f['fact_type'] == 'market_cross_section_sector'
                        and f['fields'].get('source_ref') == ref]
@@ -325,7 +328,21 @@ def _project_market_context(packet, seed, graph, *, expected_authority_sha256, e
     published = {f['fields']['series_code']:dict(quality_status=f['fields'].get('quality')) for f in facts}
     cross = None
     if market == 'kr':
-        value = component['value']
+        value = deepcopy(component['value'])
+        flow=packet['market_sources'].get('aggregate_flows',{})
+        if flow.get('status')=='AVAILABLE_AGGREGATE_ONLY':
+            from app.services.unified_aggregate_owners import validate_aggregate_flow_rows
+            from app.services.market_cross_section_service import MarketFlowFact
+            view=flow['value']
+            require(flow['owner_contract']==view['contract']=='kiwoom-aggregate-flows-reference-v1'
+                and digest(view)==flow['value_sha256'] and view['session']==component['session']
+                and flow['original_source_time']==component['original_source_time']
+                and view['scope']=='AGGREGATE_ONLY_SOURCE_REFERENCE'
+                and view['concentration']==[] and view['concentration_eligible'] is False
+                and view['full_market_parent'] is False and view['economic_use'] is False,
+                'kr_aggregate_flow_scope_drift')
+            validate_aggregate_flow_rows([MarketFlowFact.model_validate(r) for r in view['market_flows']],session=component['session'])
+            value['market_flows']=view['market_flows']
         completed_history_only = (
             {r.get('symbol') for r in value.get('indices', [])} == {'KOSPI', 'KOSDAQ'}
             and len(value['indices']) == 2 and not value.get('sectors') and value.get('breadth') is None
@@ -351,6 +368,12 @@ def _project_market_context(packet, seed, graph, *, expected_authority_sha256, e
                 indices=[i for i,r in enumerate(value['sectors']) if r.get('source_ref')==f['fields'].get('source_ref')]
                 require(len(indices)==1,'kr_sector_occurrence_ambiguous')
                 refs[f['fact_id']]=['market_sources/component/value/sectors/'+str(indices[0])]
+            elif kind=='market_flow':
+                indices=[i for i,r in enumerate(value['market_flows']) if r['source_ref']==f['fields']['source_ref']]
+                require(len(indices)==1,'kr_aggregate_flow_occurrence_ambiguous')
+                refs[f['fact_id']]=['market_sources/aggregate_flows/value/market_flows/'+str(indices[0])]
+                if flow.get('status')=='AVAILABLE_AGGREGATE_ONLY':
+                    f['fields'].update(renderer_only=True,today_signal_eligible=False)
             else:
                 refs[f['fact_id']]=['market_sources/component/value/breadth']
     else:
@@ -413,6 +436,13 @@ def _project_market_context(packet, seed, graph, *, expected_authority_sha256, e
     source = dict(session=session, adapter_context=adapter, fact_catalog=facts, numeric_registry=registry,
         coverage=coverage, night_futures=night_rows, night_futures_cautions=night_cautions,
         optional_denials=deepcopy(packet['optional_denials']), publication_denials=publication_denials)
+    if market=='kr' and flow.get('status')=='AVAILABLE_AGGREGATE_ONLY':
+        source['aggregate_flow_reference']=deepcopy(flow)
+        # The original aggregate-only owner denies economic use. Keep amounts
+        # for dated context/rendering, outside the directional citation set.
+        adapter['market_flows']=[]
+        coverage['market_flows']=dict(status='unavailable',reference_rows=6,
+            reason='AGGREGATE_REFERENCE_ONLY_NOT_DIRECTIONAL_AUTHORITY')
     if night_ownership is not None:
         source['night_futures_ownership'] = night_ownership
         if not night_rows:

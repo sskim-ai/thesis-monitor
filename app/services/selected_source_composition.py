@@ -76,6 +76,37 @@ def raw_owner_binding(inputs):
     return digest(dict(technical=inputs['technical_inputs']['receipts'],financial=inputs['financial_inputs']['receipts']))
 
 
+def selected_market_packet(native):
+    """Compose exact original pages, including a separately bounded flow view."""
+    import json
+    from app.services.unified_source_composition import _resolve,read_bound_artifact
+    from app.services.unified_aggregate_receipt import AggregateReceipt,verify_aggregate
+    from app.services.unified_aggregate_owners import kiwoom_aggregate_owner
+    from app.services.unified_kiwoom_observer import KiwoomRead
+    packet=dict(run_id=native['run_id'],attempt_id=native['attempt_id'],
+        attempt_started_at=native['start'].isoformat(),cutoff=native['cutoff'].isoformat(),component=_resolve(**native))
+    if native['role'].market!='kr':return packet
+    item=native['item'];owner=native['owners'][native['role'].owner]
+    receipt=AggregateReceipt.model_validate(json.loads(read_bound_artifact(native['root'],
+        item.receipt_artifact,item.receipt_sha256)))
+    graph=verify_aggregate(native['root'],receipt,policy=native['policy'],cutoff=native['cutoff'],
+        completion_observed_at=owner.page_completion_observed_at)
+    reads=tuple(KiwoomRead.model_validate(r) for r in json.loads(graph.plan)['reads'])
+    flows=kiwoom_aggregate_owner(role=native['role'],observed_at=datetime.fromisoformat(packet['component']['original_source_time']),
+        max_pages=max(r.max_pages for r in reads),max_requests_per_page=1,policy=native['policy'],
+        consumer_complete=True,aggregate_flows_only=True,selected_reads=reads)
+    try:
+        value=flows.project_aggregate_and_validate(graph,native['cutoff']).value
+    except ValueError:
+        packet['aggregate_flows']=dict(status='OPTIONAL_UNAVAILABLE',value=None,
+            denial='AGGREGATE_FLOW_ROWS_NOT_QUALIFIED')
+    else:
+        packet['aggregate_flows']=dict(status='AVAILABLE_AGGREGATE_ONLY',value=value,
+            original_receipt_sha256=item.receipt_sha256,owner_contract=flows.contract,
+            original_source_time=packet['component']['original_source_time'],value_sha256=digest(value))
+    return packet
+
+
 def validate_composition(seed,*,stock_inputs,market_inputs,composition_metadata,fresh_context_inputs):
     seed=SelectedSourceRunBinding.model_validate(seed)
     if (composition_metadata is None or fresh_context_inputs is None
@@ -135,8 +166,7 @@ def build_inputs(root,frozen,outcome,policy,*,prospective_owners,master_id):
     pub=replay_fresh_publications(**context['publications'])
     night=None if context['night'] is None else replay_night(**context['night'])
     rows={t:assemble_fresh_stock(**i) for t,i in inputs.items()}
-    native={m:dict(run_id=plan.run_id,attempt_id=n['attempt_id'],attempt_started_at=n['start'].isoformat(),
-        cutoff=n['cutoff'].isoformat(),component=_resolve(**n)) for m,v in markets.items() for n in [v['native_aggregate']]}
+    native={m:selected_market_packet(v['native_aggregate']) for m,v in markets.items()}
     versions={f'class-c/local-{plan.market}.json':sha256_bytes(encoded(local)+b'\n')}
     root_code=Path(__file__).resolve().parents[2]
     inventory=read(root_code/'docs/operations/UNIFIED_ACQUISITION_CLASSES.json')
@@ -145,6 +175,10 @@ def build_inputs(root,frozen,outcome,policy,*,prospective_owners,master_id):
         security_valuation_transfer=False,per_share_transfer=False)
     denials=dict(kr_market_investor_flows=dict(status='OPTIONAL_UNAVAILABLE',value=None,
         denial='DETAIL_NOT_CAPTURED_OR_COMPLETED_DATE_NOT_QUALIFIED',run_id=plan.run_id))
+    if native.get('kr',{}).get('aggregate_flows',{}).get('status')=='AVAILABLE_AGGREGATE_ONLY':
+        denials['kr_market_investor_flows']=dict(status='AVAILABLE_AGGREGATE_ONLY',
+            value_sha256=native['kr']['aggregate_flows']['value_sha256'],run_id=plan.run_id,
+            concentration='UNAVAILABLE',stock_contribution='UNAVAILABLE')
     seed=SelectedSourceRunBinding(parent_run_id=plan.run_id,child_id=plan.run_id,master_id=master_id,
         market=plan.market,subjects=plan.subjects,target_session=frozen['sessions'][plan.market],started_at=plan.frozen_at,
         source_policy_sha256=digest(sorted(policy.allowed_providers)),inventory_sha256=digest(inventory),

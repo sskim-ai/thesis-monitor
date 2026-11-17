@@ -164,10 +164,18 @@ class WireBoundary:
             write(self.root / (identity + ".response.json"), record)
 
 
-def owner_configuration(owner_root, settings):
+def settings_path(owner_root, explicit=None):
+    path = Path(explicit) if explicit is not None else owner_root / '.env'
+    if explicit is not None and (not path.is_absolute() or not path.is_file()
+            or any(p.is_symlink() for p in (path, *path.parents))):
+        raise ValueError('native_settings_regular_absolute_file_required')
+    return path
+
+
+def owner_configuration(owner_root, settings, *, settings_env_file=None):
     names = subprocess.check_output(["git", "ls-files", "app"], cwd=owner_root, text=True).splitlines()
     values = settings.model_dump(mode="json")
-    return {
+    result = {
         "owner_head": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=owner_root, text=True).strip(),
         "owner_clean": not subprocess.check_output(["git", "status", "--porcelain"], cwd=owner_root, text=True).strip(),
         "owner_files": {name: sha((owner_root / name).read_bytes()) for name in names},
@@ -181,6 +189,9 @@ def owner_configuration(owner_root, settings):
         "execution_override": {"kiwoom_max_retries": 0},
         "operating_settings_modified": False,
     }
+    if settings_env_file is not None:
+        result['settings_env_file'] = str(settings_path(owner_root, settings_env_file))
+    return result
 
 
 def acquire(plan, root, owner, settings):
@@ -280,13 +291,14 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--plan", type=Path)
     parser.add_argument("--plan-sha256")
+    parser.add_argument("--settings-env-file", type=Path)
     args = parser.parse_args()
     sys.path.insert(0, str(args.owner_root))
     from app.config import Settings
     from app.providers import kiwoom as owner
 
-    settings = Settings(_env_file=args.owner_root / ".env")
-    config = owner_configuration(args.owner_root, settings)
+    settings = Settings(_env_file=settings_path(args.owner_root, args.settings_env_file))
+    config = owner_configuration(args.owner_root, settings, settings_env_file=args.settings_env_file)
     if args.mode == "inspect":
         write(args.output, config)
         return

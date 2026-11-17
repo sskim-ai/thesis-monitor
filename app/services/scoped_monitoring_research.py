@@ -56,7 +56,12 @@ class ScopedPreparedResearchOwner(original.CanonicalPreparedSourceOwner):
 
     def relationship(self, market):
         row = self._record()
-        source = self.source(market)
+        return self._relationship(row, market)
+
+    def _relationship(self, row, market):
+        if market != row['market']:
+            raise ValueError('research_source_market_not_owned')
+        source = row['source']
         return dict(contract=CONTRACT, market=market, generation_id=row['generation_id'],
             source_generation_id=source['source_generation_id'], subjects=list(row['subjects']),
             outer_source_envelope_sha256=row['outer_sha256'], prepared_source_sha256=row['source_sha256'],
@@ -64,13 +69,22 @@ class ScopedPreparedResearchOwner(original.CanonicalPreparedSourceOwner):
             subject_sha256={t:digest(dict(stock=source['stocks'][t], prepared=source['prepared'][t]))
                 for t in row['subjects']})
 
+    def resolve_cohort(self, market):
+        """Validate the live record once per check, never cache it across calls."""
+        row = self._record()
+        relation = self._relationship(row, market)
+        return relation, {t:self._subject(row,t,relation) for t in row['subjects']}
+
 
 def prepare_scoped_research_source(*, enabled=False, market, subjects, registration_owner,
                                    whole, local_seeds, valuation_contexts, generation, coverage, census,
-                                   forward_views=None):
+                                   forward_views=None,allow_partial_evidence=False,execution_generation=None):
     if enabled is not True:
         raise ValueError('scoped_research_source_disabled')
     subjects = tuple(sorted(subjects))
+    execution_generation=generation if execution_generation is None else execution_generation
+    if not isinstance(execution_generation,str) or not execution_generation:
+        raise ValueError('scoped_explicit_execution_generation_required')
     if market not in ('us','kr') or not subjects or len(set(subjects)) != len(subjects):
         raise ValueError('scoped_research_exact_subjects_required')
     registration.require_generation(registration_owner, generation)
@@ -89,8 +103,8 @@ def prepare_scoped_research_source(*, enabled=False, market, subjects, registrat
             raise ValueError('selected_prepared_source_child_scope')
         projector=project_market
     source = prepare_monitoring_source(whole=whole, local_seeds=local_seeds,
-        valuation_contexts=valuation_contexts, generation=generation, coverage=coverage, census=census,
-        market_projector=projector)
+        valuation_contexts=valuation_contexts, generation=execution_generation, coverage=coverage, census=census,
+        market_projector=projector,allow_partial_evidence=allow_partial_evidence)
     if market == 'kr':
         from app.services.kr_forward_valuation_context import KrForwardValuationView, calibration_context
         if forward_views is None or set(forward_views) != set(subjects):
@@ -112,17 +126,17 @@ def prepare_scoped_research_source(*, enabled=False, market, subjects, registrat
         stock, prepared = source['stocks'][ticker], source['prepared'][ticker]
         verified_owned_packet_view(stock)
         original._require(stock['ticker'] == ticker and stock['market'] == market
-            and prepared['mode'] == 'EVIDENCE_BASED'
+            and prepared['mode'] in (('EVIDENCE_BASED','UNKNOWN_LIMIT') if allow_partial_evidence is True else ('EVIDENCE_BASED',))
             and stock['fresh_run_id'] == source['source_generation_id']
             and prepared['initial_chain']['source_generation_id'] == source['source_generation_id']
-            and prepared['initial_chain']['execution_generation_id'] == generation
+            and prepared['initial_chain']['execution_generation_id'] == execution_generation
             and prepared['view_receipt']['raw_source_sha256'] == digest(stock), 'original_subject_scope_required')
     # Admission still requires the original live registration at this instant.
     registration.require_generation(registration_owner, generation)
     if digest(registration._state(registration_owner)[1]) != digest(reg):
         raise ValueError('scoped_research_registration_changed_during_admission')
     row = dict(source=deepcopy(source), source_sha256=digest(source),
-        outer_sha256=digest(whole), generation_id=generation, pid=os.getpid(), closed=False,
+        outer_sha256=digest(whole), generation_id=execution_generation, pid=os.getpid(), closed=False,
         market=market, subjects=subjects, registration_sha256=digest(reg),
         registration_capture_receipt_sha256=reg['capture_receipt_sha256'],
         request_plan_sha256=whole['seed'].get('request_plan_sha256'),
@@ -139,7 +153,7 @@ def prepare_scoped_research_source(*, enabled=False, market, subjects, registrat
         raise ValueError('scoped_research_inconsistent_stock_cutoffs')
     cutoff = cutoffs.pop()
     try:
-        cohort = FrozenCohort(run_id=generation, source_generation=source['source_generation_id'],
+        cohort = FrozenCohort(run_id=execution_generation, source_generation=source['source_generation_id'],
             assessment_date=source['markets'][market]['packet']['assessment_date'], effective_at=cutoff, cutoff=cutoff,
             subjects=tuple(CohortSubject(market,t,reg['bindings'][t]['security_id'],cutoff,
                 relation['subject_sha256'][t]) for t in subjects),

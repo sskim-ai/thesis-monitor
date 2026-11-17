@@ -847,6 +847,11 @@ class OhlcvClient:
         )
         context.warnings.append("native_technical_only: independent current-price Owner unavailable")
         reference_observed = self._reference_observed_at.get('daily', observed_at)
+        if dated_analysis_as_of is not None:
+            from app.services.dated_bar_admission import admit_rows
+            adjusted_bars = {tf: admit_rows(rows,ticker=ticker,
+                market='kr' if ticker.isdigit() else 'us',timeframe=tf,cutoff=analysis_cutoff)[0]
+                for tf,rows in adjusted_bars.items()}
         native = build_provider_native_view(ticker=ticker,market='kr' if ticker.isdigit() else 'us',
             periods=adjusted_bars,cutoff=analysis_cutoff,
             completion_verifier=self.completion_verifier,observed_at=reference_observed,historical_reference=True)

@@ -90,7 +90,10 @@ def local_owner(*, role: str, market: str, session_key: str, policy: UnifiedSour
             if projected.get('cycle_owner_receipt') != document.get('cycle_owner_receipt'):
                 raise ValueError('cycle_receipt_replay_mismatch')
         if prospective_owner is not None:
-            from app.services.prospective_class_c_owner import apply_prospective_owner
+            from app.services.prospective_class_c_owner import apply_prospective_owner, replay_captured_local_seed
+            # Projected Watchlist fields cannot reproduce the original complete
+            # row hashes in canonical eligibility diagnostics.
+            projected = replay_captured_local_seed(prospective_owner, policy=policy)
             projected = apply_prospective_owner(projected, original=document, owner=prospective_owner)
             if projected.get('prospective_owner_receipt') != document.get('prospective_owner_receipt'):
                 raise ValueError('prospective_receipt_replay_mismatch')
