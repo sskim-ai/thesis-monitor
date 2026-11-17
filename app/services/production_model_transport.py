@@ -8,7 +8,8 @@ import signal
 import sys
 import uuid
 
-from app.services.official_codex_shadow_transport_service import OfficialCodexBinding, validate_binding
+from app.services.official_codex_shadow_transport_service import OfficialCodexBinding
+from app.services.codex_runtime_binding import CurrentOfficialCodexBinding, validate_binding, binding_from_json
 from app.services.official_transport_input_preflight import PREFLIGHT_REJECT_EXIT
 from app.services.production_b2_execution import ModelTransportError
 from app.services.fixture_context_authority import reject_test_only_production
@@ -42,6 +43,7 @@ class ProductionWireRequest:
     schema_sha256: str
     execution_policy: ProductionWirePolicy | SolHighWirePolicy = ProductionWirePolicy()
     model_plan_scope: dict | None = None
+    observe_timeout: bool = False
 
 
 def request_profile(request):
@@ -72,28 +74,62 @@ def request_from_frame(frame):
         if dynamic:
             from app.services.model_execution_plan import ModelExecutionPlan, validate_slot_scope
             plan = ModelExecutionPlan.from_dict(frame['execution_plan'])
-            validate_slot_scope(plan, frame['slot_scope'])
+            scope = frame['slot_scope']
+            validate_slot_scope(plan, scope)
+            inherited = value.get('inherited_market_slot')
+            physical_slots = len(plan.slots)
+            if inherited is not None:
+                from app.services.model_invocation_journal import read_invocation_journal
+                from app.services.research_artifact_budget import plain_path
+
+                market_slots = [slot.slot_id for slot in plan.slots if slot.stage == 'MARKET']
+                if market_slots != [inherited] or scope['market'] != 'kr' or scope['stage'] == 'MARKET':
+                    raise ValueError('production_worker_invalid_inherited_market_slot')
+                journal = plain_path(auth.parent.parent / 'invocation-ledger' / plan.cohort.run_id / 'events.jsonl')
+                identity = dict(contract='model-invocation-journal-v1', plan_sha256=plan.sha256,
+                    maximum=value['maximum'], inherited_market_slot=inherited)
+                state = read_invocation_journal(journal.read_bytes(), identity)
+                if (state['stopped'] or set(state['inherited']) != {inherited}
+                        or state['bound'].get(scope['slot_id']) != scope
+                        or state['used'] - state['accepted'].keys() != {scope['slot_id']}
+                        or len(state['used']) != value['physical_call']):
+                    raise ValueError('production_worker_inherited_market_journal_drift')
+                physical_slots -= 1
             if (value.get('slot_scope') != frame['slot_scope'] or value.get('execution_plan_sha256') != plan.sha256
                     or value.get('payload_sha256') != frame['slot_scope']['payload_sha256']
                     or value.get('planned_slots') != len(plan.slots)
-                    or type(value.get('maximum')) is not int or value['maximum'] < len(plan.slots)
+                    or type(value.get('maximum')) is not int or value['maximum'] < physical_slots
                     or not 1 <= value.get('physical_call', 0) <= value['maximum']):
                 raise ValueError('production_worker_dynamic_plan_or_budget_drift')
+            if 'timeout_retry_cap' in value:
+                from app.services.model_invocation_journal import read_invocation_journal
+                from app.services.research_artifact_budget import plain_path
+
+                cap = value['timeout_retry_cap']
+                slot_id = scope['slot_id']
+                attempt = value['attempt']
+                if (type(cap) is not int or cap not in (1,2) or inherited is not None
+                        or list(plan.cohort.market_subjects) != ['us']
+                        or value['maximum'] != len(plan.slots)+cap
+                        or attempt != dict(attempt_id=frame['request_id'], ordinal=value['ordinal'],
+                            prompt_sha256=frame['prompt_sha256'], schema_sha256=frame['schema_sha256'])):
+                    raise ValueError('production_worker_timeout_attempt_authorization_drift')
+                journal = plain_path(auth.parent.parent / 'invocation-ledger' / plan.cohort.run_id / 'events.jsonl')
+                state = read_invocation_journal(journal.read_bytes(), dict(contract='model-invocation-journal-v1',
+                    plan_sha256=plan.sha256, maximum=value['maximum'], timeout_retry_cap=cap))
+                if (state['stopped'] or state['bound'].get(slot_id) != scope
+                        or state['used']-state['accepted'].keys()-state['exhausted'] != {slot_id}
+                        or state['attempts'][slot_id][-1] != attempt
+                        or len(state['timeouts'].get(slot_id, ())) != attempt['ordinal']-1
+                        or state['physical_calls'] != value['physical_call']):
+                    raise ValueError('production_worker_timeout_attempt_journal_drift')
     elif frame.get('contract') == CONTRACT and set(frame) == base:
         policy = ProductionWirePolicy()
     else:
         raise ValueError('production_model_worker_contract')
     return ProductionWireRequest(binding_from_json(frame['binding']), frame['request_id'],
         frame['prompt_sha256'], frame['schema_sha256'], policy,
-        frame['slot_scope'] if dynamic else None)
-
-
-def binding_from_json(value):
-    raw = dict(value)
-    for name in ("executable", "qualification_path"):
-        if raw.get(name) is not None:
-            raw[name] = Path(raw[name])
-    return OfficialCodexBinding(**raw)
+        frame['slot_scope'] if dynamic else None, dynamic and 'timeout_retry_cap' in value)
 
 
 def render_prompt(payload, stage):
@@ -147,6 +183,25 @@ class OfficialProductionModelTransport:
         self.counts, self.total = {}, 0
 
     async def request(self, payload, *, model, effort, timeout, stage="B2", panel=None, slot_scope=None):
+        kwargs = dict(model=model, effort=effort, timeout=timeout, stage=stage, panel=panel, slot_scope=slot_scope)
+        if not getattr(self.call_budget,'timeout_retry_cap',0):
+            return await self._request_once(payload, **kwargs)
+        try:
+            return await self._request_once(payload, **kwargs)
+        except ModelTransportError as exc:
+            if getattr(exc,'confirmed_timeout',None) is None:
+                raise
+            if not self.call_budget.confirmed_timeout(exc.slot_id,exc.confirmed_timeout):
+                raise
+        try:
+            return await self._request_once(payload, **kwargs, retry=True)
+        except ModelTransportError as exc:
+            if getattr(exc,'confirmed_timeout',None) is not None:
+                if self.call_budget.confirmed_timeout(exc.slot_id,exc.confirmed_timeout):
+                    raise ValueError('model_retry_second_retry_forbidden') from exc
+            raise
+
+    async def _request_once(self, payload, *, model, effort, timeout, stage, panel, slot_scope, retry=False):
         reject_test_only_production(payload)
         expected = ('gpt-5.6-sol', 'xhigh', 600) if self.execution_profile is None else (
             self.execution_profile.model, self.execution_profile.effort, self.execution_profile.timeout_seconds)
@@ -161,14 +216,31 @@ class OfficialProductionModelTransport:
                 raise ValueError('frozen_model_slot_scope_required')
         identity = (stage, slot_scope['slot_id']) if dynamic else (stage, payload_sha256)
         ordinal = self.counts.get(identity, 0) + 1
+        retry_cap = getattr(self.call_budget,'timeout_retry_cap',0)
+        if retry_cap:
+            from app.services.research_no_send_run import current_stage_timer
+            if current_stage_timer() is None:
+                raise ValueError('production_model_retry_requires_campaign_timer')
         maximum = self.call_budget.maximum if self.execution_profile else (90 if self.cycle[0] == "us" else 54)
-        if ordinal > (1 if self.execution_profile else 3) or self.total >= maximum:
+        if (ordinal > (1+bool(retry_cap) if self.execution_profile else 3) or self.total >= maximum
+                or retry_cap and ordinal != 1 + retry):
             raise ValueError("production_model_call_budget_exhausted")
         prompt, schema = render_prompt(payload, stage), encoded(payload["response_schema"])
         if any(secret in prompt or secret in schema for secret in self.secrets):
             raise ValueError("production_model_input_secret_detected")
         policy = SolHighWirePolicy() if self.execution_profile else ProductionWirePolicy()
         contract = CONTRACT_V2 if self.execution_profile else CONTRACT
+        path = self.runtime_root / (self.cycle[1] + "-" + uuid.uuid4().hex)
+        from app.services.research_artifact_budget import (
+            ArtifactCapacityError, active_budget, CLI_WORK_ALLOWANCE, MODEL_RESULT_ALLOWANCE,
+        )
+        artifacts = active_budget()
+        if artifacts is not None:
+            artifacts.declare_cli_context(path,getattr(self.binding,'auth_source',None),
+                qualified_cli=self.binding.executable if sys.platform=='darwin'
+                and type(self.binding) is CurrentOfficialCodexBinding else None)
+            artifacts.check(path=path, added_work=len(prompt)+len(schema)+CLI_WORK_ALLOWANCE+MODEL_RESULT_ALLOWANCE,
+                added_result=MODEL_RESULT_ALLOWANCE, role='scratch')
         if self.execution_profile:
             if len(prompt) > 384 * 1024:
                 raise ValueError('sol_high_input_exceeds_384KiB')
@@ -177,11 +249,17 @@ class OfficialProductionModelTransport:
                 if not isinstance(slot_scope, dict) or slot_scope.get('market') != self.cycle[0]:
                     raise ValueError('model_slot_market_cycle_drift')
                 contract = CONTRACT_V3
-            physical_call = self.call_budget.consume(panel, stage, payload_sha256, slot_scope=slot_scope)
+            from app.services.research_no_send_run import current_stage_timer
+            if (timer := current_stage_timer()) is not None:
+                timer.check()
+            attempt = dict(attempt_id=path.name, ordinal=ordinal, prompt_sha256=sha256_bytes(prompt),
+                schema_sha256=sha256_bytes(schema)) if retry_cap else None
+            extra = dict(attempt=attempt) if attempt is not None else {}
+            physical_call = self.call_budget.consume(panel, stage, payload_sha256, slot_scope=slot_scope, **extra)
         else:
+            timer = None
             physical_call = self.total + 1
         self.counts[identity], self.total = ordinal, self.total + 1
-        path = self.runtime_root / (self.cycle[1] + "-" + uuid.uuid4().hex)
         inputs = path / "approved-input"
         inputs.mkdir(parents=True, exist_ok=False, mode=0o700)
         durable_bytes(inputs / "prompt.txt", prompt, exclusive=True)
@@ -198,6 +276,10 @@ class OfficialProductionModelTransport:
         if dynamic:
             authorization.update(slot_scope=slot_scope, execution_plan_sha256=self.call_budget.plan.sha256,
                 planned_slots=len(self.call_budget.slots), remaining_invocations=self.call_budget.maximum-physical_call)
+            if self.call_budget.inherited_market_slot is not None:
+                authorization['inherited_market_slot'] = self.call_budget.inherited_market_slot
+            if retry_cap:
+                authorization.update(timeout_retry_cap=retry_cap, attempt=attempt)
         durable_json(path / "production-authorization.json", authorization, exclusive=True)
         if self.execution_profile:
             frame.update(execution_policy=asdict(policy), authorization_sha256=sha256_bytes(
@@ -205,24 +287,55 @@ class OfficialProductionModelTransport:
         if dynamic:
             frame.update(execution_plan=self.call_budget.plan.to_dict(), slot_scope=slot_scope)
         env = {k: os.environ[k] for k in ("PATH", "HOME", "CODEX_HOME", "TMPDIR", "LANG") if k in os.environ}
+        from app.services.codex_runtime_binding import parent_environment
+        if type(self.binding) is CurrentOfficialCodexBinding:
+            env=parent_environment(self.binding,env)
         env.update(PYTHONPATH=str(ROOT), PYTHONDONTWRITEBYTECODE="1", THESIS_MONITOR_ENV_FILE="",
             DATABASE_URL="sqlite://", NOTIFICATION_DRY_RUN="true", ENABLE_LIVE_PROVIDERS="false",
             UNIFIED_SNAPSHOT_ENABLED="false")
+        if artifacts is not None:
+            env['THESIS_MONITOR_BOUNDED_RESEARCH_RECEIPT'] = '1'
+        # The CLI keeps its own exact timeout; the parent only bounds worker setup and cleanup.
+        worker_timeout = timeout
+        if timer is not None:
+            self.call_budget.run_ledger.worker_binding()
+            timer.switch('worker')
+            worker_timeout = timeout+timer.deadline['overhead_seconds']
         process = await self.worker_factory(sys.executable, "-B", "-m", "app.jobs.production_model_worker",
             cwd=ROOT, env=env, start_new_session=True, stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
         try:
-            await asyncio.wait_for(process.communicate(encoded(frame)), timeout)
-        except BaseException:
+            if artifacts is None:
+                await asyncio.wait_for(process.communicate(encoded(frame)), worker_timeout)
+            else:
+                async def communicate_and_measure():
+                    task = asyncio.create_task(process.communicate(encoded(frame)))
+                    try:
+                        while not (await asyncio.wait({task}, timeout=5))[0]:
+                            artifacts.check(path=path)
+                        return await task
+                    finally:
+                        if not task.done():
+                            task.cancel()
+                            await asyncio.gather(task, return_exceptions=True)
+
+                await asyncio.wait_for(communicate_and_measure(), worker_timeout)
+        except BaseException as exc:
             if process.returncode is None:
                 os.killpg(process.pid, signal.SIGKILL)
             await process.wait()
-            durable_json(path / "parent-exit.json", dict(status="INTERRUPTED", child_reaped=True), exclusive=True)
+            try:
+                durable_json(path / "parent-exit.json", dict(status="INTERRUPTED", child_reaped=True), exclusive=True)
+            except ArtifactCapacityError:
+                if not isinstance(exc, ArtifactCapacityError):
+                    raise
             raise
         raw_path = path / "raw-output.json"
         raw = raw_path.read_bytes() if raw_path.is_file() and not raw_path.is_symlink() else b""
         durable_json(path / "parent-exit.json", dict(status="WORKER_EXITED", child_reaped=True,
             returncode=process.returncode, raw_sha256=sha256_bytes(raw), raw_bytes=len(raw)), exclusive=True)
+        if timer is not None:
+            timer.switch('local')
         if process.returncode == PREFLIGHT_REJECT_EXIT:
             raise ValueError("production_official_transport_boundary_reject")
         if process.returncode != 0:
@@ -231,10 +344,28 @@ class OfficialProductionModelTransport:
         receipt = json.loads(receipt_path.read_bytes()) if receipt_path.exists() else {"error_code": "WORKER_FAILED"}
         if receipt.get("status") != "PASS":
             code = receipt.get("error_code")
-            if self.execution_profile and code == 'MODEL_ENTITLEMENT_OR_QUOTA_UNAVAILABLE':
-                raise ModelTransportError(code)
+            if self.execution_profile and code in {'MODEL_ENTITLEMENT_OR_QUOTA_UNAVAILABLE',
+                    'MODEL_AUTHENTICATION_FAILED','MODEL_WORKSPACE_MISMATCH'}:
+                error=ModelTransportError(code)
+                error.diagnosis=receipt.get('diagnosis')
+                error.cli_returncode=receipt.get('cli_returncode')
+                error.worker_returncode=process.returncode
+                raise error
             if code in {"TRANSPORT_TIMEOUT", "PROCESS_NONZERO", "PROCESS_START_FAILED", "WORKER_FAILED"}:
-                raise ModelTransportError(code)
+                error=ModelTransportError(code)
+                error.diagnosis=receipt.get('diagnosis')
+                error.cli_returncode=receipt.get('cli_returncode')
+                error.worker_returncode=process.returncode
+                if retry_cap and code == 'TRANSPORT_TIMEOUT':
+                    from app.services.model_timeout_retry import confirmed_timeout
+
+                    error.confirmed_timeout = confirmed_timeout(path, worker_pid=process.pid,
+                        worker_returncode=process.returncode, receipt=receipt,
+                        prompt_sha256=frame['prompt_sha256'], schema_sha256=frame['schema_sha256'])
+                    if error.confirmed_timeout is None:
+                        raise ModelTransportError('RECONCILIATION_REQUIRED') from error
+                    error.slot_id = slot_scope['slot_id']
+                raise error
             if code not in {"FINAL_OUTPUT_EMPTY", "FINAL_OUTPUT_MALFORMED"}:
                 raise ValueError("production_official_transport_boundary_reject")
         if self.execution_profile:
@@ -251,4 +382,6 @@ class OfficialProductionModelTransport:
                 raise ValueError('sol_high_worker_receipt_drift_or_output_limit')
             if dynamic and proof.get('model_plan_scope') != slot_scope:
                 raise ValueError('sol_high_worker_slot_receipt_drift')
+        if artifacts is not None:
+            artifacts.check(path=path)
         return raw

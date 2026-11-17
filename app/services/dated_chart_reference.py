@@ -32,6 +32,8 @@ def _derive(*, proof, ticker, market):
     _, rows = OhlcvClient._complete_period_response(count=1000,period='daily',bars=rows,supply_demand=supply)
     if provider != 'kiwoom':
         raise ValueError('dated_reference_original_provider_required')
+    from app.services.dated_bar_admission import admit_rows
+    rows, _ = admit_rows(rows,ticker=ticker,market=market,timeframe='daily',cutoff=cutoff)
     native = build_provider_native_view(ticker=ticker,market=market,periods={'daily': rows},
         cutoff=cutoff,observed_at=observed,historical_reference=True)
     period = native.periods['daily']
@@ -83,3 +85,47 @@ def validate_price_reference(price, *, ticker, market):
         return None
     return validate_reference(reference,price.dated_reference_evidence,
         ticker=ticker,market=market)
+
+
+def technical_context_from_references(evidence, *, ticker, market, period_sources=None):
+    """Replay retained HTTP bodies as dated native technical context, not price rights."""
+    from app.services.ohlcv_client import OhlcvClient
+    from app.services.packet_owned_technical_context_service import build_native_packet_context
+    if not isinstance(evidence, dict) or not evidence.get('as_of'):
+        raise ValueError('onboarding_native_evidence_as_of_required')
+    reference = validate_reference(evidence.get('dated_reference_price'),
+        evidence.get('dated_reference_evidence'), ticker=ticker, market=market,
+        as_of=evidence['as_of'])
+    proof = evidence['dated_reference_evidence']
+    sources = dict(period_sources or {})
+    if set(sources) - {'weekly', 'monthly'}:
+        raise ValueError('onboarding_native_period_scope_invalid')
+    sources['daily'] = dict(response_body=proof['response_body'],
+        response_sha256=reference['source_response_sha256'], observed_at=proof['observed_at'])
+    periods = {}
+    observations = []
+    for period, source in sources.items():
+        if not isinstance(source, dict) or set(source) != {'response_body', 'response_sha256', 'observed_at'}:
+            raise ValueError('onboarding_native_original_response_required')
+        raw = source['response_body'].encode('utf-8')
+        observed = datetime.fromisoformat(source['observed_at'])
+        if (len(raw) > 16*1024**2 or hashlib.sha256(raw).hexdigest() != source['response_sha256']
+                or observed.utcoffset() is None or observed > datetime.fromisoformat(evidence['as_of'])):
+            raise ValueError('onboarding_native_response_binding_invalid')
+        payload = json.loads(raw)
+        rows, supply, provider = OhlcvClient._decode_period_payload(payload, ticker=ticker,
+            period=period, adjusted=True, response_body_sha256=source['response_sha256'])
+        _, rows = OhlcvClient._complete_period_response(
+            count={'daily': 1000, 'weekly': 700, 'monthly': 300}[period],
+            period=period, bars=rows, supply_demand=supply)
+        if provider != 'kiwoom':
+            raise ValueError('dated_reference_original_provider_required')
+        from app.services.dated_bar_admission import admit_rows
+        rows, _ = admit_rows(rows,ticker=ticker,market=market,timeframe=period,
+            cutoff=date.fromisoformat(reference['analysis_cutoff']))
+        periods[period] = rows
+        observations.append(observed)
+    view = build_provider_native_view(ticker=ticker, market=market, periods=periods,
+        cutoff=date.fromisoformat(reference['analysis_cutoff']),
+        observed_at=max(observations), historical_reference=True)
+    return build_native_packet_context(view=view, session=reference['reference_date'], as_of=evidence['as_of'])

@@ -172,6 +172,9 @@ def compose_source_owners(*, seed: SourceRunBinding, market_inputs, stock_inputs
             packet = {"run_id": native["run_id"], "attempt_id": attempt,
                 "attempt_started_at": started.isoformat(), "cutoff": native["cutoff"].isoformat(),
                 "component": _resolve(**native)}
+            if selected:
+                from app.services.selected_source_composition import selected_market_packet
+                packet=selected_market_packet(native)
         else:
             packet = compose_attempt(**params)
         if packet["run_id"] != seed.parent_run_id or digest(packet) != seed.attempt_hashes[market]:

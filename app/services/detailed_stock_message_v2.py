@@ -2,7 +2,7 @@
 from typing import Literal
 
 from app.services.detailed_stock_message_service import (
-    DetailedStockMessagePlan, DetailedRow, _render_rows, _row, detailed_render,
+    DetailedStockMessagePlan, DetailedRow, _render_rows, _row, _source_number, detailed_render,
 )
 from app.services.production_b2_execution import ProductionB2ExecutionAuthorizationV1, ProductionB2ExecutionAuthorizationV2
 from app.services.kr_forward_valuation_message import KrForwardMessagePlan, render as render_kr
@@ -19,6 +19,190 @@ class DetailedStockMessagePlanV2(ContractModel):
     authorization: ProductionB2ExecutionAuthorizationV2 | ProductionB2ExecutionAuthorizationV1
     rows: tuple[DetailedRow, ...]
     acceptance_sha256: str
+
+
+def _reported_quarter_rows(packet, base):
+    if packet.market != "us":
+        return ()
+    from app.services.issuer_fiscal_week_policy import QUARTER
+    source=base.source_stock
+    stock=source["packet"]["stocks"][0]
+    groups = {}
+    for fact in stock.get("fact_catalog", ()):
+        basis = fact["fields"].get("reported_quarter_basis")
+        if not basis:
+            continue
+        entry = source.get("source_graph", {}).get(fact["fact_id"],{})
+        current, prior = basis["current_duration"], basis["prior_duration"]
+        if (fact["fact_type"] != "earnings_comparison" or basis["contract"] != QUARTER
+                or basis["normalization"] != "NONE" or {current, prior} != {"P13W", "P14W"}
+                or source.get("fresh_run_id") != base.source_generation_id
+                or "canonical:"+fact["fact_id"] not in source.get("comparative_fact_refs", ())
+                or entry.get("fact_sha256") != digest(fact)
+                or entry.get("occurrences") != fact["fields"]["source_occurrences"]
+                or entry.get("quality_receipt_sha256") != fact["quality_receipt_sha256"]
+                or basis != fact["field_dependency_receipts"].get("reported_quarter_basis")):
+            raise ValueError("detailed_v2_reported_quarter_owner_binding")
+        key = current, prior, basis["policy_receipt_sha256"]
+        groups.setdefault(key, []).append(fact["fact_id"])
+    return tuple(_row("business", "reported-quarter-weeks-" + policy[:12],
+        f"공시 기준 전년 동기 비교: 이번 분기 {current[1:-1]}주 vs 전년 분기 {prior[1:-1]}주. "
+        "분기 길이를 보정하지 않은 공시 금액 기준이며, 전년 기저에 따라 증가율이 크게 보일 수 있습니다.",
+        facts=tuple(sorted(refs)), hashes=(policy,), formatting="as-reported-fiscal-quarter-not-normalized-v1")
+        for (current, prior, policy), refs in sorted(groups.items()))
+
+
+def _us_sr_rows(packet, base, axes, security_id):
+    if packet.market != "us":
+        return ()
+    from decimal import Decimal, InvalidOperation
+    from app.services.us_dated_source_sr import CONTRACT, REFERENCE
+    source = base.source_stock
+    chart = source["packet"]["stocks"][0]["chart_context"]
+    ref = chart.get("structure", {}).get("price_structure_v3", {})
+    if (ref.get("contract") != CONTRACT or ref.get("scope") != "DATED_REFERENCE_ONLY"
+            or ref.get("ticker") != packet.ticker or ref.get("security_id") != security_id
+            or ref.get("currency") != "USD" or ref.get("adjustment_basis") != "provider_adjusted_price_v1"
+            or ref.get("source_generation") != base.source_generation_id
+            or ref.get("source_generation") != source.get("fresh_run_id")
+            or ref.get("eligible_for_current_price") is not False or ref.get("eligible_for_b2_timing") is not False
+            or ref.get("as_of") != chart.get("timeframes", {}).get("daily", {}).get("as_of_date")
+            or ref.get("as_of") != ref.get("completed_sources", {}).get("daily", {}).get("completed")):
+        return ()
+    rows = []
+    for zone in ref.get("zones", ())[:4]:
+        labels = {"support": "지지", "resistance": "저항"}
+        refs = zone.get("source_refs", [])
+        if (zone.get("side") not in labels or not refs
+                or not all(isinstance(x, str) and REFERENCE.fullmatch(x) for x in (zone.get("id"), *refs))):
+            continue
+        try:
+            low, high = Decimal(zone["low"]), Decimal(zone["high"])
+        except (InvalidOperation, KeyError, TypeError):
+            continue
+        if not low.is_finite() or not high.is_finite() or not 0 < low <= high:
+            continue
+        number = f"${low:,.2f}–${high:,.2f}"
+        if low < Decimal("0.01") or low != high and format(low, ".2f") == format(high, ".2f"):
+            number = f"${low:f}–${high:f}"
+        tier = {"near": "가까운 ", "major": "주요 구조 "}.get(zone.get("tier"), "")
+        rows.append(_row("price", zone["id"],
+            f"{ref['as_of']} USD V3 참고 {tier}{labels[zone['side']]}(조정봉): {number} · 근거 {zone['id']}",
+            facts=(zone["id"], *refs), hashes=(digest(ref),),
+            formatting="dated-us-v3-no-b2-or-quote-authority-v1"))
+    support = _us_accepted_support_row(packet, base, axes, security_id, ref["as_of"])
+    return (*rows, support) if support is not None else tuple(rows)
+
+
+def _us_accepted_support_row(packet, base, axes, security_id, session):
+    """Reuse the accepted KR9 registry invariants, without taking a V3 quote."""
+    timing = axes["entry_timing"]
+    accepted = base.accepted_calibration
+    entries = accepted.entries
+    refs = entries.get("tactical_watch_basis") or []
+    if (timing["state"] not in {"WAIT_FOR_ZONE", "FAVORABLE_NOW"}
+            or timing["reason"] != "EXACT_SELECTED_ZONE_RELATION"
+            or timing["selected"] != accepted.decision.get("tactical_choice")
+            or entries.get("tactical_watch_status") != "RESOLVED"
+            or base.valuation.security_id != security_id or len(refs) != 1
+            or refs[0] not in timing["evidence_refs"]):
+        return None
+    matches = [e for e in packet.evidence if e.ref_id == refs[0] and e.label == "chart_support_zone"]
+    if len(matches) != 1 or not matches[0].source_ref.startswith("stock.fact_catalog."):
+        return None
+    evidence = matches[0]
+    fact_id = evidence.source_ref.removeprefix("stock.fact_catalog.")
+    source = base.source_stock
+    stock = source["packet"]["stocks"][0]
+    quote = stock["current_price_context"]
+    try:
+        fact, node, low_reg, low = _source_number(fact_id, "fields.zone_low", source)
+        _, _, high_reg, high = _source_number(fact_id, "fields.zone_high", source)
+    except (KeyError, ValueError):
+        return None
+    frame = stock["chart_context"].get("timeframes", {}).get(fact["fields"].get("timeframe"), {})
+    if (fact["fact_type"] != "chart_support_zone" or fact.get("source") != "deterministic_ohlcv_structure"
+            or node.get("ticker") != packet.ticker or not evidence.source_time
+            or evidence.source_time.subject_ticker != packet.ticker
+            or evidence.source_time.canonical_fact_sha256 != digest(fact)
+            or fact["as_of_date"] != evidence.as_of or evidence.as_of != session
+            or quote.get("as_of_date") != session or frame.get("as_of_date") != session
+            or frame.get("candle", {}).get("close") != quote.get("current_price")
+            or source.get("fresh_run_id") != source["packet"].get("source_time_domains", {}).get("run_id")
+            or frame.get("quality") != "available"
+            or (quote.get("price_basis"), frame.get("price_basis")) not in {
+                ("adjusted_close", "adjusted"), ("unadjusted_close", "unadjusted"), ("regular_close", "unadjusted")}
+            or any(value != "USD" for value in (fact["fields"].get("currency"), quote.get("currency"),
+                entries.get("tactical_currency"), low_reg["unit"], high_reg["unit"]))
+            or low != entries.get("tactical_watch_low") or high != entries.get("tactical_watch_high") or not 0 < low <= high):
+        return None
+    warning = " (가격 관찰 참고, 신규 매수 권고 아님)" if axes["fundamental_attractiveness"] == "AVOID" else ""
+    return _row("price", "accepted-tactical-support",
+        f"B2 수락 관찰 지지({session} USD): ${low:,.2f}–${high:,.2f}{warning}",
+        facts=tuple(refs), hashes=(digest(fact), digest(node), digest(low_reg), digest(high_reg)),
+        numeric=(fact_id + ":fields.zone_low", fact_id + ":fields.zone_high"),
+        formatting="accepted-tactical-support-registry-v1")
+
+
+def _selected_support_row(packet, base, timing, security_id, *, new_buyer=None):
+    """Keep the accepted tactical selection separate from a V3 structural zone."""
+    accepted = base.accepted_calibration
+    entries = accepted.entries
+    refs = entries.get("tactical_watch_basis") or []
+    if (timing["state"] not in {"WAIT_FOR_ZONE", "FAVORABLE_NOW"}
+            or timing["reason"] != "EXACT_SELECTED_ZONE_RELATION"
+            or timing["selected"] != accepted.decision.get("tactical_choice")
+            or entries.get("tactical_watch_status") != "RESOLVED"
+            or base.valuation.security_id != security_id
+            or len(refs) != 1 or refs[0] not in timing["evidence_refs"]):
+        return None
+    ref = refs[0]
+    matches = [row for row in packet.evidence if row.ref_id == ref and row.label == "chart_support_zone"]
+    if len(matches) != 1 or not matches[0].source_ref.startswith("stock.fact_catalog."):
+        return None
+    evidence = matches[0]
+    fact_id = evidence.source_ref.removeprefix("stock.fact_catalog.")
+    source = base.source_stock
+    stock = source["packet"]["stocks"][0]
+    quote = stock["current_price_context"]
+    try:
+        fact, node, low_reg, low = _source_number(fact_id, "fields.zone_low", source)
+        _, _, high_reg, high = _source_number(fact_id, "fields.zone_high", source)
+    except (KeyError, ValueError):
+        return None
+    currency = {"kr": "KRW", "us": "USD"}[packet.market]
+    timeframe = fact["fields"].get("timeframe")
+    labels = {"daily": "일봉", "weekly": "주봉", "monthly": "월봉"}
+    frame = stock["chart_context"].get("timeframes", {}).get(timeframe, {})
+    basis = quote.get("price_basis")
+    session = packet.assessment_date
+    if (fact["fact_type"] != "chart_support_zone" or fact.get("source") != "deterministic_ohlcv_structure"
+            or node.get("ticker") != packet.ticker or not evidence.source_time
+            or evidence.source_time.subject_ticker != packet.ticker
+            or evidence.source_time.canonical_fact_sha256 != digest(fact)
+            or fact["as_of_date"] != evidence.as_of or evidence.as_of != session
+            or quote.get("as_of_date") != session or frame.get("as_of_date") != session
+            or frame.get("candle", {}).get("close") != quote.get("current_price")
+            or source["fresh_run_id"] != source["packet"]["source_time_domains"]["run_id"]
+            or timeframe not in labels or frame.get("quality") != "available"
+            or (basis, frame.get("price_basis")) not in {
+                ("adjusted_close", "adjusted"), ("unadjusted_close", "unadjusted"), ("regular_close", "unadjusted")}
+            or any(value != currency for value in (fact["fields"].get("currency"), quote.get("currency"),
+                entries.get("tactical_currency"), low_reg["unit"], high_reg["unit"]))
+            or low != entries.get("tactical_watch_low") or high != entries.get("tactical_watch_high")
+            or not 0 < low <= high):
+        return None
+    from app.services.price_structure_v3_renderer_service import _price_display
+
+    basis_label = "조정봉" if basis == "adjusted_close" else "비조정봉"
+    text = f"진입 관찰 지지 구간({session} {labels[timeframe]}·{basis_label}): " \
+           f"{_price_display(low, currency)}–{_price_display(high, currency)}"
+    if new_buyer == "AVOID":
+        text += " (가격 관찰 참고, 신규 매수 권고 아님)"
+    return _row("price", "accepted-tactical-support", text, facts=(ref,),
+        hashes=(digest(fact), digest(node), digest(low_reg), digest(high_reg)),
+        numeric=(fact_id + ":fields.zone_low", fact_id + ":fields.zone_high"),
+        formatting="accepted-tactical-support-registry-v1")
 
 
 def build_detailed_plan_v2(*, packet, base, b2_request, b2_result, authorization):
@@ -72,6 +256,13 @@ def build_detailed_plan_v2(*, packet, base, b2_request, b2_result, authorization
         hashes=(base.acceptance_sha256, digest(b2_result), digest(authorization.model_dump(mode="json"))),
         formatting="accepted-independent-b2-axes-v2")
     rows = (row, *(r for r in presentation.rows if r.section != "judgment"))
+    if packet.market == "us":
+        rows += (*_reported_quarter_rows(packet, base), *_us_sr_rows(packet, base, axes, authorization.security_id))
+    if packet.market == "kr":
+        support = _selected_support_row(packet, base, axes["entry_timing"], authorization.security_id,
+                                        new_buyer=axes["fundamental_attractiveness"])
+        if support is not None:
+            rows += (support,)
     binding = dict(base=presentation.acceptance_sha256, request=digest(b2_request), result=digest(b2_result),
         authorization=digest(authorization.model_dump(mode="json")), rows=[r.model_dump(mode="json") for r in rows])
     return DetailedStockMessagePlanV2(base=presentation, b2_request=b2_request, b2_result=b2_result,

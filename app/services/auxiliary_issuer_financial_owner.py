@@ -23,6 +23,20 @@ class AuxiliaryIssuerDependency(ContractModel):
     technical_eligible: Literal[False] = False
 
 
+def issuer_only_plan(source, *, stock, exact_financial_owner, retries, official_identity_sha256):
+    """Compile a financial-only dependency without adding a stock or market subject."""
+    from app.services.bounded_financial_acquisition import make_plan
+
+    if not source or source.get('ticker') != '000660' or source.get('exchange') != 'KRX':
+        raise ValueError('us14_declared_auxiliary_issuer_required')
+    plan = make_plan(source, market='kr', cutoff=stock.frozen_at, run_id=stock.run_id,
+        all_subjects_fresh=True, exact_financial_owner=exact_financial_owner,
+        maximum_retries_per_request=retries)
+    dep = AuxiliaryIssuerDependency(run_id=stock.run_id, cutoff=stock.frozen_at,
+        source_plan_sha256=digest(plan), official_identity_sha256=official_identity_sha256)
+    return plan, dep.model_dump(mode='json')
+
+
 def assemble_issuer(*, plan, acquisition, directory, receipts, dependency,
                     target_plan, field_semantics=True):
     dep = AuxiliaryIssuerDependency.model_validate(dependency)

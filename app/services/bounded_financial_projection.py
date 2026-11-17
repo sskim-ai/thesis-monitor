@@ -58,6 +58,17 @@ def paired(current, prior):
         same = cs < ce and ps < pe < ce and (ce - cs).days == (pe - ps).days and 330 <= (ce - pe).days <= 400
         if same:
             return True
+        if current['period_role']=='SINGLE_QUARTER' and current.get('issuer_reported_quarter_policy'):
+            from app.services.issuer_fiscal_week_policy import reported_quarter_comparability
+            def evidence(row):
+                return dict(amount=row['value'], amount_period_start=row['period_start'],
+                    amount_period_end=row['period_end'], currency=row['currency'],
+                    statement_basis=row['statement_basis'], source_row_identity=row['occurrence_id'],
+                    source_payload_sha256=row['raw_artifact_sha256'], issuer_cik=row['provider_issuer_id'],
+                    taxonomy=row['original_lineage']['taxonomy'], concept=row['original_lineage']['concept'],
+                    receipt=row['source_document_id'])
+            return bool(reported_quarter_comparability(evidence(current),evidence(prior),
+                proof=current['issuer_reported_quarter_policy'],cutoff=date.fromisoformat(current['filing_date'])))
         from app.services.issuer_fiscal_week_policy import annual_comparability
         def fiscal(row):
             return {**row, 'issuer': row['provider_issuer_id']}
@@ -338,8 +349,11 @@ def _raw(directory, artifact, receipts):
 
 def verify_capture(plan, acquisition, directory, receipts):
     logical = {}
+    physical = 0
     for receipt in receipts:
-        if receipt['plan_sha256'] != digest(plan) or not 1 <= receipt['attempt'] <= 3:
+        retained = 'retained_sec_origin' in receipt
+        if (receipt['plan_sha256'] != digest(plan)
+                or (receipt['attempt'] != 0 if retained else not 1 <= receipt['attempt'] <= 3)):
             raise ValueError('receipt_plan_or_attempt_mismatch')
         name = receipt['logical_id'].split(':')[-1]
         frozen = json.loads((directory / (name + '.plan.json')).read_bytes())
@@ -348,10 +362,17 @@ def verify_capture(plan, acquisition, directory, receipts):
                 or frozen.get('filing') != receipt.get('filing')):
             raise ValueError('receipt_request_binding_mismatch')
         attempts = logical.setdefault(receipt['logical_id'], [])
-        if receipt['attempt'] != len(attempts)+1 or (attempts and attempts[-1]['request_sha256'] != receipt['request_sha256']):
+        if retained:
+            from app.services.sealed_financial_reader import verify_retained_financial_use
+            verify_retained_financial_use(plan,directory,receipt)
+        else:
+            physical += 1
+        if ((attempts and (retained or 'retained_sec_origin' in attempts[-1]
+                           or attempts[-1]['request_sha256'] != receipt['request_sha256']))
+                or (not retained and receipt['attempt'] != len(attempts)+1)):
             raise ValueError('receipt_retry_identity_mismatch')
         attempts.append(receipt)
-    if len(logical) > plan['maximum_logical_requests'] or len(receipts) > plan['maximum_HTTP_attempts']:
+    if len(logical) > plan['maximum_logical_requests'] or physical > plan['maximum_HTTP_attempts']:
         raise ValueError('receipt_budget_exceeded')
     discovery = [r for r in receipts if r['stage']=='discovery' and not r['failure_class']]
     if plan['provider']=='sec_edgar':
@@ -709,6 +730,7 @@ def _project(plan, acquisition, directory, receipts, *, followup_directory=None,
     snapshots.sort(key=lambda r:(r.financial_period_end or date.min,r.filing_date or date.min),reverse=True)
     freshness, _, validated = evaluate_financial_freshness_records([], snapshots, as_of=created.date())
     records, quality_bundles = [], []
+    reported_quarters = {}
     ordered = sorted([*validated, *foreign_rows], key=lambda r: (r.financial_period_end or date.min, r.filing_date or date.min), reverse=True)
     freshness, _, _ = evaluate_financial_freshness_records([],ordered,as_of=created.date())
     expected_periods = [f['reportDate'] for f in filings if f.get('role')=='current' and f.get('reportDate')]
@@ -762,6 +784,19 @@ def _project(plan, acquisition, directory, receipts, *, followup_directory=None,
             'foreign_candidates': [r.model_dump(mode='json') for r in foreign_rows]}
         if exact_owner:
             inputs.update(exact_annual_owner=True, issuer_fiscal_policy=fiscal_policies.get(row.source_filing_id))
+        if (field_semantics and exact_owner and row.provider=='sec_companyfacts'
+                and comparison and row.period_scope==comparison['period_scope']=='single-quarter'):
+            prior_end=date.fromisoformat(comparison['financial_period_end'])
+            if (row.financial_period_end-prior_end).days in {364,371}:
+                candidate=[d for d in source_documents if d['filing']['accessionNumber']==row.source_filing_id
+                    and d['filing']['form']=='10-Q' and d['url']==sec_base(plan,d['filing'])+d['filing']['primaryDocument']]
+                if len(candidate)==1:
+                    from app.services.issuer_fiscal_week_policy import extract_reported_quarter
+                    doc=candidate[0]
+                    proof=extract_reported_quarter(doc['raw'],issuer=plan['issuer'],filing=doc['filing'])
+                    if proof is not None:
+                        reported_quarters[row.source_filing_id]=proof
+                        inputs['issuer_reported_quarter_policy']=proof
         if field_semantics and foreign_purpose:
             from app.services.sec_fpi_field_selection import POLICY
             inputs['foreign_period_policy'] = POLICY
@@ -797,6 +832,8 @@ def _project(plan, acquisition, directory, receipts, *, followup_directory=None,
                     'source_reported_value': source.get('source_reported_value'), 'original_lineage': source}
                 if exact_owner and row.source_filing_id in fiscal_policies:
                     lineage['issuer_fiscal_policy'] = fiscal_policies[row.source_filing_id]
+                if row.source_filing_id in reported_quarters:
+                    lineage['issuer_reported_quarter_policy'] = reported_quarters[row.source_filing_id]
                 role = witness['filing']['role'] if source.get('period_end') == witness['filing'].get('reportDate') else 'comparative'
                 raw_sha = witness['raw_sha']
             else:

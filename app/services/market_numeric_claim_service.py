@@ -131,6 +131,40 @@ def numeric_catalog(source, *, market, assessment_date, eligible_refs):
         value = f"{row['value']:.2f}%" if key=="level_pct" else f"{row['value']:+.2f}{'pp' if unit=='pp' else '%'}"
         claims.append(claim("OBSERVED_MARKET_VALUE",components,f"• {label}: {value} ({observed} 관측)",
                             parents=parents,formula=formula,metadata={"registry_row_sha256":digest(row),"fact_sha256":digest(fact)}))
+    # Aggregate ka10051 references are dated amounts, not stock attribution or
+    # new direction authority. The existing adapter alias must be eligible too.
+    for fact in source.get('fact_catalog') or []:
+        if market!='kr' or fact.get('fact_type')!='market_flow':continue
+        fields=fact['fields'];ref=fact['fact_id'];alias=fields.get('source_ref')
+        rows=[r for r in source.get('numeric_registry',[]) if r.get('fact_id')==ref
+            and r.get('field_path')=='fields.net_buy_amount']
+        reference=source.get('aggregate_flow_reference',{})
+        view=reference.get('value',{})
+        reference_only=(reference.get('status')=='AVAILABLE_AGGREGATE_ONLY'
+            and digest(view)==reference.get('value_sha256') and view.get('session')==completed
+            and view.get('scope')=='AGGREGATE_ONLY_SOURCE_REFERENCE' and view.get('economic_use') is False
+            and view.get('full_market_parent') is False and view.get('concentration_eligible') is False)
+        if reference_only:
+            adapters=[dict(net_flow=r['net_buy_amount'],as_of_date=completed,unit=r['currency'],
+                scope=r['market'],participant=r['actor']) for r in view['market_flows'] if r.get('source_ref')==alias]
+        else:
+            adapters=[r for r in source.get('adapter_context',{}).get('market_flows',[]) if r.get('source_ref')==alias]
+        if ((not reference_only and alias not in eligible) or fact.get('as_of_date')!=completed or len(rows)!=1 or len(adapters)!=1):continue
+        row=rows[0];adapter=adapters[0];amount=fields.get('net_buy_amount')
+        if (row.get('registered') is not True or row.get('prose_allowed') is not True
+                or row.get('scope') not in {'market','both'} or row.get('unit')!='KRW'
+                or not number(amount) or row.get('value')!=amount or adapter.get('net_flow')!=amount
+                or adapter.get('as_of_date')!=completed or adapter.get('unit')!='KRW'
+                or adapter.get('scope')!=fields.get('market_scope') or adapter.get('participant')!=fields.get('actor')
+                or fields.get('exchange_basis')!='KRX_NXT_INTEGRATED'):continue
+        labels={'foreign':'외국인','institution':'기관','retail':'개인'}
+        if fields.get('actor') not in labels or fields.get('market_scope') not in {'KOSPI','KOSDAQ'}:continue
+        parts=[component(ref,'fields.net_buy_amount',amount,'NET_FLOW','KRW',completed),
+            component(ref,'as_of_date',completed,'DATE','ISO_DATE',completed)]
+        claims.append(claim('DATED_AGGREGATE_FLOW',parts,
+            f"• {fields['market_scope']} {labels[fields['actor']]} 순매수: {amount:+,.0f} KRW ({completed} 관측, KRX·NXT 통합)",
+            metadata=dict(fact_sha256=digest(fact),registry_row_sha256=digest(row),
+                scope='AGGREGATE_ONLY_NOT_STOCK_ATTRIBUTION',source_ref=alias)))
     for row in source.get("night_futures") or []:
         receipt = night_market_eligibility(row,market=market,assessment_date=assessment_date,completed_session_date=completed)
         if not receipt["eligible"]:

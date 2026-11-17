@@ -42,6 +42,7 @@ def source_quality(bundle):
                         if inputs.get("comparison") else None),
             ticker=inputs["ticker"], cutoff=date.fromisoformat(inputs["cutoff"]),
             fiscal_policy=inputs.get('issuer_fiscal_policy'), allow_annual=inputs.get('exact_annual_owner') is True,
+            reported_quarter_policy=inputs.get('issuer_reported_quarter_policy'),
         )
     if inputs["formal"].get("provider") == "sec_foreign_filing":
         from app.services.sec_foreign_comparison_service import foreign_comparison_quality

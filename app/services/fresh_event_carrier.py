@@ -28,17 +28,21 @@ class EventRunWindow(ContractModel):
 
 class FreshEventCarrier(ContractModel):
     contract: Literal['fresh-event-carrier-v1'] = 'fresh-event-carrier-v1'
-    acquisition_class: Literal['FRESH_CURRENT_RUN', 'PERSISTED_SOURCE_RECHECK']
+    acquisition_class: Literal['FRESH_CURRENT_RUN', 'PERSISTED_SOURCE_RECHECK', 'OPTIONAL_NEWS_RATE_LIMITED']
     window: EventRunWindow
     source: BoundNewsInput | None = None
     persisted: dict | None = None
+    rate_limit: dict | None = None
 
     @model_validator(mode='after')
     def exclusive_source(self):
         if self.acquisition_class == 'FRESH_CURRENT_RUN':
-            if self.source is None or self.persisted is not None:
+            if self.source is None or self.persisted is not None or self.rate_limit is not None:
                 raise ValueError('fresh_event_exact_source_required')
-        elif self.source is not None or self.persisted is None:
+        elif self.acquisition_class == 'OPTIONAL_NEWS_RATE_LIMITED':
+            if self.source is not None or self.persisted is not None or self.rate_limit is None:
+                raise ValueError('optional_news_unavailability_without_source_required')
+        elif self.source is not None or self.persisted is None or self.rate_limit is not None:
             raise ValueError('persisted_event_exact_source_required')
         return self
 
@@ -52,6 +56,25 @@ def replay_carrier(carrier, *, plan, ticker, security, policy):
     if len(markets) != 1:
         raise ValueError('event_carrier_market_ambiguous')
     market = next(iter(markets))
+    if carrier.rate_limit is not None:
+        from app.services.selected_news_rate_limit import PROVIDER, STATUS, require_prior
+        row = carrier.rate_limit
+        prior = row['prior']
+        sessions = {r.latest_completed_session for r in plan.reads if r.subject == ticker}
+        if (market != 'us' or len(sessions) != 1 or row != dict(status=STATUS,
+                disposition='SKIPPED_RATE_LIMIT', wire_attempts=0, generation_id=plan.run_id,
+                subject=ticker, prior=prior) or security['ticker'] != ticker):
+            raise ValueError('optional_news_unavailability_subject_or_generation')
+        require_prior(prior, generation=plan.run_id, session=sessions.pop(), started_at=plan.frozen_at)
+        policy.require(PROVIDER)
+        binding = dict(provider=PROVIDER, denial=STATUS, evidence=[], selected=[], rate_limit=row)
+        output = dict(contract=carrier.contract, acquisition_class=carrier.acquisition_class,
+            ticker=ticker, current_run_id=plan.run_id, window=window.model_dump(mode='json'),
+            original_run_id=prior['prior_generation'], original_failure_receipt_sha256=prior['receipt_sha256'],
+            raw_sha256=prior['raw_sha256'], source_sha256=digest(row), denial=STATUS,
+            allowed_uses=[], canonical_fact_hashes={})
+        output['receipt_sha256'] = digest(output)
+        return dict(receipt=output, facts=[], evidence=[], binding=binding)
     persisted_receipt = None
     if carrier.source is not None:
         source = carrier.source

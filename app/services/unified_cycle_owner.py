@@ -71,6 +71,8 @@ class CycleFreeze(Strict):
     scheduled_run_event_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     policy_fingerprints: dict[str, str]
     events: tuple[CycleEvent, ...]
+    trigger_kind: Literal['REGULAR_SCHEDULED','MANUAL_ONE_SHOT'] = 'REGULAR_SCHEDULED'
+    execution_event: dict | None = None
 
 
 class CycleOwner:
@@ -259,7 +261,13 @@ def _clock(freeze, target):
     from app.services.unified_market_run import target_session
 
     local = freeze.scheduled_at.astimezone(SEOUL)
-    if freeze.scheduled_at not in scheduled_slots(freeze.market, local.date()):
+    manual = freeze.trigger_kind == 'MANUAL_ONE_SHOT'
+    if manual:
+        from app.services.vnext_one_shot_schedule import validate_manual_timing
+        validate_manual_timing(freeze.execution_event,cutoff=freeze.cutoff)
+        if freeze.scheduled_at.isoformat()!=freeze.execution_event['due_at']:
+            raise ValueError('cycle_manual_due_mismatch')
+    elif freeze.scheduled_at not in scheduled_slots(freeze.market, local.date()):
         raise ValueError("cycle_scheduled_slot_not_owned")
     if freeze.scheduled_at > freeze.cutoff:
         raise ValueError("cycle_scheduled_after_cutoff")
@@ -272,7 +280,7 @@ def _clock(freeze, target):
             selected = cal.previous_session(selected)
         if (
             selected.date() != target
-            or target_session(freeze.market, freeze.scheduled_at) != target
+            or (not manual and target_session(freeze.market, freeze.scheduled_at) != target)
         ):
             raise ValueError("cycle_completed_session_mismatch")
         prior = cal.previous_session(selected)

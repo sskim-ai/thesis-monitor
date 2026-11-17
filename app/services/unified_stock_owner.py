@@ -242,7 +242,8 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
                    fresh_financial_pending: bool = False,
                    completed_close_source: dict | None = None,
                    completed_price_source: dict | None = None, cycle_owner=None,
-                   prospective_owner=None, execution_purpose=None) -> dict:
+                   prospective_owner=None, execution_purpose=None,
+                   kr_stock_chart_v3=False, kr_stock_flow_source=None, us_selected_dated_sr=None) -> dict:
     """No path lookup, providers, prior assessments or downstream model output."""
     for key, value in (("local", local_seed), ("financial", financial), ("components", components),
                        ("receipts", receipts), ("plan", plan.model_dump(mode="json"))):
@@ -372,6 +373,51 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     structure_ready = all(c["eligible"] for rows in components["role_consumer_matrix"].values() for c in rows
         if c["consumer"] in {"legacy_local_pivots", "legacy_major_swings_atr", "legacy_boxes"})
     structure = analyze_chart_structure(periods, timeframe_contexts=timeframes) if structure_ready else {}
+    if kr_stock_chart_v3 is not False:
+        _exact(kr_stock_chart_v3, expected_hashes["kr_stock_chart_v3"])
+        if kr_stock_chart_v3 is not True or market != "kr":
+            raise ValueError("kr_stock_chart_v3_scope")
+        if "completed_session_bar_set" in components:
+            from app.services.kr_dated_structure import from_completed_periods
+            from app.services.ohlcv_client import OHLCV_PROVIDER_REQUEST_LIMIT
+            try:
+                v3 = from_completed_periods(ticker=ticker, cutoff=session_key, periods=periods,
+                    observed_at=plan.frozen_at.isoformat(), provider_limit=OHLCV_PROVIDER_REQUEST_LIMIT)
+            except (TypeError, ValueError):
+                v3 = {}
+            if v3:
+                structure["price_structure_v3"] = v3
+    if us_selected_dated_sr is not None:
+        _exact(us_selected_dated_sr, expected_hashes["us_selected_dated_sr"])
+        if (market != "us" or plan.contract != "selected-original-stock-plan-v1"
+                or us_selected_dated_sr.get("generation") != plan.run_id
+                or us_selected_dated_sr.get("session") != session_key):
+            raise ValueError("us_sr_only_same_selected_source")
+        if us_selected_dated_sr.get("enabled") is True:
+            from app.services.ohlcv_client import OHLCV_PROVIDER_REQUEST_LIMIT
+            from app.services.us_dated_source_sr import attach
+            try:
+                structure = attach(structure, enabled=True, ticker=ticker,
+                    security_id=reads[0].canonical_security_id, generation=plan.run_id, cutoff=session_key,
+                    observed_at=plan.frozen_at.isoformat(), periods=periods, receipts=receipts,
+                    provider_limit=OHLCV_PROVIDER_REQUEST_LIMIT)
+            except (KeyError, TypeError, ValueError):
+                # Optional structure does not change the existing V2 facts.
+                pass
+    flow = None
+    if kr_stock_flow_source is not None:
+        from app.services.kr_stock_flow_source import project
+        _exact(kr_stock_flow_source, expected_hashes["kr_stock_flow_source"])
+        if market != "kr" or "completed_session_bar_set" not in components:
+            raise ValueError("kr_stock_flow_requires_owned_completed_daily")
+        daily = next(r for r in reads if r.role == "adjusted_daily")
+        try:
+            flow = project(source=kr_stock_flow_source, plan=plan, daily=daily,
+                           completed_daily_rows=periods["daily"])
+        except ValueError:
+            # A valid optional receipt with no usable target row must not block prices.
+            flow = None
+    price_and_positioning = {"price": decision, **({"supply": flow} if flow else {})}
     chart = {"available": False if completed_close_source is not None or price_state is not None else bool(timeframes),
         "quality": "unavailable" if completed_close_source is not None or price_state is not None else "fresh", "source": "kiwoom",
         "timeframes": timeframes, "structure": _compact_chart_structure(structure) if structure else {},
@@ -379,7 +425,7 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     event_evidence = event_binding["evidence"] if event_binding else []
     at = business_cutoff or plan.frozen_at
     facts = build_source_fact_catalog(assessment_date=at.date(), capital_actions=[], evidence=event_evidence,
-        valuation=valuation, price={"price": decision}, chart=chart, monitoring_state={})
+        valuation=valuation, price=price_and_positioning, chart=chart, monitoring_state={})
     # Empty auto-generated earnings envelopes are not observed evidence.
     facts = [f for f in facts if f["fact_type"] != "earnings" or financial_refs]
     if price_state is not None and price_projection is None:
@@ -399,7 +445,7 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
         "thesis": {"core_thesis": thesis["core_thesis"], "time_horizon": thesis.get("time_horizon"),
             **{k: json.loads(thesis[k]) for k in ("thesis_drivers", "validation_metrics", "strengthen_signals",
                 "weaken_signals", "invalidation_signals", "market_expectations", "valuation_framework", "macro_exposures")}},
-        "evidence": event_evidence, "valuation": valuation, "price_and_positioning": {"price": decision},
+        "evidence": event_evidence, "valuation": valuation, "price_and_positioning": price_and_positioning,
         "chart_context": chart, "fact_catalog": facts, "numeric_registry": build_numeric_registry(facts),
         "current_price_context": select_current_price_context({"decision": decision}),
         "technical_context": technical.model_dump(mode="json"),
@@ -494,6 +540,16 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
             node["component_projection_sha256"] = expected_hashes["components"]
             if price_projection is not None:
                 node["completed_price_projection_sha256"] = price_projection.projection_sha256
+    if flow is not None:
+        node = graph["positioning:" + session_key]
+        node.update(source="sealed_kr_stock_flow",
+            input_sha256=expected_hashes["kr_stock_flow_source"],
+            receipt_sha256=kr_stock_flow_source["receipt_sha256"],
+            sealed_receipt_sha256=kr_stock_flow_source["sealed_receipt_sha256"],
+            raw_sha256=kr_stock_flow_source["raw_sha256"])
+        node.pop("roles")
+        node.pop("component_projection_sha256")
+        node.pop("completed_price_projection_sha256", None)
     numeric_graph = [{"fact_id": r["fact_id"], "field_path": r["field_path"],
         "registry_entry_sha256": digest(r), "source_node_sha256": digest(graph[r["fact_id"]])}
         for r in stock["numeric_registry"]]
@@ -519,7 +575,29 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
            if event_source is not None else {})}
 
 
-def validate_assembled(result, *, expected_result_sha256, versioned_business_inputs=None):
+def _validate_kr_flow_binding(result, stock, fact, binding, source):
+    """Bind the producer's dedicated positioning fact to its original flow receipt."""
+    from app.services.kr_stock_flow_source import BASIS
+
+    fields=fact["fields"]
+    if (source is None or result["market"]!="kr" or fact["fact_type"]!="positioning"
+            or fields!=stock["price_and_positioning"].get("supply")
+            or fact["fact_id"]!="positioning:"+str(fields.get("as_of_date"))
+            or source["scope"]!=fields.get("scope") or fields.get("scope")!="KR_INDIVIDUAL_SECURITY"
+            or fields.get("basis")!=BASIS or fields.get("unit")!="shares"
+            or fields.get("ticker")!=stock["ticker"] or fields.get("source_generation")!=source["run_id"]
+            or fields.get("source_role")!=source["read"]["entry_id"]
+            or fields.get("as_of_date")!=source["read"]["latest_completed_session"]
+            or fields.get("canonical_security_id")!=source["read"]["canonical_security_id"]
+            or digest(source)!=result["input_hashes"].get("kr_stock_flow_source")
+            or digest(source["receipt"])!=source["receipt_sha256"]
+            or any(binding.get(key)!=source[key] for key in
+                   ("receipt_sha256","sealed_receipt_sha256","raw_sha256"))):
+        raise ValueError("assembled_kr_stock_flow_source_binding_mismatch")
+
+
+def validate_assembled(result, *, expected_result_sha256, versioned_business_inputs=None,
+                       kr_stock_flow_source=None):
     """Detect post-owner mutation without trusting packet or PASS labels."""
     if digest(result) != expected_result_sha256:
         raise ValueError("assembled_result_hash_mismatch")
@@ -618,8 +696,11 @@ def validate_assembled(result, *, expected_result_sha256, versioned_business_inp
         binding = result["source_graph"][fact["fact_id"]]
         if binding["ticker"] != stock["ticker"] or binding["fact_sha256"] != digest(fact):
             raise ValueError("source_reference_mismatch")
+        if binding["source"] == "sealed_kr_stock_flow":
+            _validate_kr_flow_binding(result, stock, fact, binding, kr_stock_flow_source)
         key = {"selected_financial": "financial", "local_seed": "local", "sealed_stock_roles": "receipts",
-               "business_events": "events", "versioned_reported_business": "versioned_business"}[binding["source"]]
+               "business_events": "events", "versioned_reported_business": "versioned_business",
+               "sealed_kr_stock_flow": "kr_stock_flow_source"}[binding["source"]]
         if binding["input_sha256"] != result["input_hashes"][key]:
             raise ValueError("source_input_hash_mismatch")
         if binding['source'] == 'versioned_reported_business':

@@ -1,5 +1,6 @@
 """Canonical current raw/normalized/owner replay without proof-run seeds."""
 from datetime import date, datetime
+from pathlib import Path
 from app.services.bounded_financial_stock_owner import assemble as assemble_financial
 from app.services.fresh_financial_stock_owner import fresh_stock_baseline
 from app.services.sealed_fresh_dispatch import consume_bound_result, decode_request_plan
@@ -9,7 +10,7 @@ from app.services.unified_aggregate_receipt import AggregateReceipt
 from app.services.unified_run_artifacts import durable_json, sha256_bytes
 from app.services.unified_snapshot_contract import digest, encoded
 from app.services.unified_source_composition import A, SourceInput, SourceRole
-from app.services.unified_stock_acquisition import decode_owned_role
+from app.services.unified_stock_acquisition import decode_owned_role, require_native_replay_timing
 from app.services.unified_stock_anomaly_scope import materialize_source_components
 import json
 
@@ -152,6 +153,94 @@ def current_local_seed(root, frozen, plan, market, policy, *, cycle_owner=None, 
         subjects=plan.universe[market], policy=policy, cycle_owner=cycle_owner,
         prospective_owner=prospective_owner)
 
+def _stock_flow_input(root, frozen, outcome, sealed, plan, daily):
+    from app.services.kr_stock_flow_source import read_for
+    from app.services.unified_stock_acquisition import bound_artifact
+    expected = read_for(daily)
+    if expected not in frozen['kr_stock_flow_reads']:
+        raise ValueError('kr_flow_not_in_frozen_plan')
+    key = expected['entry_id']
+    descriptors = [d for d in sealed.descriptors if d.logical_request_id == key]
+    if (len(descriptors) != 1 or descriptors[0].mandatory or descriptors[0].consumer_role != key
+            or descriptors[0].endpoint_operation != expected['api_id']
+            or descriptors[0].subject != daily.subject or descriptors[0].target_period != daily.latest_completed_session):
+        raise ValueError('kr_flow_descriptor_mismatch')
+    native = root / 'native/stocks'
+    receipt = read(native / f'flow-{daily.subject}.receipt.json')
+    proof = read(native.parent / 'raw-flow-owner-replay.json')[daily.subject]
+    final = outcome['logical_results'].get(key)
+    start = datetime.fromisoformat(receipt['started_at'])
+    end = datetime.fromisoformat(receipt['completed_at'])
+    if (receipt['entry'] != expected or receipt['run_id'] != plan.run_id
+            or receipt['acquisition_id'] != plan.acquisition_id
+            or receipt['plan_sha256'] != digest(plan.model_dump(mode='json'))
+            or proof['receipt_sha256'] != digest(receipt)
+            or start.utcoffset() is None or end.utcoffset() is None
+            or not plan.frozen_at <= start <= end <= datetime.fromisoformat(outcome['completed_at'])):
+        raise ValueError('kr_flow_receipt_scope_mismatch')
+    if receipt['status'] not in {'CAPTURED', 'UNAVAILABLE'}:
+        raise ValueError('kr_flow_receipt_status_mismatch')
+    if final is None:
+        if receipt['status'] == proof['status'] == 'UNAVAILABLE' and not receipt['pages']:
+            return None
+        raise ValueError('kr_flow_missing_dispatch')
+    if (len(receipt['pages']) != 1 or len(final['attempts']) != 1
+            or final['status'] not in {'PASS', 'FAILED'}):
+        raise ValueError('kr_flow_exactly_one_attempt_required')
+    page = receipt['pages'][0]
+    attempt = final['attempts'][0]
+    request = {'method': 'POST', 'route': expected['route'], 'api_id': expected['api_id'],
+               'payload': expected['payload'], 'continuation': {'cont_yn': 'N', 'next_key': ''}}
+    sent, received = (datetime.fromisoformat(page[k]) for k in ('requested_at', 'received_at'))
+    started, finished = (datetime.fromisoformat(attempt[k]) for k in ('started_at', 'finished_at'))
+    if (page['request'] != request or page['request_sha256'] != digest(request)
+            or page['run_id'] != plan.run_id or page['acquisition_id'] != plan.acquisition_id
+            or page['entry_id'] != key or page['page_ordinal'] != 1 or page['provider'] != 'kiwoom'
+            or page['status'] != 'HTTP_RESPONSE' or page['http_status'] != attempt['status']
+            or page['source_sha256'] != attempt['raw_sha256']
+            or attempt['attempt'] != 1 or attempt['retry'] is not False
+            or not start <= sent <= started <= finished <= received <= end
+            or final['generation_id'] != plan.run_id or final['role'] != key
+            or final['plan_sha256'] != sealed.plan_sha256
+            or final['receipt_sha256'] != digest({k: v for k, v in final.items() if k != 'receipt_sha256'})
+            or final != read(root / 'dispatch/receipts' / key / 'final.json')):
+        raise ValueError('kr_flow_wire_receipt_mismatch')
+    raw = bound_artifact(native, page['artifact'], page['source_sha256'])
+    if receipt['status'] == 'UNAVAILABLE':
+        if proof['status'] != 'UNAVAILABLE':
+            raise ValueError('kr_flow_unavailable_proof_mismatch')
+        return None
+    if (final['status'] != 'PASS' or proof['status'] != 'PASS' or page['http_status'] != 200
+            or proof['normalized_sha256'] != receipt['normalized_sha256']
+            or sha256_bytes(raw) != final['raw_sha256']):
+        raise ValueError('kr_flow_raw_or_replay_binding_mismatch')
+    require_sealed_body(root, frozen, outcome, role=key, raw_sha256=page['source_sha256'])
+    rows = json.loads(bound_artifact(native, receipt['normalized_artifact'], receipt['normalized_sha256']))
+    return dict(scope='KR_INDIVIDUAL_SECURITY', run_id=plan.run_id, read=expected,
+        receipt=receipt, receipt_sha256=digest(receipt), rows=rows,
+        sealed_receipt_sha256=final['receipt_sha256'], raw_sha256=page['source_sha256'])
+
+
+def _stock_event_inputs(root, frozen, outcome, *, market, ticker, window):
+    if market == 'us':
+        from app.services.selected_news_rate_limit import KEY, replay_skip
+        if KEY in frozen:
+            from app.services.selected_source_plan import SelectedRequestPlan
+            phase = outcome['phases']['event-' + ticker]
+            return replay_skip(phase['value'], frozen=frozen,
+                plan=SelectedRequestPlan.model_validate(frozen['plan']), outcome=outcome,
+                ticker=ticker, root=root, window=window)
+    event = root/'events'/ticker/'bound-source.json'
+    if not event.exists():
+        raise ValueError("SOURCE_PARTIAL:event_owned_current_state_missing")
+    for p in event.parent.glob('*.response.json'):
+        r = read(p)
+        if r.get('artifact'):
+            require_sealed_body(root, frozen, outcome, role='events:'+ticker,
+                raw_sha256=sha256_bytes((p.parent/r['artifact']).read_bytes()))
+    return dict(acquisition_class='FRESH_CURRENT_RUN', window=window, source=read(event))
+
+
 def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=None, prospective_owners=None, class_c_bridge=None):
     from app.services.selected_source_plan import decode_stock_plan
     plan = decode_stock_plan(frozen)
@@ -164,14 +253,18 @@ def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=N
     selected = validate_subject_view(plan, subjects)
     native = root/'native/stocks'
     sealed = decode_request_plan(frozen['plan'])
+    from app.services.kr_stock_flow_source import require_planned_reads
+    flow_reads = require_planned_reads(plan, sealed, frozen.get('kr_stock_flow_reads'))
     from app.services.completed_price_state import require_plan, bind_source
     from app.services.sealed_completed_price import replay_source
     require_plan(sealed, plan)
     results = outcome['logical_results']
     inputs, errors = {}, {}
     replay = read(root/'native/raw-owner-replay.json')
-    if len(replay) != len(plan.reads) or any(r['status'] != 'PASS' for r in replay):
+    if (len(replay) != len(plan.reads) or any(r['status'] != 'PASS' for r in replay)
+            or {r['entry_id'] for r in replay} != {r.entry_id for r in plan.reads}):
         raise ValueError('SOURCE_PARTIAL:native_raw_owner_replay')
+    replay_by_entry = {r['entry_id']: r for r in replay}
     window = dict(run_id=plan.run_id, collection_started_at=frozen['frozen_at'],
         source_query_cutoff=frozen['frozen_at'], business_availability_cutoff=outcome['completed_at'])
     for market, tickers in plan.universe.items():
@@ -188,6 +281,7 @@ def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=N
                     if entry.subject != ticker:
                         continue
                     r = read(native/f'role-{ordinal:03d}.receipt.json')
+                    require_native_replay_timing(r, replay_by_entry[entry.entry_id])
                     def source(name, sha):
                         raw = (native/name).read_bytes()
                         if sha256_bytes(raw) != sha:
@@ -210,6 +304,16 @@ def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=N
                     receipts=receipts, artifacts=artifacts, components=components, policy=policy,
                     expected_hashes=dict(plan=digest(plan.model_dump(mode='json')), local=digest(local),
                         financial=digest(None), receipts=digest(receipts), components=digest(components)))
+                if market == 'kr':
+                    if frozen.get('kr_stock_chart_v3') is True:
+                        technical['kr_stock_chart_v3'] = True
+                        technical['expected_hashes']['kr_stock_chart_v3'] = digest(True)
+                    if flow_reads:
+                        daily = next(r for r in plan.reads if r.subject == ticker and r.role == 'adjusted_daily')
+                        flow = _stock_flow_input(root, frozen, outcome, sealed, plan, daily)
+                        if flow is not None:
+                            technical['kr_stock_flow_source'] = flow
+                            technical['expected_hashes']['kr_stock_flow_source'] = digest(flow)
                 if (cycle_owners or {}).get(market) is not None:
                     technical['cycle_owner'] = cycle_owners[market]
                 if (prospective_owners or {}).get(market) is not None:
@@ -220,6 +324,14 @@ def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=N
                     close_input = replay_source(root=root, frozen=frozen, outcome=outcome, read=daily)
                     technical = bind_source(technical, security=frozen['candidate']['financial_plans'][ticker]['security'],
                                             **close_input)
+                    if 'us_selected_dated_sr' in frozen:
+                        flag = frozen['us_selected_dated_sr']
+                        if (set(flag) != {'generation', 'session', 'enabled'}
+                                or flag['generation'] != plan.run_id or flag['session'] != session
+                                or type(flag['enabled']) is not bool):
+                            raise ValueError('us_sr_frozen_scope_drift')
+                        technical['us_selected_dated_sr'] = flag
+                        technical['expected_hashes']['us_selected_dated_sr'] = digest(flag)
                 path = root/'financial'/ticker
                 financial_receipts = read(path/'owner-receipts.json')
                 for receipt in financial_receipts:
@@ -227,6 +339,10 @@ def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=N
                     final = results[key]
                     if (receipt['sealed_generation_id'] != plan.run_id or receipt['sealed_final_receipt_sha256'] != final['receipt_sha256']):
                         raise ValueError('financial_sealed_receipt_mismatch')
+                    retained = final.get('retained_sec_origin')
+                    if (retained != receipt.get('retained_sec_origin') or (retained is not None
+                            and retained not in frozen.get('retained_sec_documents',{}).get(ticker,()))):
+                        raise ValueError('financial_retained_sec_not_in_frozen_sources')
                     if final['status'] == 'PASS':
                         consume_bound_result(root=root/'dispatch', plan=sealed, logical_id=key, receipt_sha256=final['receipt_sha256'])
                 item = dict(technical_inputs=technical, financial_inputs=dict(plan=frozen['candidate']['financial_plans'][ticker],
@@ -239,16 +355,8 @@ def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=N
                     from app.services.provider_native_valuation_acquisition import replay_native
                     item['valuation_inputs'] = replay_native(root=root, frozen=frozen, outcome=outcome,
                         security=frozen['candidate']['financial_plans'][ticker]['security'], policy=policy)
-                event = root/'events'/ticker/'bound-source.json'
-                if event.exists():
-                    for p in event.parent.glob('*.response.json'):
-                        r = read(p)
-                        if r.get('artifact'):
-                            require_sealed_body(root, frozen, outcome, role='events:'+ticker,
-                                raw_sha256=sha256_bytes((p.parent/r['artifact']).read_bytes()))
-                    item['event_inputs'] = dict(acquisition_class='FRESH_CURRENT_RUN', window=window, source=read(event))
-                else:
-                    raise ValueError("SOURCE_PARTIAL:event_owned_current_state_missing")
+                item['event_inputs'] = _stock_event_inputs(root, frozen, outcome, market=market,
+                    ticker=ticker, window=window)
                 inputs[ticker] = item
             except (ValueError, KeyError, TypeError, OSError) as exc:
                 errors[ticker] = dict(error_class=type(exc).__name__, reason=str(exc))
@@ -259,10 +367,21 @@ def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=N
         official = read(root/'static/official-security-identity.json')
         inputs['SKHY']['financial_inputs']['issuer_business'] = dict(source_inputs=source_owner,
             official_identity=official, official_identity_sha256=digest(official), source_result_sha256=digest(assemble_financial(**source_owner)))
-    if frozen.get('scope') == 'US14_ONLY' and 'SKHY' in inputs:
+    issuer_route = (frozen.get('scope') == 'US14_ONLY' or
+        (frozen.get('scope') == 'SELECTED_ORIGINAL_RESEARCH_V1' and frozen.get('selected_market') == 'us'
+         and bool(frozen['candidate'].get('auxiliary_issuer_dependencies'))))
+    if issuer_route and 'SKHY' in inputs:
         from app.services.bounded_financial_stock_owner import replay_issuer_source
         path = root/'financial/000660'
         try:
+            if frozen.get('scope')=='SELECTED_ORIGINAL_RESEARCH_V1':
+                from app.services.selected_source_plan import require_issuer_descriptors
+                dependency = require_issuer_descriptors(sealed,frozen['candidate'])
+                policy_path = root/'static/official-security-identity.json'
+                if (frozen.get('protected_input_hashes',{}).get('static/official-security-identity.json')
+                        != sha256_bytes(policy_path.read_bytes())
+                        or digest(read(policy_path))!=dependency.official_identity_sha256):
+                    raise ValueError('auxiliary_official_identity_not_frozen')
             receipts = read(path/'owner-receipts.json')
             for receipt in receipts:
                 key = receipt['sealed_logical_id']
@@ -316,11 +435,169 @@ def aggregate(root, role, value):
             durable_json(path, obj, exclusive=True)
     return receipt
 
+
+def replay_retained_kr_market(root, frozen, outcome, policy):
+    """Re-normalize original sealed responses; no new HTTP or receipt rewrite.
+
+    A failed collector phase is retained as failed. This result is a dated
+    derivative of independently verified wire bytes, not a fresh capture.
+    """
+    from app.providers.kiwoom_rest_client import KiwoomCallStats, KiwoomRestResponse, payload_sha256
+    from app.services.kiwoom_kr_market_context_service import (
+        KiwoomKrMarketContextService, validate_market_reads, kiwoom_market_reads)
+    from app.services.unified_kiwoom_observer import KiwoomRead
+    import asyncio
+    session = date.fromisoformat(frozen['sessions']['kr'])
+    at = datetime.fromisoformat(read(root/'markets/kr-query.json')['observed_at'])
+    reads = validate_market_reads(tuple(KiwoomRead.model_validate(r)
+        for r in frozen['candidate']['kr_market_reads']), session_date=session,
+        max_pages=frozen['kr_local_cap'], max_requests_per_page=1)
+    plan = decode_request_plan(frozen['plan'])
+    descriptors = {d.consumer_role.removeprefix('kr_market:'):d for d in plan.descriptors
+        if d.consumer_role.startswith('kr_market:') and d.page_ordinal == 1}
+    if set(descriptors) != {r.key for r in reads}:
+        raise ValueError('retained_market_exact_frozen_roles_required')
+    evidence = []
+
+    class RetainedClient:
+        source_observer = None
+        max_retries = 0
+        stats = KiwoomCallStats(0,0,0,0)
+
+        async def request(self, *, endpoint, api_id, body, continuation=False, next_key=''):
+            matches = [r for r in reads if (r.endpoint,r.api_id,r.body)==(endpoint,api_id,body)]
+            if len(matches)!=1 or continuation or next_key:
+                raise ValueError('retained_market_unplanned_request_or_cursor')
+            r=matches[0]
+            if any(e['read_key']==r.key for e in evidence):
+                raise ValueError('retained_market_duplicate_read')
+            d=descriptors[r.key]
+            final=outcome['logical_results'][d.logical_request_id]
+            consume_bound_result(root=root/'dispatch',plan=plan,logical_id=d.logical_request_id,
+                receipt_sha256=final['receipt_sha256'])
+            wire=json.loads(d.request_json)
+            if (wire['method']!='POST' or json.loads(wire['body'])!=body
+                    or dict(wire['headers']).get('api-id')!=api_id):
+                raise ValueError('retained_market_original_request_mismatch')
+            raw=(root/'dispatch'/d.raw_path).read_bytes()
+            payload=json.loads(raw)
+            policy.check_lineage(payload)
+            if int(payload.get('return_code',0))!=0:
+                raise ValueError('retained_market_provider_rejected')
+            headers=final['response_headers']
+            more=headers.get('cont-yn')=='Y'
+            cursor=headers.get('next-key','')
+            if more and not cursor:
+                raise ValueError('retained_market_missing_continuation_cursor')
+            evidence.append(dict(read_key=r.key,api_id=api_id,role=r.role,mandatory=r.mandatory,
+                raw_sha256=sha256_bytes(raw),original_receipt_sha256=final['receipt_sha256'],
+                requested_at=final['started_at'],received_at=final['finished_at'],
+                original_generation_id=plan.generation_id,continuation=more,
+                cursor_sha256=sha256_bytes(cursor.encode())))
+            return KiwoomRestResponse(api_id,payload,more,cursor,payload_sha256(payload))
+
+    result=asyncio.run(KiwoomKrMarketContextService(RetainedClient(),max_pages=frozen['kr_local_cap'],
+        completed_session_only=True,reads=reads).collect(session_date=session,observed_at=at))
+    if len(evidence)!=len(reads):
+        raise ValueError('retained_market_unconsumed_response')
+    full=kiwoom_market_reads(session_date=session,max_pages=frozen['kr_local_cap'],max_requests_per_page=1)
+    return result,dict(contract='sealed-market-derived-normalization-v1',
+        source_generation_id=plan.generation_id,original_observed_at=at.isoformat(),session=session.isoformat(),
+        source_plan_sha256=plan.plan_sha256,original_response_evidence=evidence,
+        expected_keys=[r.key for r in reads],consumed_keys=[e['read_key'] for e in evidence],
+        omitted_optional_keys=[r.key for r in full if r not in reads],
+        detail='NOT_REQUESTED' if not any(r.api_id=='ka10066' for r in reads) else 'REQUESTED',
+        concentration_eligible=not result.audit.blocked_concentration_markets,
+        financial_HTTP=0,models=0,original_failed_phase_rewritten=False,
+        fresh_capture=False,current_whole_Market_Parent=False,
+        normalized_sha256=digest(result.cross_section.model_dump(mode='json')))
+
+
+def materialize_retained_kr_market(root, frozen, outcome, policy, derived_root):
+    """Dated derivative graph over verified original egress, never new egress."""
+    from app.services.unified_aggregate_receipt import verify_aggregate
+    from app.services.kiwoom_consumed_page_contract import qualify
+    from app.services.unified_kiwoom_observer import KiwoomRead
+    from app.services.unified_aggregate_owners import validate_aggregate_flow_rows
+    result,origin=replay_retained_kr_market(root,frozen,outcome,policy)
+    derived_root.mkdir(parents=True,exist_ok=False)
+    original_plan=(root/'markets/kr/plan.json').read_bytes()
+    with (derived_root/'plan.json').open('xb') as stream:stream.write(original_plan)
+    plan=decode_request_plan(frozen['plan'])
+    for ordinal,row in enumerate(origin['original_response_evidence'],1):
+        d=next(d for d in plan.descriptors if d.consumer_role=='kr_market:'+row['read_key'] and d.page_ordinal==1)
+        final=outcome['logical_results'][d.logical_request_id]
+        name=f'read-{ordinal:04d}'
+        raw=(root/'dispatch'/d.raw_path).read_bytes()
+        with (derived_root/(name+'.body')).open('xb') as stream:stream.write(raw)
+        request=dict(method='POST',route=next(r.endpoint for r in
+            (KiwoomRead.model_validate(x) for x in frozen['candidate']['kr_market_reads']) if r.key==row['read_key']),
+            api_id=row['api_id'],body=json.loads(json.loads(d.request_json)['body']),page=1,
+            continuation=False,cursor_sha256=sha256_bytes(b''))
+        receipt=dict(run_id=plan.generation_id,attempt_id=json.loads(original_plan)['attempt_id'],
+            acquisition_class='ATTEMPT_FRESH',ordinal=ordinal,role_ordinal=1,
+            role=next(r['role'] for r in frozen['candidate']['kr_market_reads'] if r['key']==row['read_key']),
+            read_key=row['read_key'],market='kr',provider='kiwoom_rest',session=frozen['sessions']['kr'],
+            request=request,request_sha256=digest(request),requested_at=row['requested_at'],received_at=row['received_at'],
+            outcome='HTTP_RESPONSE',http_status=final['attempts'][-1]['status'],artifact=name+'.body',
+            artifact_sha256=row['raw_sha256'],derived_from_original_sealed_receipt=row['original_receipt_sha256'])
+        durable_json(derived_root/(name+'.response.json'),receipt,exclusive=True)
+        durable_json(derived_root/(name+'.page.json'),dict(response_receipt_sha256=digest(receipt),
+            raw_sha256=row['raw_sha256'],identity=name,page=1,continuation=row['continuation'],
+            next_cursor_sha256=row['cursor_sha256']),exclusive=True)
+    role=SourceRole(key='kr_local_indices_sectors_breadth',owner='kiwoom_pages',market='kr',symbol='*',
+        provider='kiwoom_rest',basis='query_time',session=frozen['sessions']['kr'],acquisition_class=A,mandatory=True)
+    cross=result.cross_section.model_dump(mode='json')
+    value={k:cross[k] for k in ('indices','sectors','breadth','breadth_by_scope')}
+    receipt=aggregate(derived_root,role,value)
+    at=datetime.fromisoformat(origin['original_observed_at'])
+    cutoff=datetime.fromisoformat(outcome['completed_at'])
+    graph=verify_aggregate(derived_root,receipt,policy=policy,cutoff=cutoff,completion_observed_at=at)
+    proof=qualify(graph,observed_at=at)
+    owner=kiwoom_aggregate_owner(role=role,observed_at=at,max_pages=frozen['kr_local_cap'],
+        max_requests_per_page=1,policy=policy,consumer_complete=True,
+        selected_reads=tuple(KiwoomRead.model_validate(r) for r in frozen['candidate']['kr_market_reads']))
+    projection=owner.project_aggregate_and_validate(graph,cutoff)
+    if projection.value!=value:raise ValueError('retained_market_derived_value_mismatch')
+    aggregate_flows=False
+    try:
+        validate_aggregate_flow_rows(result.cross_section.market_flows,session=role.session)
+        aggregate_flows=True
+    except ValueError:
+        pass
+    durable_json(derived_root/'normalization.json',dict(mandatory_complete=proof['mandatory_complete'],
+        consumer_completion=proof,roles={role.key:dict(value=value,status='AVAILABLE')},
+        field_claim_limits=dict(aggregate_flows='AVAILABLE' if aggregate_flows else 'UNAVAILABLE',
+            concentration='UNAVAILABLE',detail='NOT_REQUESTED'),owner_audit=result.audit.model_dump(mode='json')),exclusive=True)
+    from datetime import timezone
+    record=dict(**origin,derived_at=datetime.now(timezone.utc).isoformat(),
+        origin_root=str(root),original_outcome_sha256=digest(outcome),
+        original_failed_phase_sha256=sha256_bytes((root/'phase-kr-market.json').read_bytes()),
+        original_source_plan_sha256=digest(frozen['plan']),aggregate_receipt_sha256=digest(receipt.model_dump(mode='json')),
+        derivative_graph_verified=True,original_aggregate_owner_replayed=True,
+        validator_files={str(p.name):sha256_bytes(p.read_bytes()) for p in (
+            Path(__file__),Path(__file__).with_name('unified_aggregate_owners.py'),
+            Path(__file__).with_name('kiwoom_kr_market_context_service.py'))})
+    durable_json(derived_root/'DERIVATION.json',record,exclusive=True)
+    return record
+
 def market_inputs(root, frozen, outcome, policy):
     result = {}
     for market in frozen['sessions']:
-        require_captured_phase(root, frozen, outcome, market+'-market')
         path = root/'markets'/market
+        retained=frozen.get('retained_kr_market') if market=='kr' else None
+        if retained is not None:
+            from pathlib import Path
+            path=Path(retained['path'])
+            proof=read(path/'DERIVATION.json')
+            if (sha256_bytes((path/'DERIVATION.json').read_bytes())!=retained['sha256']
+                    or proof['origin_root']!=str(root) or proof['original_outcome_sha256']!=digest(outcome)
+                    or proof['original_source_plan_sha256']!=digest(frozen['plan'])
+                    or proof['original_failed_phase_sha256']!=sha256_bytes((root/'phase-kr-market.json').read_bytes())
+                    or proof['source_generation_id']!=frozen['generation_id']):
+                raise ValueError('retained_market_derivation_origin_mismatch')
+        else:
+            require_captured_phase(root, frozen, outcome, market+'-market')
         try:
             at = datetime.fromisoformat(read(root/'markets'/f'{market}-query.json')['observed_at'])
         except (ValueError, KeyError, TypeError) as exc:
@@ -354,8 +631,11 @@ def market_inputs(root, frozen, outcome, policy):
             if not n['mandatory_complete']:
                 raise ValueError('SOURCE_PARTIAL:kr_market_consumer_incomplete')
             value = n['roles'][role.key]['value']
+            from app.services.unified_kiwoom_observer import KiwoomRead
+            selected_reads = tuple(KiwoomRead.model_validate(r) for r in frozen['candidate']['kr_market_reads'])
             owner = kiwoom_aggregate_owner(role=role, observed_at=at, max_pages=frozen['kr_local_cap'],
-                max_requests_per_page=1, policy=policy, consumer_complete=True)
+                max_requests_per_page=1, policy=policy, consumer_complete=True,
+                selected_reads=selected_reads)
         receipt = aggregate(path, role, value)
         item = SourceInput(role=role.key, run_id=receipt.run_id, attempt_id=receipt.attempt_id, acquisition_class=A,
             requested_at=receipt.requested_at, received_at=receipt.received_at, artifact=receipt.artifact,

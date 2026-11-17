@@ -21,7 +21,8 @@ def source_only_message(owner, handle):
     return render_source_only_report(owner, handle)
 
 
-def market_message(session, *, sector_taxonomy_version=None, macro_display_capture=None):
+def market_message(session, *, sector_taxonomy_version=None, macro_display_capture=None,
+                   fx_observations=(),fx_source_policy=None,fx_cutoff=None,ecos_fx_body=None,ecos_fx_prior=()):
     if macro_display_capture is not None:
         raise ValueError('sealed_macro_capture_offline_source_only_not_current_owner')
     data = session.projected[session.market]
@@ -33,15 +34,21 @@ def market_message(session, *, sector_taxonomy_version=None, macro_display_captu
         raise ValueError('production_market_render_owner_gap')
     display = build_display_plan(source, market=session.market, assessment_date=packet['assessment_date'],
         eligible_refs=context['request_eligible_refs'], display_view=data['views']['display'],
-        sector_taxonomy_version=sector_taxonomy_version, macro_display_capture=macro_display_capture)
+        sector_taxonomy_version=sector_taxonomy_version, macro_display_capture=macro_display_capture,
+        fx_observations=fx_observations,fx_source_policy=fx_source_policy,fx_cutoff=fx_cutoff,
+        ecos_fx_body=ecos_fx_body,ecos_fx_prior=ecos_fx_prior)
     receipt = dict(status='PASS', errors=[], market=session.market, assessment_date=packet['assessment_date'],
         source_context_sha256=digest(source), decision_sha256=digest(output),
         numeric_catalog_sha256=digest(context['numeric_catalog']), display_plan_sha256=digest(display.model_dump(mode='json')))
     plan = AcceptedMarketCalibration(market=session.market, assessment_date=packet['assessment_date'],
         source_context=source, decision=output, acceptance=receipt, acceptance_sha256=digest(receipt),
         numeric_catalog=context['numeric_catalog'], display_plan=display)
-    return dict(message_id='MARKET_'+session.market.upper(), generation_id=session.gen,
+    message = dict(message_id='MARKET_'+session.market.upper(), generation_id=session.gen,
         text=render_daily_digest(None, accepted_market=plan), plan_sha256=digest(plan.model_dump(mode='json')))
+    if session.market == 'us':
+        from app.services.selected_news_rate_limit import disclose
+        message = disclose(message, [s.get('event_view', {}) for s in session.fresh_stocks.values()], expected_count=14)
+    return message
 
 
 def stock_message(session, ticker, b2_row, *, execution_profile=None):
@@ -57,4 +64,27 @@ def stock_message(session, ticker, b2_row, *, execution_profile=None):
     request = session.b2_request(ticker)
     plan = build_detailed_plan_v2(packet=packet, base=base, b2_request=request,
         b2_result=b2_row['result'], authorization=parse_authorization(b2_row['authorization'], execution_profile=execution_profile))
-    return dict(message_id=ticker, **render_detailed_v2(packet, plan))
+    message = dict(message_id=ticker, **render_detailed_v2(packet, plan))
+    if session.market == 'us':
+        from app.services.selected_news_rate_limit import disclose
+        message = disclose(message, [source.get('event_view', {})], expected_count=1)
+    return message
+
+
+def limitation_message(session, ticker):
+    from app.services.detailed_stock_message_service import build_unknown_plan, detailed_render
+    from app.services.selected_news_rate_limit import disclose
+
+    decision = session.limitation_decision(ticker)
+    prepared = session.prepared[ticker]
+    source = session.fresh_stocks[ticker]
+    packet = DecisionEvidencePacket.model_validate(source['evidence_packet'])
+    plan = build_unknown_plan(source_stock=source, source_authority=prepared['source_authority'],
+        local_seed=session.limitation_seed(ticker), decision=decision, execution_generation_id=session.gen,
+        valuation=parse_view(source['valuation_view']), context_only_display=True)
+    rendered = detailed_render(packet, plan)
+    if rendered.ticker != ticker or not rendered.validation.valid:
+        raise ValueError('production_limitation_render_reject')
+    return disclose(dict(message_id=ticker, generation_id=session.gen,
+        decision_mode='UNKNOWN_LIMIT', text=rendered.text, plan_sha256=plan.acceptance_sha256,
+        limitation_decision_sha256=digest(decision)), [source.get('event_view', {})], expected_count=1)

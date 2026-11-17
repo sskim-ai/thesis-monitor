@@ -124,14 +124,10 @@ def acquisition_plan(stock_plan, identities, *, kr_max_pages, exact_financial_ow
         for m, subjects in universe.items() for t in subjects}
     auxiliary = {}
     if us_only:
-        from app.services.auxiliary_issuer_financial_owner import AuxiliaryIssuerDependency
-        if not auxiliary_security or auxiliary_security.get('ticker') != '000660':
-            raise ValueError('us14_declared_auxiliary_issuer_required')
-        financial['000660'] = make_plan(auxiliary_security, market='kr', cutoff=stock.frozen_at,
-            run_id=stock.run_id, all_subjects_fresh=True, exact_financial_owner=exact_financial_owner,maximum_retries_per_request=retries)
-        auxiliary['000660'] = AuxiliaryIssuerDependency(run_id=stock.run_id,cutoff=stock.frozen_at,
-            source_plan_sha256=digest(financial['000660']),
-            official_identity_sha256=auxiliary_identity_sha256).model_dump(mode='json')
+        from app.services.auxiliary_issuer_financial_owner import issuer_only_plan
+        financial['000660'], auxiliary['000660'] = issuer_only_plan(auxiliary_security,
+            stock=stock, exact_financial_owner=exact_financial_owner, retries=retries,
+            official_identity_sha256=auxiliary_identity_sha256)
     elif auxiliary_security is not None or auxiliary_identity_sha256 is not None:
         raise ValueError('auxiliary_issuer_only_allowed_in_us14_scope')
     kr = () if us_only else kiwoom_market_reads(session_date=korea_market_session(stock.frozen_at).latest_completed_regular_session_date,

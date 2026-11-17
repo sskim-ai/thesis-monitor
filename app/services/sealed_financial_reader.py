@@ -1,16 +1,100 @@
 """Existing financial acquisition owner with network owned by sealed slots only."""
+from datetime import datetime
 import json
+from pathlib import Path
+import re
 
 import httpx
 
 from app.services.bounded_financial_acquisition import AcquisitionDenied, BoundedReader, SystemicStop
-from app.services.bounded_financial_acquisition import sec_selection
-from app.services.sealed_fresh_dispatch import consume_bound_result, wire_identity
+from app.services.bounded_financial_acquisition import sec_base, sec_document_identity, sec_selection
+from app.services.sealed_fresh_dispatch import consume_bound_result, decode_request_plan, wire_identity
 from app.services.sealed_opendart_contract import opendart_headers
 from app.services.sealed_response_binding import SlotNotSelected
 from app.services.unified_live_source_transport import SourceSafetyStop
-from app.services.unified_run_artifacts import durable_bytes, durable_json
+from app.services.unified_run_artifacts import durable_bytes, durable_json, sha256_bytes
 from app.services.unified_snapshot_contract import digest
+
+
+def _plain_read(path):
+    path = Path(path)
+    if any(p.is_symlink() for p in (path, *path.parents)) or not path.is_file():
+        raise ValueError('retained_sec_regular_file_required')
+    return path.read_bytes()
+
+
+def verify_retained_sec_document(descriptor, wire, filing, proof, raw, *, frozen_at, selected_at, discovery_finished_at):
+    """Validate an old 200 without replacing either generation's clock."""
+    binding = descriptor.response_binding
+    if (descriptor.provider != 'sec_edgar' or descriptor.market != 'us' or binding is None
+            or binding.kind not in {'SEC_PRIMARY', 'SEC_INDEX', 'SEC_EXHIBIT'}
+            or descriptor.endpoint_operation != ('index' if binding.kind == 'SEC_INDEX' else 'document')
+            or not isinstance(filing, dict) or wire.get('method') != 'GET'):
+        raise ValueError('retained_sec_requires_current_document_selection')
+    plan = json.loads(binding.policy_json)
+    pin, request, original = (proof[key] for key in ('pin', 'original_request', 'original_receipt'))
+    expected_identity = dict(ticker=descriptor.subject, issuer=plan['issuer'],
+        canonical_security_id=plan['security']['canonical_security_id'])
+    stage, url = descriptor.endpoint_operation, wire['url']
+    if (pin['identity'] != expected_identity or pin['origin_generation'] == plan['run_id']
+            or request['url'] != url or request['method'] != 'GET' or request['params']
+            or original['stage'] != stage or request['stage'] != stage
+            or request['logical_id'] != original['logical_id']
+            or request['plan_sha256'] != original['plan_sha256'] or request['plan_sha256'] != pin['original_plan_sha256']
+            or digest(request) != original['request_sha256'] or digest(original) != pin['original_receipt_sha256']
+            or original.get('retained_sec_origin') is not None or original.get('HTTP_status') != 200
+            or any(original.get(k) is not None for k in ('failure_class','error_type','systemic_reason','provider_status'))
+            or request['filing'] != original['filing']
+            or {k:v for k,v in original['filing'].items() if k != 'role'} != {k:v for k,v in filing.items() if k != 'role'}
+            or sec_document_identity(url,plan,filing) != url
+            or (stage == 'index' and url != sec_base(plan,filing)+'index.json')
+            or sha256_bytes(raw) != original['raw_sha256'] or pin['raw_sha256'] != original['raw_sha256']):
+        raise ValueError('retained_sec_document_origin_mismatch')
+    origin_cutoff, began, retrieved, discovered, selected = map(datetime.fromisoformat, (
+        pin['original_cutoff'], original['started_at'], original['finished_at'], discovery_finished_at, selected_at))
+    if (any(t.utcoffset() is None for t in (origin_cutoff,began,retrieved,frozen_at,discovered,selected))
+            or not origin_cutoff <= began <= retrieved < frozen_at <= discovered <= selected
+            or filing['filingDate'] > retrieved.date().isoformat()
+            or filing['filingDate'] > plan['cutoff'][:10]):
+        raise ValueError('retained_sec_document_time_mismatch')
+    return original
+
+
+def verify_retained_financial_use(plan, directory, receipt):
+    """Replay the existing dispatcher binding rather than trust projector flags."""
+    directory = Path(directory)
+    root = directory.parents[1]/'dispatch'
+    if directory.name != plan['ticker'] or directory.parent.name != 'financial':
+        raise ValueError('retained_sec_financial_directory_scope')
+    key = receipt['sealed_logical_id']
+    if not re.fullmatch(r'[A-Za-z0-9_.:-]+',key) or key in {'.','..'}:
+        raise ValueError('retained_sec_logical_id_scope')
+    dispatch_plan = decode_request_plan(json.loads(_plain_read(root/'plan.json')))
+    descriptor = next((d for d in dispatch_plan.descriptors if d.logical_request_id == key),None)
+    final = json.loads(_plain_read(root/'receipts'/key/'final.json'))
+    resolved = json.loads(_plain_read(root/'receipts'/key/'resolved-request.json'))
+    local = receipt['logical_id'].split(':')[-1]
+    if not re.fullmatch(r'request-\d{3}', local):
+        raise ValueError('retained_sec_projector_logical_id_scope')
+    request = json.loads(_plain_read(directory/(local+'.plan.json')))
+    if (descriptor is None or descriptor.response_binding is None or descriptor.subject != plan['ticker']
+            or json.loads(descriptor.response_binding.policy_json) != plan
+            or dispatch_plan.generation_id != plan['run_id'] or receipt['sealed_generation_id'] != plan['run_id']
+            or receipt['sealed_descriptor_sha256'] != descriptor.descriptor_sha256
+            or final.get('retained_sec_origin') is None or final['retained_sec_origin'] != receipt['retained_sec_origin']
+            or receipt['selected_at'] != final['finished_at'] or receipt['finished_at'] != final['retrieval_time']
+            or receipt['artifact'] != local+'-retained.body' or receipt['raw_sha256'] != final['raw_sha256']
+            or sha256_bytes(_plain_read(directory/receipt['artifact'])) != final['raw_sha256']
+            or request['url'] != resolved['request']['url'] or request['filing'] != resolved['selected']
+            or request['filing'] != receipt['filing'] or request['stage'] != descriptor.endpoint_operation
+            or request['stage'] != receipt['stage'] or request['method'] != 'GET' or request['params']
+            or receipt['attempt'] != 0 or receipt['HTTP_status'] is not None or receipt['failure_class'] is not None):
+        raise ValueError('retained_sec_financial_use_mismatch')
+    consume_bound_result(root=root,plan=dispatch_plan,logical_id=key,receipt_sha256=receipt['sealed_final_receipt_sha256'])
+    original = json.loads(_plain_read(root/'receipts'/key/'retained-sec-origin.json'))['original_receipt']
+    if receipt['started_at'] != original['started_at']:
+        raise ValueError('retained_sec_original_time_changed')
+    return datetime.fromisoformat(receipt['selected_at'])
 
 
 class FinancialFragment:
@@ -37,9 +121,10 @@ class SealedFinancialReader(BoundedReader):
     Adapted receipts additionally bind the sealed final receipt. This reader does
     not retry: only the dispatcher owns the frozen transient-attempt budget.
     """
-    def __init__(self, plan, output, *, dispatcher, transport, **credentials):
+    def __init__(self, plan, output, *, dispatcher, transport, retained_sec=None, **credentials):
         super().__init__(plan, output, **credentials)
         self.dispatcher, self.wire_transport = dispatcher, transport
+        self.retained_sec = retained_sec or {}
         if plan['run_id'] != dispatcher.plan.generation_id:
             raise ValueError('sealed_financial_generation_mismatch')
         slots = [d for d in dispatcher.plan.descriptors if d.subject == plan['ticker'] and d.provider == plan['provider']]
@@ -96,11 +181,36 @@ class SealedFinancialReader(BoundedReader):
         frozen = dict(stage=stage, method='GET', url=url, params=params, filing=filing,
             plan_sha256=self.plan_sha, logical_id=self.plan['ticker'] + ':' + name)
         durable_json(self.output / (name + '.plan.json'), frozen, exclusive=True)
+        retained = None
+        if self.plan['provider'] == 'sec_edgar' and stage in {'document','index'}:
+            entry = self.retained_sec.get(url)
+            if entry is not None:
+                original = entry['proof']['original_receipt']
+                comparable = lambda row: {k:v for k,v in row.items() if k != 'role'}
+                if comparable(original['filing']) == comparable(filing):
+                    raw = _plain_read(entry['body'])
+                    retained = (entry['proof'], raw)
         try:
             final = await self.dispatcher.execute(d.logical_request_id, request,
-                transport=self.wire_transport, normalize=FinancialFragment(d))
+                transport=self.wire_transport, normalize=FinancialFragment(d), **(
+                    dict(retained_sec_document=retained) if retained is not None else {}))
         except SourceSafetyStop as exc:
             raise SystemicStop('sealed_financial_systemic_stop') from exc
+        if retained is not None:
+            artifact = name+'-retained.body'
+            original = retained[0]['original_receipt']
+            receipt = dict(logical_id=frozen['logical_id'], stage=stage, plan_sha256=self.plan_sha,
+                request_sha256=digest(frozen), attempt=0, started_at=original['started_at'],
+                finished_at=original['finished_at'], selected_at=final['finished_at'],
+                HTTP_status=None, failure_class=None, filing=filing, raw_sha256=final['raw_sha256'],
+                artifact=artifact, retained_sec_origin=final['retained_sec_origin'],
+                sealed_generation_id=d.generation_id, sealed_logical_id=d.logical_request_id,
+                sealed_final_receipt_sha256=final['receipt_sha256'], sealed_descriptor_sha256=d.descriptor_sha256)
+            durable_bytes(self.output / artifact, retained[1], exclusive=True)
+            durable_json(self.output / (name+'-retained.receipt.json'), receipt, exclusive=True)
+            verify_retained_financial_use(self.plan,self.output,receipt)
+            self.receipts.append(receipt)
+            return retained[1],receipt
         for row in final['attempts']:
             self.attempts += 1
             artifact = f'{name}-attempt-{row["attempt"]}.body' if row.get('artifact') else None

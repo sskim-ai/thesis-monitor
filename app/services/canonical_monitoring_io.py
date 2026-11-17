@@ -13,5 +13,10 @@ def read(path):
     return json.loads(path.read_bytes())
 
 def write(path, value):
+    from app.services.research_artifact_budget import active_budget
+    if active_budget() is not None:
+        from app.services.unified_run_artifacts import durable_bytes
+        durable_bytes(path, (json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2, default=str) + '\n').encode())
+        return
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2, default=str) + "\n")

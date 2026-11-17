@@ -223,13 +223,16 @@ def _monitoring_item_read(
     )
     if (
         item.active
-        and item.production_eligible
         and item.onboarding_state == "ACTIVE"
     ):
         registration_message = (
             "✅ 모니터링 등록 완료\n"
             "현재 상태: ACTIVE_READY\n"
             "다음 eligible cycle부터 자동 점검"
+        ) if item.production_eligible else (
+            "모니터링 등록 완료\n"
+            "현재 상태: ACTIVE\n"
+            "투자 판단 준비: 미완료"
         )
     else:
         remaining = ", ".join(blocker_values) or "자동 온보딩 재검증"
@@ -580,7 +583,6 @@ def register_monitoring_item(
         or existing_values != requested_values
         or not (
             item.active
-            and item.production_eligible
             and item.onboarding_state == "ACTIVE"
         )
     )
@@ -601,7 +603,7 @@ async def register_monitoring_item_with_continuation(
     payload: MonitoringItemCreate,
 ) -> MonitoringItemRead:
     initial = register_monitoring_item(session, payload)
-    if initial.active and initial.production_eligible:
+    if initial.active:
         return initial
     item = session.exec(
         select(WatchlistItem).where(WatchlistItem.ticker == initial.ticker)
@@ -640,7 +642,6 @@ def list_monitoring_items(session: Session, active_only: bool = True) -> list[Mo
     if active_only:
         query = query.where(
             WatchlistItem.active.is_(True),
-            WatchlistItem.production_eligible.is_(True),
             WatchlistItem.onboarding_state == "ACTIVE",
         )
     items = session.exec(query.order_by(WatchlistItem.ticker)).all()

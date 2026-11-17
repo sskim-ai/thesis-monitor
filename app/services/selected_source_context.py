@@ -18,7 +18,9 @@ from app.services.unified_stock_event_input import make_read
 def freeze_registered_child(*, registration_owner, policy, code_sha, native, native_owner_root,
                             config_identities, configured_kr_pages, listing_rows, kis_static_hashes,
                             completed_close_documentation=None, official_identities=None,
-                            consumer_policy=None, master_id=None, ohlcv_source_url=None, enabled=False, run_ledger=None):
+                            consumer_policy=None, master_id=None, ohlcv_source_url=None, enabled=False, run_ledger=None,
+                            include_kr_stock_flow=False, kr_stock_chart_v3=False,
+                            us_runtime_settings=None, issuer_auxiliary=None):
     if enabled is not True:
         raise ValueError('selected_source_context_default_off')
     if run_ledger is None:
@@ -45,8 +47,17 @@ def freeze_registered_child(*, registration_owner, policy, code_sha, native, nat
         configured_kr_pages=configured_kr_pages,kr_post_acquisition_completeness_approved=True,
         exact_financial_owner=True,valuation_market_types=routing_markets(identities,listing_rows=listing_rows),
         transient_retry_max=0)
+    if include_kr_stock_flow is not False:
+        compiler['include_kr_stock_flow'] = include_kr_stock_flow
     if consumer_policy is not None:
         compiler['selected_consumer_policy']=consumer_policy
+    if market=='us' and 'SKHY' in identities:
+        if not issuer_auxiliary or set(issuer_auxiliary)!={'security','official_identity_sha256'}:
+            raise ValueError('PLAN_INCOMPLETE:us:issuer_auxiliary')
+        compiler.update(auxiliary_security=issuer_auxiliary['security'],
+            auxiliary_identity_sha256=issuer_auxiliary['official_identity_sha256'])
+    elif issuer_auxiliary is not None:
+        raise ValueError('selected_auxiliary_issuer_scope_denied')
     kis=build_kis_plan(generation=generation,as_of=at.isoformat(),
         securities={t:dict(s,currency='KRW') for t,s in identities.items()},static_hashes=kis_static_hashes) if market=='kr' else None
     compiled=compile_selected_plan(compiler_args=compiler,kis_plan=kis)
@@ -65,10 +76,22 @@ def freeze_registered_child(*, registration_owner, policy, code_sha, native, nat
         completed_close_documentation=completed_close_documentation,
         valuation_official_identities=official_identities or {},registration_receipt_sha256=digest(receipt),
         private_class_c_storage='MEMORY_ONLY',financial_use_granted=False)
+    if kr_stock_chart_v3 is not False:
+        if kr_stock_chart_v3 is not True or market != 'kr':
+            raise ValueError('kr_stock_chart_v3_scope')
+        frozen['kr_stock_chart_v3'] = True
     if master_id is not None:frozen['master_id']=master_id
+    if receipt.get('execution') is not None:frozen['execution_event']=receipt['execution']
+    if us_runtime_settings is not None:
+        from app.config import Settings
+        if market!='us' or not isinstance(us_runtime_settings, Settings):
+            raise ValueError('us_sr_effective_settings_required')
+        frozen['us_selected_dated_sr'] = dict(generation=generation, session=target,
+            enabled=us_runtime_settings.us_price_structure_v3_enabled)
     if ohlcv_source_url is not None:frozen['ohlcv_source_url']=ohlcv_source_url
     if run_ledger is not None:
-        child=run_ledger.identity['children'][market]
+        child=(run_ledger.selected_child(market) if run_ledger.identity.get('staged_markets')
+               else run_ledger.identity['children'][market])
         if child['generation']!=generation or tuple(child['subjects'])!=stock.subjects:
             raise ValueError('selected_shared_budget_child_scope_changed')
         frozen['shared_run_ledger']=run_ledger.worker_binding()

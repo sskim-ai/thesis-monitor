@@ -27,6 +27,8 @@ from app.utils.tickers import normalize_ticker
 
 ONBOARDING_READINESS_CONTRACT = "monitoring-onboarding-readiness-v1"
 PRODUCTION_UNIVERSE_CONTRACT = "production-packet-universe-v1"
+_MONITOR_ACTIVATION_COLUMNS = frozenset({"active", "onboarding_state", "onboarding_ready_at",
+    "activated_at", "first_eligible_session", "onboarding_readiness", "onboarding_failure_stage"})
 
 
 class OnboardingState(StrEnum):
@@ -60,8 +62,16 @@ class OnboardingReadiness:
     requirement_details: dict[str, dict[str, object]]
     as_of: str
 
+    @property
+    def monitoring_ready(self) -> bool:
+        return self.onboarding_ready or (
+            self.blocking_requirements == (OnboardingRequirement.DECISION_READINESS,)
+            and self.requirement_details.get(OnboardingRequirement.DECISION_READINESS, {}).get(
+                "independent_monitoring_prerequisites_verified") is True
+        )
+
     def to_dict(self) -> dict[str, object]:
-        return asdict(self)
+        return {**asdict(self), "monitoring_ready": self.monitoring_ready}
 
 
 @dataclass(frozen=True)
@@ -121,11 +131,19 @@ def _baseline_assessment(
     session: Session,
     ticker: str,
     thesis_version: int | None,
+    *,
+    bounded: bool = False,
 ) -> ThesisAssessment | None:
     query = select(ThesisAssessment).where(ThesisAssessment.ticker == ticker)
     if thesis_version is not None:
         query = query.where(ThesisAssessment.thesis_version == thesis_version)
+    if bounded:
+        if thesis_version is None:
+            return None
+        query = query.limit(65)
     rows = session.exec(query.order_by(ThesisAssessment.assessment_date)).all()
+    if bounded and len(rows) == 65:
+        return None
     for row in rows:
         snapshot = _json_dict(row.thesis_snapshot)
         if snapshot.get("assessment_mode") == "initial_baseline":
@@ -139,11 +157,10 @@ def _baseline_assessment(
 
 
 def _profile_readiness(
-    session: Session,
+    company: Company | None,
     item: WatchlistItem,
     data_dir: str | Path,
 ) -> tuple[bool, dict[str, object]]:
-    company = session.exec(select(Company).where(Company.ticker == item.ticker)).first()
     provenance = read_profile_provenance(item.ticker, data_dir)
     quality = str((provenance or {}).get("quality") or "missing")
     structured_fields = {
@@ -284,6 +301,15 @@ def evaluate_source_intake(item: WatchlistItem, security: SecurityMaster | None,
         for key in ('issuer_type', 'ordinary_share_identifier', 'adr_ratio'):
             watch_value, security_value = getattr(item, key), getattr(security, key)
             if watch_value is not None and security_value is not None and watch_value != security_value:
+                # An issuer's FPI classification is not a listing or share-basis assertion.
+                # Require an independently verified ADS on this exact listing.
+                if (key == 'issuer_type' and watch_value == 'foreign_private_issuer'
+                        and security_value == 'adr' and security.security_type == 'ads'
+                        and security.identity_quality == 'verified'
+                        and security.identity_provider == 'sec_official_identity'
+                        and market == 'us' and security.adr_identifier == item.ticker
+                        and security.exchange == item.exchange and security.exchange):
+                    continue
                 denials.append('source_intake_issuer_basis_conflict')
     if thesis is None or thesis.status != 'active' or not thesis.core_thesis.strip():
         denials.append('source_intake_active_user_thesis_required')
@@ -304,20 +330,29 @@ def evaluate_onboarding_readiness(
     *,
     data_dir: str | Path | None = None,
     as_of: datetime | None = None,
+    activation_only: bool = False,
 ) -> OnboardingReadiness:
     current = (as_of or datetime.now(UTC)).astimezone(UTC)
     root = Path(data_dir or get_settings().data_dir)
     security = session.exec(
         select(SecurityMaster).where(SecurityMaster.ticker == item.ticker)
     ).first()
-    exchange = item.exchange or (security.exchange if security else None)
-    market = market_scope_for_security(item.ticker, exchange)
     thesis = _latest_thesis(session, item.ticker)
     baseline = _baseline_assessment(
         session,
         item.ticker,
         thesis.version if thesis is not None else None,
+        bounded=activation_only,
     )
+    company = session.exec(select(Company).where(Company.ticker == item.ticker)).first()
+    return _readiness_from_rows(item, security, company, thesis, baseline, data_dir=root, as_of=current)
+
+
+def _readiness_from_rows(item, security, company, thesis, baseline, *, data_dir, as_of, diagnosis=None):
+    """Use already-read rows from the same bounded activation transaction."""
+    current = as_of.astimezone(UTC)
+    exchange = item.exchange or (security.exchange if security else None)
+    market = market_scope_for_security(item.ticker, exchange)
     legacy_active = bool(
         item.active
         and item.production_eligible
@@ -346,7 +381,7 @@ def evaluate_onboarding_readiness(
         **security_details,
     }
 
-    profile_ready, profile_details = _profile_readiness(session, item, root)
+    profile_ready, profile_details = _profile_readiness(company, item, data_dir)
     details[OnboardingRequirement.COMPANY_PROFILE] = {
         "ready": profile_ready,
         **profile_details,
@@ -406,13 +441,38 @@ def evaluate_onboarding_readiness(
     decision_ready = decision_ready_explicit or legacy_active
     details[OnboardingRequirement.DECISION_READINESS] = {
         "ready": decision_ready,
-        "accepted_decision_required_for_activation": not legacy_active,
+        "accepted_decision_required_for_activation": False,
+        "accepted_decision_required_for_production_eligibility": not legacy_active,
         "accepted_decision": decision_payload.get("accepted_decision"),
         "accepted_decision_id": decision_payload.get("accepted_decision_id"),
         "reason": None if decision_ready_explicit else decision_reason,
         "legacy_active_preserved": legacy_active and not decision_ready_explicit,
         "raw_candidate_grants_ready": False,
     }
+    if not decision_ready and all(d["ready"] for r, d in details.items()
+                                  if r != OnboardingRequirement.DECISION_READINESS):
+        from app.services.production_source_context import POLICY
+        from app.services.security_identity_service import IDENTITY_CONFLICT, resolve_security_identity
+
+        intake = evaluate_source_intake(item, security, company, thesis, cutoff=current, policy=POLICY)
+        try:
+            observed = datetime.fromisoformat(str(explicit_evidence.get("as_of")))
+            evidence_time_ok = observed.utcoffset() is not None and observed <= current
+        except ValueError:
+            evidence_time_ok = False
+        checks = dict(source_intake=intake["registered_source_intake_eligible"],
+            identity_provider_policy=POLICY.permits(security.identity_provider),
+            identity_nonconflicting=resolve_security_identity(company_name=item.company_name, watchlist_item=item,
+                security_master=security)["identity_state"] != IDENTITY_CONFLICT,
+            evidence_at_or_before_cutoff=evidence_time_ok,
+            evidence_market_matches=explicit_evidence.get("market") == market,
+            baseline_final_and_dated=baseline.assessment_state == "final" and baseline.assessment_date <= current.date(),
+            registration_rows_at_or_before_cutoff=all(r.created_at is not None
+                and r.created_at.replace(tzinfo=r.created_at.tzinfo or UTC) <= current for r in (item, company, thesis)))
+        details[OnboardingRequirement.DECISION_READINESS].update(
+            independent_monitoring_prerequisites_verified=all(checks.values()))
+        if diagnosis is not None:
+            diagnosis.update(monitoring_checks=checks, source_intake_denials=intake["denials"])
 
     completed = tuple(
         requirement.value
@@ -481,26 +541,49 @@ def reconcile_onboarding(
     as_of: datetime | None = None,
     activate: bool = True,
     first_eligible_session: date | None = None,
+    activation_only: bool = False,
 ) -> OnboardingReadiness:
     current = (as_of or datetime.now(UTC)).astimezone(UTC)
-    SecurityMasterService().ensure(session, item.ticker)
     readiness = evaluate_onboarding_readiness(
         session,
         item,
         data_dir=data_dir,
         as_of=current,
+        activation_only=activation_only,
     )
+    if not activation_only and (readiness.onboarding_ready or not readiness.monitoring_ready):
+        SecurityMasterService().ensure(session, item.ticker)
+        readiness = evaluate_onboarding_readiness(session, item, data_dir=data_dir, as_of=current)
+    # A scoped activation never repairs identity, restarts onboarding or writes
+    # anything when the existing subject is not eligible for this transition.
+    if activation_only and (item.id is None or item.active or item.production_eligible is not False
+            or item.activated_at is not None or item.first_eligible_session is not None
+            or not activate or not item.monitoring_requested
+            or item.onboarding_state not in {OnboardingState.PENDING_ONBOARDING, OnboardingState.ONBOARDING_FAILED}
+            or readiness.blocking_requirements != (OnboardingRequirement.DECISION_READINESS,)
+            or not readiness.monitoring_ready):
+        return readiness
+    if readiness.monitoring_ready and not readiness.onboarding_ready and item.monitoring_requested and activate:
+        from app.services.onboarding_reconciler_service import _next_monitoring_cycle_date
+        earliest = _next_monitoring_cycle_date(readiness.market, current)
+        if item.activated_at is None:
+            if first_eligible_session is not None and first_eligible_session < earliest:
+                if activation_only:
+                    raise ValueError("monitoring_first_session_before_next_eligible_cycle")
+                first_eligible_session = earliest
+            first_eligible_session = first_eligible_session or earliest
+            item.first_eligible_session = max(first_eligible_session, item.first_eligible_session or earliest)
     item.onboarding_readiness = json.dumps(
         readiness.to_dict(), ensure_ascii=False, sort_keys=True
     )
     item.onboarding_failure_stage = readiness.failure_stage
-    if readiness.onboarding_ready:
+    if readiness.monitoring_ready:
         item.onboarding_state = OnboardingState.READY
         item.onboarding_ready_at = item.onboarding_ready_at or current
         if activate and item.monitoring_requested:
             item.onboarding_state = OnboardingState.ACTIVE
             item.active = True
-            item.production_eligible = True
+            item.production_eligible = readiness.onboarding_ready
             item.activated_at = item.activated_at or current
             item.first_eligible_session = (
                 item.first_eligible_session or first_eligible_session
@@ -515,9 +598,59 @@ def reconcile_onboarding(
         item.onboarding_ready_at = None
         item.activated_at = None
         item.first_eligible_session = None
+    if activation_only:
+        from sqlalchemy import inspect
+        changed = {attr.key for attr in inspect(item).attrs if attr.history.has_changes()}
+        if not changed <= _MONITOR_ACTIVATION_COLUMNS:
+            raise ValueError("existing_monitoring_activation_write_scope")
     session.add(item)
     session.flush()
     return readiness
+
+
+def activate_existing_monitoring_subjects(session: Session, *, subjects, data_dir: str | Path,
+                                         as_of: datetime) -> dict[str, object]:
+    """Use the normal Watchlist writer in one caller-owned activation transaction."""
+    subjects = tuple(subjects)
+    if (not 1 <= len(subjects) <= 4 or len(set(subjects)) != len(subjects)
+            or any(t != normalize_ticker(t) or not t for t in subjects)
+            or as_of.utcoffset() is None or session.new or session.dirty or session.deleted):
+        raise ValueError("existing_monitoring_activation_scope_invalid")
+    # No identity refresh, enrollment, or unrelated writes are permitted here.
+    report = {}
+    with session.no_autoflush:
+        items = {i.ticker:i for i in session.exec(
+            select(WatchlistItem).where(WatchlistItem.ticker.in_(subjects))).all()}
+    for ticker in subjects:
+        item = items.get(ticker)
+        if item is None:
+            report[ticker] = {"status": "MISSING"}
+            continue
+        if item.active or item.production_eligible:
+            report[ticker] = {"status": "EXISTING_STATE_PRESERVED", "active": bool(item.active)}
+            continue
+        result = reconcile_onboarding(session, item, data_dir=data_dir, as_of=as_of,
+            activation_only=True)
+        if not item.active:
+            report[ticker] = {"status": "NOT_ELIGIBLE", "blockers": list(result.blocking_requirements),
+                "monitoring_prerequisites_verified": result.monitoring_ready}
+            continue
+        # Refresh the four allowed rows only, and compare after the original flush.
+        expected = {name:getattr(item,name) for name in _MONITOR_ACTIVATION_COLUMNS}
+        session.refresh(item)
+        actual = {name:getattr(item,name) for name in _MONITOR_ACTIVATION_COLUMNS}
+        for name in ("activated_at","onboarding_ready_at"):
+            for cells in (expected,actual):
+                value = cells[name]
+                if value is not None and value.tzinfo is None:
+                    cells[name] = value.replace(tzinfo=UTC)
+        if actual != expected or item.production_eligible:
+            raise ValueError("existing_monitoring_activation_readback_mismatch")
+        report[ticker] = {"status": "ACTIVE_MONITORING_ONLY",
+            "first_eligible_session": item.first_eligible_session.isoformat(),
+            "activated_at": actual["activated_at"].isoformat(), "decision_ready": False,
+            "production_eligible": False}
+    return report
 
 
 def deactivate_onboarding(item: WatchlistItem) -> None:
@@ -527,7 +660,8 @@ def deactivate_onboarding(item: WatchlistItem) -> None:
     item.onboarding_state = OnboardingState.INACTIVE
 
 
-def canonical_registration_eligibility(*, ticker, item, security, thesis, company, cutoff):
+def canonical_registration_eligibility(*, ticker, item, security, thesis, company, cutoff,
+                                     execution=None, regular_assignment=None, monitoring_only=False):
     """One monitoring predicate, independent of cohort size and delivery mode.
 
     This is the union of the existing universe, local identity/Thesis and
@@ -553,12 +687,51 @@ def canonical_registration_eligibility(*, ticker, item, security, thesis, compan
         check('monitoring_requested',item.monitoring_requested is True,'MONITORING_NOT_REQUESTED')
         check('active',item.active is True,'INACTIVE_MONITORING')
         check('onboarding_active',item.onboarding_state==OnboardingState.ACTIVE,'ONBOARDING_NOT_ACTIVE')
-        check('production_eligible',item.production_eligible is True,'PRODUCTION_NOT_ELIGIBLE')
+        if item.production_eligible is True or monitoring_only is not True:
+            check('production_eligible',item.production_eligible is True,'PRODUCTION_NOT_ELIGIBLE')
+        else:
+            readiness = _json_dict(item.onboarding_readiness)
+            monitor_pass = (readiness.get('monitoring_ready') is True
+                and readiness.get('ticker') == ticker and readiness.get('market') == market
+                and readiness.get('blocking_requirements') == [OnboardingRequirement.DECISION_READINESS]
+                and readiness.get('completed_requirements') ==
+                    [r.value for r in OnboardingRequirement if r != OnboardingRequirement.DECISION_READINESS])
+            if monitor_pass:
+                from app.services.production_source_context import POLICY
+                monitor_pass = bool(evaluate_source_intake(item, security, company, thesis,
+                    cutoff=cutoff, policy=POLICY)['registered_source_intake_eligible'])
+                explicit = _json_dict(item.onboarding_initial_evidence)
+                try:
+                    evidence_at = datetime.fromisoformat(str(explicit.get('as_of')))
+                except ValueError:
+                    evidence_at = None
+                monitor_pass = bool(monitor_pass and explicit.get('market') == market
+                    and available(evidence_at) and evidence_at.utcoffset() is not None
+                    and item.first_eligible_session is not None
+                    and validate_initial_evidence(explicit, ticker=ticker,
+                        thesis_version=thesis.version if thesis else 0)[0])
+            check('monitoring_eligible',monitor_pass,'MONITORING_EVIDENCE_NOT_ELIGIBLE')
         check('activation_present',item.activated_at is not None,'MISSING_ACTIVATION_TIME')
         check('activation_available',item.activated_at is None or available(item.activated_at),'ACTIVATED_AFTER_CUTOFF')
         check('registration_available',available(item.created_at),'REGISTRATION_AFTER_CUTOFF')
-        check('first_session_reached',item.first_eligible_session is None or
-            item.first_eligible_session<=cutoff.astimezone(ZoneInfo('Asia/Seoul')).date(),'FIRST_ELIGIBLE_SESSION_NOT_REACHED')
+        first_reached = item.first_eligible_session is None or item.first_eligible_session<=cutoff.astimezone(ZoneInfo('Asia/Seoul')).date()
+        if not first_reached and execution is not None and item.production_eligible is True:
+            from app.services.vnext_one_shot_schedule import validate_manual_timing
+            from app.services.onboarding_reconciler_service import _next_cycle_date
+            validate_manual_timing(execution, cutoff=cutoff)
+            proof=regular_assignment or {}
+            activation=(item.activated_at.replace(tzinfo=UTC) if item.activated_at is not None
+                and item.activated_at.tzinfo is None else item.activated_at)
+            hashes={r.__tablename__:digest(r.model_dump(mode='json')) for r in (item,security,thesis,company) if r}
+            first_reached=bool(activation and proof.get('assignment_kind')=='REGULAR_BATCH'
+                and proof.get('record_hashes')==hashes
+                and proof.get('writer')=='resume_onboarding_subject'
+                and proof.get('explicit_first_session') is None
+                and proof.get('writer_result',{}).get('active') is True
+                and proof.get('writer_result',{}).get('production_eligible') is True
+                and proof.get('writer_result',{}).get('first_eligible_session')==str(item.first_eligible_session)
+                and item.first_eligible_session==_next_cycle_date(market,activation))
+        check('first_session_reached',first_reached,'FIRST_ELIGIBLE_SESSION_NOT_REACHED')
     check('security_present',present['securitymaster'],'MISSING_SECURITY_IDENTITY')
     if item and security:
         ready,_,_= _security_readiness(item,security,market)
@@ -570,6 +743,7 @@ def canonical_registration_eligibility(*, ticker, item, security, thesis, compan
         check('market_agrees',all(v in venues for v in exchanges) and
             (len(canonical)==1 or market=='kr' and 'KRX' in canonical),'MARKET_CLASSIFICATION_MISMATCH')
         check('identity_nonconflicting',resolve_security_identity(company_name=item.company_name,
+            watchlist_item=item if monitoring_only is True and not item.production_eligible else None,
             security_master=security)['identity_state']!=IDENTITY_CONFLICT,'SECURITY_IDENTITY_CONFLICT')
         check('identity_available',available(security.updated_at),'SECURITY_IDENTITY_AFTER_CUTOFF')
     check('active_thesis_present',present['active_investmentthesis'],'MISSING_ACTIVE_THESIS')
@@ -594,6 +768,9 @@ def production_universe_snapshot(
     *,
     cutoff: datetime,
     session_key: str,
+    execution=None,
+    regular_assignments=None,
+    monitoring_only: bool = False,
 ) -> ProductionUniverseSnapshot:
     cutoff_utc = (
         cutoff.replace(tzinfo=UTC) if cutoff.tzinfo is None else cutoff.astimezone(UTC)
@@ -614,7 +791,9 @@ def production_universe_snapshot(
             continue
         result=canonical_registration_eligibility(ticker=item.ticker,item=item,security=security,
             thesis=_latest_thesis(session,item.ticker),company=session.exec(select(Company).where(
-                Company.ticker==item.ticker)).first(),cutoff=cutoff_utc)
+                Company.ticker==item.ticker)).first(),cutoff=cutoff_utc,
+            execution=execution,regular_assignment=(regular_assignments or {}).get(item.ticker),
+            monitoring_only=monitoring_only)
         audits.append(result)
         legacy={'INACTIVE_MONITORING':'monitoring_not_active','ONBOARDING_NOT_ACTIVE':'onboarding_not_active',
             'PRODUCTION_NOT_ELIGIBLE':'production_not_eligible','MONITORING_NOT_REQUESTED':'monitoring_not_requested',

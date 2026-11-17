@@ -4,12 +4,26 @@ import base64
 import json
 from pathlib import Path
 import sys
+import sysconfig
 
 import httpx
 
 from app.services.unified_live_source_transport import SourceSafetyStop
 from app.services.unified_run_artifacts import durable_json, sha256_bytes
 from app.services.unified_snapshot_contract import digest, encoded
+
+
+def native_worker_command():
+    root = Path(__file__).resolve().parents[2]
+    libraries = tuple(dict.fromkeys(sysconfig.get_path(name) for name in ("purelib", "platlib")))
+    if not all(Path(path).is_dir() and Path(path).resolve().is_relative_to(Path(sys.prefix).resolve())
+               for path in libraries):
+        raise SourceSafetyStop('native_worker_dependency_root_unverified')
+    entry = (
+        f'import runpy,sys; sys.path[:0]={list((str(root), *libraries))!r}; '
+        'runpy.run_module("scripts.r9_rev11_native_worker", run_name="__main__", alter_sys=True)'
+    )
+    return (sys.executable, '-I', '-S', '-B', '-c', entry)
 
 
 class SealedNativeBridge(httpx.AsyncBaseTransport):
@@ -49,10 +63,11 @@ class SealedNativeBridge(httpx.AsyncBaseTransport):
                 if sha256_bytes(Path(self.input_path).read_bytes()) != self.input_sha256:
                     raise SourceSafetyStop('native_input_drift')
                 if self._test_worker is None:
-                    self.process = await asyncio.create_subprocess_exec(sys.executable, '-m', 'scripts.r9_rev11_native_worker',
+                    self.process = await asyncio.create_subprocess_exec(*native_worker_command(),
                         '--owner-root', str(self.owner_root), '--input', str(self.input_path), '--sha256', self.input_sha256,
                         '--output', str(self.output), stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE,
-                        stderr=asyncio.subprocess.PIPE, limit=64 * 1024 * 1024)
+                        stderr=asyncio.subprocess.PIPE, limit=64 * 1024 * 1024,
+                        cwd=Path(__file__).resolve().parents[2])
                 else:
                     self.process = await self._test_worker.launch(
                         owner_root=self.owner_root, input_path=self.input_path,

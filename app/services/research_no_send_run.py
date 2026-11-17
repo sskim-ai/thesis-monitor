@@ -4,7 +4,9 @@ Per-market children retain their original run/source/time identities. Only the
 final manifest joins them; neither a master ID nor a hash grants source rights.
 """
 import asyncio
+from contextvars import ContextVar
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 import fcntl
 from pathlib import Path
 import re
@@ -15,13 +17,19 @@ from app.services.production_model_profile import SolHighCallBudget
 from app.services.production_model_transport import OfficialProductionModelTransport
 from app.services.production_monitoring_session import ProductionMonitoringSession
 from app.services.production_runtime_bridge import ProductionRuntimeBridgeV1
+from app.services.research_artifact_budget import ArtifactCapacityError, ResearchArtifactBudget, artifact_scope, artifact_stage
+from app.services.research_request_storage import save_stage_request
 from app.services.unified_run_artifacts import SECRET_KEY, durable_json, load_json
 from app.services.unified_runtime_v2 import CONTRACT, STAGES, validate_stage_v2
 from app.services.unified_snapshot_contract import ContractModel, digest
 from app.services.vnext_execution_profile import SOL_HIGH_V1
 
 TERMINAL = 'RENDER_VERIFIED_NO_SEND'
+PARTIAL = 'RENDER_VERIFIED_PARTIAL_NO_SEND'
 RESEARCH_STAGES = STAGES[:-1]
+FINALIZATION_STAGES = frozenset({'VALIDATE', 'RENDER'})
+FINALIZATION_LOCAL_SECONDS = 600
+_stage_timer = ContextVar('prepared_research_stage_timer', default=None)
 
 
 class PreparedResearchEnvelope(ContractModel):
@@ -51,12 +59,15 @@ class MarketResearchChild:
     def binding(self):
         self.verify()
         c = self.plan.cohort
-        return dict(market=self.market, run_id=c.run_id, source_generation=c.source_generation,
+        binding = dict(market=self.market, run_id=c.run_id, source_generation=c.source_generation,
             assessment_date=c.assessment_date, effective_at=c.effective_at, cutoff=c.cutoff,
             cohort_sha256=c.sha256, plan_sha256=self.plan.sha256,
             source_relationship_sha256=digest(self.owner.relationship(self.market)),
             consumed_source_sha256=digest(self.owner.source(self.market)),
             message_ids=['MARKET_'+self.market.upper(), *c.market_subjects[self.market]])
+        if c.limitation_subjects:
+            binding['limitation_subjects'] = list(c.limitation_subjects)
+        return binding
 
 
 @dataclass(frozen=True)
@@ -100,21 +111,89 @@ def stage_deadline(plan, stage):
     if stage not in RESEARCH_STAGES:
         raise ValueError('research_stage_not_allowed')
     calls = sum(s.stage == stage for s in plan.slots)
+    # Both finalization stages restore and render the entire accepted cohort.
+    total = FINALIZATION_LOCAL_SECONDS if stage in FINALIZATION_STAGES else 600*calls+30
     return dict(stage=stage, planned_calls=calls, per_call_seconds=600,
-        overhead_seconds=30, total_seconds=600*calls+30, retries=0)
+        overhead_seconds=30, total_seconds=total, retries=0)
+
+
+def _split_stage_deadline(bound, multi_batch_local_seconds):
+    stage, calls = bound['stage'], bound['planned_calls']
+    result = dict(bound, local_seconds=(
+        FINALIZATION_LOCAL_SECONDS if stage in FINALIZATION_STAGES
+        else multi_batch_local_seconds if stage in {'CORE','A','B'} and calls > 1
+        else 600 if calls else bound['overhead_seconds']),
+        scope='SEPARATE_LOCAL_AND_WORKER_CAMPAIGN_CAPPED')
+    del result['total_seconds']
+    return result
+
+
+class _StageTimer:
+    """Pause the cumulative local budget only while the bounded worker runs."""
+    def __init__(self, deadline, loop, campaign_end, retry_cap=0):
+        self.deadline, self.loop, self.campaign_end = deadline, loop, campaign_end
+        self.local_seconds = self.worker_seconds = 0.0
+        self.phase, self.began, self.calls = 'local', loop.time(), 0
+        self.timeout = asyncio.timeout_at(None)
+        self.retry_cap = retry_cap
+
+    def check(self):
+        now = self.loop.time()
+        if now >= self.campaign_end:
+            raise TimeoutError('research_campaign_deadline')
+        if now >= self.timeout.when():
+            raise TimeoutError('research_'+self.phase+'_deadline')
+
+    def switch(self, phase):
+        self.check()
+        now = self.loop.time()
+        if phase == 'worker':
+            self.local_seconds += now-self.began
+            self.calls += 1
+            if self.calls > self.deadline['planned_calls']+self.retry_cap:
+                raise ValueError('research_stage_worker_count_exceeded')
+            remaining = self.deadline['per_call_seconds']+self.deadline['overhead_seconds']
+        else:
+            self.worker_seconds += now-self.began
+            remaining = self.deadline['local_seconds']-self.local_seconds
+        self.phase, self.began = phase, now
+        self.timeout.reschedule(min(now+remaining,self.campaign_end))
+        self.check()
+
+    def receipt(self):
+        elapsed = self.loop.time()-self.began
+        return dict(local_seconds=round(self.local_seconds+(elapsed if self.phase=='local' else 0),3),
+            worker_seconds=round(self.worker_seconds+(elapsed if self.phase=='worker' else 0),3),
+            worker_windows=self.calls, final_phase=self.phase)
+
+
+def current_stage_timer():
+    return _stage_timer.get()
 
 
 class PreparedResearchBridge(ProductionRuntimeBridgeV1):
-    def __init__(self, *, child, settings, model, clock):
+    def __init__(self, *, child, settings, model, clock, retained_kr_ecos_body=None):
         child.verify()
         if (model.call_budget.plan != child.plan or model.cohort_source_owner is not child.owner
                 or model.call_budget.journal is None):
             raise ValueError('research_persistent_budget_and_original_owner_required')
+        if retained_kr_ecos_body is not None and (child.market != 'kr' or model.call_budget.market_origin is None):
+            raise ValueError('research_retained_kr_display_requires_market_origin')
+        self._retained_kr_ecos_body = retained_kr_ecos_body
         self.child = child
         self.child_binding = child.binding()
         super().__init__(settings=settings, sources=None, model=model, delivery=None, clock=clock,
             execution_profile=SOL_HIGH_V1)
         model.bind_cycle(market=child.market, run_id=child.plan.cohort.run_id)
+
+    def _render_market(self, session):
+        if self._retained_kr_ecos_body is None:
+            return super()._render_market(session)
+        from app.services.production_message_renderer import market_message
+        from app.services.production_source_context import POLICY
+
+        return market_message(session,sector_taxonomy_version='sector-universe-user-confirmed-v2',
+            ecos_fx_body=self._retained_kr_ecos_body,fx_source_policy=POLICY)
 
     def snapshot(self):
         self.child.verify()
@@ -149,28 +228,69 @@ class PreparedResearchBridge(ProductionRuntimeBridgeV1):
 
 
 def build_research_no_send_adapter(*, enabled=False, child, settings, binding, runtime_root,
-                                   journal_path, approved_max_invocations, approved_plan_sha256, clock, run_ledger=None):
+                                   journal_path, approved_max_invocations, approved_plan_sha256, clock, run_ledger=None,
+                                   market_origin=None, artifact_budget=None, retained_kr_ecos_body=None,
+                                   timeout_retry_cap=0):
     if enabled is not True:
         raise ValueError('research_no_send_factory_disabled')
     child.verify()
     expected_journal = Path(runtime_root)/'invocation-ledger'/child.plan.cohort.run_id/'events.jsonl'
     if Path(journal_path).absolute() != expected_journal.absolute():
         raise ValueError('research_fixed_cycle_journal_required')
-    budget = SolHighCallBudget(plan=child.plan, approved_max_invocations=approved_max_invocations,
-        approved_plan_sha256=approved_plan_sha256, journal_path=journal_path, run_ledger=run_ledger)
+    with artifact_scope(artifact_budget):
+        budget = SolHighCallBudget(plan=child.plan, approved_max_invocations=approved_max_invocations,
+            approved_plan_sha256=approved_plan_sha256, journal_path=journal_path, run_ledger=run_ledger,
+            market_origin=market_origin, timeout_retry_cap=timeout_retry_cap)
     secrets = tuple(v.get_secret_value() if hasattr(v,'get_secret_value') else str(v)
         for k,v in settings.model_dump().items() if v and SECRET_KEY.search(k))
     model = OfficialProductionModelTransport(binding=binding, runtime_root=runtime_root,
         execution_profile=SOL_HIGH_V1, call_budget=budget, cohort_source_owner=child.owner, secrets=secrets)
-    return PreparedResearchBridge(child=child, settings=settings, model=model, clock=clock)
+    bridge = PreparedResearchBridge(child=child, settings=settings, model=model, clock=clock,
+        retained_kr_ecos_body=retained_kr_ecos_body)
+    bridge.artifact_budget = artifact_budget
+    return bridge
 
 
-async def run_prepared_research(bridge, *, root, enabled=False):
+async def run_prepared_research(bridge, *, root, enabled=False, local_output_rejection=False,
+                                split_model_timing=False, multi_batch_local_seconds=600):
     if enabled is not True or type(bridge) is not PreparedResearchBridge:
         raise ValueError('explicit_prepared_research_entry_required')
+    if (type(multi_batch_local_seconds) is not int or not 600 <= multi_batch_local_seconds <= 900
+            or (multi_batch_local_seconds != 600 and split_model_timing is not True)):
+        raise ValueError('research_multi_batch_local_limit_not_allowed')
+    campaign_end = None
+    if getattr(bridge.model.call_budget,'timeout_retry_cap',0) and split_model_timing is not True:
+        raise ValueError('research_timeout_retry_requires_campaign_timer')
+    if split_model_timing is True:
+        ledger = bridge.model.call_budget.run_ledger
+        if type(bridge.model) is not OfficialProductionModelTransport or ledger is None:
+            raise ValueError('split_model_timing_requires_original_ledger_and_transport')
+        maximum = ledger.identity['wallclock_seconds_max']
+        expires = min(datetime.fromisoformat(ledger.identity['expires_at']),
+            datetime.fromisoformat(ledger.identity['authorized_at'])+timedelta(seconds=maximum))
+        campaign_end = asyncio.get_running_loop().time()+(expires-datetime.now(timezone.utc)).total_seconds()
     path = Path(root)/bridge.child.plan.cohort.run_id
     if any(p.is_symlink() for p in (path, *path.parents)):
         raise ValueError('research_cycle_symlink')
+    budget = getattr(bridge, 'artifact_budget', None)
+    if budget is None:
+        roots = {path: 'result'}
+        runtime = getattr(bridge.model, 'runtime_root', None)
+        if runtime is not None:
+            roots[runtime] = 'scratch'
+        journal = bridge.model.call_budget.journal
+        if journal is not None:
+            roots[journal.path] = 'result'
+        ledger = getattr(bridge.model.call_budget, 'run_ledger', None)
+        if ledger is not None:
+            roots[ledger.path] = 'result'
+        budget = ResearchArtifactBudget(roots=roots)
+    with artifact_scope(budget):
+        return await _run(bridge, path, local_output_rejection=local_output_rejection,
+            artifacts=budget, campaign_end=campaign_end, multi_batch_local_seconds=multi_batch_local_seconds)
+
+
+async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=None, multi_batch_local_seconds=600):
     path.mkdir(parents=True, exist_ok=True, mode=0o700)
     with (path/'cycle.lock').open('a') as lock:
         try:
@@ -186,35 +306,102 @@ async def run_prepared_research(bridge, *, root, enabled=False):
                 raise ValueError('interrupted_research_cycle_no_automatic_replay')
             durable_json(path/'intent.json',state,exclusive=True)
             snapshot = bridge.snapshot()
+            snapshot_pin = digest(snapshot)
             outputs = {}
             for stage in RESEARCH_STAGES:
-                bound = stage_deadline(bridge.child.plan, stage)
-                request = dict(contract=CONTRACT, run_id=bridge.child.plan.cohort.run_id, stage=stage,
-                    snapshot_sha256=digest(snapshot), snapshot=snapshot, inputs=dict(outputs),
-                    configuration_sha256=digest(dict(purpose=TERMINAL, child_binding=bridge.child_binding)))
-                directory = path/stage.lower()
-                durable_json(directory/'request.json',request,exclusive=True)
-                state['stage_receipts'].append(dict(stage=stage,deadline=bound,status='INTENT'))
-                durable_json(path/'state.json',state)
-                result = await asyncio.wait_for(bridge.stage(request,directory), bound['total_seconds'])
-                validate_stage_v2(result,request)
-                value = result.model_dump(mode='json')
-                durable_json(directory/'response.json',value,exclusive=True)
-                state['stage_receipts'][-1].update(status='PASS',response_sha256=digest(value))
-                outputs[stage] = value
+                with artifact_stage(stage):
+                    bound = stage_deadline(bridge.child.plan, stage)
+                    if campaign_end is not None:
+                        bound = _split_stage_deadline(bound, multi_batch_local_seconds)
+                        retry_cap = getattr(bridge.model.call_budget,'timeout_retry_cap',0)
+                        if retry_cap and bound['planned_calls']:
+                            bound['campaign_timeout_retry_cap'] = retry_cap
+                    request = dict(contract=CONTRACT, run_id=bridge.child.plan.cohort.run_id, stage=stage,
+                        snapshot_sha256=snapshot_pin, snapshot=snapshot, inputs=dict(outputs),
+                        configuration_sha256=digest(dict(purpose=TERMINAL, child_binding=bridge.child_binding)))
+                    directory = path/stage.lower()
+                    saved = save_stage_request(path, request)
+                    state['stage_receipts'].append(dict(stage=stage,deadline=bound,status='INTENT',**saved))
+                    durable_json(path/'state.json',state)
+                    if campaign_end is None:
+                        result = await asyncio.wait_for(bridge.stage(request,directory), bound['total_seconds'])
+                    else:
+                        receipt = state['stage_receipts'][-1]
+                        loop = asyncio.get_running_loop()
+                        timer = _StageTimer(bound,loop,campaign_end, getattr(bridge.model.call_budget,'timeout_retry_cap',0))
+                        token = _stage_timer.set(timer)
+                        try:
+                            async with timer.timeout:
+                                timer.timeout.reschedule(min(timer.began+bound['local_seconds'],campaign_end))
+                                timer.check()
+                                result = await bridge.stage(request,directory)
+                                timer.check()
+                        finally:
+                            _stage_timer.reset(token)
+                            receipt['timing'] = timer.receipt()
+                    validate_stage_v2(result,request)
+                    value = result.model_dump(mode='json')
+                    durable_json(directory/'response.json',value,exclusive=True)
+                    state['stage_receipts'][-1].update(status='PASS',response_sha256=digest(value))
+                    outputs[stage] = value
+            if campaign_end is not None and asyncio.get_running_loop().time() >= campaign_end:
+                raise TimeoutError('research_campaign_deadline')
             messages = outputs['RENDER']['output']['messages']
-            if (sorted(m['message_id'] for m in messages) != sorted(bridge.child_binding['message_ids'])
+            calls = bridge.model.call_budget
+            inherited = set(calls.inherited)
+            accepted = set(calls.accepted)
+            omitted = outputs['B2']['output'].get('unissued',{})
+            exhausted = getattr(calls,'exhausted',set())
+            if (omitted and not getattr(calls,'timeout_retry_cap',0)
+                    or sorted(m['message_id'] for m in messages) != sorted(set(bridge.child_binding['message_ids'])-set(omitted))
                     or digest(messages) != outputs['VALIDATE']['output']['content_sha256']
-                    or set(bridge.model.call_budget.accepted) != {s.slot_id for s in bridge.child.plan.slots}
+                    or exhausted != {v['slot_id'] for v in omitted.values()}
+                    or accepted != {s.slot_id for s in bridge.child.plan.slots}-exhausted
+                    or calls.used & inherited or accepted != (calls.used-exhausted) | inherited
                     or any(m.get('NO_SEND') is not True or not m.get('text') for m in messages)):
                 raise ValueError('research_render_coverage_or_content_drift')
-            state.update(status=TERMINAL,messages=messages,messages_sha256=digest(messages))
+            if getattr(calls,'timeout_retry_cap',0):
+                from app.services.model_invocation_journal import read_invocation_journal
+                from app.services.model_timeout_retry import verify_render_partition
+
+                verify_render_partition(messages=messages, subjects=bridge.child.plan.cohort.market_subjects['us'],
+                    slots=bridge.child.plan.slots, b2=outputs['B2']['output'],
+                    journal=read_invocation_journal(calls.journal.path.read_bytes(), calls.journal.identity),
+                    accepted_content_sha256=outputs['VALIDATE']['output']['content_sha256'])
+            state.update(status=PARTIAL if omitted else TERMINAL,messages=messages,messages_sha256=digest(messages))
+            if bridge.child.plan.cohort.limitation_subjects:
+                from app.services.model_execution_plan import verify_mixed_render
+
+                receipts = outputs['RENDER']['output']['limitation_receipts']
+                if receipts != outputs['VALIDATE']['output']['limitation_receipts']:
+                    raise ValueError('research_limitation_validate_render_drift')
+                verify_mixed_render(bridge.child.plan, messages, receipts)
+                state['limitation_receipts'] = receipts
+            if omitted:
+                state.update(unissued=omitted, expected_message_count=len(bridge.child_binding['message_ids']))
+            state['model_acceptances'] = calls.state()
+            state['storage_inventory'] = artifacts.measure()
         except (Exception, asyncio.CancelledError) as exc:
             from app.services.unified_market_run import UnifiedMarketRun
             state.update(status='FAILED_NO_SEND',error_chain=UnifiedMarketRun._error(exc))
+            for key in ('messages', 'messages_sha256', 'limitation_receipts'):
+                state.pop(key, None)
+            if isinstance(exc, ArtifactCapacityError):
+                state['storage_failure'] = exc.receipt
             try:
-                bridge.model.call_budget.stop()
+                from app.services.canonical_monitoring_io import BatchFailure
+                from app.services.production_b2_execution import SemanticReject
+                # Only an explicit canonical-output failure is child-local.
+                # Transport, authentication, boundary and ledger errors stay global.
+                local=(local_output_rejection is True and (isinstance(exc,(BatchFailure,SemanticReject))
+                    or type(exc) is ValueError and str(exc)=='production_canonical_semantic_reject'))
+                bridge.model.call_budget.stop(global_stop=not local)
             except Exception as ledger_error:
                 state['ledger_failure'] = UnifiedMarketRun._error(ledger_error)
-        durable_json(path/'terminal.json',state,exclusive=True)
+        try:
+            durable_json(path/'terminal.json',state,exclusive=True)
+        except ArtifactCapacityError as exc:
+            state.update(status='FAILED_NO_SEND', terminal_write_blocked=exc.receipt)
+            state.pop('messages', None)
+            state.pop('messages_sha256', None)
         return state

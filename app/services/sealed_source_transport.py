@@ -6,6 +6,7 @@ import httpx
 from app.services.sealed_fresh_dispatch import consume_bound_result, wire_identity
 from app.services.sealed_response_binding import SlotNotSelected
 from app.services.unified_live_source_transport import SourceSafetyStop
+from app.services.unified_run_artifacts import sha256_bytes
 
 
 class CapturedFragment:
@@ -72,7 +73,19 @@ class SealedSourceTransport(httpx.AsyncBaseTransport):
                 await reject()
             raise SourceSafetyStop('native_request_not_unique_sealed_slot')
         d = matches[0]
-        final = await run.execute(d.logical_request_id, request, transport=self.inner, normalize=CapturedFragment(d))
+        options = {}
+        if (run.plan.contract == 'selected-original-source-request-plan-v1' and d.market == 'us'
+                and d.consumer_role == 'us_market:' + d.subject and d.endpoint_operation == 'usa06012'):
+            origins = [r for p in run.plan.descriptors if p.page_ordinal == d.page_ordinal
+                       and p.consumer_role == f'stock:us:{d.subject}:adjusted_daily'
+                       and (r := run.results.get(p.logical_request_id)) and r['status'] == 'PASS'
+                       and r.get('resolved_request_sha256') == sha256_bytes(public.encode())]
+            if len(origins) > 1:
+                raise SourceSafetyStop('selected_us_market_reuse_ambiguous')
+            if origins:
+                options['reuse_us_market_origin'] = dict(logical_id=origins[0]['logical_request_id'],
+                                                        receipt_sha256=origins[0]['receipt_sha256'])
+        final = await run.execute(d.logical_request_id, request, transport=self.inner, normalize=CapturedFragment(d), **options)
         if final['status'] != 'PASS':
             last = final['attempts'][-1]
             # Returning an invented 502 would erase an owner's original failure.

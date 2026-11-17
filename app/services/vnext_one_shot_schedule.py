@@ -21,6 +21,62 @@ from app.services.vnext_research_store import digest
 CONTRACT = 'one-shot-no-send-scheduled-event-v1'
 
 
+def manual_one_shot_plan(*, label, program, working_directory, armed_at, expires_at, binding):
+    """Ordinary finite job configuration, not provider/model authorization."""
+    if (not re.fullmatch(r'local\.thesis-monitor\.one-shot\.[a-z0-9-]+', label)
+            or armed_at.utcoffset() is None or expires_at.utcoffset() is None
+            or len(program) < 2 or any(not isinstance(s,str) or not s for s in program)
+            or not Path(program[0]).is_absolute() or not Path(working_directory).is_absolute()
+            or not Path(binding['result_root']).is_absolute()):
+        raise ValueError('manual_one_shot_configuration_invalid')
+    due = armed_at + timedelta(seconds=300)
+    if not due < expires_at <= armed_at + timedelta(days=1):
+        raise ValueError('manual_one_shot_expiry_invalid')
+    local = due.astimezone(ZoneInfo('Asia/Seoul'))
+    root = Path(binding['result_root'])
+    plist = dict(Label=label,ProgramArguments=list(program),WorkingDirectory=working_directory,
+        StandardOutPath=str(root/'launchd-stdout.log'),StandardErrorPath=str(root/'launchd-stderr.log'),
+        RunAtLoad=False,KeepAlive=False,StartCalendarInterval=dict(
+            Month=local.month,Day=local.day,Hour=local.hour,Minute=local.minute))
+    # launchd calendar precision is a minute. The process waits only the remaining
+    # seconds after its real OS event, never substitutes this for job registration.
+    return dict(contract=CONTRACT,trigger_kind='MANUAL_ONE_SHOT',label=label,
+        binding=deepcopy(binding),plist=plist,armed_at=armed_at.isoformat(),
+        due_at=due.isoformat(),expires_at=expires_at.isoformat(),markets=['kr','us'],
+        repeat=False,send=False,regular_schedule_changed=False,installation_authority=False)
+
+
+def consume_manual_intent(path, *, plan, actual_started_at):
+    """O_EXCL before any work: crash/restart consumes the same single intent."""
+    due,expiry=(datetime.fromisoformat(plan[k]) for k in ('due_at','expires_at'))
+    if (plan.get('trigger_kind')!='MANUAL_ONE_SHOT' or actual_started_at.utcoffset() is None
+            or not due<=actual_started_at<expiry):
+        raise ValueError('manual_one_shot_event_outside_window')
+    import json
+    raw=json.dumps(dict(label=plan['label'],plan_sha256=digest(plan),
+        due_at=plan['due_at'],actual_started_at=actual_started_at.isoformat(),
+        pid=os.getpid(),at_most_once=True,retry=False),sort_keys=True).encode()
+    fd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+    with os.fdopen(fd,'wb') as stream:
+        stream.write(raw);stream.flush();os.fsync(stream.fileno())
+    return dict(intent_sha256=digest(raw),actual_started_at=actual_started_at.isoformat())
+
+
+def validate_manual_timing(event, *, cutoff):
+    """Validate event times only; backend separately verifies the OS job."""
+    try:
+        armed,due,started,expires=(datetime.fromisoformat(event[k]) for k in
+            ('armed_at','due_at','actual_started_at','expires_at'))
+        valid=(event['trigger_kind']=='MANUAL_ONE_SHOT' and all(t.utcoffset() is not None
+            for t in (armed,due,started,expires,cutoff)) and due==armed+timedelta(seconds=300)
+            and due<=started<=cutoff<expires and event['OS_registered_process_verified'] is True)
+    except (KeyError,TypeError,ValueError):
+        valid=False
+    if not valid:
+        raise ValueError('manual_one_shot_timing_not_verified')
+    return event
+
+
 def one_shot_plan(*, label, market, local_date, program, working_directory, binding):
     if (not re.fullmatch(r'local\.thesis-monitor\.one-shot\.[a-z0-9-]+',label) or
             market not in ('kr','us') or len(program) < 2 or

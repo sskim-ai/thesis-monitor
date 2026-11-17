@@ -51,6 +51,8 @@ from app.services.preconfirmation_decision_v2_service import (
     preconfirmation_stage2_field_ownership_inventory,
     validate_preconfirmation_candidate,
     validate_preconfirmation_stage2_owned_semantics,
+    eligible_stage2_expectation_refs,
+    stage2_owned_candidate_claims,
 )
 from app.services.expectation_valuation_interaction_service import (
     ExpectationValuationInteraction,
@@ -112,7 +114,14 @@ class AcceptedV2EvidenceOwnership(FrozenModel):
     ticker: str
     core_ref_ids: tuple[str, ...]
     timing_ref_ids: tuple[str, ...]
+    quality_ref_ids: tuple[str, ...] = ()
+    prospective_ref_ids: tuple[str, ...] = ()
     expectation_valuation: ExpectationValuationInteraction
+
+    @property
+    def stage2_ref_ids(self) -> frozenset[str]:
+        return frozenset((*self.core_ref_ids, *self.timing_ref_ids,
+                          *self.quality_ref_ids, *self.prospective_ref_ids))
 
 
 class AcceptedV2FundamentalCoreCandidate(FrozenModel):
@@ -574,11 +583,18 @@ def build_accepted_v2_production_context(
             by_ticker[ticker],
             stock=stocks_by_ticker[ticker],
         )
+        from app.services.direction_timing_ownership_service import EvidenceDomain
+        quality_refs = {row.ref.ref_id for row in owned.evidence
+                        if row.domain == EvidenceDomain.DATA_QUALITY_LIMIT}
+        prospective_refs = {row.ref.ref_id for row in owned.evidence
+                            if row.ref.source_use is not None and row.ref.source_use.prospective_only}
         ownership.append(
             AcceptedV2EvidenceOwnership(
                 ticker=ticker,
-                core_ref_ids=tuple(sorted(owned.core_refs)),
+                core_ref_ids=tuple(sorted(owned.core_refs - quality_refs - prospective_refs)),
                 timing_ref_ids=tuple(sorted(owned.timing_refs)),
+                quality_ref_ids=tuple(sorted(quality_refs)),
+                prospective_ref_ids=tuple(sorted(prospective_refs)),
                 expectation_valuation=interaction_from_packet(
                     by_ticker[ticker].model_copy(update={"evidence": tuple(
                         row.ref for row in owned.evidence
@@ -749,12 +765,25 @@ def validate_accepted_v2_candidate_ownership(
         errors.append("fundamental_core_fingerprint_mismatch")
     if projected != core:
         errors.append("price_timing_stage_mutated_fundamental_core")
-    known = set(ownership.core_ref_ids) | set(ownership.timing_ref_ids)
+    known = ownership.stage2_ref_ids
     unknown_new_buyer = sorted(set(candidate.new_buyer_axis.reason.evidence_refs) - known)
     errors.extend(
         f"new_buyer_ref_outside_owned_evidence:{ref_id}"
         for ref_id in unknown_new_buyer
     )
+    for claim in stage2_owned_candidate_claims(candidate):
+        errors.extend(f'stage2_ref_outside_owned_evidence:{ref_id}'
+            for ref_id in sorted(set(claim.evidence_refs) - known))
+    prospective = set(ownership.prospective_ref_ids)
+    if prospective & set(candidate.factual_safety_basis.evidence_refs):
+        errors.append('prospective_hypothesis_in_factual_safety')
+    pricing_claims = (candidate.pricing_requirement.basis, candidate.pricing_requirement.valuation_basis,
+                      candidate.pricing_requirement.expectation_basis)
+    if any(prospective & set(claim.evidence_refs) for claim in pricing_claims if claim is not None):
+        errors.append('prospective_hypothesis_in_pricing_evidence')
+    if candidate.asymmetry.asymmetry != 'UNKNOWN' and not set(ownership.core_ref_ids) & _claim_ref_set((
+            candidate.asymmetry.basis, candidate.asymmetry.downside_permanence, candidate.asymmetry.upside_not_priced)):
+        errors.append('noncore_source_owns_business_asymmetry')
     holder_timing = sorted(
         set(candidate.holder_axis.reason.evidence_refs) & set(ownership.timing_ref_ids)
     )
@@ -1158,9 +1187,7 @@ def accepted_v2_stage2_ref_catalog_manifest(
             collect_source_expression(child)
 
     for ticker in selected:
-        visible_owned_refs = set(ownership[ticker].core_ref_ids) | set(
-            ownership[ticker].timing_ref_ids
-        )
+        visible_owned_refs = ownership[ticker].stage2_ref_ids
         for row in packets[ticker].evidence:
             if row.ref_id not in visible_owned_refs or row.ref_id.startswith(
                 "technical-feature:"
@@ -1176,15 +1203,6 @@ def accepted_v2_stage2_ref_catalog_manifest(
             if row.logical_condition is not None:
                 source_condition_refs.add(row.logical_condition.source_condition_ref)
                 collect_source_expression(row.logical_condition.expression)
-        baseline = prior.get(ticker)
-        if baseline is not None:
-            prior_claims = (*baseline.accepted_buy_drivers, *baseline.accepted_sell_drivers)
-            visible_refs.update(_claim_ref_set(prior_claims))
-            _collect_claim_logical_refs(
-                prior_claims,
-                source_condition_refs=source_condition_refs,
-                leaf_refs=leaf_refs,
-            )
 
     ordered_refs = tuple(sorted(visible_refs))
     ordered_maturity_ref_dates = {
@@ -1213,6 +1231,14 @@ def accepted_v2_stage2_ref_catalog_manifest(
         "allowed_source_condition_refs": ordered_source_condition_refs,
         "allowed_leaf_refs": ordered_leaf_refs,
     }
+    expectation_refs_by_subject = {ticker: sorted(
+        eligible_stage2_expectation_refs(packets[ticker]) & ownership[ticker].stage2_ref_ids)
+        for ticker in selected}
+    continuity_refs_by_subject = {ticker: sorted(_claim_ref_set((
+        *prior[ticker].accepted_buy_drivers, *prior[ticker].accepted_sell_drivers)))
+        if ticker in prior else [] for ticker in selected}
+    catalog_payload['expectation_refs_by_subject'] = expectation_refs_by_subject
+    catalog_payload['continuity_refs_by_subject'] = continuity_refs_by_subject
     if atomic_manifest is not None:
         catalog_payload["maturity_atomic_claim_catalog_hash"] = atomic_manifest[
             "claim_catalog_hash"
@@ -1231,6 +1257,9 @@ def accepted_v2_stage2_ref_catalog_manifest(
         "ref_catalog_hash": catalog_hash,
         "ref_catalog_count": len(ordered_refs),
         "allowed_refs": list(ordered_refs),
+        "expectation_refs_by_subject": expectation_refs_by_subject,
+        "continuity_refs_by_subject": continuity_refs_by_subject,
+        "source_role_contract": "stage2-owned-core-timing-quality-prospective-v1",
         "maturity_date_catalog_hash": canonical_sha256(ordered_maturity_ref_dates),
         "maturity_date_count": len(allowed_maturity_dates),
         "allowed_maturity_dates": list(allowed_maturity_dates),
@@ -1355,6 +1384,31 @@ def accepted_v2_stage2_output_schema(
             if not isinstance(items, dict) or items.get("type") != "string":
                 raise ValueError("v2_stage2_maturity_claim_schema_invalid")
             items["enum"] = list(claim_refs)
+    # Subject-specific branches keep UNKNOWN absence local; EvidenceClaim stays cited.
+    candidate_branches = []
+    for ticker in selected:
+        branch = deepcopy(definitions['PreconfirmationDecisionCandidate'])
+        branch['properties']['ticker']['const'] = ticker
+        expectation_schema = deepcopy(definitions['Stage2MarketExpectationAssessment'])
+        pricing_schema = deepcopy(definitions['Stage2PricingRequirementAssessment'])
+        expected_refs = manifest['expectation_refs_by_subject'][ticker]
+        if expected_refs:
+            cited = deepcopy(definitions['EvidenceClaim'])
+            cited['properties']['evidence_refs']['items']['enum'] = expected_refs
+            expectation_schema['properties']['basis'] = cited
+            expectation_schema['properties']['unavailable_reason'] = {'type': 'null'}
+            pricing_schema['properties']['expectation_basis'] = deepcopy(cited)
+        else:
+            expectation_schema['properties']['level'] = {'type': 'string', 'const': 'unknown'}
+            expectation_schema['properties']['basis'] = {'type': 'null'}
+            expectation_schema['properties']['unavailable_reason'] = {
+                'type': 'string', 'const': 'NO_ELIGIBLE_EXPECTATION_SOURCE'}
+            pricing_schema['properties']['requirement'] = {'type': 'string', 'const': 'UNKNOWN'}
+            pricing_schema['properties']['expectation_basis'] = {'type': 'null'}
+        branch['properties']['market_expectation'] = expectation_schema
+        branch['properties']['pricing_requirement'] = pricing_schema
+        candidate_branches.append(branch)
+    properties['candidates']['items'] = {'anyOf': candidate_branches}
     from app.services.reviewed_fixture_authority import fixture_metadata
     schema.update(fixture_metadata(context, consumer="STAGE2_SCHEMA"))
     return schema
@@ -1521,7 +1575,7 @@ def _materialize_v2_stage2_output(
             )
         visible_refs = {
             ref_id
-            for ref_id in (*owned.core_ref_ids, *owned.timing_ref_ids)
+            for ref_id in owned.stage2_ref_ids
             if not ref_id.startswith("technical-feature:")
         }
         evidence = {
@@ -1837,6 +1891,9 @@ def accepted_v2_production_prompt(
             "price_timing_evidence": _compact_stage2_owned_evidence(
                 packets[ticker], ownership[ticker].timing_ref_ids
             ),
+            "quality_limit_evidence": _compact_stage2_owned_evidence(packets[ticker], ownership[ticker].quality_ref_ids),
+            "prospective_hypotheses_not_facts": _compact_stage2_owned_evidence(packets[ticker], ownership[ticker].prospective_ref_ids),
+            "eligible_expectation_refs": ref_catalog['expectation_refs_by_subject'][ticker],
             "expectation_valuation_interaction": ownership[
                 ticker
             ].expectation_valuation.model_dump(mode="json"),
@@ -1859,6 +1916,8 @@ Holder REVIEW means 보유 근거 재검토, not an automatic sell. Holder REDUC
 Set post_confirmation_hold=true only when decision=HOLD and overall_maturity.maturity=CONFIRMED. If overall_maturity.maturity is not CONFIRMED, set post_confirmation_hold=false and postconfirmation_hold_explanation=null. A HOLD decision alone does not imply post_confirmation_hold=true; do not change the decision or maturity merely to satisfy this flag.
 
 Use EXPECTATION_VALUATION_INTERACTION as an evidence-ownership rule. Never count the same underlying valuation signal once as high expectations and again as expensive valuation. Preserve genuinely independent expectation evidence. Do not force GOOGL or any other ticker to a target enum.
+
+Use the per-subject eligible_expectation_refs exactly. When it is empty, market_expectation must have level=unknown, basis=null, unavailable_reason=NO_ELIGIBLE_EXPECTATION_SOURCE; pricing_requirement must have requirement=UNKNOWN and expectation_basis=null. These nulls describe unavailable evidence, not a low expectation, a price signal or a forced WAIT/HOLD. All other EvidenceClaim objects retain nonempty exact citations. When eligible expectation refs exist, both expectation bases must cite them and unavailable_reason=null, including when the assessed level remains unknown. Quality limits justify limits only; prospective user hypotheses are conditions, never observed market expectations, independent pricing evidence or current economic facts.
 
 For every supplied ticker, emit exactly one PreconfirmationDecisionCandidate in candidates. Use VERY_HIGH reasoning_grade and concise natural Korean for every prose claim. Evidence refs are exact opaque identifiers. Copy only refs present in the supplied Stage-2 evidence catalog. Never edit, append, shorten, infer, synthesize, guess, or repair an evidence ref. If no exact supplied ref supports a statement, do not cite one. Distinguish factual safety from investment uncertainty. Evaluate evidence maturity, expectations, pricing requirement, Bear/Base/Bull scenarios, asymmetry, confirmation cost, and preconfirmation error cost without a weighted score. BUY before full confirmation is allowed only when the structured contract permits it. Confirmed business evidence can still be HOLD or SELL when expectations are demanding. Technical and market evidence may own timing, not long-horizon business asymmetry.
 

@@ -2,18 +2,19 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Literal
 from zoneinfo import ZoneInfo
 
 from pydantic import Field, model_validator
 
-from app.services.market_session import market_session_for_ticker
+from app.services.market_session import korea_market_session, market_session_for_ticker, us_market_session
 from app.services.ohlcv_provider_integrity_service import inspect_normalized_ohlcv_rows
 from app.services.unified_run_artifacts import sha256_bytes
 from app.services.unified_snapshot_contract import ContractModel, digest
 from app.services.unified_source_policy import UnifiedSourcePolicy
+from scripts.native_stock_receipt_time import verify_monotonic_receipt
 
 
 UNIVERSE = {
@@ -166,6 +167,33 @@ def load_owned_role(plan: StockPlan, read: StockRead, receipt: dict, root: Path)
         lambda path, sha: bound_artifact(root, path, sha))
 
 
+def require_native_replay_timing(receipt, replay):
+    pin = digest(receipt) if "clock" in receipt else None
+    if replay.get("native_timing_receipt_sha256") != pin:
+        raise ValueError("stock_native_replay_timing_receipt_mismatch")
+
+
+def _require_stock_wall_scope(plan, read, timing):
+    walls, excess, diagnostic = timing
+    lower, upper = min(walls), max(walls)
+    if lower < plan.frozen_at or excess > 5:
+        raise ValueError("TIME_CUTOFF_UNCERTAIN")
+    if diagnostic != "MONOTONIC_ORDER_PASS":
+        # Never shift stored times. Check both sides of the possible clock step.
+        padding = timedelta(seconds=excess)
+        lower, upper = lower - padding, upper + padding
+        if lower < plan.frozen_at:
+            raise ValueError("TIME_CUTOFF_UNCERTAIN")
+    session_at = us_market_session if read.market == "us" else korea_market_session
+    first, last = session_at(lower), session_at(upper)
+    if (first.market_date != last.market_date
+            or {s.latest_completed_regular_session_date.isoformat() for s in (first, last)}
+               != {read.latest_completed_session}
+            or (read.market == "kr" and
+                {t.astimezone(ZoneInfo("Asia/Seoul")).strftime("%Y%m%d") for t in (lower, upper)} != {read.query_date})):
+        raise ValueError("TIME_CUTOFF_UNCERTAIN")
+
+
 def decode_owned_role(plan: StockPlan, read: StockRead, receipt: dict, artifact_reader) -> list[dict]:
     """Same receipt checks, with caller-owned byte inputs for pure assembly."""
     import json
@@ -177,12 +205,16 @@ def decode_owned_role(plan: StockPlan, read: StockRead, receipt: dict, artifact_
     if receipt["entry"] != read.model_dump(mode="json"):
         raise ValueError("stock_role_receipt_mismatch")
     start, end = (datetime.fromisoformat(receipt[k]) for k in ("started_at", "completed_at"))
-    if not start.tzinfo or not end.tzinfo or not plan.frozen_at <= start <= end:
+    if ("clock" not in receipt
+            and (not start.tzinfo or not end.tzinfo or not plan.frozen_at <= start <= end)):
         raise ValueError("stock_receipt_time_mismatch")
     if receipt["status"] != "CAPTURED" or not receipt["pages"]:
         raise ValueError(receipt.get("error_class") or "stock_source_role_unavailable")
     if len(receipt["pages"]) > read.max_pages:
         raise ValueError("stock_page_budget_exceeded")
+    timing = verify_monotonic_receipt(receipt)
+    if timing is not None:
+        _require_stock_wall_scope(plan, read, timing)
     for ordinal, page in enumerate(receipt["pages"], 1):
         PROVIDER.require(page["provider"])
         if page["entry_id"] != read.entry_id or page["page_ordinal"] != ordinal:
@@ -197,7 +229,8 @@ def decode_owned_role(plan: StockPlan, read: StockRead, receipt: dict, artifact_
             raise ValueError("stock_page_exchange_mismatch")
         if page["request_sha256"] != digest(request):
             raise ValueError("stock_request_hash_mismatch")
-        if not start <= datetime.fromisoformat(page["requested_at"]) <= datetime.fromisoformat(page["received_at"]) <= end:
+        if (timing is None
+                and not start <= datetime.fromisoformat(page["requested_at"]) <= datetime.fromisoformat(page["received_at"]) <= end):
             raise ValueError("stock_page_time_mismatch")
         raw = artifact_reader(page["artifact"], page["source_sha256"])
         data = json.loads(raw)

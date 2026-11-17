@@ -35,7 +35,6 @@ def add_watchlist_item(session: Session, payload: WatchlistItemCreate) -> Watchl
         if not (
             existing
             and item.active
-            and item.production_eligible
             and item.onboarding_state == "ACTIVE"
         ):
             begin_onboarding(item)

@@ -89,15 +89,23 @@ class ProductionRuntimeBridgeV1:
                     raise ValueError('sol_high_multi_subject_batch_outside_four_panel_plan')
                 scope['panel'] = session.market.upper() + '_MARKET' if stage == 'MARKET' else subjects[0]
         for index in range(1, 2 if profile else 4):
+            transport_failure = None
             path = directory / ('attempt-'+str(index))
             receipt = dict(request_sha256=digest(payload), classification='INTENT', ordinal=index)
             durable_json(path/'intent.json', receipt, exclusive=True)
             try:
-                raw = await asyncio.wait_for(self.model.request(deepcopy(payload),
+                from app.services.research_no_send_run import current_stage_timer
+                call = self.model.request(deepcopy(payload),
                     model=profile.model if profile else 'gpt-5.6-sol',
-                    effort=profile.effort if profile else 'xhigh', timeout=600, stage=stage, **scope), 600)
+                    effort=profile.effort if profile else 'xhigh', timeout=600, stage=stage, **scope)
+                raw = await call if current_stage_timer() is not None else await asyncio.wait_for(call, 600)
             except (ModelTransportError, TimeoutError) as exc:
+                transport_failure = exc
                 receipt.update(classification='TRANSPORT_FAILURE', error_type=type(exc).__name__)
+                if getattr(exc, 'diagnosis', None) is not None:
+                    receipt['diagnosis'] = exc.diagnosis
+                for key in ('cli_returncode','worker_returncode'):
+                    if hasattr(exc,key):receipt[key]=getattr(exc,key)
             else:
                 if not isinstance(raw, bytes):
                     raise TypeError('production_raw_response_required')
@@ -125,6 +133,10 @@ class ProductionRuntimeBridgeV1:
                         return dict(batch=request['batch'], subjects=list(request['subjects']), output=output,
                             payload_sha256=digest(payload), raw_sha256=receipt['raw_sha256'])
             durable_json(path/'receipt.json', receipt, exclusive=True)
+            if profile and transport_failure is not None:
+                if isinstance(transport_failure, TimeoutError) and not isinstance(transport_failure, ModelTransportError):
+                    raise ModelTransportError('RECONCILIATION_REQUIRED') from transport_failure
+                raise transport_failure
         raise ModelTransportError('production_transport_form_budget_exhausted')
 
     def _session(self, request, directory):
@@ -157,11 +169,13 @@ class ProductionRuntimeBridgeV1:
         return session, collection
 
     def _restore_upstream(self, session, request):
+        from app.services.research_artifact_budget import artifact_role
         for stage in STAGES[:STAGES.index(request['stage'])]:
             if stage not in {'MARKET', 'CORE', 'A', 'B'}:
                 continue
             rows = request['inputs'][stage]['output']['rows']
-            captured = session.build(stage)
+            with artifact_role('scratch'):
+                captured = session.build(stage)
             if len(rows) != len(captured):
                 raise ValueError('production_upstream_batch_coverage')
             for item, row in zip(captured, rows, strict=True):
@@ -169,6 +183,9 @@ class ProductionRuntimeBridgeV1:
                         or row['payload_sha256'] != digest(item['payload'])):
                     raise ValueError('production_upstream_payload_drift')
                 session.accept(stage, item, row['output'])
+
+    def _render_market(self, session):
+        return market_message(session)
 
     async def stage(self, request, directory):
         reject_test_only_production(request)
@@ -184,13 +201,26 @@ class ProductionRuntimeBridgeV1:
         session, collection = self._session(request, directory)
         stage = request['stage']
         if stage in {'MARKET', 'CORE', 'A', 'B'}:
+            from app.services.research_artifact_budget import artifact_role
             rows = []
-            for item in session.build(stage):
-                rows.append(await self._invoke(session, stage, item, directory/('model-'+str(item['batch']))))
+            with artifact_role('scratch'):
+                items = session.build(stage)
+            for item in items:
+                budget = getattr(self.model, 'call_budget', None)
+                if stage == 'MARKET' and getattr(budget, 'market_origin', None) is not None:
+                    rows.append(budget.inherit_market(session=session, item=item, snapshot=request['snapshot']))
+                else:
+                    rows.append(await self._invoke(session, stage, item, directory/('model-'+str(item['batch']))))
             output = dict(rows=rows, generation_id=session.gen)
         elif stage == 'B2':
-            rows = {}
-            for ticker in collection.production_envelope.subjects:
+            rows, unissued = {}, {}
+            limited = session.limitation_subjects
+            ordinary = session.ordinary_subjects()
+            if set(ordinary) | limited != set(collection.production_envelope.subjects) or (
+                    limited and self.execution_profile is None):
+                raise ValueError('production_b2_verified_cohort_partition_required')
+            decisions = {ticker:digest(session.limitation_decision(ticker)) for ticker in sorted(limited)}
+            for ticker in ordinary:
                 item = session.b2_request(ticker)
                 reject_test_only_production(item)
                 binding = dict(generation_id=session.gen, source_generation_id=session.source_gen,
@@ -206,25 +236,67 @@ class ProductionRuntimeBridgeV1:
                         execution_generation_id=session.gen, source_generation_id=session.source_gen,
                         payload=payload, payload_sha256=auth.request_sha256,
                         original_authorization_sha256=digest(auth.model_dump(mode='json'))))
-                result = await execute_b2(item, auth, current_binding=binding, transport=self.model, directory=directory/ticker)
+                try:
+                    result = await execute_b2(item, auth, current_binding=binding, transport=self.model, directory=directory/ticker)
+                except ModelTransportError as exc:
+                    if (b2_scope is None or not getattr(budget,'timeout_retry_cap',0)
+                            or not getattr(exc,'confirmed_timeout',None) or exc.slot_id != b2_scope['slot_id']
+                            or exc.slot_id not in budget.exhausted):
+                        raise
+                    omission = dict(status='B2_UNISSUED_TIMEOUT', slot_id=exc.slot_id,
+                        request_sha256=auth.request_sha256, attempts=len(budget.attempts[exc.slot_id]))
+                    durable_json(directory/ticker/'unissued.json',omission,exclusive=True)
+                    unissued[ticker] = omission
+                    continue
                 if b2_scope is not None:
                     budget.record_acceptance(b2_scope['slot_id'], payload_sha256=auth.request_sha256,
                                              output_sha256=result['attempts'][-1]['raw_sha256'])
                 rows[ticker] = dict(authorization=auth.model_dump(mode='json'), result=result)
             output = dict(rows=rows, generation_id=session.gen)
+            if limited:
+                output['limitation_decisions'] = decisions
+            if unissued:
+                output['unissued'] = unissued
         else:
-            b2_rows = request['inputs']['B2']['output']['rows']
-            if set(b2_rows) != set(collection.production_envelope.subjects):
+            b2 = request['inputs']['B2']['output']
+            b2_rows = b2['rows']
+            subjects = collection.production_envelope.subjects
+            budget = getattr(self.model,'call_budget',None)
+            omitted = b2.get('unissued',{})
+            limits = session.limitation_subjects
+            decisions = {ticker:digest(session.limitation_decision(ticker)) for ticker in sorted(limits)}
+            if b2.get('limitation_decisions',{}) != decisions or (limits and (omitted or stage == 'DELIVER')):
+                raise ValueError('production_limitation_no_send_decision_binding')
+            if omitted and (stage not in {'VALIDATE','RENDER'} or not getattr(budget,'timeout_retry_cap',0)):
+                raise ValueError('production_partial_b2_no_send_required')
+            if omitted:
+                from app.services.model_timeout_retry import verify_b2_coverage
+
+                verify_b2_coverage(b2, subjects=subjects, slots=budget.slots, exhausted=budget.exhausted,
+                    bound=budget.bound, attempts=budget.attempts)
+            elif set(b2_rows) != set(subjects) - limits:
                 raise ValueError('production_b2_complete_current_cohort_required')
             if stage in {'VALIDATE', 'RENDER'}:
                 scope = dict(execution_profile=self.execution_profile) if self.execution_profile else {}
-                messages = [market_message(session)] + [stock_message(session, t, b2_rows[t], **scope) for t in collection.production_envelope.subjects]
+                from app.services.production_message_renderer import limitation_message
+                messages = [self._render_market(session)] + [(limitation_message(session, t) if t in limits else
+                    stock_message(session, t, b2_rows[t], **scope))
+                    for t in subjects if t not in omitted]
                 for message in messages:
                     message['snapshot_sha256'] = request['snapshot_sha256']
                     if self.execution_profile:
                         message['NO_SEND'] = True
                 output = dict(messages=messages, generation_id=session.gen, finality_claim='NOT_CLAIMED') if stage == 'RENDER' else dict(
                     status='PASS', message_count=len(messages), content_sha256=digest(messages), generation_id=session.gen)
+                if limits:
+                    from app.services.model_execution_plan import verify_mixed_render
+
+                    receipts = {m['message_id']: dict(plan_sha256=m['plan_sha256'], content_sha256=digest(m['text']),
+                        decision_sha256=m['limitation_decision_sha256']) for m in messages if m['message_id'] in limits}
+                    if {t:r['decision_sha256'] for t,r in receipts.items()} != decisions:
+                        raise ValueError('production_render_limitation_decision_drift')
+                    verify_mixed_render(budget.plan, messages, receipts)
+                    output['limitation_receipts'] = receipts
             else:
                 messages = request['inputs']['RENDER']['output']['messages']
                 if digest(messages) != request['inputs']['VALIDATE']['output']['content_sha256']:

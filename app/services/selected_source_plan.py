@@ -92,13 +92,21 @@ def acquisition_plan(stock,identities,*,kr_max_pages,exact_financial_owner=False
                      auxiliary_security=None,auxiliary_identity_sha256=None,transient_retry_max=None,
                      consumer_policy=None):
     if (type(stock) is not SelectedStockPlan or set(identities)!=set(stock.subjects)
-            or transient_retry_max!=0 or auxiliary_security is not None or auxiliary_identity_sha256 is not None):
+            or type(transient_retry_max) is not int or transient_retry_max!=0):
         raise ValueError('selected_explicit_no_retry_scope_required')
     # Direct financial ownership is generic. An issuer bridge is not guessed
     # from a ticker/CIK and cannot transfer per-share or price authority.
     financial={t:make_plan(s,market=stock.market,cutoff=stock.frozen_at,run_id=stock.run_id,
         all_subjects_fresh=True,exact_financial_owner=exact_financial_owner,maximum_retries_per_request=0)
         for t,s in identities.items()}
+    auxiliary = {}
+    if auxiliary_security is not None or auxiliary_identity_sha256 is not None:
+        if stock.market != 'us' or 'SKHY' not in identities or not exact_financial_owner or consumer_policy is None:
+            raise ValueError('selected_auxiliary_issuer_scope_denied')
+        from app.services.auxiliary_issuer_financial_owner import issuer_only_plan
+        financial['000660'], auxiliary['000660'] = issuer_only_plan(auxiliary_security,
+            stock=stock, exact_financial_owner=True, retries=0,
+            official_identity_sha256=auxiliary_identity_sha256)
     kr=() if stock.market=='us' else kiwoom_market_reads(
         session_date=korea_market_session(stock.frozen_at).latest_completed_regular_session_date,
         max_pages=kr_max_pages,max_requests_per_page=1)
@@ -122,6 +130,8 @@ def acquisition_plan(stock,identities,*,kr_max_pages,exact_financial_owner=False
         source_identity_sha256=digest(identities),source_use='NOT_ISSUED')
     if consumer_policy is not None:
         value['consumer_policy']=consumer_policy.model_dump(mode='json')
+    if auxiliary:
+        value['auxiliary_issuer_dependencies']=auxiliary
     return dict(value,plan_sha256=digest(value))
 
 
@@ -173,7 +183,27 @@ def compile_selected_plan(*,compiler_args,kis_plan=None):
         compiler_input_sha256=_compiler_identity(compiler_args),
         compiler_output_sha256=digest({k:v for k,v in result.items() if k!='plan'}),
         kis_plan_sha256=digest(kis_plan) if kis_plan is not None else None)
+    aux=result['candidate'].get('auxiliary_issuer_dependencies',{})
+    if aux:
+        require_issuer_descriptors(result['plan'],result['candidate'])
     return result
+
+
+def require_issuer_descriptors(plan, candidate):
+    from app.services.auxiliary_issuer_financial_owner import AuxiliaryIssuerDependency
+    dependencies=candidate.get('auxiliary_issuer_dependencies',{})
+    if set(dependencies)!={'000660'} or set(candidate['financial_plans'])!=set(plan.subjects)|{'000660'}:
+        raise ValueError('PLAN_INCOMPLETE:us:issuer_auxiliary')
+    dependency=AuxiliaryIssuerDependency.model_validate(dependencies['000660'])
+    financial=candidate['financial_plans']['000660']
+    descriptors=[d for d in plan.descriptors if d.subject=='000660']
+    if (plan.market!='us' or 'SKHY' not in plan.subjects or '000660' in plan.subjects
+            or dependency.run_id!=plan.generation_id or dependency.source_plan_sha256!=digest(financial)
+            or dependency.cutoff.isoformat()!=financial['cutoff'] or not descriptors
+            or any(d.provider!='opendart' or d.consumer_role!='financial:000660'
+                   or d.transient_retry_max!=0 for d in descriptors)):
+        raise ValueError('PLAN_INCOMPLETE:us:issuer_auxiliary')
+    return dependency
 
 
 def decode_stock_plan(frozen):

@@ -28,6 +28,9 @@ class SelectedSourceDispatcher(SealedDispatcher):
                 or approved_plan_sha256!=self.plan.plan_sha256
                 or approved_provider_caps!=request_budget(rebuilt,kis_plan)['providers']):
             raise ValueError('selected_current_exact_plan_approval_required')
+        if self.plan.market=='us' and 'SKHY' in self.plan.subjects:
+            from app.services.selected_source_plan import require_issuer_descriptors
+            require_issuer_descriptors(self.plan,rebuilt['candidate'])
         if (self.plan.binding_owner_sha256!=binding_owner_hash()
                 or not callable(guard)):
             raise ValueError('selected_original_binding_and_host_guard_required')
@@ -77,9 +80,15 @@ class SelectedSourceDispatcher(SealedDispatcher):
                                 metered=CampaignOhlcvTransport(binding=parent.run_ledger.worker_binding(),
                                     market=parent.plan.market,subject=descriptor.subject,phase='SOURCE',inner=wire)
                             else:
+                                issuer_only=(parent.plan.market=='us' and descriptor.subject=='000660'
+                                    and descriptor.provider=='opendart' and descriptor.consumer_role=='financial:000660')
                                 metered=MeteredAsyncTransport(binding=parent.run_ledger.worker_binding(),
-                                    market=parent.plan.market,phase='SOURCE',owner='SelectedSourceDispatcher',inner=wire)
-                            response=await metered.handle_async_request(request)
+                                    market=parent.plan.market,phase='SOURCE',owner='SelectedSourceDispatcher',inner=wire,
+                                    **({'subject':'000660'} if issuer_only else {}))
+                            if descriptor.endpoint_operation=='usa20590':
+                                response=await _completed_close_on_lane(metered,request)
+                            else:
+                                response=await metered.handle_async_request(request)
                         else:
                             response = await wire.handle_async_request(request)
                     except BaseException:
@@ -103,3 +112,18 @@ class SelectedSourceDispatcher(SealedDispatcher):
             ledger.stop('MANDATORY_SOURCE_REJECTED')
             raise SourceSafetyStop('selected_mandatory_source_rejected')
         return final
+
+
+async def _completed_close_on_lane(transport, request):
+    # The native OHLCV worker already holds the host lane for its RPC.
+    # usa20590 comes directly from the parent, so it needs the lane here.
+    from app.services.kiwoom_global_lane import configured_lane, validate_envelope
+
+    lane = configured_lane()
+    if lane is None:
+        raise SourceSafetyStop('selected_completed_close_original_lane_required')
+    async with lane.slot():
+        response = await transport.handle_async_request(request)
+        response.request = request  # Direct transports do not attach the client request.
+        validate_envelope(response)
+        return response

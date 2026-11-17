@@ -133,6 +133,19 @@ def _next_cycle_date(market: str, current: datetime) -> date:
     return local.date() if local.time() < cutoff else local.date() + timedelta(days=1)
 
 
+def _next_monitoring_cycle_date(market: str, current: datetime) -> date:
+    from app.services.unified_market_run import target_session
+    from app.services.unified_runtime_v2 import scheduled_slots
+
+    day = _next_cycle_date(market, current)
+    for _ in range(14):
+        slot = scheduled_slots(market, day)[0]
+        if slot >= current and target_session(market, slot) is not None:
+            return day
+        day += timedelta(days=1)
+    raise ValueError("monitoring_next_eligible_cycle_unverified")
+
+
 def _safe_error(exc: BaseException) -> str:
     detail = str(exc).splitlines()[0].strip().replace("\t", " ")[:180]
     return f"{type(exc).__name__}:{detail}" if detail else type(exc).__name__
@@ -206,7 +219,11 @@ def _persist_attempt_state(
     origin: str,
     error: str | None,
 ) -> OnboardingRetryClass:
-    if readiness.onboarding_ready:
+    if readiness.monitoring_ready and item.active:
+        retry_class = OnboardingRetryClass.NONE
+        item.onboarding_next_retry_at = None
+        item.onboarding_last_error = error
+    elif readiness.onboarding_ready:
         retry_class = OnboardingRetryClass.NONE
         item.onboarding_next_retry_at = None
         item.onboarding_last_error = None
@@ -261,6 +278,7 @@ async def resume_onboarding_subject(
     source_intake_generation: str | None = None,
     decision_timeout_seconds: int | None = None,
     cycle_event_sink: Callable | None = None,
+    activation_clock: Callable[[], datetime] | None = None,
 ) -> OnboardingAttemptResult:
     if decision_timeout_seconds is not None and decision_timeout_seconds != 600:
         raise ValueError('explicit_onboarding_decision_timeout_must_be_600')
@@ -365,14 +383,18 @@ async def resume_onboarding_subject(
             session.add(item)
             session.commit()
 
-        selected_first_session = first_eligible_session or _next_cycle_date(
-            market, current
-        )
+        activation_time = current
+        if activation_clock is not None:
+            activation_time = activation_clock()
+            if activation_time.utcoffset() is None or activation_time < current:
+                raise ValueError('onboarding_activation_clock_naive_or_before_attempt')
+            activation_time = activation_time.astimezone(UTC)
+        selected_first_session = first_eligible_session or _next_cycle_date(market, activation_time)
         readiness = reconcile_onboarding(
             session,
             item,
             data_dir=data_dir,
-            as_of=current,
+            as_of=activation_time,
             first_eligible_session=selected_first_session,
         )
         session.commit()
@@ -387,7 +409,8 @@ async def resume_onboarding_subject(
             item,
             data_dir=data_dir,
             as_of=current,
-            activate=False,
+            activate=bool(attempted and attempted[-1] == OnboardingRequirement.DECISION_READINESS
+                and before.monitoring_ready and not before.onboarding_ready),
         )
         session.commit()
 
