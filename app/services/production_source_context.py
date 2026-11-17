@@ -159,6 +159,8 @@ def freeze_current_context(*, request, directory, settings, configuration, imple
         configuration_sha256=configuration.identity, local_snapshot_identity=db_identity,
         protocol_inputs=static, protected_input_hashes={str(p.relative_to(root)): sha256_bytes(p.read_bytes())
             for p in root.rglob("*.json")})
+    if market == "kr" and settings.kr_price_structure_v3_enabled:
+        frozen["kr_stock_chart_v3"] = True
     if market == "us":
         frozen["context_sessions"] = {"kr_fx": korea_market_session(at).latest_completed_regular_session_date.isoformat()}
     durable_json(root / "production-frozen-source-plan.json", frozen, exclusive=True)

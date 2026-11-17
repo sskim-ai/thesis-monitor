@@ -94,7 +94,7 @@ class CanonicalMonitoringDomain:
 
     def before_b(self):
         requests=[]
-        for spec in self.batch_topology():
+        for spec in getattr(self, "decision_batch_topology", self.batch_topology)():
             contexts,schemas={},{}
             for t in spec['subjects']:
                 if self.prepared[t]['mode']=='UNKNOWN_LIMIT':

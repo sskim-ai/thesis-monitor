@@ -16,9 +16,16 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+from time import monotonic_ns
 from types import SimpleNamespace
+from uuid import uuid4
 
 import httpx
+
+if __package__:
+    from scripts.native_stock_receipt_time import CONTRACT, clock_domain_sha, verify_monotonic_receipt
+else:
+    from native_stock_receipt_time import CONTRACT, clock_domain_sha, verify_monotonic_receipt
 
 
 def encoded(value):
@@ -56,8 +63,9 @@ def contains_secret_field(value):
 
 
 class WireBoundary:
-    def __init__(self, *, root: Path, plan: dict, client, secrets: tuple[str, ...]):
+    def __init__(self, *, root: Path, plan: dict, client, secrets: tuple[str, ...], domain, flow_reads=()):
         self.root, self.plan, self.client, self.secrets = root, plan, client, secrets
+        self.domain = domain
         self.active = None
         self.pages = []
         self.auth_calls = self.data_calls = 0
@@ -65,13 +73,23 @@ class WireBoundary:
         self.last_continuation = None
         self._consumed_roles = set()
         self._continuations = set()
+        self.flow_reads = tuple(flow_reads)
 
-    def begin(self, entry):
-        if entry not in self.plan["reads"] or entry["entry_id"] in self._consumed_roles:
+    def begin(self, entry, *, started_ns):
+        if (entry not in self.plan["reads"] and entry not in self.flow_reads
+                or entry["entry_id"] in self._consumed_roles):
             raise ValueError("unplanned_or_repeated_logical_role")
         self._consumed_roles.add(entry["entry_id"])
         self.active, self.pages, self.page_number, self.last_continuation = entry, [], 0, None
         self._continuations = set()
+        self._last_tick = started_ns
+        self.monotonic_failed = False
+
+    def check_tick(self, observed_ns):
+        if self.monotonic_failed or observed_ns < self._last_tick:
+            self.monotonic_failed = True
+            raise ValueError("stock_monotonic_order_mismatch")
+        self._last_tick = observed_ns
 
     def post(self, url, *, json, headers, timeout):
         if url == "https://api.kiwoom.com/oauth2/token":
@@ -101,11 +119,14 @@ class WireBoundary:
         entry = self.active
         if entry is None or url != "https://api.kiwoom.com" + entry["route"]:
             raise ValueError("undeclared_provider_or_endpoint_denied")
-        expected = {"stk_cd": entry["subject"], "upd_stkpc_tp": str(int(entry["adjusted"]))}
-        if entry["market"] == "us":
-            expected.update(stex_tp=entry["exchange"], strt_dt="", exrt_appl_tp="0")
+        if entry in self.flow_reads:
+            expected = entry["payload"]
         else:
-            expected["base_dt"] = entry["query_date"]
+            expected = {"stk_cd": entry["subject"], "upd_stkpc_tp": str(int(entry["adjusted"]))}
+            if entry["market"] == "us":
+                expected.update(stex_tp=entry["exchange"], strt_dt="", exrt_appl_tp="0")
+            else:
+                expected["base_dt"] = entry["query_date"]
         if json != expected or headers.get("api-id") != entry["api_id"]:
             raise ValueError("request_not_in_frozen_role")
         continuation = {"cont_yn": headers.get("cont-yn"), "next_key": headers.get("next-key")}
@@ -118,6 +139,9 @@ class WireBoundary:
             raise ValueError("repeated_pagination_denied")
         if self.page_number >= entry["max_pages"]:
             raise ValueError("page_budget_exhausted")
+        requested_at = now()
+        requested_ns = monotonic_ns()
+        self.check_tick(requested_ns)
         self.page_number += 1
         self._continuations.add(continuation["next_key"])
         self.data_calls += 1
@@ -128,12 +152,15 @@ class WireBoundary:
                   "entry_id": entry["entry_id"], "provider": "kiwoom",
                   "external_ordinal": self.auth_calls + self.data_calls,
                   "data_ordinal": self.data_calls, "page_ordinal": self.page_number,
-                  "request": request, "request_sha256": sha(encoded(request)), "requested_at": now()}
+                  "request": request, "request_sha256": sha(encoded(request)), "requested_at": requested_at,
+                  "clock": {"domain_sha256": clock_domain_sha(self.domain), "request_ns": requested_ns}}
         write(self.root / (identity + ".intent.json"), record)
         try:
             response = self.client.post(url, json=json, headers=headers, timeout=timeout)
+            received_ns = monotonic_ns()
             raw = response.content
             record.update(http_status=response.status_code, received_at=now())
+            record["clock"] = dict(record["clock"], receive_ns=received_ns, elapsed_ns=received_ns-requested_ns)
             try:
                 secret_fields = contains_secret_field(response.json())
             except ValueError:
@@ -154,6 +181,8 @@ class WireBoundary:
             }
             record["response_continuation"] = self.last_continuation
             save(self.root / record["artifact"], raw)
+            # Time-of-day and source quality are not transport failures.
+            self.check_tick(received_ns)
             return response
         except httpx.HTTPError as exc:
             record.update(status="TRANSPORT_ERROR", error_class=type(exc).__name__, received_at=now())
@@ -194,21 +223,29 @@ def owner_configuration(owner_root, settings, *, settings_env_file=None):
     return result
 
 
-def acquire(plan, root, owner, settings):
+def acquire(plan, root, owner, settings, *, flow_reads=()):
+    from app.services.kiwoom_global_lane import boot_identity
+
+    if flow_reads:
+        from app.providers.investor_flows import KiwoomInvestorFlowProvider
     plan_hash = sha(encoded(plan))
+    domain = dict(contract=CONTRACT, pid=os.getpid(), worker=uuid4().hex,
+                  boot_sha256=sha(boot_identity().encode()))
     with httpx.Client(transport=httpx.HTTPTransport(retries=0), follow_redirects=False) as client:
-        wire = WireBoundary(root=root, plan=plan, client=client,
-                            secrets=(settings.kiwoom_app_key, settings.kiwoom_secret_key))
+        wire = WireBoundary(root=root, plan=plan, client=client, domain=domain,
+                            secrets=(settings.kiwoom_app_key, settings.kiwoom_secret_key), flow_reads=flow_reads)
         # Module-local dependency injection in this isolated worker only. Original
         # auth, pagination, rate limiting, error handling, and normalization remain owners.
         owner.httpx = SimpleNamespace(post=wire.post, HTTPError=httpx.HTTPError)
         bounded_settings = settings.model_copy(update={"kiwoom_max_retries": 0})
         provider = owner.KiwoomProvider(owner.KiwoomClient(bounded_settings, owner.KiwoomAuth(bounded_settings)))
         for ordinal, entry in enumerate(plan["reads"], 1):
-            wire.begin(entry)
             receipt = {"run_id": plan["run_id"], "acquisition_id": plan["acquisition_id"],
                        "plan_sha256": plan_hash, "entry": entry, "logical_ordinal": ordinal,
                        "started_at": now()}
+            started_ns = monotonic_ns()
+            receipt["clock"] = dict(domain=domain, start_ns=started_ns)
+            wire.begin(entry, started_ns=started_ns)
             write(root / f"role-{ordinal:03d}.intent.json", receipt)
             try:
                 bars = provider.get_bars(code=entry["subject"], period=entry["timeframe"],
@@ -223,20 +260,61 @@ def acquire(plan, root, owner, settings):
                 receipt.update(status="FAILED", error_class=type(exc).__name__,
                     error_message_sha256=sha(str(exc).encode()),
                     error_code=str(exc) if isinstance(exc, ValueError) and re.fullmatch(r"[a-z_]+", str(exc)) else None)
+            completed_ns = monotonic_ns()
             receipt.update(completed_at=now(), pages=wire.pages)
+            receipt["clock"].update(end_ns=completed_ns, elapsed_ns=completed_ns-started_ns, diagnostic=None)
+            if wire.monotonic_failed:
+                receipt["error_code"] = "stock_monotonic_order_mismatch"
+            if receipt["status"] == "CAPTURED":
+                try:
+                    _, _, diagnostic = verify_monotonic_receipt(receipt, expected_domain=domain, check_diagnostic=False)
+                    receipt["clock"]["diagnostic"] = diagnostic
+                except ValueError as exc:
+                    receipt.update(status="FAILED", error_class=type(exc).__name__, error_code=str(exc))
             write(root / f"role-{ordinal:03d}.receipt.json", receipt)
             print(json.dumps({"logical": ordinal, "subject": entry["subject"],
                 "role": entry["role"], "status": receipt["status"], "pages": len(wire.pages)}), flush=True)
+        flow_start = wire.data_calls
+        for entry in flow_reads:
+            prefix = f'flow-{entry["subject"]}'
+            started_ns = monotonic_ns()
+            wire.begin(entry, started_ns=started_ns)
+            receipt = dict(run_id=plan["run_id"], acquisition_id=plan["acquisition_id"],
+                           plan_sha256=plan_hash, entry=entry, started_at=now(),
+                           clock=dict(domain=domain, start_ns=started_ns))
+            write(root / (prefix + ".intent.json"), receipt)
+            try:
+                rows = KiwoomInvestorFlowProvider(provider.client).get_session_net_buy(
+                    entry["subject"], entry["latest_completed_session"], entry["count"])
+            except (ValueError, owner.KiwoomError) as exc:
+                receipt.update(status="UNAVAILABLE", error_class=type(exc).__name__)
+            else:
+                raw = encoded(rows)
+                path = prefix + ".normalized.json"
+                save(root / path, raw)
+                receipt.update(status="CAPTURED", normalized_artifact=path, normalized_sha256=sha(raw))
+            end_ns = monotonic_ns()
+            receipt.update(completed_at=now(), pages=wire.pages)
+            receipt["clock"].update(end_ns=end_ns, elapsed_ns=end_ns-started_ns, diagnostic=None)
+            if receipt["status"] == "CAPTURED":
+                try:
+                    _, _, diagnostic = verify_monotonic_receipt(receipt, expected_domain=domain,
+                                                               check_diagnostic=False)
+                    receipt["clock"]["diagnostic"] = diagnostic
+                except ValueError as exc:
+                    receipt.update(status="UNAVAILABLE", error_class=type(exc).__name__)
+            write(root / (prefix + ".receipt.json"), receipt)
         write(root / "transport-counts.json", {"logical_roles_attempted": len(plan['reads']),
             "provider_data_requests": wire.data_calls, "auth_requests": wire.auth_calls,
             "external_transport_requests": wire.data_calls + wire.auth_calls,
             "automatic_retries": 0, "alpha_vantage_calls": 0, "massive_calls": 0,
-            "fallback_calls": 0, "symbol_discovery_calls": 0, "investor_flow_calls": 0,
+            "fallback_calls": 0, "symbol_discovery_calls": 0, "investor_flow_calls": wire.data_calls - flow_start,
             "model_calls": 0, "rendered_messages": 0, "telegram_sends": 0,
             "production_db_writes": 0, "scheduler_mutations": 0})
+    return domain
 
 
-def replay(plan, root, owner):
+def replay(plan, root, owner, *, expected_domain=None, flow_reads=()):
     results = []
     for ordinal, entry in enumerate(plan["reads"], 1):
         receipt = json.loads((root / f"role-{ordinal:03d}.receipt.json").read_bytes())
@@ -273,15 +351,39 @@ def replay(plan, root, owner):
         owner.datetime = ReplayDateTime
         client = ReplayClient()
         try:
+            timing = verify_monotonic_receipt(receipt, expected_domain=expected_domain)
             bars = owner.KiwoomProvider(client).get_bars(code=entry["subject"], period=entry["timeframe"],
                 count=entry["count"], adjusted=entry["adjusted"], exchange=entry["exchange"])
             if client.index != len(receipt["pages"]) or sha(encoded(bars)) != receipt["normalized_sha256"]:
                 raise ValueError("offline_owner_normalization_mismatch")
-            results.append({"entry_id": entry["entry_id"], "status": "PASS",
-                            "normalized_sha256": sha(encoded(bars)), "network_calls": 0})
+            row = {"entry_id": entry["entry_id"], "status": "PASS",
+                   "normalized_sha256": sha(encoded(bars)), "network_calls": 0}
+            if timing is not None:
+                row["native_timing_receipt_sha256"] = sha(encoded(receipt))
+            results.append(row)
         except Exception as exc:
             results.append({"entry_id": entry["entry_id"], "status": "FAIL", "error_class": type(exc).__name__})
     write(root.parent / "raw-owner-replay.json", results)
+    if flow_reads:
+        from app.providers.investor_flows import KiwoomInvestorFlowProvider
+        results = {}
+        for entry in flow_reads:
+            subject = entry["subject"]
+            receipt = json.loads((root / f"flow-{subject}.receipt.json").read_bytes())
+            if receipt["status"] != "CAPTURED":
+                results[subject] = dict(status="UNAVAILABLE", receipt_sha256=sha(encoded(receipt)))
+                continue
+            verify_monotonic_receipt(receipt, expected_domain=expected_domain)
+            page, = receipt["pages"]
+            raw = (root / page["artifact"]).read_bytes()
+            if sha(raw) != page["source_sha256"]:
+                raise ValueError("offline_flow_source_hash_mismatch")
+            rows = KiwoomInvestorFlowProvider.normalize_session_net_buy(json.loads(raw), subject, entry["count"])
+            if sha(encoded(rows)) != receipt["normalized_sha256"]:
+                raise ValueError("offline_flow_normalization_mismatch")
+            results[subject] = dict(status="PASS", receipt_sha256=sha(encoded(receipt)),
+                                    normalized_sha256=sha(encoded(rows)))
+        write(root.parent / "raw-flow-owner-replay.json", results)
 
 
 def main():

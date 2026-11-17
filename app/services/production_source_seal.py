@@ -10,6 +10,7 @@ from app.services.sealed_fresh_dispatch import _binding_parent, consume_bound_re
 from app.services.sealed_response_binding import resolve_response_binding, SlotNotSelected
 from app.services.unified_run_artifacts import durable_json, sha256_bytes
 from app.services.unified_snapshot_contract import digest
+from app.services.unified_stock_acquisition import require_native_replay_timing
 
 
 def read(path):
@@ -29,6 +30,7 @@ def row_count_proofs(root, frozen, outcome):
             receipt = read(path)
             normalized = path.parent / receipt["normalized_artifact"]
             row = replay_rows[entry["entry_id"]]
+            require_native_replay_timing(receipt, row)
             if (receipt["entry"] != entry or receipt["status"] != "CAPTURED" or row["status"] != "PASS"
                     or sha256_bytes(normalized.read_bytes()) != receipt["normalized_sha256"]
                     or receipt["normalized_sha256"] != row["normalized_sha256"]

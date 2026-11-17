@@ -65,12 +65,13 @@ def build_shadow_numeric_registry(facts):
     return registry
 
 
-def validate_frozen_baseline(baseline):
+def validate_frozen_baseline(baseline, *, kr_stock_flow_source=None):
     """JSON object-key sorting may reorder registry traversal, never its rows."""
     stock = baseline['packet']['stocks'][0]
     registry = build_numeric_registry(stock['fact_catalog'])
     if stock['numeric_registry'] == registry:
-        return validate_assembled(baseline, expected_result_sha256=digest(baseline))
+        return validate_assembled(baseline, expected_result_sha256=digest(baseline),
+            kr_stock_flow_source=kr_stock_flow_source)
     if Counter(digest(r) for r in registry) != Counter(digest(r) for r in stock['numeric_registry']):
         raise ValueError('frozen_numeric_registry_rows_mismatch')
     if digest(baseline['packet']) != baseline['diagnostic_packet_sha256']:
@@ -88,7 +89,8 @@ def validate_frozen_baseline(baseline):
     replay['diagnostic_packet_sha256'] = digest(replay['packet'])
     if replay['status']=='PASS':
         replay['packet_sha256'] = replay['diagnostic_packet_sha256']
-    return validate_assembled(replay, expected_result_sha256=digest(replay))
+    return validate_assembled(replay, expected_result_sha256=digest(replay),
+        kr_stock_flow_source=kr_stock_flow_source)
 
 
 def reported_comparisons(plan, projection):
@@ -113,8 +115,8 @@ def reported_comparisons(plan, projection):
     return facts, denied
 
 
-def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, followup_directory=None, phase2=None, field_semantics=False, coverage_window=None, issuer_business=None, statement_basis_policy=None, basis_execution_generation=None, current_financial_parent=None, current_purpose_intake=None):
-    validate_frozen_baseline(baseline)
+def assemble(*, baseline, plan, acquisition, directory, receipts, local_seed, followup_directory=None, phase2=None, field_semantics=False, coverage_window=None, issuer_business=None, statement_basis_policy=None, basis_execution_generation=None, current_financial_parent=None, current_purpose_intake=None, kr_stock_flow_source=None):
+    validate_frozen_baseline(baseline, kr_stock_flow_source=kr_stock_flow_source)
     if baseline['ticker'] != plan['ticker'] or baseline['market'] != plan['market']:
         raise ValueError('financial_stock_subject_mismatch')
     if digest(local_seed) != baseline['input_hashes']['local'] or digest(plan['security']) != plan['identity_sha256']:

@@ -75,14 +75,27 @@ class ScopedPreparedResearchOwner(original.CanonicalPreparedSourceOwner):
         relation = self._relationship(row, market)
         return relation, {t:self._subject(row,t,relation) for t in row['subjects']}
 
+    def limitation_seed(self, ticker):
+        row = self._record()
+        seeds = row.get('limitation_seeds', {})
+        source = row['source']
+        if (ticker not in seeds or source['prepared'][ticker]['mode'] != 'UNKNOWN_LIMIT'
+                or digest(seeds[ticker]) != source['stocks'][ticker]['input_hashes']['local']):
+            raise ValueError('scoped_limitation_original_local_seed_binding')
+        return deepcopy(seeds[ticker])
+
 
 def prepare_scoped_research_source(*, enabled=False, market, subjects, registration_owner,
                                    whole, local_seeds, valuation_contexts, generation, coverage, census,
-                                   forward_views=None,allow_partial_evidence=False,execution_generation=None):
+                                   forward_views=None,allow_partial_evidence=False,execution_generation=None,
+                                   mixed_limitations=False):
     if enabled is not True:
         raise ValueError('scoped_research_source_disabled')
     subjects = tuple(sorted(subjects))
     execution_generation=generation if execution_generation is None else execution_generation
+    if type(mixed_limitations) is not bool or mixed_limitations and (
+            market != 'us' or allow_partial_evidence is not True or execution_generation == generation):
+        raise ValueError('scoped_mixed_limitations_requires_new_selected_us_execution')
     if not isinstance(execution_generation,str) or not execution_generation:
         raise ValueError('scoped_explicit_execution_generation_required')
     if market not in ('us','kr') or not subjects or len(set(subjects)) != len(subjects):
@@ -131,6 +144,7 @@ def prepare_scoped_research_source(*, enabled=False, market, subjects, registrat
             and prepared['initial_chain']['source_generation_id'] == source['source_generation_id']
             and prepared['initial_chain']['execution_generation_id'] == execution_generation
             and prepared['view_receipt']['raw_source_sha256'] == digest(stock), 'original_subject_scope_required')
+    limits = tuple(t for t in subjects if source['prepared'][t]['mode'] == 'UNKNOWN_LIMIT') if mixed_limitations else ()
     # Admission still requires the original live registration at this instant.
     registration.require_generation(registration_owner, generation)
     if digest(registration._state(registration_owner)[1]) != digest(reg):
@@ -141,6 +155,9 @@ def prepare_scoped_research_source(*, enabled=False, market, subjects, registrat
         registration_capture_receipt_sha256=reg['capture_receipt_sha256'],
         request_plan_sha256=whole['seed'].get('request_plan_sha256'),
         registration_cutoff=reg['cutoff'], accepted_at=datetime.now(timezone.utc).isoformat())
+    if limits:
+        # The full registration projection is model-invisible and not a subject packet.
+        row['limitation_seeds'] = {t: deepcopy(local_seeds[t]) for t in limits}
     row['acceptance'] = _acceptance(row)
     row['acceptance_sha256'] = digest(row['acceptance'])
     handle = object.__new__(ScopedPreparedResearchOwner)
@@ -158,8 +175,11 @@ def prepare_scoped_research_source(*, enabled=False, market, subjects, registrat
             subjects=tuple(CohortSubject(market,t,reg['bindings'][t]['security_id'],cutoff,
                 relation['subject_sha256'][t]) for t in subjects),
             source_owner_bindings=((market,digest(relation)),), feature_scope_sha256=digest(dict(
-                purpose=CONTRACT, market=market, subjects=subjects, registration_sha256=digest(reg))), planning_only=False)
+                purpose=CONTRACT, market=market, subjects=subjects, registration_sha256=digest(reg))), planning_only=False,
+            limitation_subjects=limits)
         cohort.verify_source_owner(handle)
+        for ticker in limits:
+            handle.limitation_seed(ticker)
     except Exception:
         handle.close()
         raise

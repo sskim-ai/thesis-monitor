@@ -25,8 +25,11 @@ class SelectedRunLedger:
                  wallclock_seconds_max=None, runtime_cap=None, onboarding_subjects=None,
                  staged_markets=False, capture_max_private_export_bytes=None, timeout_retry_cap=0):
         decision = registration._approval(approval)
-        if (not master_id or set(children) != {'us', 'kr'}
-                or len({c['generation'] for c in children.values()}) != 2
+        from app.services.unified_stock_acquisition import UNIVERSE
+        single_us = (staged_markets is True and set(children) == {'us'}
+                     and tuple(children['us']['subjects']) == UNIVERSE['us'])
+        if (not master_id or not (set(children) == {'us', 'kr'} or single_us)
+                or len({c['generation'] for c in children.values()}) != len(children)
                 or any(c['generation'] == master_id for c in children.values())
                 or any(not c['subjects'] or len(set(c['subjects'])) != len(c['subjects']) for c in children.values())
                 or sorted(t for c in children.values() for t in c['subjects']) != sorted(decision.subjects)
@@ -701,6 +704,12 @@ class SelectedRunLedger:
             raise ValueError('selected_original_market_child_required')
         binding = child.binding()
         messages = result.get('messages',[])
+        if child.plan.cohort.limitation_subjects:
+            from app.services.model_execution_plan import verify_mixed_render
+
+            if result.get('status') != TERMINAL:
+                raise ValueError('selected_mixed_limitation_terminal_required')
+            verify_mixed_render(child.plan, messages, result.get('limitation_receipts',{}))
         partial = result.get('status') == PARTIAL
         omissions = result.get('unissued',{}) if partial else {}
         b2_slots = {s.subjects[0]:s.slot_id for s in child.plan.slots if s.stage=='B2'}

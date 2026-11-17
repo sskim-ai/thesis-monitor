@@ -84,8 +84,11 @@ class ProductionMonitoringSession:
             raise ValueError("production_monitoring_generation_or_market_drift")
         if set(self.prepared) != set(self.cohort_subjects()) or set(self.fresh_stocks) != set(self.prepared):
             raise ValueError("production_monitoring_current_cohort_gap")
+        self.limitation_subjects = frozenset(frozen_cohort.limitation_subjects if frozen_cohort is not None else ())
         for ticker, row in self.prepared.items():
-            if (row["mode"] != "EVIDENCE_BASED"
+            expected_mode = "UNKNOWN_LIMIT" if ticker in self.limitation_subjects else "EVIDENCE_BASED"
+            if (row["mode"] != expected_mode
+                    or expected_mode == "UNKNOWN_LIMIT" and not row["recovery"]
                     or row["initial_chain"]["source_generation_id"] != self.source_gen
                     or row["initial_chain"]["execution_generation_id"] != generation_id
                     or self.fresh_stocks[ticker]["fresh_run_id"] != self.source_gen
@@ -190,6 +193,29 @@ class ProductionMonitoringSession:
     def cohort_subjects(self):
         return UNIVERSE[self.market] if self._frozen_cohort is None else self._frozen_cohort.market_subjects.get(self.market, ())
 
+    def ordinary_subjects(self):
+        return tuple(t for t in self.cohort_subjects() if t not in self.limitation_subjects)
+
+    def decision_batch_topology(self):
+        rows = self.batch_topology()
+        for row in rows:
+            row["subjects"] = [t for t in row["subjects"] if t not in self.limitation_subjects]
+        return [row for row in rows if row["subjects"]]
+
+    def limitation_decision(self, ticker):
+        self._verify_native_source()
+        limited = self.limitation_subjects
+        if (ticker not in limited or set(self.limits["core"]) != limited or set(self.limits["pass-a"]) != limited
+                or self.limits["pass-b"] or any(limited & set(x) for x in (self.cores, self.arows, self.brows))):
+            raise ValueError("production_limitation_stage_coverage")
+        return deepcopy(self.limits["pass-a"][ticker])
+
+    def limitation_seed(self, ticker):
+        self._verify_native_source()
+        if ticker not in self.limitation_subjects:
+            raise ValueError("production_limitation_seed_outside_scope")
+        return self._cohort_source_owner.limitation_seed(ticker)
+
     def verify_model_build(self, stage, request):
         self._verify_native_source()
         if request not in self.captured.get(stage, ()):
@@ -225,13 +251,16 @@ class ProductionMonitoringSession:
             # Input visibility is not a complete economic output contract. Until
             # that adapter is qualified, do not fall back to legacy Core batches.
             raise ValueError("MANUAL_NATIVE_ECONOMIC_CONSUMER_CONTRACT_PENDING")
+        batches = self.decision_batch_topology if stage_name == "pass-b" else self.batch_topology
         expected = [] if stage_name == "market" else next(
-            (s["subjects"] for s in self.batch_topology() if s["batch"] == spec["batch"]), None)
+            (s["subjects"] for s in batches() if s["batch"] == spec["batch"]), None)
         if spec["market"] != self.market or spec["subjects"] != expected:
             raise ValueError("production_request_subject_scope")
         if stage_name in {"core", "pass-a"}:
             require_direction_isolation(context)
             require_direction_isolation(schema)
+        if stage_name == "pass-b" and set(context) != set(expected):
+            raise ValueError("production_pass_b_context_scope")
         if stage_name == "pass-b" and any(context[t].get("valuation_context") != self.valuation_context(t) for t in expected):
             raise ValueError("production_pass_b_valuation_visibility_drift")
         wire, projection = domain.owner.project_provider_wire_schema(schema)
@@ -269,11 +298,16 @@ class ProductionMonitoringSession:
         elif stage == "CORE":
             rows = []
             for spec in self.batch_topology():
-                contexts = {}
+                contexts, regular = {}, {}
                 for ticker in spec["subjects"]:
+                    if ticker in self.limitation_subjects:
+                        contexts[ticker] = self.limit_context(ticker)
+                        continue
                     self.chain(ticker)
-                    contexts[ticker] = {**self.prepared[ticker]["core_input"], "authority": self.chains[ticker]["authority"]}
-                rows.append(self.capture("core", spec, contexts, domain.c.schemas.core_schema(contexts),
+                    contexts[ticker] = regular[ticker] = {
+                        **self.prepared[ticker]["core_input"], "authority": self.chains[ticker]["authority"]}
+                schema = domain.add_limits(domain.c.schemas.core_schema(regular), self.prepared, spec["subjects"])
+                rows.append(self.capture("core", spec, contexts, schema,
                     domain.c.schemas.CORE_PROMPT + "\n" + domain.c.LIMIT_PROMPT))
         else:
             rows = self.before_a() if stage == "A" else self.before_b()
@@ -315,7 +349,8 @@ class ProductionMonitoringSession:
         self._verify_native_source()
         if self._manual_source_owner is not None:
             raise ValueError("MANUAL_NATIVE_B2_COVERAGE_CENSUS_NOT_AUTHORIZED")
-        if set(self.brows) != set(self.cohort_subjects()):
+        ordinary = set(self.ordinary_subjects())
+        if ticker not in ordinary or set(self.brows) != ordinary:
             raise ValueError("production_b2_requires_complete_b")
         first = b1.build_request(settings=SimpleNamespace(newbuyer_qualified_valuation_shadow=True),
             context=shadow_request_context(self.bctx[ticker], self.fresh_stocks[ticker]),

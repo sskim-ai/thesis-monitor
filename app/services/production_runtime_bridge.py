@@ -214,7 +214,13 @@ class ProductionRuntimeBridgeV1:
             output = dict(rows=rows, generation_id=session.gen)
         elif stage == 'B2':
             rows, unissued = {}, {}
-            for ticker in collection.production_envelope.subjects:
+            limited = session.limitation_subjects
+            ordinary = session.ordinary_subjects()
+            if set(ordinary) | limited != set(collection.production_envelope.subjects) or (
+                    limited and self.execution_profile is None):
+                raise ValueError('production_b2_verified_cohort_partition_required')
+            decisions = {ticker:digest(session.limitation_decision(ticker)) for ticker in sorted(limited)}
+            for ticker in ordinary:
                 item = session.b2_request(ticker)
                 reject_test_only_production(item)
                 binding = dict(generation_id=session.gen, source_generation_id=session.source_gen,
@@ -247,6 +253,8 @@ class ProductionRuntimeBridgeV1:
                                              output_sha256=result['attempts'][-1]['raw_sha256'])
                 rows[ticker] = dict(authorization=auth.model_dump(mode='json'), result=result)
             output = dict(rows=rows, generation_id=session.gen)
+            if limited:
+                output['limitation_decisions'] = decisions
             if unissued:
                 output['unissued'] = unissued
         else:
@@ -255,6 +263,10 @@ class ProductionRuntimeBridgeV1:
             subjects = collection.production_envelope.subjects
             budget = getattr(self.model,'call_budget',None)
             omitted = b2.get('unissued',{})
+            limits = session.limitation_subjects
+            decisions = {ticker:digest(session.limitation_decision(ticker)) for ticker in sorted(limits)}
+            if b2.get('limitation_decisions',{}) != decisions or (limits and (omitted or stage == 'DELIVER')):
+                raise ValueError('production_limitation_no_send_decision_binding')
             if omitted and (stage not in {'VALIDATE','RENDER'} or not getattr(budget,'timeout_retry_cap',0)):
                 raise ValueError('production_partial_b2_no_send_required')
             if omitted:
@@ -262,11 +274,13 @@ class ProductionRuntimeBridgeV1:
 
                 verify_b2_coverage(b2, subjects=subjects, slots=budget.slots, exhausted=budget.exhausted,
                     bound=budget.bound, attempts=budget.attempts)
-            elif set(b2_rows) != set(subjects):
+            elif set(b2_rows) != set(subjects) - limits:
                 raise ValueError('production_b2_complete_current_cohort_required')
             if stage in {'VALIDATE', 'RENDER'}:
                 scope = dict(execution_profile=self.execution_profile) if self.execution_profile else {}
-                messages = [self._render_market(session)] + [stock_message(session, t, b2_rows[t], **scope)
+                from app.services.production_message_renderer import limitation_message
+                messages = [self._render_market(session)] + [(limitation_message(session, t) if t in limits else
+                    stock_message(session, t, b2_rows[t], **scope))
                     for t in subjects if t not in omitted]
                 for message in messages:
                     message['snapshot_sha256'] = request['snapshot_sha256']
@@ -274,6 +288,15 @@ class ProductionRuntimeBridgeV1:
                         message['NO_SEND'] = True
                 output = dict(messages=messages, generation_id=session.gen, finality_claim='NOT_CLAIMED') if stage == 'RENDER' else dict(
                     status='PASS', message_count=len(messages), content_sha256=digest(messages), generation_id=session.gen)
+                if limits:
+                    from app.services.model_execution_plan import verify_mixed_render
+
+                    receipts = {m['message_id']: dict(plan_sha256=m['plan_sha256'], content_sha256=digest(m['text']),
+                        decision_sha256=m['limitation_decision_sha256']) for m in messages if m['message_id'] in limits}
+                    if {t:r['decision_sha256'] for t,r in receipts.items()} != decisions:
+                        raise ValueError('production_render_limitation_decision_drift')
+                    verify_mixed_render(budget.plan, messages, receipts)
+                    output['limitation_receipts'] = receipts
             else:
                 messages = request['inputs']['RENDER']['output']['messages']
                 if digest(messages) != request['inputs']['VALIDATE']['output']['content_sha256']:

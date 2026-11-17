@@ -28,6 +28,9 @@ class SelectedSourceDispatcher(SealedDispatcher):
                 or approved_plan_sha256!=self.plan.plan_sha256
                 or approved_provider_caps!=request_budget(rebuilt,kis_plan)['providers']):
             raise ValueError('selected_current_exact_plan_approval_required')
+        if self.plan.market=='us' and 'SKHY' in self.plan.subjects:
+            from app.services.selected_source_plan import require_issuer_descriptors
+            require_issuer_descriptors(self.plan,rebuilt['candidate'])
         if (self.plan.binding_owner_sha256!=binding_owner_hash()
                 or not callable(guard)):
             raise ValueError('selected_original_binding_and_host_guard_required')
@@ -77,8 +80,11 @@ class SelectedSourceDispatcher(SealedDispatcher):
                                 metered=CampaignOhlcvTransport(binding=parent.run_ledger.worker_binding(),
                                     market=parent.plan.market,subject=descriptor.subject,phase='SOURCE',inner=wire)
                             else:
+                                issuer_only=(parent.plan.market=='us' and descriptor.subject=='000660'
+                                    and descriptor.provider=='opendart' and descriptor.consumer_role=='financial:000660')
                                 metered=MeteredAsyncTransport(binding=parent.run_ledger.worker_binding(),
-                                    market=parent.plan.market,phase='SOURCE',owner='SelectedSourceDispatcher',inner=wire)
+                                    market=parent.plan.market,phase='SOURCE',owner='SelectedSourceDispatcher',inner=wire,
+                                    **({'subject':'000660'} if issuer_only else {}))
                             if descriptor.endpoint_operation=='usa20590':
                                 response=await _completed_close_on_lane(metered,request)
                             else:

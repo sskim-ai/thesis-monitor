@@ -73,7 +73,14 @@ class SelectedSourceRunBinding(SourceRunBinding):
 
 
 def raw_owner_binding(inputs):
-    return digest(dict(technical=inputs['technical_inputs']['receipts'],financial=inputs['financial_inputs']['receipts']))
+    financial=inputs['financial_inputs']
+    binding=dict(technical=inputs['technical_inputs']['receipts'],financial=financial['receipts'])
+    issuer=financial.get('issuer_business')
+    if issuer and 'dependency' in issuer['source_inputs']:
+        aux=issuer['source_inputs']
+        binding['issuer_business']=dict(dependency=aux['dependency'], plan_sha256=digest(aux['plan']),
+            owner_receipts_sha256=digest(aux['receipts']), official_identity_sha256=issuer['official_identity_sha256'])
+    return digest(binding)
 
 
 def selected_market_packet(native):

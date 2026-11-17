@@ -20,6 +20,10 @@ def prepare_monitoring_subject(*, stock, authority, local_seed, generation, allo
         cutoff=stock["packet"]["generated_at"],
     )
     modes=("EVIDENCE_BASED","UNKNOWN_LIMIT") if allow_partial_evidence is True else ("EVIDENCE_BASED",)
+    if allow_partial_evidence is True and readiness["status"] != "PASS":
+        blocker = readiness.get("blocker")
+        reason = blocker if blocker == "A_DETERMINISTIC_QUALITY_MATERIALIZATION_GAP" else "PREFLIGHT_NOT_PASS"
+        require(False, "STRICT_NATIVE_SOURCE_PREFLIGHT_GAP:" + stock["ticker"] + ":" + reason)
     require(readiness["status"] == "PASS" and data["mode"] in modes,
             "STRICT_NATIVE_SOURCE_PREFLIGHT_GAP:" + stock["ticker"])
     return readiness, data

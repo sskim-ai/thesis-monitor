@@ -118,6 +118,12 @@ def main(*, test_bootstrap=None):
         def flush(self):
             pass
     stocks_done, discovery_done, replay_done, symbols = False, False, False, set()
+    stock_domain = None
+    flow_reads = frozen.get('kr_stock_flow_reads', ())
+    if flow_reads:
+        from app.providers.investor_flows import KiwoomInvestorFlowProvider
+        if not callable(getattr(KiwoomInvestorFlowProvider, 'get_session_net_buy', None)):
+            raise ValueError('kr_stock_flow_native_owner_not_installed')
     for line in sys.stdin:
         command = json.loads(line)
         if command == {'close': True}:
@@ -128,7 +134,8 @@ def main(*, test_bootstrap=None):
             replay_done = True
             original_datetime = owner.datetime
             try:
-                stock_worker.replay(frozen['stock_plan'], args.output / 'stocks', owner)
+                stock_worker.replay(frozen['stock_plan'], args.output / 'stocks', owner,
+                                    expected_domain=stock_domain, flow_reads=flow_reads)
             finally:
                 owner.datetime = original_datetime
             rows = json.loads((args.output / 'raw-owner-replay.json').read_bytes())
@@ -152,7 +159,8 @@ def main(*, test_bootstrap=None):
             stock_worker.httpx = SimpleNamespace(Client=lambda **kw: Client(), HTTPTransport=lambda **kw: None,
                                                  HTTPError=httpx.HTTPError)
             with contextlib.redirect_stdout(Progress()):
-                stock_worker.acquire(frozen['stock_plan'], args.output / 'stocks', owner, bounded)
+                stock_domain = stock_worker.acquire(frozen['stock_plan'], args.output / 'stocks', owner, bounded,
+                                                    flow_reads=flow_reads)
             owner.httpx = SimpleNamespace(post=post, HTTPError=httpx.HTTPError)
             emit({'result': {'status': 'STOCK_CAPTURE_COMPLETE_NOT_QUALIFIED'}})
         elif set(command) == {'market'} and command['market'] in frozen['us_market_symbols'] and command['market'] not in symbols:

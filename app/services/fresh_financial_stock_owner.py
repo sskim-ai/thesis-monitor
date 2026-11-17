@@ -178,7 +178,8 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
             if datetime.fromisoformat(receipt['completed_at']) > window.business_availability_cutoff:
                 raise ValueError('technical_response_after_business_availability')
     baseline = fresh_stock_baseline(tech)
-    result = financial.assemble(baseline=baseline, local_seed=tech['local_seed'], **fin)
+    result = financial.assemble(baseline=baseline, local_seed=tech['local_seed'],
+        kr_stock_flow_source=tech.get('kr_stock_flow_source'), **fin)
     facts = [f for f in result['packet']['stocks'][0]['fact_catalog']
              if 'canonical:' + f['fact_id'] in result['comparative_fact_refs']]
     bridge = result.get('issuer_business_bridge')

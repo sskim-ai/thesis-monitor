@@ -6,6 +6,7 @@ prose, labels or numbers. Rebuilding the plan is the final acceptance check.
 
 from datetime import date
 import math
+import re
 from typing import Literal
 
 from pydantic import Field, model_validator
@@ -197,7 +198,7 @@ def _unavailable_price_row(valuation):
 
 
 def build_unknown_plan(*, source_stock, source_authority, local_seed, decision,
-                       execution_generation_id, valuation):
+                       execution_generation_id, valuation, context_only_display=False):
     from scripts.r2b_r2_preflight import preflight_subject
     from scripts.r2b_r2_contract import DIRECTION_BUCKETS, validate_unknown
     source = source_stock
@@ -219,6 +220,15 @@ def build_unknown_plan(*, source_stock, source_authority, local_seed, decision,
              hashes=(digest(check),), formatting='whole-decision-limit-v1'),
         _row('core', 'limit', '방향 판단에 사용할 사업 증거가 부족합니다. 중립 의견이나 보유 권고를 뜻하지 않습니다.',
              hashes=(digest(check),), formatting='whole-decision-limit-v1')]
+    if context_only_display:
+        rows[0] = _row('judgment', 'limit', '판단 자료 부족 (OBSERVE)',
+            hashes=(digest(check),), formatting='whole-decision-limit-v1')
+        bridge = source.get('issuer_business_bridge')
+        if bridge:
+            _require(bridge.get('status') == 'PASS' and bridge.get('security_valuation_transfer') is False,
+                'detailed_unqualified_issuer_context')
+            rows.append(_row('business', 'issuer-context', '발행사 사업 비교는 기업 참고 자료(CONTEXT)입니다. 이 증권의 판단·가치평가에는 사용하지 않았습니다.',
+                hashes=(digest(bridge),), formatting='issuer-context-not-security-evidence-v1'))
     labels = {'QUALIFIED_FINANCIAL_LINEAGE': '기간·기업 기준과 출처 연결이 검증된 정식 재무 공시',
               'COMPARABLE_FINANCIAL_OBSERVATION': '기간·기업·통화·연결 기준이 일치하는 비교 재무 수치',
               'VERIFIED_BUSINESS_EVENT': '공식 원문으로 확인된 사업 성과'}
@@ -230,37 +240,46 @@ def build_unknown_plan(*, source_stock, source_authority, local_seed, decision,
     price_selection = _price_selection(source, valuation)
     rows.append(_numeric(price_selection, source) if price_selection else _unavailable_price_row(valuation))
     rows.append(_row('flow', 'unavailable', '자료 부족', hashes=(digest(source),), formatting='explicit-unavailable-v1'))
-    rows.extend(_valuation_rows(valuation))
+    if not context_only_display:
+        rows.extend(_valuation_rows(valuation))
     rows.sort(key=lambda r: SECTION_ORDER.index(r.section))
     receipt = dict(contract='detailed-unknown-acceptance-v1', source_stock_sha256=digest(source),
         source_authority_sha256=digest(source_authority), local_seed_sha256=digest(local_seed),
         decision_sha256=digest(decision), preflight_sha256=digest(readiness),
         valuation_sha256=digest(valuation.model_dump(mode='json')), execution_generation_id=execution_generation_id,
         rows_sha256=digest([r.model_dump(mode='json') for r in rows]), section_coverage=section_coverage(rows))
+    if context_only_display:
+        receipt['context_only_display'] = True
     return DetailedUnknownMessagePlan(ticker=source['ticker'], source_generation_id=source['fresh_run_id'],
         execution_generation_id=execution_generation_id, source_stock=source, source_authority=source_authority,
         local_seed=local_seed, decision=decision, valuation=valuation, rows=tuple(rows),
         acceptance=receipt, acceptance_sha256=digest(receipt))
 
 
-def _numeric(selection, source):
+def _source_number(ref, field_path, source):
     stock = source['packet']['stocks'][0]
-    matches = [f for f in stock['fact_catalog'] if f['fact_id'] == selection.ref]
+    matches = [f for f in stock['fact_catalog'] if f['fact_id'] == ref]
     _require(len(matches) == 1, 'detailed_numeric_fact_not_unique')
     fact = matches[0]
-    node = source['source_graph'].get(selection.ref)
+    node = source['source_graph'].get(ref)
     _require(node and node['fact_sha256'] == digest(fact), 'detailed_source_graph_mismatch')
     _require(fact.get('ticker', stock['ticker']) == stock['ticker'], 'detailed_wrong_ticker')
-    rows = [r for r in stock['numeric_registry'] if r['fact_id'] == selection.ref
-            and r['field_path'] == selection.field_path]
+    rows = [r for r in stock['numeric_registry'] if r['fact_id'] == ref
+            and r['field_path'] == field_path]
     _require(len(rows) == 1 and rows[0].get('registered') and rows[0].get('prose_allowed'),
              'detailed_numeric_registry_not_display_eligible')
     reg = rows[0]
     value = fact
-    for token in selection.field_path.split('.'):
+    for token in field_path.split('.'):
         value = value[token]
     _require(not isinstance(value, bool) and isinstance(value, (float, int)) and math.isfinite(value)
              and value == reg['value'], 'detailed_numeric_value_mismatch')
+    return fact, node, reg, value
+
+
+def _numeric(selection, source):
+    stock = source['packet']['stocks'][0]
+    fact, node, reg, value = _source_number(selection.ref, selection.field_path, source)
     allowed_types = {'business': {'earnings', 'earnings_comparison'},
                      'price': {'price', 'chart_timeframe', 'chart_structure'},
                      'flow': {'investor_flow', 'chart_timeframe', 'positioning'}}
@@ -281,6 +300,108 @@ def _numeric(selection, source):
     return _row(selection.section, selection.ref + ':' + selection.field_path, text,
         facts=(selection.ref,), hashes=(digest(fact), digest(node), digest(reg)),
         numeric=(selection.ref + ':' + selection.field_path,), formatting='canonical-registry-unit-v1')
+
+
+_REPORTED_COMPARISON = re.compile(
+    r'Reported (revenue|operating_income) is (higher|lower) versus the source-owned '
+    r'comparable period; source period (\d{4}-\d{2}-\d{2})\. '
+    r'Recurrence is not established by this observation\.'
+)
+
+
+def _localized_earnings_line(text, *, packet, source, refs):
+    match = _REPORTED_COMPARISON.fullmatch(text)
+    if packet.market != 'kr' or not match:
+        return text
+    metric, direction, period = match.groups()
+    linked = [e for e in packet.evidence if e.ref_id in refs and e.label == 'earnings_comparison'
+              and str(e.as_of) == period and e.source_ref.startswith('stock.fact_catalog.')]
+    if len(linked) != 1 or not linked[0].source_time:
+        return text
+    ev = linked[0]
+    fact_id = ev.source_ref.removeprefix('stock.fact_catalog.')
+    facts = [f for f in source['packet']['stocks'][0]['fact_catalog'] if f['fact_id'] == fact_id]
+    if len(facts) != 1:
+        return text
+    fact = facts[0]
+    node = source['source_graph'].get(fact_id, {})
+    fields = fact['fields']
+    if (fact['fact_type'] != 'earnings_comparison' or ev.source_time.subject_ticker != packet.ticker
+            or ev.source_time.canonical_fact_sha256 != digest(fact) or node.get('fact_sha256') != digest(fact)
+            or (fields.get('metric'), fields.get('direction'), fields.get('period_end'), fields.get('source_ticker'))
+            != (metric, direction, period, packet.ticker) or not fields.get('statement_basis')):
+        return text
+    try:
+        prior = date.fromisoformat(fields['prior_period_end']).isoformat()
+    except (KeyError, TypeError, ValueError):
+        return text
+    name = {'revenue': '매출액', 'operating_income': '영업이익'}[metric]
+    verb = {'higher': '증가', 'lower': '감소'}[direction]
+    return (f'{period} 종료 기간의 {name}은 원본 비교기간({prior} 종료)보다 '
+            f'{verb}했습니다. 이 관측만으로 같은 흐름이 이어질지는 확인할 수 없습니다.')
+
+
+def _kr_flow_rows(packet, source):
+    from app.services.kr_stock_flow_source import BASIS, PARTICIPANTS, WINDOWS
+    if packet.market != 'kr':
+        return []
+    stock = source['packet']['stocks'][0]
+    supply = stock.get('price_and_positioning', {}).get('supply') or {}
+    session = supply.get('as_of_date')
+    fact_id = f'positioning:{session}'
+    node = source['source_graph'].get(fact_id, {})
+    if (supply.get('scope') != 'KR_INDIVIDUAL_SECURITY' or supply.get('unit') != 'shares'
+            or supply.get('basis') != BASIS or supply.get('ticker') != packet.ticker
+            or not session or session != stock['chart_context']['timeframes']['daily'].get('as_of_date')
+            or source['fresh_run_id'] != supply.get('source_generation')
+            or source['fresh_run_id'] != source['packet']['source_time_domains']['run_id']
+            or node.get('source') != 'sealed_kr_stock_flow' or node.get('ticker') != packet.ticker):
+        return []
+    rows = []
+    for (size, suffix) in WINDOWS:
+        labels, numeric, hashes = [], [], []
+        status = supply['period_comparison'].get(f'{size}d')
+        if status != ('DAILY_PROVIDER_ROW' if size == 1 else 'NOT_CHECKED'):
+            continue
+        for participant, label in zip(PARTICIPANTS, ('외국인', '기관', '개인'), strict=True):
+            path = 'fields.' + participant + '_net_buy_qty' + suffix
+            try:
+                fact, _, registry, value = _source_number(fact_id, path, source)
+            except (KeyError, ValueError):
+                labels.append(label + ' 자료 부족')
+                continue
+            if fact['fact_type'] != 'positioning' or fact['fields'] != supply or registry['unit'] != 'shares':
+                return []
+            labels.append(f'{label} {value:+,.0f}주')
+            numeric.append(fact_id + ':' + path)
+            hashes.append(digest(registry))
+        if numeric and (size == 1 or len(numeric) == len(PARTICIPANTS)):
+            status_label = ' · 별도 기간 합계 미대조' if status == 'NOT_CHECKED' else ''
+            rows.append(_row('flow', f'kr-stock-net-buy-{size}d',
+                f'{session} 기준 {size}거래일 순매수: ' + ' / '.join(labels) + status_label,
+                facts=(fact_id,), hashes=(node['fact_sha256'], digest(node), *hashes),
+                numeric=numeric, formatting='dated-kr-stock-net-buy-shares-v1'))
+    return rows
+
+
+def _kr_dated_structure_row(packet, source):
+    from app.services.kr_dated_structure import CONTRACT
+    if packet.market != 'kr':
+        return None
+    chart = source['packet']['stocks'][0]['chart_context']
+    ref = chart.get('structure', {}).get('price_structure_v3') or {}
+    if (ref.get('contract') != CONTRACT or ref.get('ticker') != packet.ticker
+            or not ref.get('as_of') or ref['as_of'] != chart['timeframes']['daily'].get('as_of_date')
+            or ref.get('adjustment_basis') != 'provider_adjusted_price_v1'
+            or ref.get('eligible_for_current_price') is not False
+            or ref.get('eligible_for_b2_timing') is not False or not ref.get('zones')):
+        return None
+    zones = ref['zones']
+    return _row('price', 'kr-v3-dated-reference',
+        '\n'.join([f"{ref['as_of']} 완료 세션 기준 V3 참고 지지·저항 (조정봉, B2와 별개)",
+                   *(z['text'] for z in zones)]),
+        facts=tuple(z['zone_id'] for z in zones), hashes=(digest(ref),),
+        formatting='dated-kr-v3-reference-not-current-or-entry-authority-v1')
 
 
 def build_detailed_plan(*, packet, accepted, source_stock, core, pass_a, valuation, selections=()):
@@ -369,9 +490,15 @@ def build_detailed_plan(*, packet, accepted, source_stock, core, pass_a, valuati
         else:
             _require(selected.section == 'business' and effect.startswith('DIRECTIONAL_'),
                      'detailed_claim_section_mismatch')
-        rows.append(_row(selected.section, selected.ref, _safe_prose(claim['claim']['text'], refs),
+        text = _safe_prose(claim['claim']['text'], refs)
+        if selected.section == 'business':
+            text = _localized_earnings_line(text, packet=packet, source=source, refs=lineage[selected.ref])
+        rows.append(_row(selected.section, selected.ref, text,
             facts=lineage[selected.ref], hashes=(digest(claim), digest(core))))
     _require(sum(r.section == 'monitoring' for r in rows) in {0, 2, 3, 4}, 'detailed_monitoring_cardinality')
+    if dated := _kr_dated_structure_row(packet, source):
+        rows.append(dated)
+    rows.extend(_kr_flow_rows(packet, source))
     if not any(r.section == 'flow' for r in rows):
         rows.append(_row('flow', 'unavailable', '자료 부족', hashes=(digest(source),),
                          formatting='explicit-unavailable-v1'))
@@ -395,7 +522,7 @@ def detailed_render(packet, plan):
     if isinstance(plan, DetailedUnknownMessagePlan):
         expected = build_unknown_plan(source_stock=plan.source_stock, source_authority=plan.source_authority,
             local_seed=plan.local_seed, decision=plan.decision, execution_generation_id=plan.execution_generation_id,
-            valuation=plan.valuation)
+            valuation=plan.valuation, context_only_display=plan.acceptance.get('context_only_display') is True)
         _require(expected == plan and packet.model_dump(mode='json') == plan.source_stock['evidence_packet'],
                  'detailed_unknown_acceptance_plan_mismatch')
         return RenderedDetailedUnknown(ticker=plan.ticker, text=_render_rows(packet, plan.rows),

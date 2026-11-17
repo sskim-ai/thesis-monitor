@@ -90,6 +90,10 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
                 or dispatcher.plan.market != frozen.get('selected_market')
                 or decode_stock_plan(frozen).planning_only):
             raise SourceSafetyStop('selected_current_dispatch_plan_required')
+    skipped_news = {}
+    if us_only and selected:
+        from app.services.selected_news_rate_limit import skipped_slots
+        skipped_news = skipped_slots(frozen, dispatcher.plan)
     if kr_only and not selected:
         from scripts.kr8_source_scope import require_kr8_plan
         require_kr8_plan(frozen)
@@ -108,6 +112,14 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
     else:
         native_payload = {**{k: frozen[k] for k in ('native_owner', 'stock_plan', 'us_market_symbols')},
             'latest_completed_us_session': frozen['sessions'].get('us')}
+    from app.services.kr_stock_flow_source import require_planned_reads
+    try:
+        planned = require_planned_reads(decode_stock_plan(frozen), dispatcher.plan,
+                                       frozen.get('kr_stock_flow_reads'))
+    except ValueError as exc:
+        raise SourceSafetyStop(str(exc)) from exc
+    if planned:
+        native_payload['kr_stock_flow_reads'] = planned
     durable_json(root / 'live-dispatch-once.json', {'started_at': now().isoformat(),
         'plan_sha256': dispatcher.plan.plan_sha256}, exclusive=True)
     native_input = root / 'native-input.json'
@@ -247,6 +259,8 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
 
     async def news(read):
         read = NewsRead.model_validate(read)
+        if read.subject in skipped_news:
+            return skipped_news[read.subject]
         path = root/'events'/read.subject
         transport = PlannedNewsTransport(read=read, root=path, policy=policy, inner=sealed,
             settings_identity=frozen["config_identities"][read.provider])

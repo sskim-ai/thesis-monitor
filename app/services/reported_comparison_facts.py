@@ -37,6 +37,8 @@ def comparative_facts(quality, *, ticker, issuer_id, projection=None):
             fields['fiscal_comparability'] = deepcopy(comparison['fiscal_comparability'])
         elif current.get('occurrence', {}).get('period_scope') == 'annual' or comparison.get('reported_period_scope') == 'annual':
             fields['period_type'] = 'annual'
+        if comparison.get('reported_quarter_basis'):
+            fields['reported_quarter_basis'] = deepcopy(comparison['reported_quarter_basis'])
         document_class = (current.get('occurrence') or {}).get('document_evidence_class')
         if document_class:
             fields['document_evidence_class'] = deepcopy(document_class)

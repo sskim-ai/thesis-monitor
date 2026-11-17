@@ -27,7 +27,8 @@ def kiwoom_request(api, route, body):
 def compile_slots(*, stock, identities, news_reads, config_identities,
                  configured_kr_pages, kr_post_acquisition_completeness_approved, exact_financial_owner=False,
                  valuation_market_types=None, auxiliary_security=None, auxiliary_identity_sha256=None,
-                 transient_retry_max=None, selected_research_v1=False, selected_consumer_policy=None):
+                 transient_retry_max=None, selected_research_v1=False, selected_consumer_policy=None,
+                 include_kr_stock_flow=False):
     if transient_retry_max is not None and (type(transient_retry_max) is not int or not 0 <= transient_retry_max <= 2):
         raise ValueError('finite_transient_retry_policy_required')
     if kr_post_acquisition_completeness_approved is not True:
@@ -87,6 +88,17 @@ def compile_slots(*, stock, identities, news_reads, config_identities,
             kiwoom('completed_close:' + r.subject, 'completed_close:' + r.subject, 'us', r.subject,
                 'usa20590', '/api/us/mrkcond', dict(stex_tp=r.exchange, stk_cd=r.subject,
                     base_dt=r.latest_completed_session.replace('-', '')))
+    flow_reads = []
+    if include_kr_stock_flow is not False:
+        if include_kr_stock_flow is not True or set(stock.universe) != {'kr'}:
+            raise ValueError('kr_stock_flow_requires_explicit_kr_plan')
+        from app.services.kr_stock_flow_source import read_for
+        for daily in (r for r in stock.reads if r.role == 'adjusted_daily'):
+            flow = read_for(daily)
+            key = flow['entry_id']
+            kiwoom(key, key, 'kr', daily.subject, flow['api_id'], flow['route'],
+                flow['payload'], mandatory=False, retries=0)
+            flow_reads.append(flow)
     discovery = []
     for exchange in (('ND', 'NY', 'NA') if 'us' in stock.universe else ()):
         discovery.append(kiwoom('us_market:discovery:' + exchange, 'us_market:exchange_discovery', 'us', '*',
@@ -153,4 +165,5 @@ def compile_slots(*, stock, identities, news_reads, config_identities,
         optional_valuation={t: {'native_metric': ('PLANNED_NATIVE_SNAPSHOT_OPTIONAL_VALUE' if valuation_slots else 'OPTIONAL_UNAVAILABLE_NO_PLANNED_NATIVE_READ'),
             'financial_price_inputs': 'CURRENT_GENERATION_ONLY', 'no_new_provider': True} for t in identities},
         valuation_slots=valuation_slots, news_reads=[r.model_dump(mode='json') for r in news_reads],
-        acquisition_fragment_not_source_qualification=True)
+        acquisition_fragment_not_source_qualification=True,
+        **({'kr_stock_flow_reads': flow_reads} if flow_reads else {}))

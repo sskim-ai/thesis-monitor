@@ -19,9 +19,8 @@ ISSUER_METRICS = frozenset({
 })
 
 
-def identity_bridge(*, target, source, official, expected_official_sha256,
-                    dart_rows, dart_receipt, cutoff):
-    """Reuse qualified SEC instrument identity plus captured DART stock mapping."""
+def issuer_identity_errors(*, target, source, official, expected_official_sha256, cutoff):
+    """Validate the frozen SEC relationship before the current DART lookup."""
     errors = []
     evidence = official.get('evidence') or {}
     fields = official.get('field_provenance') or {}
@@ -78,6 +77,15 @@ def identity_bridge(*, target, source, official, expected_official_sha256,
         errors.append('issuer_cik_conflict')
     if target.get('corp_code') not in (None, '', source.get('corp_code')):
         errors.append('issuer_corp_code_conflict')
+    return errors
+
+
+def identity_bridge(*, target, source, official, expected_official_sha256,
+                    dart_rows, dart_receipt, cutoff):
+    """Reuse qualified SEC instrument identity plus captured DART stock mapping."""
+    errors=issuer_identity_errors(target=target,source=source,official=official,
+        expected_official_sha256=expected_official_sha256,cutoff=cutoff)
+    evidence=official.get('evidence') or {}
     mappings = {(r.get('stock_code'), r.get('corp_code')) for r in dart_rows}
     if (not source.get('corp_code') or mappings != {(source.get('ticker'), source.get('corp_code'))}
             or not dart_receipt or dart_receipt.get('stage') != 'discovery'

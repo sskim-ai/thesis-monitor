@@ -59,12 +59,15 @@ class MarketResearchChild:
     def binding(self):
         self.verify()
         c = self.plan.cohort
-        return dict(market=self.market, run_id=c.run_id, source_generation=c.source_generation,
+        binding = dict(market=self.market, run_id=c.run_id, source_generation=c.source_generation,
             assessment_date=c.assessment_date, effective_at=c.effective_at, cutoff=c.cutoff,
             cohort_sha256=c.sha256, plan_sha256=self.plan.sha256,
             source_relationship_sha256=digest(self.owner.relationship(self.market)),
             consumed_source_sha256=digest(self.owner.source(self.market)),
             message_ids=['MARKET_'+self.market.upper(), *c.market_subjects[self.market]])
+        if c.limitation_subjects:
+            binding['limitation_subjects'] = list(c.limitation_subjects)
+        return binding
 
 
 @dataclass(frozen=True)
@@ -366,6 +369,14 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                     journal=read_invocation_journal(calls.journal.path.read_bytes(), calls.journal.identity),
                     accepted_content_sha256=outputs['VALIDATE']['output']['content_sha256'])
             state.update(status=PARTIAL if omitted else TERMINAL,messages=messages,messages_sha256=digest(messages))
+            if bridge.child.plan.cohort.limitation_subjects:
+                from app.services.model_execution_plan import verify_mixed_render
+
+                receipts = outputs['RENDER']['output']['limitation_receipts']
+                if receipts != outputs['VALIDATE']['output']['limitation_receipts']:
+                    raise ValueError('research_limitation_validate_render_drift')
+                verify_mixed_render(bridge.child.plan, messages, receipts)
+                state['limitation_receipts'] = receipts
             if omitted:
                 state.update(unissued=omitted, expected_message_count=len(bridge.child_binding['message_ids']))
             state['model_acceptances'] = calls.state()
@@ -373,6 +384,8 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
         except (Exception, asyncio.CancelledError) as exc:
             from app.services.unified_market_run import UnifiedMarketRun
             state.update(status='FAILED_NO_SEND',error_chain=UnifiedMarketRun._error(exc))
+            for key in ('messages', 'messages_sha256', 'limitation_receipts'):
+                state.pop(key, None)
             if isinstance(exc, ArtifactCapacityError):
                 state['storage_failure'] = exc.receipt
             try:

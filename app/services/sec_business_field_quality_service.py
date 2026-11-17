@@ -92,8 +92,9 @@ def independently_usable_business(row):
     return any(getattr(row, field) is not None and not field_errors(row, field) for field in FIELDS)
 
 
-def reported_comparison_quality(*, formal, comparison, ticker, cutoff, fiscal_policy=None, allow_annual=False):
-    """An absolute observation is insufficient; require same-filing annual comparison."""
+def reported_comparison_quality(*, formal, comparison, ticker, cutoff, fiscal_policy=None, allow_annual=False,
+                                reported_quarter_policy=None):
+    """An absolute observation is insufficient; require a same-filing comparison."""
     fields, comparisons = {}, []
     for role, row in (("current", formal), ("comparison", comparison)):
         for metric in FIELDS:
@@ -123,7 +124,7 @@ def reported_comparison_quality(*, formal, comparison, ticker, cutoff, fiscal_po
         if current["hard_denial_reasons"] or prior["hard_denial_reasons"]:
             continue
         a, b = current["lineage"], prior["lineage"]
-        annual = None
+        annual = quarter = None
         try:
             starts = [date.fromisoformat(x["amount_period_start"]) for x in (a, b)]
             ends = [date.fromisoformat(x["amount_period_end"]) for x in (a, b)]
@@ -133,6 +134,10 @@ def reported_comparison_quality(*, formal, comparison, ticker, cutoff, fiscal_po
             compatible = (basis and equal_duration
                 and 330 <= (ends[0] - ends[1]).days <= 400
                 and formal.period_scope == comparison.period_scope == "single-quarter")
+            if basis and not equal_duration and formal.period_scope == comparison.period_scope == "single-quarter":
+                from app.services.issuer_fiscal_week_policy import reported_quarter_comparability
+                quarter = reported_quarter_comparability(a,b,proof=reported_quarter_policy,cutoff=cutoff)
+                compatible = quarter is not None
             if allow_annual and basis and formal.period_scope == comparison.period_scope == 'annual':
                 from app.services.issuer_fiscal_week_policy import annual_comparability
                 def fiscal_tuple(lineage):
@@ -152,6 +157,7 @@ def reported_comparison_quality(*, formal, comparison, ticker, cutoff, fiscal_po
             continue
         av, bv = a["amount"], b["amount"]
         comparisons.append({**({'fiscal_comparability': annual} if annual else {}),
+            **({'reported_quarter_basis': quarter} if quarter else {}),
             **({'reported_period_scope': 'annual'} if allow_annual and formal.period_scope == 'annual' else {}),
             "metric": metric, "current": current, "comparison": prior,
             "delta": av - bv, "direction": "higher" if av > bv else "lower" if av < bv else "unchanged",
@@ -169,5 +175,9 @@ def reported_comparison_quality(*, formal, comparison, ticker, cutoff, fiscal_po
         result['limitations'].append('Reported 53/52-week annual comparison; no week adjustment or annualization.')
     if any(c.get('fiscal_comparability') for c in comparisons):
         result['fiscal_metadata_policy'] = fiscal_policy
+    if any(c.get('reported_quarter_basis') for c in comparisons):
+        result['quality_reason_codes'].append('FISCAL_QUARTER_WEEK_COUNT_DIFFERENCE')
+        result['limitations'].append('Same fiscal quarter as reported in the filing; unequal week counts; no week normalization.')
+        result['limitations'].append('Do not present a percentage change from a low comparison base as recurring or normalized growth; interpret the two reported amounts and base effect together.')
     result["receipt_sha256"] = sha(result)
     return result

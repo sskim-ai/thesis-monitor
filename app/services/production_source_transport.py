@@ -18,6 +18,29 @@ from app.services.unified_snapshot_contract import digest
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def require_selected_issuer_scope(root, frozen, rebuilt, runtime_cap):
+    from app.services.issuer_business_bridge import issuer_identity_errors
+    from app.services.selected_source_plan import require_issuer_descriptors
+
+    path='static/official-security-identity.json'
+    candidate=rebuilt['candidate']
+    dependency=require_issuer_descriptors(rebuilt['plan'],candidate)
+    roles=runtime_cap.get('market_subjects',{}).get('us',())
+    try:
+        raw=(root/path).read_bytes()
+        official=json.loads(raw)
+        if (candidate==frozen['candidate'] and '000660' in roles
+                and sha256_bytes(raw)==frozen.get('protected_input_hashes',{}).get(path)
+                and not issuer_identity_errors(target=candidate['financial_plans']['SKHY']['security'],
+                    source=candidate['financial_plans']['000660']['security'],official=official,
+                    expected_official_sha256=dependency.official_identity_sha256,
+                    cutoff=dependency.cutoff.isoformat())):
+            return dependency
+    except (OSError, TypeError, KeyError, ValueError):
+        pass
+    raise ValueError('PLAN_INCOMPLETE:us:issuer_auxiliary')
+
+
 async def acquire_kis_worker(*, root, frozen, plan, credentials, remaining, run_ledger=None):
     path = root / "production-frozen-source-plan.json"
     if frozen.get('scope')=='SELECTED_ORIGINAL_RESEARCH_V1':
@@ -83,6 +106,8 @@ class NativeProductionSourceTransport:
             from app.services.selected_source_dispatch import SelectedSourceDispatcher
             from app.services.selected_source_plan import request_budget,compile_selected_plan
             rebuilt=compile_selected_plan(compiler_args=compiler,kis_plan=kis_plan)
+            if frozen.get('selected_market')=='us' and 'SKHY' in rebuilt['plan'].subjects:
+                require_selected_issuer_scope(root,frozen,rebuilt,self.run_ledger.identity['runtime_cap'])
             dispatcher=SelectedSourceDispatcher(**options,registration_owner=self.registration_owner,
                 policy=self.source_policy,approved_plan_sha256=rebuilt['plan'].plan_sha256,
                 approved_provider_caps=request_budget(rebuilt,kis_plan)['providers'],guard=guard,
