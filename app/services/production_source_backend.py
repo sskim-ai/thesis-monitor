@@ -19,6 +19,26 @@ from app.services.unified_snapshot_contract import digest
 ROOT = Path(__file__).resolve().parents[2]
 
 
+async def _source_sync(function, /, *args, on_cancel=None, **kwargs):
+    # A cancelled caller must not leave Source writes/handles behind in a thread.
+    task = asyncio.create_task(asyncio.to_thread(function, *args, **kwargs))
+    try:
+        return await asyncio.shield(task)
+    except asyncio.CancelledError:
+        while not task.done():
+            try:
+                await asyncio.shield(task)
+            except asyncio.CancelledError:
+                continue
+            except Exception:
+                break
+        if not task.cancelled():
+            error = task.exception()
+            if error is None and on_cancel is not None:
+                on_cancel(task.result())
+        raise
+
+
 def runtime_code_identity():
     # Include uncommitted implementation during offline qualification. A final
     # commit does not authorize any different source bytes after admission.
@@ -106,12 +126,13 @@ class CanonicalProductionSourceBackend:
         run_ledger.source_captured(plan.market)
         require_captured_phase(root, frozen, outcome, 'stocks')
         market_inputs(root, frozen, outcome, policy)
-        seal = await asyncio.to_thread(seal_collection, root,
+        seal = await _source_sync(seal_collection, root,
             seal_path=root.parent/'source-seal.json', frozen=frozen, outcome=outcome)
         verify_collection_seal(root, seal, frozen)
-        child, proof = await asyncio.to_thread(prepare_child, root=root, frozen=frozen, outcome=outcome,
+        child, proof = await _source_sync(prepare_child, root=root, frozen=frozen, outcome=outcome,
             policy=policy, registration_owner=registration_owner, kis_plan=kis_plan, enabled=True,
-            execution_generation=execution_generation, mixed_limitations=mixed_limitations)
+            execution_generation=execution_generation, mixed_limitations=mixed_limitations,
+            on_cancel=lambda result: result[0].owner.close())
         try:
             child.verify()
             child.plan.validate()
@@ -189,13 +210,14 @@ class CanonicalProductionSourceBackend:
         # Finish that step before the immutable corpus inventory is sealed.
         require_captured_phase(root, frozen, outcome, 'stocks')
         market_inputs(root, frozen, outcome, POLICY)
-        seal = seal_collection(root, seal_path=Path(directory) / "source-seal.json", frozen=frozen, outcome=outcome)
+        seal = await _source_sync(seal_collection, root,
+            seal_path=Path(directory) / "source-seal.json", frozen=frozen, outcome=outcome)
         finished_at = self.clock.now()
         if finished_at < datetime.fromisoformat(request["started_at"]):
             raise ValueError("production_source_clock_regressed")
         # Canonical offline replay owns nested event loops and performs no live
         # requests. No transport may execute after collection seal.
-        result, replay = await asyncio.to_thread(self.project, root, frozen, outcome, kis_plan, seal, request, finished_at)
+        result, replay = await _source_sync(self.project, root, frozen, outcome, kis_plan, seal, request, finished_at)
         durable_json(Path(directory) / "source-owner-replay.json", replay, exclusive=True)
         identity = (request["run_id"], request["attempt_id"])
         if identity in self.admitted:
