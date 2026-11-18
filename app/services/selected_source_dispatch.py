@@ -51,6 +51,7 @@ class SelectedSourceDispatcher(SealedDispatcher):
         if run_ledger is not None and run_ledger.state()['plans'].get(self.plan.market) != self.plan.plan_sha256:
             raise ValueError('selected_shared_run_plan_not_bound')
         self._require_current()
+        self._qualified_registration = (registration_owner, stock, policy)
         self.admission = dict(contract='selected-original-source-admission-v1',
             live_dispatch_allowed=True,plan_sha256=self.plan.plan_sha256,
             generation_id=self.plan.generation_id,historical_receipt_dependency=False,
@@ -59,7 +60,17 @@ class SelectedSourceDispatcher(SealedDispatcher):
 
     def _require_current(self):
         self.guard()
-        local_seed(self.registration_owner,stock=self.stock,policy=self.policy)
+        qualified = getattr(self, '_qualified_registration', None)
+        if qualified is None:
+            local_seed(self.registration_owner, stock=self.stock, policy=self.policy)
+            return
+        if any(current is not original for current, original in zip(
+                (self.registration_owner, self.stock, self.policy), qualified, strict=True)):
+            raise SourceSafetyStop('selected_registration_scope_changed')
+        # Rebuilding the unchanged Class-C projection recreates memory DBs.
+        # The original live Owner still checks expiry, revoke, code and policy.
+        from app.services.prospective_class_c_owner import require_generation
+        require_generation(self.registration_owner, self.stock.run_id)
 
     async def execute(self,*args,**kwargs):
         self._require_current()

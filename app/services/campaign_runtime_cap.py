@@ -96,8 +96,11 @@ class RuntimeCap:
             for sequence,line in enumerate(raw.splitlines()):
                 row=json.loads(line)
                 pin=row.pop('sha256')
-                if identity is None:identity=row['identity']
-                if (row['identity']!=identity or digest(identity)!=self.pin
+                if identity is None:
+                    identity=row['identity']
+                    if digest(identity)!=self.pin:
+                        raise ValueError('CAMPAIGN_JOURNAL_CHAIN_DRIFT')
+                if (row['identity']!=identity
                         or row['sequence']!=sequence or row['previous']!=previous or digest(row)!=pin):
                     raise ValueError('CAMPAIGN_JOURNAL_CHAIN_DRIFT')
                 if row['event'] in ('STOP','RENDER'):terminal=True
