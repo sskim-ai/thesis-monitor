@@ -101,6 +101,22 @@ class UnifiedMarketRun:
             raise ValueError("positive_timeout_required")
 
     async def run(self, market: str, day: date) -> dict:
+        from app.services.research_no_send_run import PreparedResearchBridge, run_prepared_research
+
+        if type(self.ports) is PreparedResearchBridge:
+            child = self.ports.child
+            child.verify()
+            cohort = child.plan.cohort
+            slots = v2.scheduled_slots(market, day)
+            session = target_session(market, slots[0])
+            if (not self.v2 or market != child.market or session is None
+                    or datetime.fromisoformat(cohort.cutoff).astimezone(KST).date() != day):
+                raise ValueError('prepared_cycle_market_day_or_completed_session_mismatch')
+            # Both manual and canonical prepared entries share the same durable
+            # cycle lock, stage loop, invocation journal and RENDER-only terminal.
+            ledger = getattr(getattr(self.ports.model, 'call_budget', None), 'run_ledger', None)
+            return await run_prepared_research(self.ports, root=self.config.root, enabled=True,
+                split_model_timing=bool(ledger and ledger.identity.get('wallclock_seconds_max')))
         slots = (v2.scheduled_slots if self.v2 else scheduled_slots)(market, day)
         # Durable cycle identity prevents retries, process restarts and duplicate schedulers
         # from generating a second normal delivery for the same market/date.

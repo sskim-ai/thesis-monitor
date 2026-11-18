@@ -33,10 +33,12 @@ class UnqualifiedAdapter:
         return {"status": result}
 
 
-def load_adapter(settings):
+def load_adapter(settings, **prepared):
     if settings.unified_snapshot_adapter_version == "production-v1":
         from app.services.production_adapter_factory import build_production_adapter
-        return build_production_adapter(settings)
+        return build_production_adapter(settings, **prepared)
+    if prepared:
+        raise ValueError('prepared_cycle_production_registry_required')
     return UnqualifiedAdapter()
 
 
@@ -61,6 +63,37 @@ async def run_selected(market, engine, day):
     for selected in ("us", "kr") if market == "all" else (market,):
         results.append(await engine.run(selected, day))
     return results
+
+
+async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', clock=None):
+    """Explicit registered cycle for manual and future scheduler callers.
+
+    Callers supply the original approval/Owner/ledger and already frozen plan;
+    neither settings nor this entry issues permissions or installs a trigger.
+    """
+    from app.services.production_source_backend import CanonicalProductionSourceBackend
+    from app.services.unified_snapshot_contract import digest
+
+    if mode not in {'SOURCE_ONLY', 'LIVE_NO_SEND'} or mode == 'SOURCE_ONLY' and model is not None:
+        raise ValueError('registered_cycle_source_only_or_explicit_no_send_required')
+    if mode == 'LIVE_NO_SEND' and (not model or model.get('run_ledger') is not source.get('run_ledger')):
+        raise ValueError('registered_cycle_same_source_model_ledger_required')
+    child, proof = await CanonicalProductionSourceBackend.prepare_registered(settings=settings, **source)
+    try:
+        child.verify()
+        if mode == 'SOURCE_ONLY':
+            return dict(status='SOURCE_ADMISSION_PASS', market=child.market,
+                model_plan_sha256=child.plan.sha256, model_slots=len(child.plan.slots),
+                source_acceptance_sha256=digest(child.owner.acceptance()), normal_messages_sent=False)
+        model_options = dict(model)
+        model_options.setdefault('approved_plan_sha256', child.plan.sha256)
+        adapter = load_adapter(settings, child=child, clock=clock, **model_options)
+        source['run_ledger'].bind_model_plan(child)
+        engine = build_engine(settings, adapter, repo_commit=source['frozen']['stock_plan']['implementation_sha'],
+            adapter_fingerprint=digest(child.binding()), clock=clock)
+        return await engine.run(child.market, datetime.fromisoformat(child.plan.cohort.cutoff).astimezone(KST).date())
+    finally:
+        child.owner.close()
 
 
 async def main():

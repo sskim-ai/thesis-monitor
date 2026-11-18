@@ -34,6 +34,50 @@ def runtime_code_identity():
 
 
 class CanonicalProductionSourceBackend:
+    @staticmethod
+    async def prepare_registered(*, settings, registration_owner, run_ledger, root, frozen, compiler,
+                                 credentials, policy, deadline, kis_plan=None, retained_sec=None,
+                                 execution_generation=None, mixed_limitations=False, transport=None):
+        """Shared selected Source-only boundary; registration and plan stay original."""
+        from app.services import prospective_class_c_owner as registration
+        from app.services.selected_source_plan import SelectedRequestPlan, SCOPE
+        from app.services.selected_source_preparation import prepare_child
+
+        if frozen.get('scope') != SCOPE or run_ledger is None:
+            raise ValueError('production_registered_selected_plan_required')
+        registration.require_generation(registration_owner, frozen['generation_id'])
+        plan = SelectedRequestPlan.model_validate(frozen['plan'])
+        if (run_ledger.state()['plans'].get(plan.market) != plan.plan_sha256
+                or frozen.get('shared_run_ledger') != run_ledger.worker_binding()):
+            raise ValueError('production_registered_plan_ledger_mismatch')
+        root = Path(root)
+        if read(root/'production-frozen-source-plan.json') != frozen:
+            raise ValueError('production_registered_sealed_plan_mismatch')
+        collector = transport or NativeProductionSourceTransport(settings, run_ledger=run_ledger,
+            registration_owner=registration_owner, source_policy=policy)
+        remaining = min(600, deadline-time.monotonic())
+        if remaining <= 0:
+            raise TimeoutError('production_registered_source_deadline')
+        outcome = await asyncio.wait_for(collector.collect(root=root, frozen=frozen, compiler=compiler,
+            kis_plan=kis_plan, credentials=credentials, deadline=time.monotonic()+remaining,
+            retained_sec=retained_sec), remaining)
+        run_ledger.source_captured(plan.market)
+        require_captured_phase(root, frozen, outcome, 'stocks')
+        market_inputs(root, frozen, outcome, policy)
+        seal = seal_collection(root, seal_path=root.parent/'source-seal.json', frozen=frozen, outcome=outcome)
+        verify_collection_seal(root, seal, frozen)
+        child, proof = await asyncio.to_thread(prepare_child, root=root, frozen=frozen, outcome=outcome,
+            policy=policy, registration_owner=registration_owner, kis_plan=kis_plan, enabled=True,
+            execution_generation=execution_generation, mixed_limitations=mixed_limitations)
+        try:
+            child.verify()
+            child.plan.validate()
+            run_ledger.source_owned(child)
+        except BaseException:
+            child.owner.close()
+            raise
+        return child, proof
+
     def __init__(self, *, settings, configuration, implementation_sha, clock, transport=None,
                  context_factory=freeze_current_context,run_ledger=None,registration_owner=None,source_policy=None):
         self.settings = settings

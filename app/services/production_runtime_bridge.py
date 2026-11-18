@@ -8,6 +8,7 @@ from copy import deepcopy
 import hashlib
 import json
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Protocol
 
 from app.services.production_b2_execution import ModelTransportError, SemanticReject, authorize_b2, execute_b2
@@ -105,7 +106,8 @@ class ProductionRuntimeBridgeV1:
                 if getattr(exc, 'diagnosis', None) is not None:
                     receipt['diagnosis'] = exc.diagnosis
                 for key in ('cli_returncode','worker_returncode'):
-                    if hasattr(exc,key):receipt[key]=getattr(exc,key)
+                    if hasattr(exc,key):
+                        receipt[key]=getattr(exc,key)
             else:
                 if not isinstance(raw, bytes):
                     raise TypeError('production_raw_response_required')
@@ -140,6 +142,21 @@ class ProductionRuntimeBridgeV1:
         raise ModelTransportError('production_transport_form_budget_exhausted')
 
     def _session(self, request, directory):
+        child = getattr(self, 'child', None)
+        if child is not None:
+            from app.services.research_no_send_run import PreparedResearchEnvelope
+
+            expected = self.snapshot()
+            if (request['snapshot'] != expected or request['snapshot_sha256'] != digest(expected)
+                    or request['run_id'] != child.plan.cohort.run_id):
+                raise ValueError('research_child_snapshot_binding_mismatch')
+            cohort = child.plan.cohort
+            session = ProductionMonitoringSession(directory/'canonical', market=child.market,
+                generation_id=cohort.run_id, source=expected['collection']['monitoring_input'],
+                source_generation_id=cohort.source_generation, frozen_cohort=cohort, cohort_source_owner=child.owner)
+            self._restore_upstream(session, request)
+            return session, SimpleNamespace(production_envelope=PreparedResearchEnvelope.model_validate(
+                expected['collection']['production_envelope']))
         collection = ProductionCollection.model_validate(request['snapshot']['collection'])
         policy = self.policies[request['run_id']]
         errors = validate_production_collection(collection, policy=policy, run_id=request['run_id'],

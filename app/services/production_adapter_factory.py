@@ -15,9 +15,11 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def build_research_adapter(*, enabled=False, **kwargs):
-    """Explicit prepared-source NO-SEND entry; never selected by production-v1."""
-    from app.services.research_no_send_run import build_research_no_send_adapter
-    return build_research_no_send_adapter(enabled=enabled, **kwargs)
+    """Manual alias for the same explicitly admitted production child."""
+    if enabled is not True:
+        raise ValueError('research_no_send_factory_disabled')
+    settings = kwargs.pop('settings')
+    return build_production_adapter(settings, **kwargs)
 
 
 def _configuration(path, expected):
@@ -33,7 +35,24 @@ def _configuration(path, expected):
     return json.loads(raw)
 
 
-def build_production_adapter(settings, *, clock=None, source_transport=None, model_transport=None, notifier=None):
+def build_production_adapter(settings, *, clock=None, source_transport=None, model_transport=None, notifier=None,
+                             child=None, binding=None, runtime_root=None, journal_path=None,
+                             approved_max_invocations=None, approved_plan_sha256=None, run_ledger=None,
+                             market_origin=None, artifact_budget=None, retained_kr_ecos_body=None,
+                             timeout_retry_cap=0):
+    if child is not None:
+        from app.services.research_no_send_run import build_research_no_send_adapter
+
+        if any(port is not None for port in (source_transport, model_transport, notifier)):
+            raise ValueError('prepared_cycle_no_alternate_source_model_or_delivery_port')
+        return build_research_no_send_adapter(enabled=True, child=child, settings=settings, binding=binding,
+            runtime_root=runtime_root, journal_path=journal_path, approved_max_invocations=approved_max_invocations,
+            approved_plan_sha256=approved_plan_sha256, clock=clock or Clock(), run_ledger=run_ledger,
+            market_origin=market_origin, artifact_budget=artifact_budget, retained_kr_ecos_body=retained_kr_ecos_body,
+            timeout_retry_cap=timeout_retry_cap)
+    if any(value is not None for value in (binding, runtime_root, journal_path, approved_max_invocations,
+            approved_plan_sha256, run_ledger, market_origin, artifact_budget, retained_kr_ecos_body)) or timeout_retry_cap:
+        raise ValueError('prepared_cycle_original_child_required')
     if not settings.unified_snapshot_enabled or settings.unified_snapshot_runtime_contract != "unified-query-time-snapshot-v2":
         raise ValueError("production_adapter_disabled_or_wrong_version")
     source_config = _configuration(settings.unified_snapshot_source_configuration,

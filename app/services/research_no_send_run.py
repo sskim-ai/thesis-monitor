@@ -10,12 +10,10 @@ from datetime import datetime, timedelta, timezone
 import fcntl
 from pathlib import Path
 import re
-from types import SimpleNamespace
 
 from app.services.model_execution_plan import ModelExecutionPlan
 from app.services.production_model_profile import SolHighCallBudget
 from app.services.production_model_transport import OfficialProductionModelTransport
-from app.services.production_monitoring_session import ProductionMonitoringSession
 from app.services.production_runtime_bridge import ProductionRuntimeBridgeV1
 from app.services.research_artifact_budget import ArtifactCapacityError, ResearchArtifactBudget, artifact_scope, artifact_stage
 from app.services.research_request_storage import save_stage_request
@@ -203,19 +201,6 @@ class PreparedResearchBridge(ProductionRuntimeBridgeV1):
         return dict(contract='prepared-scoped-research-snapshot-v1', child_binding=self.child_binding,
             collection=dict(market=self.child.market, monitoring_input=self.child.owner.source(self.child.market),
                 production_envelope=dict(generation_id=c.run_id, subjects=list(c.market_subjects[self.child.market]))))
-
-    def _session(self, request, directory):
-        expected = self.snapshot()
-        if (request['snapshot'] != expected or request['snapshot_sha256'] != digest(expected)
-                or request['run_id'] != self.child.plan.cohort.run_id):
-            raise ValueError('research_child_snapshot_binding_mismatch')
-        c = self.child.plan.cohort
-        session = ProductionMonitoringSession(directory/'canonical', market=self.child.market,
-            generation_id=c.run_id, source=expected['collection']['monitoring_input'],
-            source_generation_id=c.source_generation, frozen_cohort=c, cohort_source_owner=self.child.owner)
-        self._restore_upstream(session, request)
-        return session, SimpleNamespace(production_envelope=PreparedResearchEnvelope.model_validate(
-            expected['collection']['production_envelope']))
 
     async def policy(self, *args, **kwargs):
         raise ValueError('research_prepared_source_only_no_collection')
