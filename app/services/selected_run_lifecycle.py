@@ -186,6 +186,12 @@ class SelectedRunLedger:
             if not self.identity.get('runtime_cap'):
                 raise ValueError('runtime_cap_not_enabled')
             if s['runtime'] is None:s['runtime']=runtime_state()
+            if event == 'PHYSICAL_INTENT' and v.get('optional_news'):
+                pending = s['used'].get(s['pending'], {})
+                if (v['optional_news']['plan_sha256'] != s['plans'].get(v['market'])
+                        or pending.get('key') != 'HTTP:us:' + v['optional_news']['logical_id']
+                        or pending.get('provider') != v['provider']):
+                    raise ValueError('selected_optional_news_pending_plan_mismatch')
             apply_runtime_event(s['runtime'],event,v,self.identity)
             s['http_total']=s['runtime']['total']
             s['http']=dict(s['runtime']['providers'])
@@ -420,9 +426,17 @@ class SelectedRunLedger:
             s['pending'] = key
         elif event == 'RESULT':
             if s['pending'] != v['key']: raise ValueError('selected_result_without_intent')
+            optional = v.get('optional_unavailable')
+            if optional is not None:
+                from app.services.campaign_runtime_cap import optional_news_result
+                attempt = (s.get('runtime') or {}).get('attempts', {}).get(optional, {})
+                if (v['ok'] is not False or not optional_news_result(attempt, self.identity)
+                        or v['key'] != 'HTTP:us:' + attempt['optional_news']['logical_id']):
+                    raise ValueError('selected_optional_news_result_not_original_429')
             s['pending'] = None
             s['completed'].append(v['key'])
-            if not v['ok']: s['state'] = 'STOPPED_NO_SEND'
+            if not v['ok'] and optional is None:
+                s['state'] = 'STOPPED_NO_SEND'
         elif event == 'MODEL_CONFIRMED_TIMEOUT':
             from app.services.model_timeout_retry import validate_timeout
 
@@ -660,8 +674,9 @@ class SelectedRunLedger:
             provider=provider, plan=plan_sha256, logical_id=logical_id, request_sha256=request_sha256)
         return key
 
-    def result(self, key, *, ok):
-        self._event('RESULT', key=key, ok=ok is True)
+    def result(self, key, *, ok, optional_unavailable=None):
+        self._event('RESULT', key=key, ok=ok is True, **(
+            {'optional_unavailable': optional_unavailable} if optional_unavailable is not None else {}))
 
     def reject_model_output(self,key):
         return self._event('MODEL_OUTPUT_REJECTED',key=key,reason='CANONICAL_OUTPUT_VALIDATION_REJECTED')

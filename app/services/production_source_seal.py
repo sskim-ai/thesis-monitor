@@ -65,6 +65,10 @@ def slot_dispositions(root, frozen, outcome):
     if set(finals) - set(descriptors):
         raise ValueError("production_undeclared_source_receipt")
     night_tail = _verified_night_probe_tail(root, frozen, outcome, plan, finals)
+    from app.services.selected_news_rate_limit import current_rows, replay_current
+    limited = current_rows(root, frozen, plan, outcome['logical_results'])
+    for ticker, row in limited.items():
+        replay_current(row, frozen=frozen, plan=plan, outcome=outcome, ticker=ticker, root=root, window={})
     states = {}
 
     def classify(key):
@@ -75,7 +79,10 @@ def slot_dispositions(root, frozen, outcome):
         count_stop = (descriptor.provider == "kiwoom" and descriptor.response_binding
             and descriptor.response_binding.kind == "KIWOOM_CONTINUATION" and proof
             and descriptor.page_ordinal > proof["pages"] and proof["rows"] >= proof["count"] > 0)
-        if final is not None:
+        if descriptor.subject in limited and descriptor.logical_request_id == 'events:' + descriptor.subject:
+            value = ('OPTIONAL_UNAVAILABLE_HTTP_429' if limited[descriptor.subject]['wire_attempts']
+                     else 'NOT_ACTIVATED_OPTIONAL_NEWS_RATE_LIMIT')
+        elif final is not None:
             if final["status"] == "PASS":
                 consume_bound_result(root=root / "dispatch", plan=plan, logical_id=key,
                                      receipt_sha256=final["receipt_sha256"])

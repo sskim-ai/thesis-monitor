@@ -57,21 +57,31 @@ def replay_carrier(carrier, *, plan, ticker, security, policy):
         raise ValueError('event_carrier_market_ambiguous')
     market = next(iter(markets))
     if carrier.rate_limit is not None:
-        from app.services.selected_news_rate_limit import PROVIDER, STATUS, require_prior
+        from app.services.selected_news_rate_limit import PROVIDER, STATUS, require_prior, require_current, current_row
         row = carrier.rate_limit
-        prior = row['prior']
         sessions = {r.latest_completed_session for r in plan.reads if r.subject == ticker}
-        if (market != 'us' or len(sessions) != 1 or row != dict(status=STATUS,
-                disposition='SKIPPED_RATE_LIMIT', wire_attempts=0, generation_id=plan.run_id,
-                subject=ticker, prior=prior) or security['ticker'] != ticker):
+        if market != 'us' or len(sessions) != 1 or security['ticker'] != ticker:
             raise ValueError('optional_news_unavailability_subject_or_generation')
-        require_prior(prior, generation=plan.run_id, session=sessions.pop(), started_at=plan.frozen_at)
+        if 'prior' in row:
+            proof = row['prior']
+            if row != dict(status=STATUS, disposition='SKIPPED_RATE_LIMIT', wire_attempts=0,
+                    generation_id=plan.run_id, subject=ticker, prior=proof):
+                raise ValueError('optional_news_unavailability_subject_or_generation')
+            require_prior(proof, generation=plan.run_id, session=sessions.pop(), started_at=plan.frozen_at)
+            original = proof['prior_generation']
+        else:
+            proof = row['current']
+            if row != current_row(proof, ticker):
+                raise ValueError('optional_news_current_unavailability_subject_or_generation')
+            require_current(proof, generation=plan.run_id, session=sessions.pop(),
+                started_at=plan.frozen_at, completed_at=window.business_availability_cutoff)
+            original = proof['generation_id']
         policy.require(PROVIDER)
         binding = dict(provider=PROVIDER, denial=STATUS, evidence=[], selected=[], rate_limit=row)
         output = dict(contract=carrier.contract, acquisition_class=carrier.acquisition_class,
             ticker=ticker, current_run_id=plan.run_id, window=window.model_dump(mode='json'),
-            original_run_id=prior['prior_generation'], original_failure_receipt_sha256=prior['receipt_sha256'],
-            raw_sha256=prior['raw_sha256'], source_sha256=digest(row), denial=STATUS,
+            original_run_id=original, original_failure_receipt_sha256=proof['receipt_sha256'],
+            raw_sha256=proof['raw_sha256'], source_sha256=digest(row), denial=STATUS,
             allowed_uses=[], canonical_fact_hashes={})
         output['receipt_sha256'] = digest(output)
         return dict(receipt=output, facts=[], evidence=[], binding=binding)

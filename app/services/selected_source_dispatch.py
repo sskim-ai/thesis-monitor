@@ -79,6 +79,10 @@ class SelectedSourceDispatcher(SealedDispatcher):
             parent, wire = self, kwargs['transport']
             logical = args[0] if args else kwargs['logical_id']
             descriptor = next(d for d in self.plan.descriptors if d.logical_request_id == logical)
+            from app.services.campaign_runtime_cap import OPTIONAL_NEWS_429
+            from app.services.selected_news_rate_limit import optional_scope
+            optional = (optional_scope(self.plan, descriptor) if
+                ledger.identity.get('runtime_cap', {}).get('optional_news_429') == OPTIONAL_NEWS_429 else None)
             class CountedTransport:
                 async def handle_async_request(self, request):
                     parent._require_current()
@@ -95,7 +99,8 @@ class SelectedSourceDispatcher(SealedDispatcher):
                                     and descriptor.provider=='opendart' and descriptor.consumer_role=='financial:000660')
                                 metered=MeteredAsyncTransport(binding=parent.run_ledger.worker_binding(),
                                     market=parent.plan.market,phase='SOURCE',owner='SelectedSourceDispatcher',inner=wire,
-                                    **({'subject':'000660'} if issuer_only else {}))
+                                    **({'subject':descriptor.subject, 'optional_news':optional} if optional else
+                                       {'subject':'000660'} if issuer_only else {}))
                             if descriptor.endpoint_operation=='usa20590':
                                 response=await _completed_close_on_lane(metered,request)
                             else:
@@ -105,7 +110,16 @@ class SelectedSourceDispatcher(SealedDispatcher):
                     except BaseException:
                         parent.run_ledger.result(key, ok=False)
                         raise
-                    parent.run_ledger.result(key, ok=response.status_code not in (401,403,429))
+                    optional_attempt = None
+                    if optional and response.status_code == 429:
+                        from app.services.campaign_runtime_cap import optional_news_result
+                        matches = [k for k, a in metered.cap.state()['attempts'].items()
+                            if a.get('optional_news') == optional and optional_news_result(a, ledger.identity)]
+                        if len(matches) != 1:
+                            raise SourceSafetyStop('selected_optional_news_physical_result_missing')
+                        optional_attempt = matches[0]
+                    parent.run_ledger.result(key, ok=response.status_code not in (401,403,429),
+                        **({'optional_unavailable':optional_attempt} if optional_attempt else {}))
                     return response
             kwargs['transport'] = CountedTransport()
         try:
@@ -114,7 +128,10 @@ class SelectedSourceDispatcher(SealedDispatcher):
             if ledger is not None:
                 ledger.stop('SOURCE_DISPATCH_FAILED')
             raise
-        if any(a['status']==429 or a.get('error') for a in final['attempts']):
+        optional_429 = (ledger is not None and optional and final['status'] == 'FAILED'
+            and len(final['attempts']) == 1 and final['attempts'][0]['status'] == 429
+            and final['attempts'][0].get('error') is None)
+        if not optional_429 and any(a['status']==429 or a.get('error') for a in final['attempts']):
             self.halted=True
             if ledger is not None:
                 ledger.stop('SOURCE_QUOTA_OR_TRANSPORT_FAILED')

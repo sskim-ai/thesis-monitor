@@ -223,11 +223,17 @@ def _stock_flow_input(root, frozen, outcome, sealed, plan, daily):
 
 def _stock_event_inputs(root, frozen, outcome, *, market, ticker, window):
     if market == 'us':
-        from app.services.selected_news_rate_limit import KEY, replay_skip
+        from app.services.selected_news_rate_limit import KEY, replay_skip, replay_current
         if KEY in frozen:
             from app.services.selected_source_plan import SelectedRequestPlan
             phase = outcome['phases']['event-' + ticker]
             return replay_skip(phase['value'], frozen=frozen,
+                plan=SelectedRequestPlan.model_validate(frozen['plan']), outcome=outcome,
+                ticker=ticker, root=root, window=window)
+        phase = outcome['phases'].get('event-' + ticker, {})
+        if 'current' in phase.get('value', {}):
+            from app.services.selected_source_plan import SelectedRequestPlan
+            return replay_current(phase['value'], frozen=frozen,
                 plan=SelectedRequestPlan.model_validate(frozen['plan']), outcome=outcome,
                 ticker=ticker, root=root, window=window)
     event = root/'events'/ticker/'bound-source.json'

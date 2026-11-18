@@ -26,6 +26,30 @@ def runtime_state():
     return dict(total=0,providers={},pending={},attempts={},stopped_providers=[],first_external_failure=None)
 
 
+OPTIONAL_NEWS_429 = 'SELECTED_US_OPTIONAL_NEWS_429_V1'
+
+
+def optional_news_attempt(attempt, identity):
+    scope = attempt.get('optional_news', {})
+    child = identity.get('children', {}).get('us', {})
+    return (identity.get('runtime_cap', {}).get('optional_news_429') == OPTIONAL_NEWS_429
+        and attempt.get('provider') == 'google_news_rss' and attempt.get('market') == 'us'
+        and attempt.get('phase') == 'SOURCE' and attempt.get('method') == 'GET'
+        and attempt.get('endpoint') == 'GOOGLE_NEWS_RSS'
+        and attempt.get('owner') == 'SelectedSourceDispatcher'
+        and attempt.get('generation') == child.get('generation')
+        and attempt.get('subject') in child.get('subjects', ())
+        and scope.get('logical_id') == 'events:' + attempt.get('subject', '')
+        and scope.get('mandatory') is False and scope.get('operation') == 'news'
+        and all(re.fullmatch('[a-f0-9]{64}', scope.get(k, ''))
+                for k in ('plan_sha256', 'descriptor_sha256')))
+
+
+def optional_news_result(attempt, identity):
+    return (optional_news_attempt(attempt, identity)
+        and attempt.get('outcome') == 'HTTP_RESPONSE' and attempt.get('status') == 429)
+
+
 def apply_runtime_event(state,event,value,identity):
     if event=='PHYSICAL_INTENT':
         caps=identity['runtime_cap']
@@ -58,7 +82,8 @@ def apply_runtime_event(state,event,value,identity):
             raise ValueError('PHYSICAL_RESULT_WITHOUT_PENDING_INTENT')
         provider=state['pending'].pop(key)['provider']
         state['attempts'][key]={**state['attempts'][key],**value}
-        if (identity['runtime_cap'].get('stop_on_first_external_failure') and
+        if (not optional_news_result(state['attempts'][key], identity)
+                and identity['runtime_cap'].get('stop_on_first_external_failure') and
                 (value['outcome']=='TRANSPORT_UNKNOWN' or (value.get('status') or 0)>=400)):
             state['first_external_failure']=key
         if value.get('status') in (401,403,429) or value['outcome']=='TRANSPORT_UNKNOWN':
@@ -91,7 +116,7 @@ class RuntimeCap:
             market_capture_cutoffs={}
             pending_markets=[]
             rendered_markets=set()
-            frozen_plans=set()
+            frozen_plans={}
             closed_source=set()
             for sequence,line in enumerate(raw.splitlines()):
                 row=json.loads(line)
@@ -108,7 +133,8 @@ class RuntimeCap:
                 if row['event']=='REGISTRATION':
                     capture_cutoff=row['value']['receipt']['cutoff']
                     market_capture_cutoffs.update({m:capture_cutoff for m in pending_markets})
-                if row['event']=='PLAN':frozen_plans.add(row['value']['market'])
+                if row['event']=='PLAN':
+                    frozen_plans[row['value']['market']]=row['value']['sha256']
                 if row['event']=='CAPTURE':closed_source.add(row['value']['market'])
                 if identity.get('staged_markets') and row['event'] in ('RENDER_MARKET','MARKET_FAILED'):
                     rendered_markets.add(row['value']['market'])
@@ -122,6 +148,9 @@ class RuntimeCap:
                 state['terminal']=terminal
                 return identity,state
             if event=='PHYSICAL_INTENT':
+                if value.get('optional_news') and (not optional_news_attempt(value, identity)
+                        or value['optional_news']['plan_sha256'] != frozen_plans.get(value['market'])):
+                    raise ValueError('PHYSICAL_OPTIONAL_NEWS_FROZEN_PLAN_MISMATCH')
                 now=datetime.now(timezone.utc)
                 if (terminal or not datetime.fromisoformat(identity['authorized_at'])<=now<
                         datetime.fromisoformat(identity['expires_at'])):
@@ -158,7 +187,7 @@ class RuntimeCap:
         return identity
 
     def reserve(self,*,provider,method,host,path,market,subject,phase,owner,
-                request_sha256,attempt_id=None):
+                request_sha256,attempt_id=None,optional_news=None):
         identity,_=self._locked()
         child=identity['children'].get(market,{})
         market_subjects = identity['runtime_cap'].get('market_subjects',{}).get(market,()) if phase=='SOURCE' else ()
@@ -176,6 +205,8 @@ class RuntimeCap:
             provider=provider,endpoint=rule['endpoint'],method=method,subject=subject,market=market,
             phase=phase,owner=owner,worker_pid=os.getpid(),timestamp=datetime.now(timezone.utc).isoformat(),
             request_sha256=request_sha256)
+        if optional_news is not None:
+            value['optional_news'] = deepcopy(optional_news)
         self._locked('PHYSICAL_INTENT',value)
         return key
 
@@ -201,7 +232,7 @@ def public_fingerprint(*,method,endpoint,query=(),body=None,api_id=None):
         query=sorted((k,v) for k,v in query if not _SECRET.search(k)),body=clean(body),api_id=api_id))
 
 
-def reserve_request(cap,request,*,provider,market,subject,phase,owner):
+def reserve_request(cap,request,*,provider,market,subject,phase,owner,optional_news=None):
     try:body=json.loads(request.content) if request.content else None
     except (ValueError,RuntimeError):body=None
     # ECOS credentials can be in the path; record only the approved endpoint label.
@@ -216,7 +247,8 @@ def reserve_request(cap,request,*,provider,market,subject,phase,owner):
     fingerprint=public_fingerprint(method=request.method,endpoint=route,query=request.url.params.multi_items(),
         body=body,api_id=[request.headers.get('api-id') or request.headers.get('tr_id'),cursor])
     return cap.reserve(provider=provider,method=request.method,host=request.url.host,path=request.url.path,
-        market=market,subject=subject,phase=phase,owner=owner,request_sha256=fingerprint)
+        market=market,subject=subject,phase=phase,owner=owner,request_sha256=fingerprint,
+        optional_news=optional_news)
 
 
 def provider_for_request(cap,request):
@@ -242,9 +274,12 @@ import httpx
 
 
 class MeteredAsyncTransport(_TransportMixin,httpx.AsyncBaseTransport):
-    def __init__(self,*,binding,market,subject='*',phase='ONBOARDING',owner='OriginalProvider',inner=None):
+    def __init__(self,*,binding,market,subject='*',phase='ONBOARDING',owner='OriginalProvider',inner=None,
+                 optional_news=None):
         self._setup(binding=binding,market=market,subject=subject,phase=phase,owner=owner,
             inner=inner if inner is not None else httpx.AsyncHTTPTransport(retries=0))
+        if optional_news is not None:
+            self.context['optional_news'] = optional_news
 
     async def handle_async_request(self,request):
         provider=provider_for_request(self.cap,request)

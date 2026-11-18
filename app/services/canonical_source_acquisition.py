@@ -94,6 +94,8 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
     if us_only and selected:
         from app.services.selected_news_rate_limit import skipped_slots
         skipped_news = skipped_slots(frozen, dispatcher.plan)
+        if frozen.get('optional_news_429') != dispatcher.run_ledger.identity.get('runtime_cap', {}).get('optional_news_429'):
+            raise SourceSafetyStop('optional_news_frozen_campaign_policy_mismatch')
     if kr_only and not selected:
         from scripts.kr8_source_scope import require_kr8_plan
         require_kr8_plan(frozen)
@@ -261,6 +263,14 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
         read = NewsRead.model_validate(read)
         if read.subject in skipped_news:
             return skipped_news[read.subject]
+        from app.services.selected_news_rate_limit import current_rows
+        limited = current_rows(root, frozen, dispatcher.plan, dispatcher.results)
+        if read.subject in limited:
+            key = 'events:' + read.subject
+            if key in dispatcher.used:
+                raise SourceSafetyStop('optional_news_repeated_logical_request')
+            dispatcher.used.add(key)
+            return limited[read.subject]
         path = root/'events'/read.subject
         transport = PlannedNewsTransport(read=read, root=path, policy=policy, inner=sealed,
             settings_identity=frozen["config_identities"][read.provider])
@@ -292,7 +302,8 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
             response_receipt_b64=b64(responses[0]), normalization_b64=b64(path/'normalization.json'),
             raw_response_b64=b64(path/receipt['artifact']) if receipt.get('artifact') else None)
         durable_json(path/'bound-source.json', source, exclusive=True)
-        return dict(denial=normalization['denial'], current_run=True)
+        return current_rows(root, frozen, dispatcher.plan, dispatcher.results).get(
+            read.subject, dict(denial=normalization['denial'], current_run=True))
 
     try:
         await phase('stocks', lambda: bridge.command({'stocks': True}))
