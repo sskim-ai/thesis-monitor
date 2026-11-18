@@ -34,6 +34,7 @@ class ApprovalDecision(BaseModel):
     effective_at: AwareDatetime
     expires_at: AwareDatetime
     subjects: tuple[str, ...]
+    manual_no_send_source_seconds: int | None = Field(default=None, strict=True, ge=600, le=1800)
 
 
 class OperatorApproval:
@@ -434,7 +435,9 @@ def require_generation(owner, generation_id, *, purpose=SCOPE):
 
 
 def revoke_prospective_owner(owner):
-    _state(owner)
+    # Expiry denies use, not cleanup of this same live handle.
+    if type(owner) is not ProspectiveOwner or owner not in _OWNERS:
+        raise ValueError("prospective_live_backend_owner_required")
     _stop_runs(_OWNERS[owner][0])
     del _OWNERS[owner]
     _OWNER_CAPTURES.pop(owner, None)

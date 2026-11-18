@@ -1,6 +1,7 @@
 """Concrete current-cycle source backend; canonical owners remain authoritative."""
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+import math
 from pathlib import Path
 import time
 
@@ -37,7 +38,8 @@ class CanonicalProductionSourceBackend:
     @staticmethod
     async def prepare_registered(*, settings, registration_owner, run_ledger, root, frozen, compiler,
                                  credentials, policy, deadline, kis_plan=None, retained_sec=None,
-                                 execution_generation=None, mixed_limitations=False, transport=None):
+                                 execution_generation=None, mixed_limitations=False, transport=None,
+                                 manual_no_send=False, manual_source_seconds=None):
         """Shared selected Source-only boundary; registration and plan stay original."""
         from app.services import prospective_class_c_owner as registration
         from app.services.selected_source_plan import SelectedRequestPlan, SCOPE
@@ -53,14 +55,54 @@ class CanonicalProductionSourceBackend:
         root = Path(root)
         if read(root/'production-frozen-source-plan.json') != frozen:
             raise ValueError('production_registered_sealed_plan_mismatch')
+        ceiling = 600
+        if manual_source_seconds is not None:
+            if (manual_no_send is not True or type(manual_source_seconds) is not int
+                    or not 600 <= manual_source_seconds <= 1800 or plan.market != 'us'):
+                raise ValueError('registered_manual_source_budget_invalid')
+            decision = registration._approval(run_ledger.approval)
+            _, owner_receipt = registration._state(registration_owner)
+            run_ledger._external()
+            identity = run_ledger.identity
+            maximum = identity.get('wallclock_seconds_max')
+            if (decision.manual_no_send_source_seconds != manual_source_seconds
+                    or owner_receipt['approval_sha256'] != identity['approval_sha256']
+                    or digest(decision.model_dump(mode='json')) != identity['approval_sha256']
+                    or owner_receipt['purpose'] != registration.SCOPE
+                    or identity['children'][plan.market]['generation'] != plan.generation_id
+                    or type(maximum) is not int or maximum < manual_source_seconds
+                    or identity.get('onboarding') or identity['max_models'] < 1):
+                raise ValueError('registered_manual_source_budget_not_approved')
+            expires = min(decision.expires_at, datetime.fromisoformat(owner_receipt['expires_at']),
+                datetime.fromisoformat(identity['authorized_at']) + timedelta(seconds=maximum))
+            if (expires - datetime.now(timezone.utc)).total_seconds() < manual_source_seconds:
+                raise ValueError('registered_manual_source_budget_exceeds_authority_window')
+            ceiling = manual_source_seconds
+        began = time.monotonic()
+        if (type(deadline) not in (int, float) or not math.isfinite(deadline)
+                or manual_source_seconds is not None and deadline > began + ceiling):
+            raise ValueError('registered_source_deadline_outside_budget')
+        effective_deadline = min(deadline, began + ceiling)
+        remaining = effective_deadline - began
+        if remaining <= 0:
+            raise TimeoutError('source_deadline_exceeded')
         collector = transport or NativeProductionSourceTransport(settings, run_ledger=run_ledger,
             registration_owner=registration_owner, source_policy=policy)
-        remaining = min(600, deadline-time.monotonic())
-        if remaining <= 0:
-            raise TimeoutError('production_registered_source_deadline')
-        outcome = await asyncio.wait_for(collector.collect(root=root, frozen=frozen, compiler=compiler,
-            kis_plan=kis_plan, credentials=credentials, deadline=time.monotonic()+remaining,
-            retained_sec=retained_sec), remaining)
+        durable_json(root.parent/'source-time-budget.json', dict(ceiling_seconds=ceiling,
+            manual_no_send=manual_source_seconds is not None, monotonic_deadline=effective_deadline,
+            original_approval_sha256=run_ledger.identity['approval_sha256']), exclusive=True)
+        terminal = 'FAILED_OR_CANCELLED'
+        try:
+            outcome = await asyncio.wait_for(collector.collect(root=root, frozen=frozen, compiler=compiler,
+                kis_plan=kis_plan, credentials=credentials, deadline=effective_deadline,
+                retained_sec=retained_sec), max(0, effective_deadline-time.monotonic()))
+            terminal = 'COLLECTOR_RETURNED_REQUIRES_SOURCE_ADMISSION'
+        finally:
+            durable_json(root.parent/'source-time-result.json', dict(status=terminal,
+                elapsed_seconds=time.monotonic()-began, ceiling_seconds=ceiling,
+                monotonic_deadline=effective_deadline,
+                note='Cancellation cleanup may finish after the collection deadline; no new requests allowed'),
+                exclusive=True)
         run_ledger.source_captured(plan.market)
         require_captured_phase(root, frozen, outcome, 'stocks')
         market_inputs(root, frozen, outcome, policy)

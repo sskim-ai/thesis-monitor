@@ -14,6 +14,7 @@ from app.services.production_source_dispatch import ProductionSourceDispatcher
 from app.services.production_source_seal import read
 from app.services.unified_run_artifacts import durable_json, sha256_bytes
 from app.services.unified_snapshot_contract import digest
+from app.services.unified_live_source_transport import SourceSafetyStop
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -87,8 +88,10 @@ class NativeProductionSourceTransport:
         initial = sha256_bytes(plan_path.read_bytes())
 
         def guard():
-            if time.monotonic() >= deadline or sha256_bytes(plan_path.read_bytes()) != initial:
-                raise ValueError("production_source_deadline_or_plan_drift")
+            if time.monotonic() >= deadline:
+                raise SourceSafetyStop('source_deadline_exceeded')
+            if sha256_bytes(plan_path.read_bytes()) != initial:
+                raise SourceSafetyStop('source_frozen_plan_drift')
 
         options=dict(plan=frozen['plan'],root=root/'dispatch',compiler_args=compiler,kis_plan=kis_plan,
             config_identities=frozen['config_identities'],credential_presence={k:all(v) for k,v in credentials.items()},
