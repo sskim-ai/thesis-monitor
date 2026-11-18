@@ -248,3 +248,41 @@ def test_scheduled_model_and_source_configuration_stays_600(tmp_path):
     assert UnifiedMarketRun(config, object()).config.stage_timeout_seconds == 600
     with pytest.raises(ValueError, match='600_second_contract_required'):
         UnifiedMarketRun(RunConfiguration(**{**config.__dict__, 'collection_timeout_seconds': 1800}), object())
+
+
+def test_registered_seal_sync_replay_runs_off_event_loop(tmp_path, monkeypatch):
+    from app.services import selected_source_preparation as preparation
+    args = prepared(tmp_path/'seal-thread')
+    calls = []
+
+    def sealer(*a, **kwargs):
+        async def captured_only_replay():
+            return 'SYNTHETIC_NO_NETWORK_REPLAY'
+        result = asyncio.run(captured_only_replay())
+        calls.append(result)
+        return {'synthetic': True}
+    async def active_loop_reproduction():
+        async def body():
+            return None
+        pending = body()
+        try:
+            with pytest.raises(RuntimeError, match='running event loop'):
+                asyncio.run(pending)
+        finally:
+            pending.close()
+    asyncio.run(active_loop_reproduction())
+    monkeypatch.setattr(backend, 'require_captured_phase', lambda *a: None)
+    monkeypatch.setattr(backend, 'market_inputs', lambda *a: None)
+    monkeypatch.setattr(backend, 'seal_collection', sealer)
+    monkeypatch.setattr(backend, 'verify_collection_seal', lambda *a: calls.append('verify_seal'))
+    child = SimpleNamespace(verify=lambda: None, plan=SimpleNamespace(validate=lambda: None),
+        owner=SimpleNamespace(close=lambda: None))
+    monkeypatch.setattr(preparation, 'prepare_child', lambda **kwargs: (child, {}))
+    monkeypatch.setattr(args['run_ledger'], 'source_captured', lambda m: calls.append('capture_stub'))
+    monkeypatch.setattr(args['run_ledger'], 'source_owned', lambda c: calls.append('owned_stub'))
+    class Collector:
+        async def collect(self, **kwargs):
+            return {'synthetic': True}
+    actual, _ = asyncio.run(backend.CanonicalProductionSourceBackend.prepare_registered(
+        **args, manual_no_send=True, manual_source_seconds=1800, transport=Collector()))
+    assert actual is child and calls == ['capture_stub', 'SYNTHETIC_NO_NETWORK_REPLAY', 'verify_seal', 'owned_stub']

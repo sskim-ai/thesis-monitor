@@ -106,7 +106,8 @@ class CanonicalProductionSourceBackend:
         run_ledger.source_captured(plan.market)
         require_captured_phase(root, frozen, outcome, 'stocks')
         market_inputs(root, frozen, outcome, policy)
-        seal = seal_collection(root, seal_path=root.parent/'source-seal.json', frozen=frozen, outcome=outcome)
+        seal = await asyncio.to_thread(seal_collection, root,
+            seal_path=root.parent/'source-seal.json', frozen=frozen, outcome=outcome)
         verify_collection_seal(root, seal, frozen)
         child, proof = await asyncio.to_thread(prepare_child, root=root, frozen=frozen, outcome=outcome,
             policy=policy, registration_owner=registration_owner, kis_plan=kis_plan, enabled=True,
