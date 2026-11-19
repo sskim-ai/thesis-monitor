@@ -60,7 +60,7 @@ class CanonicalProductionSourceBackend:
                                  credentials, policy, deadline, kis_plan=None, retained_sec=None,
                                  execution_generation=None, mixed_limitations=False, transport=None,
                                  manual_no_send=False, manual_source_seconds=None,
-                                 routine_us_no_send_source_seconds=None):
+                                 routine_us_no_send_source_seconds=None, native_settings=None):
         """Shared selected Source-only boundary; registration and plan stay original."""
         from app.services import prospective_class_c_owner as registration
         from app.services.selected_source_plan import SelectedRequestPlan, SelectedStockPlan, SCOPE
@@ -150,8 +150,10 @@ class CanonicalProductionSourceBackend:
         remaining = effective_deadline - began
         if remaining <= 0:
             raise TimeoutError('source_deadline_exceeded')
+        if native_settings is not None and native_settings is not settings:
+            raise ValueError('registered_native_settings_instance_mismatch')
         collector = transport or NativeProductionSourceTransport(settings, run_ledger=run_ledger,
-            registration_owner=registration_owner, source_policy=policy)
+            registration_owner=registration_owner, source_policy=policy, native_settings=native_settings)
         budget = dict(ceiling_seconds=ceiling,
             manual_no_send=manual_source_seconds is not None, monotonic_deadline=effective_deadline,
             original_approval_sha256=run_ledger.identity['approval_sha256'])

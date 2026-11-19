@@ -10,6 +10,7 @@ import fcntl
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import time
 from typing import Literal
@@ -79,7 +80,7 @@ def _local_lock(path, *, existing=False):
         os.close(fd)
 
 
-async def _local_registered_cycle(config, directory, session):
+async def _local_registered_cycle(config, directory, session, *, one_shot_tag=None):
     from app.config import Settings
     from app.macro.providers.market import MARKET_SYMBOLS
     from app.services import prospective_class_c_owner as registration
@@ -130,11 +131,14 @@ async def _local_registered_cycle(config, directory, session):
         lane._state()
     source_root = directory/'source'
     protocols = source_config.seal_protocols(source_root, market)
-    native = inspect_native(source_config, source_root, settings_env_file=config.settings_env_file,
-        settings=settings if market == 'us' else None)
+    native = inspect_native(source_config, source_root, settings_env_file=config.settings_env_file, settings=settings)
     credentials = credential_binding(settings, market)
     now = datetime.now(timezone.utc)
     master = 'local-' + market + '-' + session
+    if one_shot_tag is not None:
+        if market != 'us' or not re.fullmatch(r'us-20261120-[a-f0-9]{8}', one_shot_tag):
+            raise ValueError('local_one_shot_tag_scope_invalid')
+        master += '-once-' + one_shot_tag
     generation, execution = master+'-source', master+'-consumer'
     children = {m: dict(generation=generation if m == market else master+'-reference',
         execution_generation=execution, subjects=list(UNIVERSE[m]))
@@ -193,13 +197,17 @@ async def _local_registered_cycle(config, directory, session):
         source = dict(registration_owner=owners[market], run_ledger=ledger, root=source_root,
             frozen=frozen, compiler=compiler, kis_plan=kis, credentials=credentials, policy=POLICY,
             deadline=time.monotonic()+(1800 if market == 'us' else 600),
-            execution_generation=execution, mixed_limitations=market == 'us')
+            execution_generation=execution, mixed_limitations=market == 'us', native_settings=settings)
+        from app.services.research_artifact_budget import ResearchArtifactBudget, artifact_scope
+        artifacts = ResearchArtifactBudget(roots={directory:'source', directory/'results':'result', runtime:'scratch'})
         model = dict(binding=binding, runtime_root=runtime,
             journal_path=runtime/'invocation-ledger'/execution/'events.jsonl', run_ledger=ledger,
-            approved_max_invocations=ledger.identity['max_models'], timeout_retry_cap=1 if market == 'us' else 0)
-        return await run_registered(settings, source=source, model=model, mode='LIVE_NO_SEND',
-            record_market_terminal=True,
-            **(dict(routine_us_no_send_source_seconds=1800) if market == 'us' else {}))
+            approved_max_invocations=ledger.identity['max_models'], timeout_retry_cap=1 if market == 'us' else 0,
+            artifact_budget=artifacts)
+        with artifact_scope(artifacts):
+            return await run_registered(settings, source=source, model=model, mode='LIVE_NO_SEND',
+                record_market_terminal=True,
+                **(dict(routine_us_no_send_source_seconds=1800) if market == 'us' else {}))
     finally:
         for owner in owners.values():
             registration.revoke_prospective_owner(owner)
@@ -211,7 +219,7 @@ async def _local_registered_cycle(config, directory, session):
             values.clear()
 
 
-async def run_local_scheduled(configuration, market, *, now=None):
+async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=None):
     """One market/session through original ports. This function installs nothing."""
     from app.services.unified_market_run import target_session
     from app.services.unified_run_artifacts import durable_json
@@ -222,16 +230,24 @@ async def run_local_scheduled(configuration, market, *, now=None):
     now = now or datetime.now(KST)
     if now.utcoffset() is None:
         raise ValueError('local_schedule_timezone_required')
+    if one_shot_tag is not None:
+        if not re.fullmatch(r'us-20261120-[a-f0-9]{8}', one_shot_tag) or market != 'us':
+            raise ValueError('local_one_shot_tag_scope_invalid')
+        if now.astimezone(KST).date().isoformat() != '2026-11-20':
+            return dict(status='NO_RUN', reason='ONE_SHOT_DATE_CLOSED', normal_messages_sent=False)
     session = target_session(market, now)
     if session is None:
         return dict(status='NO_RUN', reason='SESSION_NOT_COMPLETED_OR_CLOSED', normal_messages_sent=False)
+    if one_shot_tag is not None and session.isoformat() != '2026-11-19':
+        return dict(status='NO_RUN', reason='ONE_SHOT_SESSION_MISMATCH', normal_messages_sent=False)
     head = subprocess.check_output(['/usr/bin/git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
     dirty = subprocess.check_output(['/usr/bin/git', '-C', str(ROOT), 'status', '--porcelain', '--',
         'app', 'scripts', 'docs/operations'], text=True)
     if head != config.code_commit or dirty:
         raise ValueError('local_schedule_clean_code_pin_required')
     os.umask(0o077)
-    directory = _absolute_local_path(str(Path(config.run_root)/(market+'-'+session.isoformat())))
+    relative = Path(market+'-'+session.isoformat()) if one_shot_tag is None else Path('one-shot/2026-11-20')/one_shot_tag
+    directory = _absolute_local_path(str(Path(config.run_root)/relative))
     directory.mkdir(parents=True, exist_ok=True, mode=0o700)
     locks = ExitStack()
     try:
@@ -248,15 +264,23 @@ async def run_local_scheduled(configuration, market, *, now=None):
         # Any interrupted/failed attempt is consumed, not a retry invitation.
         if any((directory/name).exists() for name in ('intent.json', 'terminal.json', 'campaign.jsonl', 'STOP')):
             return dict(status='NO_RUN', reason='SESSION_ALREADY_CONSUMED', normal_messages_sent=False)
+        if one_shot_tag:
+            once_intent = directory.parent/'intent.json'
+            if once_intent.exists():
+                return dict(status='NO_RUN', reason='ONE_SHOT_ALREADY_CONSUMED', normal_messages_sent=False)
+            durable_json(once_intent, dict(one_shot_tag=one_shot_tag, session=session.isoformat(),
+                date='2026-11-20', code_commit=head, normal_messages_sent=False), exclusive=True)
         durable_json(directory/'intent.json', dict(basis=LOCAL_BASIS, market=market,
             session=session.isoformat(), code_commit=head, configuration_sha256=digest(config.model_dump(mode='json')),
             consent_basis='LOCAL_USER_MANAGED_CONFIGURATION_NOT_EXTERNAL_OR_DAILY_HUMAN_SIGNATURE',
             source_seconds=1800 if market == 'us' else 600, model_per_call_seconds=600,
             max_http=sum(LOCAL_CAPS[market].values()), max_models=30 if market == 'us' else 18,
-            timeout_retry_cap=1 if market == 'us' else 0, normal_messages_sent=False), exclusive=True)
+            timeout_retry_cap=1 if market == 'us' else 0, normal_messages_sent=False,
+            **(dict(one_shot_tag=one_shot_tag,one_shot_date='2026-11-20') if one_shot_tag else {})), exclusive=True)
         try:
             async with asyncio.timeout(16200):
-                result = await _local_registered_cycle(config, directory, session.isoformat())
+                result = await _local_registered_cycle(config, directory, session.isoformat(),
+                    **(dict(one_shot_tag=one_shot_tag) if one_shot_tag else {}))
         except BaseException as exc:
             durable_json(directory/'terminal.json', dict(status='STOPPED_NO_SEND',
                 error_type=type(exc).__name__, normal_messages_sent=False), exclusive=True)
@@ -370,12 +394,13 @@ async def main():
     parser.add_argument("--market", choices=("us", "kr", "all"), required=True)
     parser.add_argument('--local-scheduled', action='store_true')
     parser.add_argument('--configuration')
+    parser.add_argument('--one-shot-tag')
     args = parser.parse_args()
     if args.local_scheduled:
         try:
             if not args.configuration or args.market == 'all':
                 raise ValueError('local_schedule_one_market_configuration_required')
-            result = await run_local_scheduled(args.configuration, args.market)
+            result = await run_local_scheduled(args.configuration, args.market, one_shot_tag=args.one_shot_tag)
             print(json.dumps({k:result[k] for k in ('status', 'reason', 'normal_messages_sent') if k in result}))
             return
         except Exception as exc:
@@ -383,6 +408,8 @@ async def main():
             raise SystemExit(1)
     if args.configuration:
         parser.error('--configuration requires --local-scheduled')
+    if args.one_shot_tag:
+        parser.error('--one-shot-tag requires --local-scheduled')
     settings = get_settings()
     if not settings.unified_snapshot_enabled:
         print(json.dumps({"status": "DISABLED", "mutations": 0}))

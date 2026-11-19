@@ -77,11 +77,12 @@ async def acquire_kis_worker(*, root, frozen, plan, credentials, remaining, run_
 
 class NativeProductionSourceTransport:
     def __init__(self, settings, *, http_transport_factory=None, kis_worker=acquire_kis_worker,
-                 run_ledger=None, registration_owner=None, source_policy=None):
+                 run_ledger=None, registration_owner=None, source_policy=None, native_settings=None):
         self.settings = settings
         self.http_transport_factory = http_transport_factory or (lambda: httpx.AsyncHTTPTransport(retries=0))
         self.kis_worker = kis_worker
         self.run_ledger,self.registration_owner,self.source_policy=run_ledger,registration_owner,source_policy
+        self.native_settings = native_settings
 
     async def collect(self, *, root, frozen, compiler, kis_plan, credentials, deadline, retained_sec=None):
         plan_path = root / "production-frozen-source-plan.json"
@@ -121,7 +122,7 @@ class NativeProductionSourceTransport:
             dispatcher=ProductionSourceDispatcher(**options)
 
         await acquire_all(root=root, frozen=frozen, settings=self.settings, dispatcher=dispatcher,
-            inner=self.http_transport_factory(), policy=POLICY, guard=guard, **(
+            inner=self.http_transport_factory(), policy=POLICY, guard=guard, native_settings=self.native_settings, **(
                 dict(retained_sec=retained_sec) if retained_pins else {}))
         outcome = read(root / "acquisition-outcome.json")
         if "systemic_stop" in outcome["phases"]:

@@ -95,5 +95,11 @@ def freeze_registered_child(*, registration_owner, policy, code_sha, native, nat
                else run_ledger.identity['children'][market])
         if child['generation']!=generation or tuple(child['subjects'])!=stock.subjects:
             raise ValueError('selected_shared_budget_child_scope_changed')
+        optional_news = run_ledger.identity.get('runtime_cap', {}).get('optional_news_429')
+        if optional_news is not None:
+            from app.services.campaign_runtime_cap import OPTIONAL_NEWS_429
+            if market != 'us' or optional_news != OPTIONAL_NEWS_429:
+                raise ValueError('selected_optional_news_policy_scope_mismatch')
+            frozen['optional_news_429'] = optional_news
         frozen['shared_run_ledger']=run_ledger.worker_binding()
     return frozen,compiler,kis,private_local

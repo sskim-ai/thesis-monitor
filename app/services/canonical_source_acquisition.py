@@ -58,17 +58,20 @@ class PublicationCapture(httpx.AsyncBaseTransport):
         return response
 
 
-async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guard, test_worker=None, retained_sec=None):
+async def acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guard, test_worker=None, retained_sec=None,
+                      native_settings=None):
     from app.services.test_only_native_runtime import NativeWorkerTestCapability
     try:
         return await _acquire_all(root=root, frozen=frozen, settings=settings, dispatcher=dispatcher,
-            inner=inner, policy=policy, guard=guard, test_worker=test_worker, retained_sec=retained_sec)
+            inner=inner, policy=policy, guard=guard, test_worker=test_worker, retained_sec=retained_sec,
+            native_settings=native_settings)
     finally:
         if type(test_worker) is NativeWorkerTestCapability:
             test_worker.revoke()
 
 
-async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guard, test_worker=None, retained_sec=None):
+async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, guard, test_worker=None, retained_sec=None,
+                       native_settings=None):
     """Freeze, then enter once; every HTTP attempt belongs to the one dispatcher."""
     guard()
     from app.services.test_only_native_runtime import is_test_scope, native_test_input
@@ -84,6 +87,8 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
     selected = frozen.get('scope') == SCOPE
     kr_only = frozen.get('scope') == 'KR8_ONLY' or selected and frozen.get('selected_market') == 'kr'
     us_only = frozen.get('scope') == 'US14_ONLY' or selected and frozen.get('selected_market') == 'us'
+    if native_settings is not None and (not selected or test_scope or native_settings is not settings):
+        raise SourceSafetyStop('native_local_settings_scope_mismatch')
     if selected:
         from app.services.selected_source_plan import SelectedRequestPlan
         if (type(dispatcher.plan) is not SelectedRequestPlan
@@ -129,8 +134,8 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
     bridge = SealedNativeBridge(owner_root=Path(frozen['native_owner_root']), input_path=native_input,
         input_sha256=sha256_bytes(native_input.read_bytes()), output=root/'native', transport=sealed,
         market_reads=frozen['us_market_reads'], test_worker=test_worker,
-        settings=settings if selected and us_only and not test_scope
-            and getattr(dispatcher.plan, 'routine_us_no_send_source_seconds', None) is not None else None)
+        settings=native_settings if native_settings is not None else (settings if selected and us_only and not test_scope
+            and getattr(dispatcher.plan, 'routine_us_no_send_source_seconds', None) is not None else None))
     result = {}
     async def phase(name, action):
         if selected_phases is not None and name not in selected_phases:
