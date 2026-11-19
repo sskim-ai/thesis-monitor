@@ -253,6 +253,14 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
     if market == 'us':
         for series in US_MACRO:
             macro(series)
+        display_only = sorted({ref for item in items if item.block_id == 'macro'
+            and item.status == 'AVAILABLE' for ref in item.fact_ids
+            if ref not in set(eligible_refs)})
+        if display_only:
+            add('macro_note', '거시 관측 사용 범위',
+                text='위 거시 관측값 중 판단 사용권이 없는 자료는 날짜별 참고 표시이며, 시장 방향 판단에 사용하지 않았습니다.',
+                proof={'display_only_refs': display_only, 'directional_authority_added': False},
+                formatter='display-only-note')
     add('judgment', '시장 판단', text='', formatter='accepted-numeric-free-narrative')
 
     observed, sector_audit = sector_observations(facts, registry, market=market,

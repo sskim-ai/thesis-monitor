@@ -56,6 +56,10 @@ def _us_sr_rows(packet, base, axes, security_id):
     if packet.market != "us":
         return ()
     from decimal import Decimal, InvalidOperation
+    from datetime import date, datetime
+    import re
+    from app.services.dated_multiframe_research import period_end
+    from app.services.market_session import us_market_session
     from app.services.us_dated_source_sr import CONTRACT, REFERENCE
     source = base.source_stock
     chart = source["packet"]["stocks"][0]["chart_context"]
@@ -65,9 +69,45 @@ def _us_sr_rows(packet, base, axes, security_id):
             or ref.get("currency") != "USD" or ref.get("adjustment_basis") != "provider_adjusted_price_v1"
             or ref.get("source_generation") != base.source_generation_id
             or ref.get("source_generation") != source.get("fresh_run_id")
+            or not isinstance(ref.get("source_plan_sha256"), str)
+            or not re.fullmatch(r"[a-f0-9]{64}", ref["source_plan_sha256"])
             or ref.get("eligible_for_current_price") is not False or ref.get("eligible_for_b2_timing") is not False
-            or ref.get("as_of") != chart.get("timeframes", {}).get("daily", {}).get("as_of_date")
+            or ref.get("as_of") != ref.get("target_session")
             or ref.get("as_of") != ref.get("completed_sources", {}).get("daily", {}).get("completed")):
+        return ()
+    # Dated adjusted S/R has its own receipt/session proof, not the isolated
+    # technical-view date and not the separate regular_close amount/basis.
+    clock = source["packet"].get("source_time_domains", {})
+    try:
+        observed = datetime.fromisoformat(ref["observed_at"])
+        original = datetime.fromisoformat(clock.get("price_source_frozen_at") or clock["started_at"])
+        target = date.fromisoformat(ref["as_of"])
+        if (observed.utcoffset() is None or original != observed
+                or clock.get("run_id") != ref["source_generation"]
+                or us_market_session(observed).latest_completed_regular_session_date != target):
+            return ()
+        completed = ref["completed_sources"]
+        if set(completed) != {"daily", "weekly", "monthly"}:
+            return ()
+        for tf, proof in completed.items():
+            if (proof.get("bar_state") != "COMPLETE" or proof.get("calendar") != "XNYS"
+                    or proof.get("completion_owner") != "normalize_completed_bars"
+                    or proof.get("source_role") != "adjusted_" + tf
+                    or proof.get("completed_count", 0) < 1
+                    or date.fromisoformat(proof["completed"]) > target
+                    or period_end(date.fromisoformat(proof["label"]), tf, "us").isoformat() != proof["completed"]
+                    or not all(isinstance(proof.get(key), str) and re.fullmatch(r"[a-f0-9]{64}", proof[key])
+                        for key in ("receipt_sha256", "normalized_sha256", "original_rows_sha256", "completed_rows_sha256"))):
+                return ()
+        facts = {f["fact_id"]: f for f in source["packet"]["stocks"][0].get("fact_catalog", ())}
+        bound = any(node.get("source") == "sealed_stock_roles" and node.get("ticker") == packet.ticker
+            and node.get("fact_sha256") == digest(facts.get(fact_id))
+            and all(node.get("roles", {}).get("adjusted_" + tf, {}).get(key) == proof[key]
+                for tf, proof in completed.items() for key in ("receipt_sha256", "normalized_sha256"))
+            for fact_id, node in source.get("source_graph", {}).items())
+        if not bound:
+            return ()
+    except (KeyError, TypeError, ValueError):
         return ()
     rows = []
     for zone in ref.get("zones", ())[:4]:
@@ -87,7 +127,8 @@ def _us_sr_rows(packet, base, axes, security_id):
             number = f"${low:f}–${high:f}"
         tier = {"near": "가까운 ", "major": "주요 구조 "}.get(zone.get("tier"), "")
         rows.append(_row("price", zone["id"],
-            f"{ref['as_of']} USD V3 참고 {tier}{labels[zone['side']]}(조정봉): {number} · 근거 {zone['id']}",
+            f"{ref['as_of']} 미국 완료 거래일 기준 조정봉 V3 참고 {tier}{labels[zone['side']]} USD: {number} "
+            "(현재가·평가배수·B2 진입 권한 아님)",
             facts=(zone["id"], *refs), hashes=(digest(ref),),
             formatting="dated-us-v3-no-b2-or-quote-authority-v1"))
     support = _us_accepted_support_row(packet, base, axes, security_id, ref["as_of"])

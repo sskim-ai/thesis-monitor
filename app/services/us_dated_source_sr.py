@@ -5,6 +5,9 @@ import re
 
 from app.services.dated_multiframe_research import period_end
 from app.services.market_session import us_market_session
+from app.services.ohlcv_provider_integrity_service import inspect_normalized_ohlcv_rows
+from app.services.price_structure_wave_fibonacci_v3_service import normalize_completed_bars
+from app.services.unified_snapshot_contract import digest
 from app.services.us_price_structure_selective_rollout_service import (
     build_us_price_structure_rollout_decision, build_us_price_structure_runtime_context,
 )
@@ -25,6 +28,8 @@ def attach(structure, *, enabled, ticker, security_id, generation, cutoff, obser
             or set(periods) != FRAMES or ticker.isdigit()):
         return structure
     complete, evidence = {}, {}
+    plan_hashes = set()
+    acquisitions = set()
     for tf in sorted(FRAMES):
         receipt = receipts[f"adjusted_{tf}"]
         entry = receipt["entry"]
@@ -32,22 +37,41 @@ def attach(structure, *, enabled, ticker, security_id, generation, cutoff, obser
         if (entry["market"] != "us" or entry["subject"] != ticker
                 or entry["canonical_security_id"] != security_id or entry["adjusted"] is not True
                 or entry["latest_completed_session"] != cutoff or receipt["run_id"] != generation
+                or entry.get("timeframe") != tf or entry.get("role") != "adjusted_" + tf
+                or receipt.get("status") != "CAPTURED" or not receipt.get("pages")
+                or not re.fullmatch(r"[a-f0-9]{64}", receipt.get("plan_sha256", ""))
                 or not re.fullmatch(r"[a-f0-9]{64}", pin)):
             return structure
+        plan_hashes.add(receipt["plan_sha256"])
+        acquisitions.add(receipt.get("acquisition_id"))
+        original = periods[tf]
+        original_dates = [r["date"] for r in original]
+        if original_dates != sorted(set(original_dates)):
+            return structure
+        normalized = normalize_completed_bars(original, cutoff=cutoff, timeframe=tf,
+            market="US", observed_at=observed_at)
+        by_date = {bar.date: bar for bar in normalized}
         good = []
-        for row in periods[tf]:
+        for row in original:
             label = date.fromisoformat(row["date"])
             marker = str(row.get("bar_state") or row.get("completion_state") or "").upper()
-            if marker not in INCOMPLETE and label <= target and period_end(label, tf, "us") <= target:
+            bar = by_date.get(row["date"])
+            if (marker not in INCOMPLETE and bar is not None and bar.bar_state == "COMPLETE"
+                    and label <= target and period_end(label, tf, "us") <= target):
                 good.append(row)
-        if not good:
+        if not good or not inspect_normalized_ohlcv_rows(good, timeframe=tf, cutoff=target).valid:
             return structure
         dates = [r["date"] for r in good]
         if dates != sorted(set(dates)) or tf == "daily" and dates[-1] != cutoff:
             return structure
         complete[tf] = good
         evidence[tf] = dict(label=dates[-1], completed=period_end(date.fromisoformat(dates[-1]), tf, "us").isoformat(),
-                            normalized_sha256=pin)
+            normalized_sha256=pin, receipt_sha256=digest(receipt), source_role="adjusted_" + tf,
+            original_rows_sha256=digest(original), completed_rows_sha256=digest(good),
+            completed_count=len(good), calendar=by_date[dates[-1]].market_calendar,
+            completion_owner="normalize_completed_bars", bar_state="COMPLETE")
+    if len(plan_hashes) != 1 or len(acquisitions) != 1 or not next(iter(acquisitions)):
+        return structure
     context = build_us_price_structure_runtime_context(ticker=ticker, cutoff=cutoff,
         raw_by_timeframe=complete, observed_at=observed_at, provider_limit=provider_limit, provider_native=True)
     if (context.get("as_of") != cutoff or context.get("current_quote") is not None
@@ -85,4 +109,5 @@ def attach(structure, *, enabled, ticker, security_id, generation, cutoff, obser
     return dict(structure, price_structure_v3=dict(contract=CONTRACT,
         scope="DATED_REFERENCE_ONLY", ticker=ticker, security_id=security_id, source_generation=generation,
         as_of=cutoff, currency="USD", adjustment_basis="provider_adjusted_price_v1", completed_sources=evidence,
+        target_session=cutoff, observed_at=observed_at, source_plan_sha256=next(iter(plan_hashes)),
         eligible_for_current_price=False, eligible_for_b2_timing=False, zones=zones[:4]))

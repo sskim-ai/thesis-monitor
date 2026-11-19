@@ -395,11 +395,18 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
             raise ValueError("us_sr_only_same_selected_source")
         if us_selected_dated_sr.get("enabled") is True:
             from app.services.ohlcv_client import OHLCV_PROVIDER_REQUEST_LIMIT
+            from app.services.sealed_native_bridge import require_complete_stock_window
             from app.services.us_dated_source_sr import attach
+            # Same decoded Native source, independent adjusted reference only.
+            # The isolated technical/B2 periods above remain unchanged.
+            for read in reads:
+                if read.role.startswith("adjusted_"):
+                    require_complete_stock_window(read, receipts[read.role], roles[read.role])
             try:
                 structure = attach(structure, enabled=True, ticker=ticker,
                     security_id=reads[0].canonical_security_id, generation=plan.run_id, cutoff=session_key,
-                    observed_at=plan.frozen_at.isoformat(), periods=periods, receipts=receipts,
+                    observed_at=plan.frozen_at.isoformat(),
+                    periods={tf: roles["adjusted_" + tf] for tf in ("daily", "weekly", "monthly")}, receipts=receipts,
                     provider_limit=OHLCV_PROVIDER_REQUEST_LIMIT)
             except (KeyError, TypeError, ValueError):
                 # Optional structure does not change the existing V2 facts.

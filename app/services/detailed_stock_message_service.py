@@ -293,6 +293,26 @@ def _numeric(selection, source):
     _require(labels and isinstance(labels[0], str), 'detailed_numeric_label_unowned')
     label = labels[0]
     unit = reg['unit']
+    projection = source.get('completed_session_current_price') or {}
+    if (selection.section == 'price' and fact['fact_type'] == 'price'
+            and selection.field_path == 'fields.current_price'
+            and projection.get('availability') == 'AVAILABLE'
+            and projection.get('ticker') == stock['ticker']
+            and projection.get('generation_id') == source['fresh_run_id']
+            and projection.get('price_as_of') == projection.get('target_session') == quote['as_of_date']
+            and projection.get('current_price') == quote['current_price'] == value
+            and projection.get('currency') == quote['currency'] == unit
+            and projection.get('adjustment_basis') == quote.get('price_basis')
+            and fact['fields'].get('price_as_of') == quote['as_of_date']
+            and fact['fields'].get('price_basis') == quote.get('price_basis')):
+        session = date.fromisoformat(quote['as_of_date']).isoformat()
+        if (projection.get('contract') == 'kiwoom-us-completed-session-price-v2'
+                and projection.get('price_role') == 'COMPLETED_REGULAR_SESSION_CLOSE'
+                and quote['price_basis'] == 'regular_close'):
+            label = f'{session} 완료 정규장 종가 (regular_close)'
+        elif (projection.get('contract') == 'completed-session-current-price-v1'
+                and quote['price_basis'] == 'adjusted_close'):
+            label = f'{session} 완료 세션 차트 기준가격 (조정종가)'
     # Formatting follows the canonical registry's unit; never a price currency
     # copied onto an issuer financial amount or an ad-hoc currency conversion.
     precision = 0 if unit in {'KRW', 'shares', 'count'} else 2
@@ -311,7 +331,7 @@ _REPORTED_COMPARISON = re.compile(
 
 def _localized_earnings_line(text, *, packet, source, refs):
     match = _REPORTED_COMPARISON.fullmatch(text)
-    if packet.market != 'kr' or not match:
+    if packet.market not in {'kr', 'us'} or not match:
         return text
     metric, direction, period = match.groups()
     linked = [e for e in packet.evidence if e.ref_id in refs and e.label == 'earnings_comparison'
@@ -544,7 +564,9 @@ def _render_rows(packet, rows):
         lines.append('')
         if section in HEADINGS:
             lines.append(HEADINGS[section])
-        lines.extend(r.text for r in selected)
+        # Distinct recovery evidence may share one visible condition label.
+        texts = [r.text for r in selected]
+        lines.extend(dict.fromkeys(texts) if section == 'reevaluation' else texts)
     return '\n'.join(lines)
 
 
