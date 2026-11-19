@@ -67,11 +67,23 @@ def main(*, test_bootstrap=None):
         configuration = test_bootstrap.owner_configuration(settings)
     if configuration != frozen['native_owner']:
         raise ValueError('native_owner_configuration_drift')
+    def verify_configuration():
+        if test_bootstrap is None:
+            current = Settings(_env_file=stock_worker.settings_path(args.owner_root, settings_file))
+            actual = stock_worker.owner_configuration(args.owner_root, current,
+                settings_env_file=settings_file)
+            if actual != frozen['native_owner']:
+                raise ValueError('native_owner_configuration_drift')
+            if any(frozen['stock_plan'].get(key) != actual[key] for key in
+                    ('owner_head', 'owner_files', 'settings_sha256', 'request_environment_sha256')):
+                raise ValueError('native_stock_plan_configuration_drift')
+    verify_configuration()
     output = sys.stdout
     def emit(value):
         output.write(json.dumps(value, ensure_ascii=False) + '\n')
         output.flush()
     def post(url, *, json, headers, timeout):
+        verify_configuration()
         request = httpx.Request('POST', url, json=json, headers=headers)
         emit({'wire': dict(method=request.method, url=str(request.url), headers=list(request.headers.multi_items()),
                            body_b64=base64.b64encode(request.content).decode())})
@@ -128,6 +140,7 @@ def main(*, test_bootstrap=None):
         command = json.loads(line)
         if command == {'close': True}:
             break
+        verify_configuration()
         if command == {'replay-stocks': True}:
             if not stocks_done or replay_done:
                 raise ValueError('native_stock_replay_state_invalid')

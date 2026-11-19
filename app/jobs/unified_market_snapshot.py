@@ -130,7 +130,7 @@ async def _local_registered_cycle(config, directory, session):
         lane._state()
     source_root = directory/'source'
     protocols = source_config.seal_protocols(source_root, market)
-    native = inspect_native(source_config, source_root)
+    native = inspect_native(source_config, source_root, settings_env_file=config.settings_env_file)
     credentials = credential_binding(settings, market)
     now = datetime.now(timezone.utc)
     master = 'local-' + market + '-' + session

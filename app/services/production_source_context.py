@@ -49,14 +49,24 @@ def credential_binding(settings, market):
     return result
 
 
-def inspect_native(config, root):
+def inspect_native(config, root, *, settings_env_file=None):
+    options = []
+    if settings_env_file is not None:
+        from scripts.unified_stock_source_worker import settings_path
+        env_path = settings_path(Path(config.native_owner_root), settings_env_file)
+        env_sha256 = sha256_bytes(env_path.read_bytes())
+        options = ['--settings-env-file', str(env_path)]
     output = root / "native-owner.json"
     result = subprocess.run([config.native_python, "-B", str(ROOT / "scripts/unified_stock_source_worker.py"),
-        "inspect", "--owner-root", config.native_owner_root, "--output", str(output)],
+        "inspect", "--owner-root", config.native_owner_root, "--output", str(output), *options],
         cwd=config.native_owner_root, capture_output=True, timeout=60, check=False)
     if result.returncode != 0:
         raise ValueError("production_native_inspection_failed")
     value = json.loads(output.read_bytes())
+    if settings_env_file is not None and (value.get('settings_env_file') != str(env_path)
+            or value.get('settings_env_file_sha256') != env_sha256
+            or sha256_bytes(env_path.read_bytes()) != env_sha256):
+        raise ValueError('production_native_settings_file_drift')
     if (not value["owner_clean"] or not value["credentials_present"] or not value["live_provider"]
             or value["environment"] != "real" or value["base_url"] != "https://api.kiwoom.com"):
         raise ValueError("production_native_owner_not_qualified")

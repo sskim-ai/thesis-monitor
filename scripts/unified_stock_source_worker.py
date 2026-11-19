@@ -219,7 +219,9 @@ def owner_configuration(owner_root, settings, *, settings_env_file=None):
         "operating_settings_modified": False,
     }
     if settings_env_file is not None:
-        result['settings_env_file'] = str(settings_path(owner_root, settings_env_file))
+        path = settings_path(owner_root, settings_env_file)
+        result['settings_env_file'] = str(path)
+        result['settings_env_file_sha256'] = sha(path.read_bytes())
     return result
 
 
