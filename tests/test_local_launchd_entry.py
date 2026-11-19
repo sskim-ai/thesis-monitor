@@ -60,6 +60,7 @@ def test_calendar_closed_incomplete_dst_and_no_previous_day_fallback(tmp_path, m
         assert asyncio.run(job.run_local_scheduled(path, 'us', now=datetime.fromisoformat(stamp)))['status'] == 'NO_RUN'
     assert str(target_session('us', datetime.fromisoformat('2026-03-06T06:10:00+09:00'))) == '2026-03-05'
     assert str(target_session('us', datetime.fromisoformat('2026-03-10T06:10:00+09:00'))) == '2026-03-09'
+    assert str(target_session('us', datetime.fromisoformat('2026-11-21T06:10:00+09:00'))) == '2026-11-20'
     assert target_session('kr', datetime.fromisoformat('2026-11-19T15:20:00+09:00')) is None
     assert target_session('kr', datetime.fromisoformat('2026-11-21T15:35:00+09:00')) is None
 
@@ -244,6 +245,7 @@ def test_plist_absolute_single_entry_no_credentials_no_auto_restart():
         for key in ('WorkingDirectory','StandardOutPath','StandardErrorPath'):
             assert Path(value[key]).is_absolute()
         assert Path(value['ProgramArguments'][0]).is_absolute()
-        assert value['StartCalendarInterval'] == [dict(Weekday=d,Hour=hour,Minute=minute) for d in range(1,6)]
+        weekdays = range(2,7) if market == 'us' else range(1,6)
+        assert value['StartCalendarInterval'] == [dict(Weekday=d,Hour=hour,Minute=minute) for d in weekdays]
         assert not value.get('EnvironmentVariables')
         assert 'monitor_daily' not in value['Label']

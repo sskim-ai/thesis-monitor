@@ -63,12 +63,12 @@ inferred from clock alone. Missing inputs cannot reach the model or NO-SEND.
 
 ## Schedule Caveat
 
-US draft is literally Monday-Friday **KST06:10**, KR Monday-Friday KST15:35.
-Mac timezone must be Asia/Seoul at installation. US Monday KST is NY Sunday and
-will NO_RUN; US Friday closes on KST Saturday, which this requested schedule
-does not cover. Confirm Tue-Sat KST if all five US sessions are intended; this
-task has NOT silently changed the requested weekdays. XNYS/XKRX holidays and
-not-yet-closed sessions do not fall back to yesterday's session.
+US draft is Tuesday-Saturday **KST06:10**, KR Monday-Friday KST15:35.
+Mac timezone must be Asia/Seoul at installation. US Friday's regular session
+closes on KST Saturday; KST Sunday/Monday mornings have no new completed US
+regular session. Weekdays alone do not prove completion: XNYS/XKRX holidays,
+early closes and not-yet-closed sessions are checked by the original calendars.
+Closed days do not fall back to yesterday's session.
 
 08:10/16:10 are best-effort readiness goals, not SEND or completion guarantees.
 The Mac must be powered on, user logged in, timezone correct, and awake with
