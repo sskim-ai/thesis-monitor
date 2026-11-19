@@ -1,5 +1,9 @@
 """Explicit, hash-bound production protocol configuration; no historical roots."""
+from configparser import ConfigParser, Error as ConfigError
+import os
 from pathlib import Path
+import re
+import sys
 from typing import Literal
 
 from pydantic import Field, model_validator
@@ -38,11 +42,39 @@ class ProductionSourceConfiguration(ContractModel):
 
     @model_validator(mode="after")
     def explicit_roots(self):
-        for raw in (self.database_path, self.native_owner_root, self.native_python):
+        for raw in (self.database_path, self.native_owner_root):
             path = Path(raw)
             if (not path.is_absolute() or any(p.is_symlink() for p in (path, *path.parents))
                     or {"Reports", "tests", "fixtures"}.intersection(path.parts)):
                 raise ValueError("production_runtime_path_not_deployed")
+        python = Path(self.native_python)
+        cfg = python.parent.parent / 'pyvenv.cfg'
+        if (not python.is_absolute() or '..' in python.parts
+                or any(p.is_symlink() for p in python.parents)
+                or {'Reports', 'tests', 'fixtures'}.intersection(python.parts)
+                or python.parent.name != 'bin' or not re.fullmatch(r'python(?:\d+(?:\.\d+)?)?', python.name)
+                or cfg.is_symlink() or not cfg.is_file() or cfg.stat().st_size > 16384):
+            raise ValueError('production_native_python_venv_required')
+        try:
+            target = python.resolve(strict=True)
+            base = Path(sys._base_executable).resolve(strict=True)
+            metadata = ConfigParser(interpolation=None)
+            metadata.read_string('[venv]\n' + cfg.read_text(encoding='utf-8'))
+            recorded = Path(metadata['venv']['executable']).resolve(strict=True)
+            home = Path(metadata['venv']['home'])
+            version = metadata['venv']['version'].split('.')[:2]
+            # Reuse this runtime's Python binary, not an arbitrary executable
+            # renamed python under a forged pyvenv.cfg. Copies are valid too.
+            if (not target.is_file() or not os.access(python, os.X_OK) or recorded != base
+                    or not home.is_absolute() or not home.is_dir()
+                    or (home / f'python{sys.version_info.major}.{sys.version_info.minor}').resolve() != base
+                    or version != [str(sys.version_info.major), str(sys.version_info.minor)]
+                    or metadata['venv']['include-system-site-packages'] not in {'true', 'false'}
+                    or (target != base and sha256_bytes(target.read_bytes()) != sha256_bytes(base.read_bytes()))):
+                raise ValueError('production_native_python_venv_unqualified')
+        except (OSError, RuntimeError, ConfigError, KeyError) as exc:
+            raise ValueError('production_native_python_venv_unqualified') from exc
+        # Preserve the literal venv path; resolving it loses sys.prefix/site-packages.
         if not self.kis_protocols or any(Path(n).name != n or n in {".", ".."} for n in self.kis_protocols):
             raise ValueError("production_kis_protocol_names_invalid")
         if self.completed_close.purpose != "PUBLIC_PROTOCOL" or self.kr_listing_routing.purpose != "IDENTITY_ROUTING_ONLY":
