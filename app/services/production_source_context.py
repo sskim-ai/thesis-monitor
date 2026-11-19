@@ -49,7 +49,7 @@ def credential_binding(settings, market):
     return result
 
 
-def inspect_native(config, root, *, settings_env_file=None):
+def inspect_native(config, root, *, settings_env_file=None, settings=None):
     options = []
     if settings_env_file is not None:
         from scripts.unified_stock_source_worker import settings_path
@@ -57,9 +57,11 @@ def inspect_native(config, root, *, settings_env_file=None):
         env_sha256 = sha256_bytes(env_path.read_bytes())
         options = ['--settings-env-file', str(env_path)]
     output = root / "native-owner.json"
+    from app.services.production_source_configuration import native_child_environment
+    child_env = native_child_environment(settings) if settings is not None else None
     result = subprocess.run([config.native_python, "-B", str(ROOT / "scripts/unified_stock_source_worker.py"),
         "inspect", "--owner-root", config.native_owner_root, "--output", str(output), *options],
-        cwd=config.native_owner_root, capture_output=True, timeout=60, check=False)
+        cwd=config.native_owner_root, capture_output=True, timeout=60, check=False, env=child_env)
     if result.returncode != 0:
         raise ValueError("production_native_inspection_failed")
     value = json.loads(output.read_bytes())

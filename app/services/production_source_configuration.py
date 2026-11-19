@@ -14,6 +14,18 @@ from app.services.unified_snapshot_contract import ContractModel, digest
 SHA = r"^[a-f0-9]{64}$"
 
 
+def native_child_environment(settings):
+    """Translate only qualified canonical settings for the Native child."""
+    if (settings.enable_live_providers is not True
+            or settings.kiwoom_rest_base_url != 'https://api.kiwoom.com'):
+        raise ValueError('CANONICAL_LIVE_OR_ENDPOINT_NOT_QUALIFIED')
+    mapped = dict(ENABLE_LIVE_PROVIDER=str(settings.enable_live_providers).lower(),
+        KIWOOM_BASE_URL_REAL=settings.kiwoom_rest_base_url)
+    if any(key in os.environ and os.environ[key] != value for key, value in mapped.items()):
+        raise ValueError('native_child_settings_environment_conflict')
+    return {**os.environ, **mapped}
+
+
 class ProtocolFile(ContractModel):
     path: str
     sha256: str = Field(pattern=SHA)

@@ -128,7 +128,9 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
     durable_json(native_input, native_payload, exclusive=True)
     bridge = SealedNativeBridge(owner_root=Path(frozen['native_owner_root']), input_path=native_input,
         input_sha256=sha256_bytes(native_input.read_bytes()), output=root/'native', transport=sealed,
-        market_reads=frozen['us_market_reads'], test_worker=test_worker)
+        market_reads=frozen['us_market_reads'], test_worker=test_worker,
+        settings=settings if selected and us_only and not test_scope
+            and getattr(dispatcher.plan, 'routine_us_no_send_source_seconds', None) is not None else None)
     result = {}
     async def phase(name, action):
         if selected_phases is not None and name not in selected_phases:

@@ -28,7 +28,7 @@ def native_worker_command():
 
 class SealedNativeBridge(httpx.AsyncBaseTransport):
     def __init__(self, *, owner_root, input_path, input_sha256, output, transport, market_reads,
-                 test_worker=None):
+                 test_worker=None, settings=None):
         self.owner_root, self.input_path, self.input_sha256 = owner_root, input_path, input_sha256
         self.output, self.transport, self.market_reads = output, transport, tuple(market_reads)
         self.process = None
@@ -37,6 +37,7 @@ class SealedNativeBridge(httpx.AsyncBaseTransport):
         self.commands = []
         self.exit_receipt = None
         self._test_worker = test_worker
+        self._settings = settings
         self._terminal = False
         self.cleanup_failure = None
 
@@ -63,11 +64,13 @@ class SealedNativeBridge(httpx.AsyncBaseTransport):
                 if sha256_bytes(Path(self.input_path).read_bytes()) != self.input_sha256:
                     raise SourceSafetyStop('native_input_drift')
                 if self._test_worker is None:
+                    from app.services.production_source_configuration import native_child_environment
+                    child_env = native_child_environment(self._settings) if self._settings is not None else None
                     self.process = await asyncio.create_subprocess_exec(*native_worker_command(),
                         '--owner-root', str(self.owner_root), '--input', str(self.input_path), '--sha256', self.input_sha256,
                         '--output', str(self.output), stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE,
                         stderr=asyncio.subprocess.PIPE, limit=64 * 1024 * 1024,
-                        cwd=Path(__file__).resolve().parents[2])
+                        cwd=Path(__file__).resolve().parents[2], env=child_env)
                 else:
                     self.process = await self._test_worker.launch(
                         owner_root=self.owner_root, input_path=self.input_path,
