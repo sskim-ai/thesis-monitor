@@ -117,7 +117,8 @@ async def _local_registered_cycle(config, directory, session):
         unified_snapshot_runtime_contract='unified-query-time-snapshot-v2',
         unified_snapshot_live_delivery_authorized=False, data_dir=str(directory/'results'),
         us_price_structure_v3_enabled=True, kr_price_structure_v3_enabled=True)
-    target, device, inode = database_target(settings, runtime_directory=ROOT)
+    runtime_db_root = Path(config.settings_env_file).parent
+    target, device, inode = database_target(settings, runtime_directory=runtime_db_root)
     if str(target) != source_config.database_path:
         raise ValueError('local_schedule_active_database_mismatch')
     lane = configured_lane()
@@ -154,7 +155,7 @@ async def _local_registered_cycle(config, directory, session):
             runtime_cap=dict(endpoints=endpoints, market_subjects={'us':[*MARKET_SYMBOLS, '000660'], 'kr':[]},
                 stop_on_first_external_failure=True,
                 **(dict(optional_news_429='SELECTED_US_OPTIONAL_NEWS_429_V1') if market == 'us' else {})))
-        _, owners, _ = capture_approved_markets(settings=settings, runtime_directory=ROOT,
+        _, owners, _ = capture_approved_markets(settings=settings, runtime_directory=runtime_db_root,
             approval=approval, generations={market:generation}, policy=POLICY, ledger=ledger,
             enabled=True, monitoring_only=True, subject_limits={market:len(UNIVERSE[market])},
             priority_subjects={market:UNIVERSE[market]})
