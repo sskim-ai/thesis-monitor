@@ -4,13 +4,263 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+from contextlib import contextmanager, ExitStack
+import fcntl
 import json
+import os
 from pathlib import Path
+import subprocess
+import time
+from typing import Literal
+
+from pydantic import Field
 
 from app.config import get_settings
 from app.services.unified_market_run import KST, RunConfiguration, UnifiedMarketRun
 from app.services.unified_run_artifacts import SECRET_KEY
+from app.services.unified_snapshot_contract import ContractModel, digest
+from app.services.production_source_configuration import ProtocolFile
+
+
+LOCAL_BASIS = 'LOCAL_OPERATOR_SCHEDULED_NO_SEND'
+LOCAL_CAPS = {
+    'us': dict(kiwoom=552, sec_edgar=86, finnhub=28, google_news_rss=14,
+        fred=13, krx_night_futures=7, opendart=6, eia=3, ecos=1),
+    'kr': dict(kiwoom=190, kis=85, opendart=48, naver_news=8, ecos=1),
+}
+ROOT = Path(__file__).resolve().parents[2]
+
+
+class LocalScheduleConfiguration(ContractModel):
+    """Operator-managed local settings, not a signed grant or serialized Owner."""
+    basis: Literal['LOCAL_OPERATOR_SCHEDULED_NO_SEND'] = LOCAL_BASIS
+    enabled: bool = Field(default=False, strict=True)
+    mode: Literal['LIVE_NO_SEND'] = 'LIVE_NO_SEND'
+    market: Literal['us', 'kr']
+    code_commit: str = Field(pattern=r'^[a-f0-9]{40}$')
+    run_root: str
+    settings_env_file: str
+    shared_lease_path: str
+    source_configuration: ProtocolFile
+    model_binding: ProtocolFile
+    endpoint_rules: ProtocolFile
+    auxiliary_issuer: ProtocolFile | None = None
+
+
+def _absolute_local_path(value):
+    path = Path(value)
+    if not path.is_absolute() or '..' in path.parts or any(p.is_symlink() for p in (path, *path.parents)):
+        raise ValueError('local_schedule_absolute_nonsymlink_path_required')
+    return path
+
+
+def read_local_configuration(path, market):
+    path = _absolute_local_path(path)
+    st = path.stat()
+    if not path.is_file() or st.st_uid != os.getuid() or st.st_mode & 0o077 or st.st_size > 65536:
+        raise ValueError('local_schedule_operator_private_configuration_required')
+    config = LocalScheduleConfiguration.model_validate_json(path.read_bytes())
+    if market != config.market:
+        raise ValueError('local_schedule_market_scope_mismatch')
+    for value in (config.run_root, config.settings_env_file, config.shared_lease_path):
+        _absolute_local_path(value)
+    return config
+
+
+@contextmanager
+def _local_lock(path, *, existing=False):
+    flags = os.O_RDONLY if existing else os.O_RDWR | os.O_CREAT
+    fd = os.open(path, flags | os.O_NOFOLLOW, 0o600)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        yield
+    finally:
+        os.close(fd)
+
+
+async def _local_registered_cycle(config, directory, session):
+    from app.config import Settings
+    from app.macro.providers.market import MARKET_SYMBOLS
+    from app.services import prospective_class_c_owner as registration
+    from app.services.codex_runtime_binding import binding_from_json, parent_environment, validate_binding
+    from app.services.kiwoom_global_lane import configured_lane
+    from app.services.production_source_configuration import ProductionSourceConfiguration
+    from app.services.production_source_context import POLICY, credential_binding, inspect_native
+    from app.services.selected_run_lifecycle import SelectedRunLedger
+    from app.services.selected_source_context import freeze_registered_child
+    from app.services.selected_source_plan import SelectedConsumerPolicy, SelectedRequestPlan, request_budget
+    from app.services.selected_source_registration import capture_approved_markets, database_target
+    from app.services.unified_run_artifacts import durable_json, sha256_bytes
+    from app.services.unified_stock_acquisition import UNIVERSE
+    from app.services.vnext_execution_profile import SOL_HIGH_V1
+
+    market = config.market
+    source_config = ProductionSourceConfiguration.model_validate_json(config.source_configuration.read())
+    binding = json.loads(config.model_binding.read())
+    bound = binding_from_json(binding)
+    # Use the reviewed CLI's existing environment, not launchd's default PATH.
+    # Keep override variables visible so validate_binding can still reject them.
+    reviewed = parent_environment(bound)
+    for key in ('HOME', 'PATH', 'CODEX_HOME'):
+        if key in reviewed:
+            os.environ[key] = reviewed[key]
+        elif key == 'CODEX_HOME':
+            os.environ.pop(key, None)
+    os.environ['KIWOOM_GLOBAL_LANE_REQUIRED'] = '1'
+    validate_binding(bound, str(bound.executable), profile=SOL_HIGH_V1)
+    endpoints = json.loads(config.endpoint_rules.read())
+    if set(endpoints) != set(LOCAL_CAPS[market]):
+        raise ValueError('local_schedule_original_provider_scope_required')
+    settings = Settings(_env_file=config.settings_env_file, notification_dry_run=True,
+        unified_snapshot_enabled=True, unified_snapshot_adapter_version='production-v1',
+        unified_snapshot_runtime_contract='unified-query-time-snapshot-v2',
+        unified_snapshot_live_delivery_authorized=False, data_dir=str(directory/'results'),
+        us_price_structure_v3_enabled=True, kr_price_structure_v3_enabled=True)
+    target, device, inode = database_target(settings, runtime_directory=ROOT)
+    if str(target) != source_config.database_path:
+        raise ValueError('local_schedule_active_database_mismatch')
+    lane = configured_lane()
+    if lane is None:
+        raise ValueError('local_schedule_existing_global_lane_required')
+    # Read under the original lock; never recover/reset an unavailable Lane.
+    with os.fdopen(lane._open(), 'rb') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        lane._state()
+    source_root = directory/'source'
+    protocols = source_config.seal_protocols(source_root, market)
+    native = inspect_native(source_config, source_root)
+    credentials = credential_binding(settings, market)
+    now = datetime.now(timezone.utc)
+    master = 'local-' + market + '-' + session
+    generation, execution = master+'-source', master+'-consumer'
+    children = {m: dict(generation=generation if m == market else master+'-reference',
+        execution_generation=execution, subjects=list(UNIVERSE[m]))
+        for m in (('us',) if market == 'us' else ('kr', 'us'))}
+    approval = ledger = None
+    owners = {}
+    try:
+        approval = registration.record_backend_approval(registration.ApprovalDecision(
+            event_id=master, approved=True, user_message_sha256=digest(config.model_dump(mode='json')),
+            effective_at=now, expires_at=now+timedelta(hours=4, minutes=30),
+            subjects=tuple(t for child in children.values() for t in child['subjects']),
+            **(dict(routine_us_no_send_source_seconds=1800) if market == 'us' else {})))
+        ledger = SelectedRunLedger(path=directory/'campaign.jsonl', approval=approval, master_id=master,
+            children=children, provider_caps=LOCAL_CAPS[market], max_http=sum(LOCAL_CAPS[market].values()),
+            max_models=30 if market == 'us' else 18, staged_markets=True,
+            timeout_retry_cap=1 if market == 'us' else 0, wallclock_seconds_max=16200,
+            database_identity=dict(path=str(target), device=device, inode=inode),
+            capture_max_private_export_bytes=64*1024**2,
+            runtime_cap=dict(endpoints=endpoints, market_subjects={'us':[*MARKET_SYMBOLS, '000660'], 'kr':[]},
+                stop_on_first_external_failure=True,
+                **(dict(optional_news_429='SELECTED_US_OPTIONAL_NEWS_429_V1') if market == 'us' else {})))
+        _, owners, _ = capture_approved_markets(settings=settings, runtime_directory=ROOT,
+            approval=approval, generations={market:generation}, policy=POLICY, ledger=ledger,
+            enabled=True, monitoring_only=True, subject_limits={market:len(UNIVERSE[market])},
+            priority_subjects={market:UNIVERSE[market]})
+        _, receipt = registration._state(owners[market])
+        if receipt['calendar']['target'] != session or set(receipt['bindings']) != set(UNIVERSE[market]):
+            raise ValueError('local_schedule_completed_session_or_roster_drift')
+        listing = json.loads((source_root/'static/kr-list-routing.json').read_bytes())['list'] if market == 'kr' else []
+        official = json.loads((source_root/'static/official-security-identity.json').read_bytes())
+        auxiliary = (dict(security=json.loads(config.auxiliary_issuer.read()), official_identity_sha256=digest(official))
+            if market == 'us' and config.auxiliary_issuer else None)
+        frozen, compiler, kis, private_seed = freeze_registered_child(registration_owner=owners[market],
+            policy=POLICY, code_sha=config.code_commit, native=native, native_owner_root=source_config.native_owner_root,
+            config_identities={p:digest(v) for p,v in credentials.items()},
+            configured_kr_pages=settings.kiwoom_rest_max_pages, listing_rows=listing,
+            kis_static_hashes={n:p.sha256 for n,p in source_config.kis_protocols.items()},
+            completed_close_documentation=(dict(path='static/completed-close-documentation.json',
+                sha256=source_config.completed_close.sha256) if market == 'us' else None),
+            consumer_policy=SelectedConsumerPolicy(), master_id=master,
+            ohlcv_source_url=settings.ohlcv_base_url.rstrip('/')+'/ohlcv', run_ledger=ledger, enabled=True,
+            include_kr_stock_flow=market == 'kr', kr_stock_chart_v3=market == 'kr',
+            us_runtime_settings=settings if market == 'us' else None, issuer_auxiliary=auxiliary)
+        plan = SelectedRequestPlan.model_validate(frozen['plan'])
+        budget = request_budget({'plan':plan}, kis)
+        if budget['total'] > ledger.identity['max_http'] or any(
+                n > LOCAL_CAPS[market].get(p, 0) for p,n in budget['providers'].items()):
+            raise ValueError('local_schedule_frozen_plan_exceeds_original_caps')
+        frozen.update(protocol_inputs=protocols, private_export_limit_bytes=64*1024**2,
+            available_evidence_policy='FIELD_LOCAL_DATED_USE_V1',
+            protected_input_hashes={str(p.relative_to(source_root)):sha256_bytes(p.read_bytes())
+                for p in (source_root/'static').rglob('*') if p.is_file()})
+        durable_json(source_root/'production-frozen-source-plan.json', frozen, exclusive=True)
+        ledger.bind_source_plan(market, plan)
+        runtime = directory/'model-runtime'
+        source = dict(registration_owner=owners[market], run_ledger=ledger, root=source_root,
+            frozen=frozen, compiler=compiler, kis_plan=kis, credentials=credentials, policy=POLICY,
+            deadline=time.monotonic()+(1800 if market == 'us' else 600),
+            execution_generation=execution, mixed_limitations=market == 'us')
+        model = dict(binding=binding, runtime_root=runtime,
+            journal_path=runtime/'invocation-ledger'/execution/'events.jsonl', run_ledger=ledger,
+            approved_max_invocations=ledger.identity['max_models'], timeout_retry_cap=1 if market == 'us' else 0)
+        return await run_registered(settings, source=source, model=model, mode='LIVE_NO_SEND',
+            record_market_terminal=True,
+            **(dict(routine_us_no_send_source_seconds=1800) if market == 'us' else {}))
+    finally:
+        for owner in owners.values():
+            registration.revoke_prospective_owner(owner)
+        if ledger is not None and ledger.state()['state'] not in {'STOPPED_NO_SEND', 'RENDERED_NO_SEND'}:
+            ledger.stop('LOCAL_SCHEDULE_CYCLE_CLOSED_NO_REPLAY')
+        if approval is not None:
+            registration.revoke_approval(approval)
+        for values in credentials.values():
+            values.clear()
+
+
+async def run_local_scheduled(configuration, market, *, now=None):
+    """One market/session through original ports. This function installs nothing."""
+    from app.services.unified_market_run import target_session
+    from app.services.unified_run_artifacts import durable_json
+
+    config = read_local_configuration(configuration, market)
+    if not config.enabled:
+        return dict(status='DISABLED', basis=LOCAL_BASIS, normal_messages_sent=False)
+    now = now or datetime.now(KST)
+    if now.utcoffset() is None:
+        raise ValueError('local_schedule_timezone_required')
+    session = target_session(market, now)
+    if session is None:
+        return dict(status='NO_RUN', reason='SESSION_NOT_COMPLETED_OR_CLOSED', normal_messages_sent=False)
+    head = subprocess.check_output(['/usr/bin/git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
+    dirty = subprocess.check_output(['/usr/bin/git', '-C', str(ROOT), 'status', '--porcelain', '--',
+        'app', 'scripts', 'docs/operations'], text=True)
+    if head != config.code_commit or dirty:
+        raise ValueError('local_schedule_clean_code_pin_required')
+    os.umask(0o077)
+    directory = _absolute_local_path(str(Path(config.run_root)/(market+'-'+session.isoformat())))
+    directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+    locks = ExitStack()
+    try:
+        locks.enter_context(_local_lock(config.shared_lease_path, existing=True))
+        locks.enter_context(_local_lock(directory/'cycle.lock'))
+    except BlockingIOError:
+        locks.close()
+        return dict(status='NO_RUN', reason='EXISTING_SHARED_OR_SESSION_LOCK_BUSY', normal_messages_sent=False)
+    except BaseException:
+        locks.close()
+        raise
+    with locks:
+        # Same durable intent/terminal conventions as the canonical cycle.
+        # Any interrupted/failed attempt is consumed, not a retry invitation.
+        if any((directory/name).exists() for name in ('intent.json', 'terminal.json', 'campaign.jsonl', 'STOP')):
+            return dict(status='NO_RUN', reason='SESSION_ALREADY_CONSUMED', normal_messages_sent=False)
+        durable_json(directory/'intent.json', dict(basis=LOCAL_BASIS, market=market,
+            session=session.isoformat(), code_commit=head, configuration_sha256=digest(config.model_dump(mode='json')),
+            consent_basis='LOCAL_USER_MANAGED_CONFIGURATION_NOT_EXTERNAL_OR_DAILY_HUMAN_SIGNATURE',
+            source_seconds=1800 if market == 'us' else 600, model_per_call_seconds=600,
+            max_http=sum(LOCAL_CAPS[market].values()), max_models=30 if market == 'us' else 18,
+            timeout_retry_cap=1 if market == 'us' else 0, normal_messages_sent=False), exclusive=True)
+        try:
+            async with asyncio.timeout(16200):
+                result = await _local_registered_cycle(config, directory, session.isoformat())
+        except BaseException as exc:
+            durable_json(directory/'terminal.json', dict(status='STOPPED_NO_SEND',
+                error_type=type(exc).__name__, normal_messages_sent=False), exclusive=True)
+            raise
+        durable_json(directory/'terminal.json', result, exclusive=True)
+        return result
 
 
 class UnqualifiedAdapter:
@@ -66,7 +316,8 @@ async def run_selected(market, engine, day):
 
 
 async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', clock=None,
-                         manual_source_seconds=None, routine_us_no_send_source_seconds=None):
+                         manual_source_seconds=None, routine_us_no_send_source_seconds=None,
+                         record_market_terminal=False):
     """Explicit registered cycle for manual and future scheduler callers.
 
     Callers supply the original approval/Owner/ledger and already frozen plan;
@@ -79,6 +330,8 @@ async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', cl
         raise ValueError('registered_cycle_source_only_or_explicit_no_send_required')
     if mode == 'LIVE_NO_SEND' and (not model or model.get('run_ledger') is not source.get('run_ledger')):
         raise ValueError('registered_cycle_same_source_model_ledger_required')
+    if type(record_market_terminal) is not bool or record_market_terminal and mode != 'LIVE_NO_SEND':
+        raise ValueError('registered_market_terminal_requires_no_send')
     if manual_source_seconds is not None and mode != 'LIVE_NO_SEND':
         raise ValueError('registered_manual_source_budget_requires_no_send')
     if manual_source_seconds is not None and routine_us_no_send_source_seconds is not None:
@@ -102,7 +355,10 @@ async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', cl
         source['run_ledger'].bind_model_plan(child)
         engine = build_engine(settings, adapter, repo_commit=source['frozen']['stock_plan']['implementation_sha'],
             adapter_fingerprint=digest(child.binding()), clock=clock)
-        return await engine.run(child.market, datetime.fromisoformat(child.plan.cohort.cutoff).astimezone(KST).date())
+        result = await engine.run(child.market, datetime.fromisoformat(child.plan.cohort.cutoff).astimezone(KST).date())
+        if record_market_terminal:
+            source['run_ledger'].rendered_market(child, result)
+        return result
     finally:
         child.owner.close()
 
@@ -110,7 +366,21 @@ async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', cl
 async def main():
     parser = argparse.ArgumentParser(description="Run one immutable market snapshot cycle")
     parser.add_argument("--market", choices=("us", "kr", "all"), required=True)
+    parser.add_argument('--local-scheduled', action='store_true')
+    parser.add_argument('--configuration')
     args = parser.parse_args()
+    if args.local_scheduled:
+        try:
+            if not args.configuration or args.market == 'all':
+                raise ValueError('local_schedule_one_market_configuration_required')
+            result = await run_local_scheduled(args.configuration, args.market)
+            print(json.dumps({k:result[k] for k in ('status', 'reason', 'normal_messages_sent') if k in result}))
+            return
+        except Exception as exc:
+            print(json.dumps(dict(status='STOPPED_NO_SEND', error_type=type(exc).__name__, normal_messages_sent=False)))
+            raise SystemExit(1)
+    if args.configuration:
+        parser.error('--configuration requires --local-scheduled')
     settings = get_settings()
     if not settings.unified_snapshot_enabled:
         print(json.dumps({"status": "DISABLED", "mutations": 0}))

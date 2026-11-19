@@ -1,0 +1,30 @@
+{
+  "basis": "LOCAL_OPERATOR_SCHEDULED_NO_SEND",
+  "enabled": false,
+  "mode": "LIVE_NO_SEND",
+  "market": "us",
+  "code_commit": "0000000000000000000000000000000000000000",
+  "run_root": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-pr52-local-launchd-20261119/data/local-launchd/runs",
+  "settings_env_file": "/Users/sskim/Codex/thesis-monitor/.env",
+  "shared_lease_path": "/Users/sskim/Documents/Codex/2026-07-04/the/maintenance/20261116-c22bk-atomic-swap/pair.lease",
+  "source_configuration": {
+    "path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-pr52-local-launchd-20261119/data/local-launchd/source-configuration.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "purpose": "PROTOCOL_CONTROL"
+  },
+  "model_binding": {
+    "path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-pr52-local-launchd-20261119/data/local-launchd/model-binding.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "purpose": "PROTOCOL_CONTROL"
+  },
+  "endpoint_rules": {
+    "path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-pr52-local-launchd-20261119/data/local-launchd/us-endpoints.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "purpose": "PROTOCOL_CONTROL"
+  },
+  "auxiliary_issuer": {
+    "path": "/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-pr52-local-launchd-20261119/data/local-launchd/000660-public-security.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "purpose": "IDENTITY_ROUTING_ONLY"
+  }
+}

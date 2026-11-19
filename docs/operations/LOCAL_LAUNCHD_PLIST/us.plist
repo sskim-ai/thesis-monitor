@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>Label</key><string>local.thesis-monitor.canonical.us.no-send</string>
+<key>ProgramArguments</key><array>
+<string>/Users/sskim/Codex/thesis-monitor/.venv/bin/python</string>
+<string>-B</string><string>-m</string><string>app.jobs.unified_market_snapshot</string>
+<string>--local-scheduled</string><string>--configuration</string>
+<string>/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-pr52-local-launchd-20261119/data/local-launchd/us.json</string>
+<string>--market</string><string>us</string></array>
+<key>WorkingDirectory</key><string>/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-pr52-local-launchd-20261119</string>
+<key>StandardOutPath</key><string>/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-pr52-local-launchd-20261119/data/local-launchd/logs/us.out.log</string>
+<key>StandardErrorPath</key><string>/Users/sskim/Documents/Codex/2026-07-04/the/work/thesis-monitor-pr52-local-launchd-20261119/data/local-launchd/logs/us.err.log</string>
+<key>RunAtLoad</key><false/><key>KeepAlive</key><false/>
+<key>StartCalendarInterval</key><array>
+<dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>6</integer><key>Minute</key><integer>10</integer></dict>
+<dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>6</integer><key>Minute</key><integer>10</integer></dict>
+<dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>6</integer><key>Minute</key><integer>10</integer></dict>
+<dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>6</integer><key>Minute</key><integer>10</integer></dict>
+<dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>6</integer><key>Minute</key><integer>10</integer></dict>
+</array></dict></plist>
