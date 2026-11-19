@@ -36,7 +36,7 @@ def code_fingerprints():
 
 class SelectedSourceRunBinding(SourceRunBinding):
     contract: Literal['selected-original-source-run-binding-v1']=CONTRACT
-    execution_purpose: Literal['MANUAL_SHADOW_UNSENT']='MANUAL_SHADOW_UNSENT'
+    execution_purpose: Literal['MANUAL_SHADOW_UNSENT','ROUTINE_US_NO_SEND_SOURCE']='MANUAL_SHADOW_UNSENT'
     master_id: str=Field(min_length=1)
     child_id: str=Field(min_length=1)
     market: Literal['us','kr']
@@ -61,6 +61,8 @@ class SelectedSourceRunBinding(SourceRunBinding):
 
     @model_validator(mode='after')
     def selected_binding(self):
+        if self.execution_purpose == 'ROUTINE_US_NO_SEND_SOURCE' and self.market != 'us':
+            raise ValueError('selected_routine_source_binding_us_only')
         session=(us_market_session if self.market=='us' else korea_market_session)(self.started_at)
         if (self.parent_run_id!=self.child_id or self.master_id==self.child_id
                 or tuple(sorted(set(self.subjects)))!=self.subjects
@@ -187,6 +189,7 @@ def build_inputs(root,frozen,outcome,policy,*,prospective_owners,master_id):
             value_sha256=native['kr']['aggregate_flows']['value_sha256'],run_id=plan.run_id,
             concentration='UNAVAILABLE',stock_contribution='UNAVAILABLE')
     seed=SelectedSourceRunBinding(parent_run_id=plan.run_id,child_id=plan.run_id,master_id=master_id,
+        execution_purpose=frozen.get('execution_purpose','MANUAL_SHADOW_UNSENT'),
         market=plan.market,subjects=plan.subjects,target_session=frozen['sessions'][plan.market],started_at=plan.frozen_at,
         source_policy_sha256=digest(sorted(policy.allowed_providers)),inventory_sha256=digest(inventory),
         **registry.seed_bindings,universe_sha256=digest(plan.universe),

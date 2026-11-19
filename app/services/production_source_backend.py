@@ -59,15 +59,22 @@ class CanonicalProductionSourceBackend:
     async def prepare_registered(*, settings, registration_owner, run_ledger, root, frozen, compiler,
                                  credentials, policy, deadline, kis_plan=None, retained_sec=None,
                                  execution_generation=None, mixed_limitations=False, transport=None,
-                                 manual_no_send=False, manual_source_seconds=None):
+                                 manual_no_send=False, manual_source_seconds=None,
+                                 routine_us_no_send_source_seconds=None):
         """Shared selected Source-only boundary; registration and plan stay original."""
         from app.services import prospective_class_c_owner as registration
-        from app.services.selected_source_plan import SelectedRequestPlan, SCOPE
+        from app.services.selected_source_plan import SelectedRequestPlan, SelectedStockPlan, SCOPE
         from app.services.selected_source_preparation import prepare_child
 
         if frozen.get('scope') != SCOPE or run_ledger is None:
             raise ValueError('production_registered_selected_plan_required')
-        registration.require_generation(registration_owner, frozen['generation_id'])
+        routine = routine_us_no_send_source_seconds is not None
+        if routine and (manual_source_seconds is not None or manual_no_send is not False
+                or type(routine_us_no_send_source_seconds) is not int
+                or not 600 <= routine_us_no_send_source_seconds <= 1800):
+            raise ValueError('registered_routine_source_budget_invalid')
+        registration.require_generation(registration_owner, frozen['generation_id'],
+            purpose=registration.ROUTINE_SCOPE if routine else registration.SCOPE)
         plan = SelectedRequestPlan.model_validate(frozen['plan'])
         if (run_ledger.state()['plans'].get(plan.market) != plan.plan_sha256
                 or frozen.get('shared_run_ledger') != run_ledger.worker_binding()):
@@ -76,6 +83,40 @@ class CanonicalProductionSourceBackend:
         if read(root/'production-frozen-source-plan.json') != frozen:
             raise ValueError('production_registered_sealed_plan_mismatch')
         ceiling = 600
+        authority_expires = None
+        if routine:
+            decision = registration._approval(run_ledger.approval)
+            _, owner_receipt = registration._state(registration_owner)
+            run_ledger._external()
+            identity = run_ledger.identity
+            stock = SelectedStockPlan.model_validate(frozen['stock_plan'])
+            child = run_ledger.selected_child(plan.market)
+            maximum = identity.get('wallclock_seconds_max')
+            if (plan.market != 'us' or frozen.get('execution_purpose') != registration.ROUTINE_SCOPE
+                    or plan.purpose != registration.ROUTINE_SCOPE or identity.get('send') is not False
+                    or identity.get('onboarding') or type(maximum) is not int or maximum <= 0
+                    or decision.routine_us_no_send_source_seconds != routine_us_no_send_source_seconds
+                    or identity.get('routine_us_no_send_source_seconds') != routine_us_no_send_source_seconds
+                    or owner_receipt.get('routine_us_no_send_source_seconds') != routine_us_no_send_source_seconds
+                    or plan.routine_us_no_send_source_seconds != routine_us_no_send_source_seconds
+                    or stock.routine_us_no_send_source_seconds != routine_us_no_send_source_seconds
+                    or owner_receipt['approval_sha256'] != identity['approval_sha256']
+                    or digest(decision.model_dump(mode='json')) != identity['approval_sha256']
+                    or identity['expires_at'] != decision.expires_at.isoformat()
+                    or owner_receipt['market'] != plan.market or stock.market != plan.market
+                    or plan.generation_id != frozen['generation_id'] or stock.run_id != plan.generation_id
+                    or owner_receipt['source_generation_id'] != plan.generation_id
+                    or child['generation'] != plan.generation_id or tuple(child['subjects']) != plan.subjects
+                    or stock.subjects != plan.subjects or set(owner_receipt['bindings']) != set(plan.subjects)
+                    or frozen.get('registration_receipt_sha256') != digest(owner_receipt)
+                    or plan.stock_plan_sha256 != digest(stock.model_dump(mode='json'))
+                    or stock.frozen_at.isoformat() != owner_receipt['cutoff']
+                    or stock.universe_sha256 != digest(dict(market=plan.market, subjects=stock.subjects,
+                        registration_sha256=digest(owner_receipt)))):
+                raise ValueError('registered_routine_source_budget_not_approved')
+            authority_expires = min(decision.expires_at, datetime.fromisoformat(owner_receipt['expires_at']),
+                datetime.fromisoformat(identity['authorized_at'])+timedelta(seconds=maximum))
+            ceiling = routine_us_no_send_source_seconds
         if manual_source_seconds is not None:
             if (manual_no_send is not True or type(manual_source_seconds) is not int
                     or not 600 <= manual_source_seconds <= 1800 or plan.market != 'us'):
@@ -103,14 +144,22 @@ class CanonicalProductionSourceBackend:
                 or manual_source_seconds is not None and deadline > began + ceiling):
             raise ValueError('registered_source_deadline_outside_budget')
         effective_deadline = min(deadline, began + ceiling)
+        if authority_expires is not None:
+            effective_deadline = min(effective_deadline,
+                began + (authority_expires-datetime.now(timezone.utc)).total_seconds())
         remaining = effective_deadline - began
         if remaining <= 0:
             raise TimeoutError('source_deadline_exceeded')
         collector = transport or NativeProductionSourceTransport(settings, run_ledger=run_ledger,
             registration_owner=registration_owner, source_policy=policy)
-        durable_json(root.parent/'source-time-budget.json', dict(ceiling_seconds=ceiling,
+        budget = dict(ceiling_seconds=ceiling,
             manual_no_send=manual_source_seconds is not None, monotonic_deadline=effective_deadline,
-            original_approval_sha256=run_ledger.identity['approval_sha256']), exclusive=True)
+            original_approval_sha256=run_ledger.identity['approval_sha256'])
+        if routine:
+            budget.update(purpose=registration.ROUTINE_SCOPE,
+                routine_us_no_send_source_seconds=ceiling, authority_expires_at=authority_expires.isoformat(),
+                plan_sha256=plan.plan_sha256, generation_id=plan.generation_id)
+        durable_json(root.parent/'source-time-budget.json', budget, exclusive=True)
         terminal = 'FAILED_OR_CANCELLED'
         try:
             outcome = await asyncio.wait_for(collector.collect(root=root, frozen=frozen, compiler=compiler,

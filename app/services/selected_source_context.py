@@ -32,14 +32,15 @@ def freeze_registered_child(*, registration_owner, policy, code_sha, native, nat
             raise ValueError('selected_distinct_master_id_required')
         if market=='us' and (not ohlcv_source_url or not completed_close_documentation):
             raise ValueError('selected_original_market_route_and_close_documentation_required')
-    registration.require_generation(registration_owner,generation)
+    registration.require_generation(registration_owner,generation,purpose=receipt['purpose'])
     at=datetime.fromisoformat(receipt['cutoff'])
     identities={r['record']['ticker']:r['record']
         for role in document['roles'].values() for r in role['records'] if r['table']=='securitymaster'}
     if set(identities)!=set(receipt['bindings']):
         raise ValueError('selected_current_identity_coverage_required')
     stock=build_stock_plan(market=market,identities=identities,at=at,generation=generation,
-        code_sha=code_sha,counts=COUNTS,native=native,registration_sha256=digest(receipt))
+        code_sha=code_sha,counts=COUNTS,native=native,registration_sha256=digest(receipt),
+        routine_us_no_send_source_seconds=receipt.get('routine_us_no_send_source_seconds'))
     private_local=local_seed(registration_owner,stock=stock,policy=policy)
     records=list(identities.values())
     news=[make_read(security=s,market=market,run_id=generation,lookback_days=3,security_records=records) for s in records]
@@ -64,7 +65,7 @@ def freeze_registered_child(*, registration_owner, policy, code_sha, native, nat
     target=next(iter({r.latest_completed_session for r in stock.reads}))
     symbols=compiled['candidate']['us_market_symbols']
     frozen=dict(**{k:v for k,v in compiled.items() if k!='plan'},scope=SCOPE,selected_market=market,
-        execution_purpose=registration.SCOPE,generation_id=generation,frozen_at=at.isoformat(),
+        execution_purpose=receipt['purpose'],generation_id=generation,frozen_at=at.isoformat(),
         plan=compiled['plan'].model_dump(mode='json'),stock_plan=stock.model_dump(mode='json'),
         security_records=records,native_owner=native,native_owner_root=str(native_owner_root),
         us_market_symbols=symbols,us_market_reads=[dict(role='us_market:'+s,symbol=s,market='us',

@@ -66,7 +66,7 @@ async def run_selected(market, engine, day):
 
 
 async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', clock=None,
-                         manual_source_seconds=None):
+                         manual_source_seconds=None, routine_us_no_send_source_seconds=None):
     """Explicit registered cycle for manual and future scheduler callers.
 
     Callers supply the original approval/Owner/ledger and already frozen plan;
@@ -81,10 +81,14 @@ async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', cl
         raise ValueError('registered_cycle_same_source_model_ledger_required')
     if manual_source_seconds is not None and mode != 'LIVE_NO_SEND':
         raise ValueError('registered_manual_source_budget_requires_no_send')
-    if {'manual_source_seconds', 'manual_no_send'} & source.keys():
+    if manual_source_seconds is not None and routine_us_no_send_source_seconds is not None:
+        raise ValueError('registered_manual_and_routine_source_budget_exclusive')
+    if {'manual_source_seconds', 'manual_no_send', 'routine_us_no_send_source_seconds'} & source.keys():
         raise ValueError('registered_manual_source_budget_requires_explicit_entry_argument')
     options = {} if manual_source_seconds is None else dict(
         manual_no_send=True, manual_source_seconds=manual_source_seconds)
+    if routine_us_no_send_source_seconds is not None:
+        options['routine_us_no_send_source_seconds'] = routine_us_no_send_source_seconds
     child, proof = await CanonicalProductionSourceBackend.prepare_registered(settings=settings, **source, **options)
     try:
         child.verify()

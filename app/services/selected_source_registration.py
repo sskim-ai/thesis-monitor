@@ -91,6 +91,7 @@ def capture_markets(*, permission, approval, generations, policy, enabled=False,
                 if not selected:raise ValueError('NO_ELIGIBLE_SUBJECT_FOR_MARKET')
             owners[market], _ = original.issue_prospective_owner(approval=approval, capture=capture,
                 market=market, source_generation_id=generation, generation_id=generation, policy=policy,
+                **(dict(purpose=original.ROUTINE_SCOPE) if getattr(decision,'routine_us_no_send_source_seconds',None) is not None else {}),
                 **(dict(subjects=selected) if selected is not None else {}),
                 execution=execution,regular_assignments=regular_assignments,
                 reference_capture=(reference_captures or {}).get(market),
@@ -166,10 +167,12 @@ def local_seed(owner, *, stock, policy):
     """Use the original authenticated document, never a persisted public receipt."""
     from app.services.unified_local_seed_bridge import admit_pinned_local_seed
     from app.services.unified_snapshot_contract import digest, encoded
-    original.require_generation(owner, stock.run_id)
+    original.require_generation(owner, stock.run_id,
+        purpose=original.ROUTINE_SCOPE if stock.routine_us_no_send_source_seconds is not None else original.SCOPE)
     document, receipt = original._state(owner)
     sessions = {r.latest_completed_session for r in stock.reads}
-    if (receipt['market'] != stock.market or len(sessions) != 1
+    if (receipt.get('routine_us_no_send_source_seconds') != stock.routine_us_no_send_source_seconds
+            or receipt['market'] != stock.market or len(sessions) != 1
             or receipt['calendar']['target'] not in sessions
             or receipt['cutoff'] != stock.frozen_at.isoformat()
             or set(receipt['bindings']) != set(stock.subjects)):

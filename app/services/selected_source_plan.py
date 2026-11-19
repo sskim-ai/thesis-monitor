@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from typing import Literal
 from zoneinfo import ZoneInfo
 
-from pydantic import Field, model_validator
+from pydantic import Field, model_serializer, model_validator
 
 from app.macro.providers.eia import EIA_SERIES
 from app.macro.providers.fred import FRED_SERIES
@@ -51,6 +51,14 @@ class SelectedStockPlan(ContractModel):
     planning_only: bool = True
     automatic_retries: Literal[0] = 0
     maximum_auth_requests: Literal[1] = 1
+    routine_us_no_send_source_seconds: int | None = Field(default=None, strict=True, ge=600, le=1800)
+
+    @model_serializer(mode='wrap')
+    def original_wire_unless_routine(self, handler):
+        value = handler(self)
+        if self.routine_us_no_send_source_seconds is None:
+            value.pop('routine_us_no_send_source_seconds', None)
+        return value
 
     @property
     def universe(self):
@@ -58,6 +66,8 @@ class SelectedStockPlan(ContractModel):
 
     @model_validator(mode='after')
     def selected_complete(self):
+        if self.routine_us_no_send_source_seconds is not None and self.market != 'us':
+            raise ValueError('selected_routine_source_us_only')
         expected={f'{self.market}:{t}:{r}' for t in self.subjects for r in ROLES}
         if (self.frozen_at.utcoffset() is None or not self.run_id or not self.acquisition_id
                 or tuple(sorted(set(self.subjects)))!=self.subjects
@@ -74,7 +84,8 @@ class SelectedStockPlan(ContractModel):
         return self
 
 
-def build_stock_plan(*,market,identities,at,generation,code_sha,counts,native=None,registration_sha256=None):
+def build_stock_plan(*,market,identities,at,generation,code_sha,counts,native=None,registration_sha256=None,
+                     routine_us_no_send_source_seconds=None):
     state=(us_market_session if market=='us' else korea_market_session)(at)
     names=tuple(sorted(identities))
     reads=tuple(ScopedStockRead(**stock_read_fields(subject=t,identity=identities[t],market=market,
@@ -85,7 +96,8 @@ def build_stock_plan(*,market,identities,at,generation,code_sha,counts,native=No
         universe_sha256=digest(dict(market=market,subjects=names,registration_sha256=registration_sha256)),reads=reads,
         owner_files=native.get('owner_files',{}),owner_head=native.get('owner_head'),
         settings_sha256=native.get('settings_sha256'),request_environment_sha256=native.get('request_environment_sha256'),
-        planning_only=not bool(native and registration_sha256))
+        planning_only=not bool(native and registration_sha256),
+        routine_us_no_send_source_seconds=routine_us_no_send_source_seconds)
 
 
 def acquisition_plan(stock,identities,*,kr_max_pages,exact_financial_owner=False,
@@ -137,16 +149,28 @@ def acquisition_plan(stock,identities,*,kr_max_pages,exact_financial_owner=False
 
 class SelectedRequestPlan(RequestPlan):
     contract: Literal['selected-original-source-request-plan-v1'] = WIRE_CONTRACT
-    purpose: Literal['SELECTED_ORIGINAL_RESEARCH_V1'] = SCOPE
+    purpose: Literal['SELECTED_ORIGINAL_RESEARCH_V1','ROUTINE_US_NO_SEND_SOURCE'] = SCOPE
     market: Literal['us','kr']
     subjects: tuple[str,...]
     stock_plan_sha256: str = Field(pattern=r'^[a-f0-9]{64}$')
     compiler_input_sha256: str = Field(pattern=r'^[a-f0-9]{64}$')
     compiler_output_sha256: str = Field(pattern=r'^[a-f0-9]{64}$')
     kis_plan_sha256: str | None = Field(default=None,pattern=r'^[a-f0-9]{64}$')
+    routine_us_no_send_source_seconds: int | None = Field(default=None, strict=True, ge=600, le=1800)
+
+    @model_serializer(mode='wrap')
+    def original_wire_unless_routine(self, handler):
+        value = handler(self)
+        if self.routine_us_no_send_source_seconds is None:
+            value.pop('routine_us_no_send_source_seconds', None)
+        return value
 
     @model_validator(mode='after')
     def required_scope(self):
+        routine = self.routine_us_no_send_source_seconds is not None
+        if (routine != (self.purpose == 'ROUTINE_US_NO_SEND_SOURCE')
+                or routine and self.market != 'us'):
+            raise ValueError('selected_routine_source_plan_scope')
         if (not self.subjects or tuple(sorted(set(self.subjects)))!=self.subjects
                 or self.unresolved_roles or any(d.transient_retry_max!=0 for d in self.descriptors)):
             raise ValueError('selected_complete_bounded_wire_required')
@@ -179,6 +203,8 @@ def compile_selected_plan(*,compiler_args,kis_plan=None):
     result=compile_slots(**compiler_args,selected_research_v1=True)
     raw=result['plan'].model_dump()
     result['plan']=SelectedRequestPlan(**raw,market=stock.market,subjects=stock.subjects,
+        purpose='ROUTINE_US_NO_SEND_SOURCE' if stock.routine_us_no_send_source_seconds is not None else SCOPE,
+        routine_us_no_send_source_seconds=stock.routine_us_no_send_source_seconds,
         stock_plan_sha256=digest(stock.model_dump(mode='json')),
         compiler_input_sha256=_compiler_identity(compiler_args),
         compiler_output_sha256=digest({k:v for k,v in result.items() if k!='plan'}),

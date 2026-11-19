@@ -69,8 +69,9 @@ class SelectedSourceDispatcher(SealedDispatcher):
             raise SourceSafetyStop('selected_registration_scope_changed')
         # Rebuilding the unchanged Class-C projection recreates memory DBs.
         # The original live Owner still checks expiry, revoke, code and policy.
-        from app.services.prospective_class_c_owner import require_generation
-        require_generation(self.registration_owner, self.stock.run_id)
+        from app.services import prospective_class_c_owner as registration
+        registration.require_generation(self.registration_owner, self.stock.run_id,
+            purpose=registration.ROUTINE_SCOPE if self.stock.routine_us_no_send_source_seconds is not None else registration.SCOPE)
 
     async def execute(self,*args,**kwargs):
         self._require_current()

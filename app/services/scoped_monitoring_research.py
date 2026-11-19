@@ -100,7 +100,8 @@ def prepare_scoped_research_source(*, enabled=False, market, subjects, registrat
         raise ValueError('scoped_explicit_execution_generation_required')
     if market not in ('us','kr') or not subjects or len(set(subjects)) != len(subjects):
         raise ValueError('scoped_research_exact_subjects_required')
-    registration.require_generation(registration_owner, generation)
+    purpose = whole.get('seed', {}).get('execution_purpose', registration.SCOPE)
+    registration.require_generation(registration_owner, generation, purpose=purpose)
     _, reg = registration._state(registration_owner)
     if (reg['market'] != market or not set(subjects) <= set(reg['bindings'])
             or set(whole['packets']) != {market}
@@ -111,7 +112,7 @@ def prepare_scoped_research_source(*, enabled=False, market, subjects, registrat
     if whole.get('seed',{}).get('contract')=='selected-original-source-run-binding-v1':
         from app.services.selected_source_composition import project_market,SelectedSourceRunBinding
         binding=SelectedSourceRunBinding.model_validate(whole['seed'])
-        if (binding.child_id!=generation or binding.market!=market or binding.subjects!=subjects
+        if (binding.execution_purpose!=reg['purpose'] or binding.child_id!=generation or binding.market!=market or binding.subjects!=subjects
                 or binding.registration_receipt_sha256!=digest(reg)):
             raise ValueError('selected_prepared_source_child_scope')
         projector=project_market
@@ -146,7 +147,7 @@ def prepare_scoped_research_source(*, enabled=False, market, subjects, registrat
             and prepared['view_receipt']['raw_source_sha256'] == digest(stock), 'original_subject_scope_required')
     limits = tuple(t for t in subjects if source['prepared'][t]['mode'] == 'UNKNOWN_LIMIT') if mixed_limitations else ()
     # Admission still requires the original live registration at this instant.
-    registration.require_generation(registration_owner, generation)
+    registration.require_generation(registration_owner, generation, purpose=purpose)
     if digest(registration._state(registration_owner)[1]) != digest(reg):
         raise ValueError('scoped_research_registration_changed_during_admission')
     row = dict(source=deepcopy(source), source_sha256=digest(source),

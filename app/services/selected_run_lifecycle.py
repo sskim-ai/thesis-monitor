@@ -46,6 +46,10 @@ class SelectedRunLedger:
             authorized_at=decision.effective_at.isoformat(), expires_at=decision.expires_at.isoformat(),
             children=deepcopy(children), provider_caps=dict(provider_caps), max_http=max_http,
             max_models=max_models, database_identity=database_identity, retry=0, send=False)
+        if decision.routine_us_no_send_source_seconds is not None:
+            if set(children) != {'us'} or onboarding or wallclock_seconds_max is None:
+                raise ValueError('selected_routine_us_no_send_source_scope')
+            self.identity['routine_us_no_send_source_seconds'] = decision.routine_us_no_send_source_seconds
         if type(staged_markets) is not bool or (staged_markets and runtime_cap is None):
             raise ValueError('selected_staged_runtime_cap_required')
         if staged_markets:
@@ -558,10 +562,15 @@ class SelectedRunLedger:
         self._event('REGISTRATION', sha256=digest(receipt), selects=selects, receipt=receipt)
 
     def bind_source_plan(self, market, plan):
+        self._external()
         c = self.selected_child(market)
         if (plan.market != market or plan.generation_id != c['generation'] or tuple(plan.subjects) != tuple(c['subjects'])
                 or any(d.transient_retry_max != 0 for d in plan.descriptors)):
             raise ValueError('selected_request_scope_changed')
+        seconds = self.identity.get('routine_us_no_send_source_seconds')
+        if (getattr(plan, 'routine_us_no_send_source_seconds', None) != seconds
+                or seconds is not None and (market != 'us' or plan.purpose != registration.ROUTINE_SCOPE)):
+            raise ValueError('selected_routine_source_plan_approval_mismatch')
         self._event('PLAN', market=market, sha256=plan.plan_sha256)
 
     def source_captured(self, market):
@@ -690,7 +699,10 @@ class SelectedRunLedger:
         """Bind only the original current Owner's subset; never activate a row."""
         self._external()
         _, receipt = registration._state(owner)
-        registration.require_generation(owner,self.identity['children'][market]['generation'])
+        registration.require_generation(owner,self.identity['children'][market]['generation'],
+            purpose=registration.ROUTINE_SCOPE if self.identity.get('routine_us_no_send_source_seconds') is not None else registration.SCOPE)
+        if receipt.get('routine_us_no_send_source_seconds') != self.identity.get('routine_us_no_send_source_seconds'):
+            raise ValueError('selected_routine_registration_approval_mismatch')
         state = self.state()
         if (receipt['market']!=market or receipt['approval_event']!=self.identity['approval_event']
                 or receipt['capture_receipt_sha256']!=state['registrations'].get(market,{}).get('sha256')):

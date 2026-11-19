@@ -11,7 +11,7 @@ from importlib.metadata import version
 import json
 from weakref import WeakKeyDictionary, WeakMethod, ref
 
-from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, model_serializer, model_validator
 
 from app.services.market_session import NEW_YORK, SEOUL, _exchange_calendar
 from app.services.minimal_class_c_export import captured_private_snapshot, project_captured_export
@@ -20,6 +20,7 @@ from app.services.unified_snapshot_contract import digest
 
 CONTRACT = "prospective-manual-shadow-class-c-owner-v1"
 SCOPE = "MANUAL_SHADOW_UNSENT"
+ROUTINE_SCOPE = "ROUTINE_US_NO_SEND_SOURCE"
 
 
 def _now():
@@ -35,6 +36,20 @@ class ApprovalDecision(BaseModel):
     expires_at: AwareDatetime
     subjects: tuple[str, ...]
     manual_no_send_source_seconds: int | None = Field(default=None, strict=True, ge=600, le=1800)
+    routine_us_no_send_source_seconds: int | None = Field(default=None, strict=True, ge=600, le=1800)
+
+    @model_validator(mode='after')
+    def distinct_source_authority(self):
+        if self.manual_no_send_source_seconds is not None and self.routine_us_no_send_source_seconds is not None:
+            raise ValueError('prospective_manual_and_routine_source_authority_exclusive')
+        return self
+
+    @model_serializer(mode='wrap')
+    def original_wire_unless_routine(self, handler):
+        value = handler(self)
+        if self.routine_us_no_send_source_seconds is None:
+            value.pop('routine_us_no_send_source_seconds', None)
+        return value
 
 
 class OperatorApproval:
@@ -323,6 +338,8 @@ def issue_prospective_owner(*, approval, capture, market, source_generation_id,
                             execution=None, regular_assignments=None,reference_capture=None,retained_capture_sha256=None,
                             monitoring_only=False):
     decision = _approval(approval)
+    routine_seconds = decision.routine_us_no_send_source_seconds
+    expected_purpose = ROUTINE_SCOPE if routine_seconds is not None else SCOPE
     raw, capture_receipt = captured_private_snapshot(capture)
     from app.services.minimal_class_c_export import captured_source_cutoff
     captured_at = datetime.fromisoformat(capture_receipt["cutoff"])
@@ -331,7 +348,8 @@ def issue_prospective_owner(*, approval, capture, market, source_generation_id,
     # A new approval authorizes consumption now, never collection in the past.
     # The trusted campaign supplies the prior receipt's frozen hash separately.
     retained_use=reference_capture is not None and retained_capture_sha256 is not None
-    if (purpose != SCOPE or not source_generation_id or not generation_id
+    if (purpose != expected_purpose or routine_seconds is not None and market != 'us'
+            or not source_generation_id or not generation_id
             or not decision.effective_at <= captured_at <= _now()
             or (not retained_use and not decision.effective_at <= cutoff <= _now())
             or cutoff>captured_at
@@ -390,6 +408,8 @@ def issue_prospective_owner(*, approval, capture, market, source_generation_id,
         identity_policy_sha256=digest(sorted(policy.allowed_providers)),
         schema_sha256=digest(ApprovalDecision.model_json_schema()), scope="MEMBERSHIP_ONLY_NOT_D01_D02")
     if requested_subjects is not None:receipt['selected_subjects']=sorted(requested_subjects)
+    if routine_seconds is not None:
+        receipt['routine_us_no_send_source_seconds'] = routine_seconds
     if monitoring_only is True:receipt['monitoring_only']=True
     if execution is not None:
         receipt['execution']=execution
@@ -412,13 +432,24 @@ def _state(owner):
     if type(owner) is not ProspectiveOwner or owner not in _OWNERS:
         raise ValueError("prospective_live_backend_owner_required")
     approval, document, receipt = _OWNERS[owner]
-    _approval(approval)
+    decision = _approval(approval)
     receipt = json.loads(receipt)
     from hashlib import sha256
     from pathlib import Path
 
     if receipt["owner_sha256"] != sha256(Path(__file__).read_bytes()).hexdigest():
         raise ValueError("prospective_owner_implementation_changed")
+    routine_seconds = decision.routine_us_no_send_source_seconds
+    if routine_seconds is not None:
+        _, captured = captured_private_snapshot(_OWNER_CAPTURES[owner])
+        expires = min(decision.expires_at, datetime.fromisoformat(captured['cutoff'])+timedelta(hours=1))
+        if (receipt['purpose'] != ROUTINE_SCOPE or receipt['market'] != 'us'
+                or receipt.get('routine_us_no_send_source_seconds') != routine_seconds
+                or receipt['approval_sha256'] != digest(decision.model_dump(mode='json'))
+                or receipt['expires_at'] != expires.isoformat()):
+            raise ValueError('prospective_routine_source_authority_changed')
+    elif receipt['purpose'] != SCOPE or 'routine_us_no_send_source_seconds' in receipt:
+        raise ValueError('prospective_routine_source_not_approved')
     if _now() >= datetime.fromisoformat(receipt["expires_at"]):
         raise ValueError("prospective_owner_expired")
     if receipt["policy_fingerprints"] != policy_fingerprints():
