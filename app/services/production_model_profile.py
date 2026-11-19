@@ -84,6 +84,8 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
         self.exhausted, self.timeouts, self.attempts = set(), {}, {}
         self.physical_calls = self.retry_used = 0
         self.active_attempts = {}
+        if run_ledger is not None and run_ledger.identity.get('timeout_retry_cap',0) != timeout_retry_cap:
+            raise ValueError('model_timeout_retry_ledger_cap_mismatch')
         if (type(timeout_retry_cap) is not int or timeout_retry_cap not in (0,1,2)
                 or timeout_retry_cap and (plan is None or journal_path is None or run_ledger is None
                     or market_origin is not None or run_ledger.identity.get('timeout_retry_cap') != timeout_retry_cap

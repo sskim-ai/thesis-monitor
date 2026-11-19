@@ -352,7 +352,7 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                 verify_render_partition(messages=messages, subjects=bridge.child.plan.cohort.market_subjects['us'],
                     slots=bridge.child.plan.slots, b2=outputs['B2']['output'],
                     journal=read_invocation_journal(calls.journal.path.read_bytes(), calls.journal.identity),
-                    accepted_content_sha256=outputs['VALIDATE']['output']['content_sha256'])
+                    accepted_content_sha256=outputs['VALIDATE']['output']['content_sha256'],plan=bridge.child.plan)
             state.update(status=PARTIAL if omitted else TERMINAL,messages=messages,messages_sha256=digest(messages))
             if bridge.child.plan.cohort.limitation_subjects:
                 from app.services.model_execution_plan import verify_mixed_render

@@ -84,11 +84,25 @@ def verify_b2_coverage(output, *, subjects, slots, exhausted, bound, attempts):
             raise ValueError('production_partial_b2_original_timeout_gap')
 
 
-def verify_render_partition(*, messages, subjects, slots, b2, journal, accepted_content_sha256):
+def verify_render_partition(*, messages, subjects, slots, b2, journal, accepted_content_sha256, plan=None):
     from app.services.unified_snapshot_contract import digest
 
     omitted = b2.get('unissued',{})
-    verify_b2_coverage(b2, subjects=subjects, slots=slots, exhausted=journal['exhausted'],
+    ordinary = subjects
+    if plan is not None:
+        from app.services.model_execution_plan import ModelExecutionPlan
+
+        if type(plan) is not ModelExecutionPlan:
+            raise ValueError('research_timeout_original_model_plan_required')
+        plan.validate()
+        if (list(plan.cohort.market_subjects) != ['us'] or tuple(slots) != plan.slots
+                or tuple(subjects) != plan.cohort.market_subjects['us']):
+            raise ValueError('research_timeout_plan_scope_drift')
+        limits = set(plan.cohort.limitation_subjects)
+        if limits and omitted:
+            raise ValueError('production_limitation_no_send_decision_binding')
+        ordinary = tuple(t for t in subjects if t not in limits)
+    verify_b2_coverage(b2, subjects=ordinary, slots=slots, exhausted=journal['exhausted'],
         bound=journal['bound'], attempts=journal['attempts'])
     if (journal['stopped'] or journal['inherited']
             or set(journal['accepted']) != {s.slot_id for s in slots}-journal['exhausted']
@@ -154,7 +168,7 @@ def read_no_send_partition(cycle, *, plan, invocation_journal):
         expected['timeout_retry_cap'] = cap
     journal = read_invocation_journal(raw, expected)
     verify_render_partition(messages=messages,subjects=plan.cohort.market_subjects['us'],slots=plan.slots,b2=b2,
-        journal=journal,accepted_content_sha256=outputs['VALIDATE']['output']['content_sha256'])
+        journal=journal,accepted_content_sha256=outputs['VALIDATE']['output']['content_sha256'],plan=plan)
     for ticker, row in b2['rows'].items():
         folder = plain_path(cycle/'b2'/ticker)
         result = row['result']
