@@ -185,10 +185,11 @@ def original_cycle_probe(folder, market, monkeypatch, *, one_shot_tag=None):
     assert observed['collector'] and any(r['event']=='PLAN' for r in rows)
     identity = rows[0]['identity']
     diagnostic=bool(one_shot_tag and one_shot_tag.startswith('us2-'))
-    assert identity['max_models'] == (8 if diagnostic else 42 if market == 'us' else 18)
-    assert identity['max_http'] == (sum(job.US2_CAPS.values()) if diagnostic else 710 if market == 'us' else 332)
+    sr5=bool(one_shot_tag and one_shot_tag.startswith('us5-'))
+    assert identity['max_models'] == (15 if sr5 else 8 if diagnostic else 42 if market == 'us' else 18)
+    assert identity['max_http'] == (sum(job.SR5_CAPS.values()) if sr5 else sum(job.US2_CAPS.values()) if diagnostic else 710 if market == 'us' else 332)
     assert identity.get('timeout_retry_cap',0) == 0
-    assert identity.get('b2_retry_policy') == ('B2_US2_DIAGNOSTIC_V1' if diagnostic else 'B2_PER_TICKER_ONE_RETRY_V1' if market=='us' else None)
+    assert identity.get('b2_retry_policy') == ('B2_SR5_DIAGNOSTIC_V1' if sr5 else 'B2_US2_DIAGNOSTIC_V1' if diagnostic else 'B2_PER_TICKER_ONE_RETRY_V1' if market=='us' else None)
     if market == 'kr':
         from app.services.selected_kis_sources import require_persisted_plan
         from app.services.selected_source_plan import SelectedRequestPlan

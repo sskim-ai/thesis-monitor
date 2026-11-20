@@ -6,6 +6,7 @@ import re
 
 B2_PER_TICKER_ONE_RETRY_V1 = 'B2_PER_TICKER_ONE_RETRY_V1'
 B2_US2_DIAGNOSTIC_V1 = 'B2_US2_DIAGNOSTIC_V1'
+B2_SR5_DIAGNOSTIC_V1 = 'B2_SR5_DIAGNOSTIC_V1'
 
 
 def retry_policy_limits(policy):
@@ -13,6 +14,8 @@ def retry_policy_limits(policy):
         return 29,13,42
     if policy == B2_US2_DIAGNOSTIC_V1:
         return 6,2,8
+    if policy == B2_SR5_DIAGNOSTIC_V1:
+        return 11,4,15
     raise ValueError('model_b2_retry_policy_unknown')
 
 
@@ -22,6 +25,10 @@ def b2_retry_binding(plan, policy=B2_PER_TICKER_ONE_RETRY_V1):
         raise ValueError('model_b2_retry_original_us_plan_required')
     if policy == B2_US2_DIAGNOSTIC_V1 and tuple(plan.cohort.market_subjects['us']) != ('GOOGL','MU'):
         raise ValueError('model_b2_retry_exact_diagnostic_subjects_required')
+    if policy == B2_SR5_DIAGNOSTIC_V1 and (
+            tuple(plan.cohort.market_subjects['us']) != ('CRCL','HUT','SKHY','TSM','WULF')
+            or tuple(plan.cohort.limitation_subjects) != ('SKHY',)):
+        raise ValueError('model_b2_retry_exact_sr5_limitation_scope_required')
     value = dict(policy=policy, plan_sha256=plan.sha256,
         base_slots=len(plan.slots), maximum=len(plan.slots)+sum(s.stage=='B2' for s in plan.slots),
         slot_stages={s.slot_id:s.stage for s in plan.slots},
@@ -39,6 +46,7 @@ def validate_b2_retry_binding(value):
             or len(value['slot_stages']) != base or len(value['b2_slots']) != reserves
             or len(set(value['b2_slots'].values())) != reserves
             or value['policy'] == B2_US2_DIAGNOSTIC_V1 and set(value['b2_slots'].values()) != {'GOOGL','MU'}
+            or value['policy'] == B2_SR5_DIAGNOSTIC_V1 and set(value['b2_slots'].values()) != {'CRCL','HUT','TSM','WULF'}
             or set(value['b2_slots']) != {s for s,stage in value['slot_stages'].items() if stage == 'B2'}
             or any(not s or not t for s,t in value['b2_slots'].items())):
         raise ValueError('model_b2_per_ticker_retry_binding_invalid')

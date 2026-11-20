@@ -49,7 +49,7 @@ def market_message(session, *, sector_taxonomy_version=None, macro_display_captu
         from app.services.selected_news_rate_limit import disclose
         subjects=set(session.fresh_stocks)
         message = disclose(message, [s.get('event_view', {}) for s in session.fresh_stocks.values()],
-            expected_count=2 if subjects=={'GOOGL','MU'} else 14)
+            expected_count=2 if subjects=={'GOOGL','MU'} else 5 if subjects=={'CRCL','HUT','SKHY','TSM','WULF'} else 14)
     return message
 
 

@@ -25,7 +25,7 @@ from app.services.unified_market_run import KST, RunConfiguration, UnifiedMarket
 from app.services.unified_run_artifacts import SECRET_KEY
 from app.services.unified_snapshot_contract import ContractModel, digest
 from app.services.production_source_configuration import ProtocolFile
-from app.services.model_timeout_retry import B2_PER_TICKER_ONE_RETRY_V1, B2_US2_DIAGNOSTIC_V1
+from app.services.model_timeout_retry import B2_PER_TICKER_ONE_RETRY_V1, B2_US2_DIAGNOSTIC_V1, B2_SR5_DIAGNOSTIC_V1
 
 
 LOCAL_BASIS = 'LOCAL_OPERATOR_SCHEDULED_NO_SEND'
@@ -38,15 +38,18 @@ ROOT = Path(__file__).resolve().parents[2]
 US2_SUBJECTS = ('GOOGL','MU')
 US2_CAPS = dict(kiwoom=120,sec_edgar=8,finnhub=4,google_news_rss=2,
     fred=13,krx_night_futures=7,opendart=0,eia=3,ecos=1)
+SR5_SUBJECTS = ('CRCL','HUT','SKHY','TSM','WULF')
+SR5_CAPS = dict(kiwoom=228,sec_edgar=40,finnhub=10,google_news_rss=5,
+    fred=13,krx_night_futures=7,opendart=6,eia=3,ecos=1)
 
 
 def one_shot_scope(market, tag):
     if tag is None:
         return False
-    match = re.fullmatch(r'(us|us2|kr)-20261120-[a-f0-9]{8}',tag)
-    if match is None or ('us' if match[1]=='us2' else match[1]) != market:
+    match = re.fullmatch(r'(us|us2|us5|kr)-20261120-[a-f0-9]{8}',tag)
+    if match is None or ('us' if match[1] in ('us2','us5') else match[1]) != market:
         raise ValueError('local_one_shot_tag_scope_invalid')
-    return match[1]=='us2'
+    return match[1] in ('us2','us5')
 
 
 class LocalScheduleConfiguration(ContractModel):
@@ -188,10 +191,11 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
 
     market = config.market
     diagnostic = one_shot_scope(market,one_shot_tag)
-    subjects = US2_SUBJECTS if diagnostic else UNIVERSE[market]
-    caps = US2_CAPS if diagnostic else LOCAL_CAPS[market]
-    max_models = 8 if diagnostic else 42 if market=='us' else 18
-    retry_policy = B2_US2_DIAGNOSTIC_V1 if diagnostic else B2_PER_TICKER_ONE_RETRY_V1 if market=='us' else None
+    sr5 = bool(one_shot_tag and one_shot_tag.startswith('us5-'))
+    subjects = SR5_SUBJECTS if sr5 else US2_SUBJECTS if diagnostic else UNIVERSE[market]
+    caps = SR5_CAPS if sr5 else US2_CAPS if diagnostic else LOCAL_CAPS[market]
+    max_models = 15 if sr5 else 8 if diagnostic else 42 if market=='us' else 18
+    retry_policy = B2_SR5_DIAGNOSTIC_V1 if sr5 else B2_US2_DIAGNOSTIC_V1 if diagnostic else B2_PER_TICKER_ONE_RETRY_V1 if market=='us' else None
     master = 'local-' + market + '-' + session
     if one_shot_tag is not None:
         master += '-once-' + one_shot_tag
@@ -258,7 +262,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
             b2_retry_policy=retry_policy, wallclock_seconds_max=16200,
             database_identity=dict(path=str(target), device=device, inode=inode),
             capture_max_private_export_bytes=64*1024**2,
-            runtime_cap=dict(endpoints=endpoints, market_subjects={'us':[*MARKET_SYMBOLS,*(() if diagnostic else ('000660',))], 'kr':[]},
+            runtime_cap=dict(endpoints=endpoints, market_subjects={'us':[*MARKET_SYMBOLS,*(('000660',) if not diagnostic or 'SKHY' in subjects else ())], 'kr':[]},
                 stop_on_first_external_failure=True,
                 **(dict(optional_news_429='SELECTED_US_OPTIONAL_NEWS_429_V1') if market == 'us' else {})))
         _, owners, _ = capture_approved_markets(settings=settings, runtime_directory=runtime_db_root,
@@ -301,16 +305,17 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
         durable_json(source_root/'production-frozen-source-plan.json', frozen, exclusive=True)
         ledger.bind_source_plan(market, plan)
         if diagnostic:
-            if (tuple(plan.subjects)!=US2_SUBJECTS or tuple(compiler['stock'].subjects)!=US2_SUBJECTS
-                    or set(frozen['candidate']['financial_plans'])!=set(US2_SUBJECTS)
-                    or {d.subject for d in plan.descriptors if d.consumer_role.startswith('events:')}!=set(US2_SUBJECTS)
-                    or '000660' in frozen['candidate']['financial_plans']):
-                raise ValueError('local_us2_frozen_scope_before_HTTP')
-            durable_json(directory/'us2-before-http.json',dict(subjects=list(subjects),
+            financial_subjects=set(subjects)|({'000660'} if auxiliary else set())
+            if (tuple(plan.subjects)!=subjects or tuple(compiler['stock'].subjects)!=subjects
+                    or set(frozen['candidate']['financial_plans'])!=financial_subjects
+                    or {d.subject for d in plan.descriptors if d.consumer_role.startswith('events:')}!=set(subjects)):
+                raise ValueError('local_diagnostic_frozen_scope_before_HTTP')
+            durable_json(directory/('us5-before-http.json' if sr5 else 'us2-before-http.json'),dict(subjects=list(subjects),
                 stock_plan_sha256=digest(frozen['stock_plan']),request_plan_sha256=plan.plan_sha256,
                 financial_subjects=sorted(frozen['candidate']['financial_plans']),
                 actual_plan_budget=budget,defensive_caps=caps,max_HTTP=sum(caps.values()),
-                expected_base_model_slots=6,expected_B2_subjects=list(subjects),max_models=8,
+                expected_base_model_slots=11 if sr5 else 6,
+                expected_B2_subjects=[t for t in subjects if not sr5 or t!='SKHY'],max_models=max_models,
                 financial_HTTP_before_this_receipt=0),exclusive=True)
         source = dict(registration_owner=owners[market], run_ledger=ledger, root=source_root,
             frozen=frozen, compiler=compiler, kis_plan=kis, credentials=credentials, policy=POLICY,
@@ -387,6 +392,7 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
             return dict(status='NO_RUN', reason='ONE_SHOT_DATE_CLOSED', normal_messages_sent=False)
     else:
         diagnostic=False
+    sr5=bool(one_shot_tag and one_shot_tag.startswith('us5-'))
     session = latest_one_shot_session(market,now) if one_shot_tag is not None else target_session(market, now)
     if session is None:
         return dict(status='NO_RUN', reason='SESSION_NOT_COMPLETED_OR_CLOSED', normal_messages_sent=False)
@@ -426,9 +432,9 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
             session=session.isoformat(), code_commit=head, configuration_sha256=digest(config.model_dump(mode='json')),
             consent_basis='LOCAL_USER_MANAGED_CONFIGURATION_NOT_EXTERNAL_OR_DAILY_HUMAN_SIGNATURE',
             source_seconds=1800 if market == 'us' else 600, model_per_call_seconds=600,
-            max_http=sum(US2_CAPS.values()) if diagnostic else sum(LOCAL_CAPS[market].values()),
-            max_models=8 if diagnostic else 42 if market == 'us' else 18,
-            b2_retry_policy=B2_US2_DIAGNOSTIC_V1 if diagnostic else B2_PER_TICKER_ONE_RETRY_V1 if market == 'us' else None,
+            max_http=sum(SR5_CAPS.values()) if sr5 else sum(US2_CAPS.values()) if diagnostic else sum(LOCAL_CAPS[market].values()),
+            max_models=15 if sr5 else 8 if diagnostic else 42 if market == 'us' else 18,
+            b2_retry_policy=B2_SR5_DIAGNOSTIC_V1 if sr5 else B2_US2_DIAGNOSTIC_V1 if diagnostic else B2_PER_TICKER_ONE_RETRY_V1 if market == 'us' else None,
             normal_messages_sent=False,
             **(dict(one_shot_tag=one_shot_tag,one_shot_date='2026-11-20') if one_shot_tag else {})), exclusive=True)
         try:

@@ -58,7 +58,9 @@ def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True, subj
     base = old.listed_plan(subjects, run='SYNTHETIC_V8_US', source='source-one')
     plan = compile_model_plan(replace(base.cohort, limitation_subjects=('SKHY',) if limited else ()),
                               topology='CANONICAL_PRODUCTION')
-    assert len(plan.slots) == (29 if limited else 1+3*((len(subjects)+2)//3)+len(subjects))
+    batches=(len(subjects)+2)//3
+    b_batches=sum(bool(set(subjects[i:i+3])-set(plan.cohort.limitation_subjects)) for i in range(0,len(subjects),3))
+    assert len(plan.slots) == 1+2*batches+b_batches+len(subjects)-len(plan.cohort.limitation_subjects)
     original = old.SelectedRunLedger
     def fresh_ledger(**kwargs):
         kwargs.update(provider_caps={'kiwoom':1}, max_http=1)
