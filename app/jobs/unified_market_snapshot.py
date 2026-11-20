@@ -10,8 +10,11 @@ import fcntl
 import json
 import os
 from pathlib import Path
+import pwd
 import re
+import stat
 import subprocess
+import tempfile
 import time
 from typing import Literal
 
@@ -80,6 +83,35 @@ def _local_lock(path, *, existing=False):
         os.close(fd)
 
 
+def _local_model_runtime(execution):
+    """Private generation scratch outside Git, independent of launchd HOME."""
+    from app.services.research_artifact_budget import FREE_GUARD
+
+    if not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,159}', execution):
+        raise ValueError('local_model_runtime_generation_invalid')
+    uid = os.getuid()
+    home = _absolute_local_path(pwd.getpwuid(uid).pw_dir)
+    if not home.is_dir() or home.stat().st_uid != uid:
+        raise ValueError('local_model_runtime_os_home_owner_required')
+    base = _absolute_local_path(str(home/'Library/Application Support/ThesisMonitor/private-model-runtime'))
+    if any((p/'.git').exists() for p in (base.resolve(), *base.resolve().parents)):
+        raise ValueError('production_model_input_root_inside_repository')
+    base.mkdir(parents=True, exist_ok=True, mode=0o700)
+    info = base.lstat()
+    if not stat.S_ISDIR(info.st_mode) or info.st_uid != uid or stat.S_IMODE(info.st_mode) != 0o700:
+        raise ValueError('local_model_runtime_private_directory_required')
+    fs = os.statvfs(base)
+    if fs.f_bavail*fs.f_frsize < FREE_GUARD:
+        raise ValueError('local_model_runtime_free_space_guard')
+    runtime = Path(tempfile.mkdtemp(prefix=execution+'-', dir=base))
+    info = runtime.lstat()
+    if (runtime.is_symlink() or info.st_uid != uid or stat.S_IMODE(info.st_mode) != 0o700
+            or any((p/'.git').exists() for p in (runtime.resolve(), *runtime.resolve().parents))):
+        runtime.rmdir()
+        raise ValueError('local_model_runtime_private_directory_required')
+    return runtime
+
+
 def _record_local_failure(directory, exc, *, config, session, generation=None, before_owner_cleanup=False):
     """Keep the first bounded code-only diagnostic; cleanup cannot overwrite it."""
     from app.services.unified_run_artifacts import durable_json, sha256_bytes
@@ -142,6 +174,19 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     from app.services.vnext_execution_profile import SOL_HIGH_V1
 
     market = config.market
+    master = 'local-' + market + '-' + session
+    if one_shot_tag is not None:
+        if market != 'us' or not re.fullmatch(r'us-20261120-[a-f0-9]{8}', one_shot_tag):
+            raise ValueError('local_one_shot_tag_scope_invalid')
+        master += '-once-' + one_shot_tag
+    generation, execution = master+'-source', master+'-consumer'
+    runtime = _local_model_runtime(execution)
+    durable_json(directory/'model-runtime-preflight.json', dict(
+        execution=execution, runtime_root=str(runtime), uid=runtime.stat().st_uid,
+        mode=stat.S_IMODE(runtime.stat().st_mode), git_markers=[],
+        journal_path=str(runtime/'invocation-ledger'/execution/'events.jsonl'),
+        artifact_roots={str(directory):'source', str(directory/'results'):'result', str(runtime):'scratch'},
+        before_registration_and_financial_HTTP=True), exclusive=True)
     source_config = ProductionSourceConfiguration.model_validate_json(config.source_configuration.read())
     binding = json.loads(config.model_binding.read())
     bound = binding_from_json(binding)
@@ -179,12 +224,6 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     native = inspect_native(source_config, source_root, settings_env_file=config.settings_env_file, settings=settings)
     credentials = credential_binding(settings, market)
     now = datetime.now(timezone.utc)
-    master = 'local-' + market + '-' + session
-    if one_shot_tag is not None:
-        if market != 'us' or not re.fullmatch(r'us-20261120-[a-f0-9]{8}', one_shot_tag):
-            raise ValueError('local_one_shot_tag_scope_invalid')
-        master += '-once-' + one_shot_tag
-    generation, execution = master+'-source', master+'-consumer'
     children = {m: dict(generation=generation if m == market else master+'-reference',
         execution_generation=execution, subjects=list(UNIVERSE[m]))
         for m in (('us',) if market == 'us' else ('kr', 'us'))}
@@ -238,7 +277,6 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
                 for p in (source_root/'static').rglob('*') if p.is_file()})
         durable_json(source_root/'production-frozen-source-plan.json', frozen, exclusive=True)
         ledger.bind_source_plan(market, plan)
-        runtime = directory/'model-runtime'
         source = dict(registration_owner=owners[market], run_ledger=ledger, root=source_root,
             frozen=frozen, compiler=compiler, kis_plan=kis, credentials=credentials, policy=POLICY,
             deadline=time.monotonic()+(1800 if market == 'us' else 600),
@@ -266,6 +304,10 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
             registration.revoke_approval(approval)
         for values in credentials.values():
             values.clear()
+        try:
+            runtime.rmdir()
+        except OSError:
+            pass  # Keep nonempty current invocation evidence; retire only empty scratch.
 
 
 async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=None):
