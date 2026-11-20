@@ -184,9 +184,9 @@ def original_cycle_probe(folder, market, monkeypatch):
     rows = [json.loads(line) for line in (folder/'campaign.jsonl').read_bytes().splitlines()]
     assert observed['collector'] and any(r['event']=='PLAN' for r in rows)
     identity = rows[0]['identity']
-    assert identity['max_models'] == (30 if market == 'us' else 18)
+    assert identity['max_models'] == (31 if market == 'us' else 18)
     assert identity['max_http'] == (710 if market == 'us' else 332)
-    assert identity.get('timeout_retry_cap',0) == (1 if market=='us' else 0)
+    assert identity.get('timeout_retry_cap',0) == (2 if market=='us' else 0)
     assert budget['ceiling_seconds'] == (1800 if market=='us' else 600)
     assert not any(r['event'].startswith('PHYSICAL_') for r in rows)
     assert all(not values for values in credentials.values())

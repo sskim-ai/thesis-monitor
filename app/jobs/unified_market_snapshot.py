@@ -237,8 +237,8 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
             **(dict(routine_us_no_send_source_seconds=1800) if market == 'us' else {})))
         ledger = SelectedRunLedger(path=directory/'campaign.jsonl', approval=approval, master_id=master,
             children=children, provider_caps=LOCAL_CAPS[market], max_http=sum(LOCAL_CAPS[market].values()),
-            max_models=30 if market == 'us' else 18, staged_markets=True,
-            timeout_retry_cap=1 if market == 'us' else 0, wallclock_seconds_max=16200,
+            max_models=31 if market == 'us' else 18, staged_markets=True,
+            timeout_retry_cap=2 if market == 'us' else 0, wallclock_seconds_max=16200,
             database_identity=dict(path=str(target), device=device, inode=inode),
             capture_max_private_export_bytes=64*1024**2,
             runtime_cap=dict(endpoints=endpoints, market_subjects={'us':[*MARKET_SYMBOLS, '000660'], 'kr':[]},
@@ -285,7 +285,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
         artifacts = ResearchArtifactBudget(roots={directory:'source', directory/'results':'result', runtime:'scratch'})
         model = dict(binding=binding, runtime_root=runtime,
             journal_path=runtime/'invocation-ledger'/execution/'events.jsonl', run_ledger=ledger,
-            approved_max_invocations=ledger.identity['max_models'], timeout_retry_cap=1 if market == 'us' else 0,
+            approved_max_invocations=ledger.identity['max_models'], timeout_retry_cap=2 if market == 'us' else 0,
             artifact_budget=artifacts)
         with artifact_scope(artifacts):
             return await run_registered(settings, source=source, model=model, mode='LIVE_NO_SEND',
@@ -365,8 +365,8 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
             session=session.isoformat(), code_commit=head, configuration_sha256=digest(config.model_dump(mode='json')),
             consent_basis='LOCAL_USER_MANAGED_CONFIGURATION_NOT_EXTERNAL_OR_DAILY_HUMAN_SIGNATURE',
             source_seconds=1800 if market == 'us' else 600, model_per_call_seconds=600,
-            max_http=sum(LOCAL_CAPS[market].values()), max_models=30 if market == 'us' else 18,
-            timeout_retry_cap=1 if market == 'us' else 0, normal_messages_sent=False,
+            max_http=sum(LOCAL_CAPS[market].values()), max_models=31 if market == 'us' else 18,
+            timeout_retry_cap=2 if market == 'us' else 0, normal_messages_sent=False,
             **(dict(one_shot_tag=one_shot_tag,one_shot_date='2026-11-20') if one_shot_tag else {})), exclusive=True)
         try:
             async with asyncio.timeout(16200):
