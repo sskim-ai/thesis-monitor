@@ -111,9 +111,9 @@ def request_from_frame(frame):
                 slot_id = scope['slot_id']
                 attempt = value['attempt']
                 if (type(cap) is not int or (cap not in (1,2) if per_ticker is None else cap != 0)
-                        or per_ticker is not None and per_ticker != b2_retry_binding(plan) or inherited is not None
+                        or per_ticker is not None and per_ticker != b2_retry_binding(plan,per_ticker['policy']) or inherited is not None
                         or list(plan.cohort.market_subjects) != ['us']
-                        or value['maximum'] != (42 if per_ticker else len(plan.slots)+cap)
+                        or value['maximum'] != (per_ticker['maximum'] if per_ticker else len(plan.slots)+cap)
                         or attempt != dict(attempt_id=frame['request_id'], ordinal=value['ordinal'],
                             prompt_sha256=frame['prompt_sha256'], schema_sha256=frame['schema_sha256'])):
                     raise ValueError('production_worker_timeout_attempt_authorization_drift')

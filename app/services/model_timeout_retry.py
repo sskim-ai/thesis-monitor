@@ -5,14 +5,25 @@ import os
 import re
 
 B2_PER_TICKER_ONE_RETRY_V1 = 'B2_PER_TICKER_ONE_RETRY_V1'
+B2_US2_DIAGNOSTIC_V1 = 'B2_US2_DIAGNOSTIC_V1'
 
 
-def b2_retry_binding(plan):
+def retry_policy_limits(policy):
+    if policy == B2_PER_TICKER_ONE_RETRY_V1:
+        return 29,13,42
+    if policy == B2_US2_DIAGNOSTIC_V1:
+        return 6,2,8
+    raise ValueError('model_b2_retry_policy_unknown')
+
+
+def b2_retry_binding(plan, policy=B2_PER_TICKER_ONE_RETRY_V1):
     plan.validate()
     if plan.topology != 'CANONICAL_PRODUCTION' or list(plan.cohort.market_subjects) != ['us']:
         raise ValueError('model_b2_retry_original_us_plan_required')
-    value = dict(policy=B2_PER_TICKER_ONE_RETRY_V1, plan_sha256=plan.sha256,
-        base_slots=len(plan.slots), maximum=42,
+    if policy == B2_US2_DIAGNOSTIC_V1 and tuple(plan.cohort.market_subjects['us']) != ('GOOGL','MU'):
+        raise ValueError('model_b2_retry_exact_diagnostic_subjects_required')
+    value = dict(policy=policy, plan_sha256=plan.sha256,
+        base_slots=len(plan.slots), maximum=len(plan.slots)+sum(s.stage=='B2' for s in plan.slots),
         slot_stages={s.slot_id:s.stage for s in plan.slots},
         b2_slots={s.slot_id:s.subjects[0] for s in plan.slots if s.stage == 'B2' and len(s.subjects) == 1})
     validate_b2_retry_binding(value)
@@ -20,13 +31,14 @@ def b2_retry_binding(plan):
 
 
 def validate_b2_retry_binding(value):
+    base,reserves,maximum = retry_policy_limits(value.get('policy') if isinstance(value,dict) else None)
     if (type(value) is not dict or set(value) != {'policy','plan_sha256','base_slots','maximum','slot_stages','b2_slots'}
-            or value['policy'] != B2_PER_TICKER_ONE_RETRY_V1
             or not re.fullmatch('[a-f0-9]{64}', value['plan_sha256'])
-            or type(value['base_slots']) is not int or value['base_slots'] != 29
-            or type(value['maximum']) is not int or value['maximum'] != 42
-            or len(value['slot_stages']) != 29 or len(value['b2_slots']) != 13
-            or len(set(value['b2_slots'].values())) != 13
+            or type(value['base_slots']) is not int or value['base_slots'] != base
+            or type(value['maximum']) is not int or value['maximum'] != maximum
+            or len(value['slot_stages']) != base or len(value['b2_slots']) != reserves
+            or len(set(value['b2_slots'].values())) != reserves
+            or value['policy'] == B2_US2_DIAGNOSTIC_V1 and set(value['b2_slots'].values()) != {'GOOGL','MU'}
             or set(value['b2_slots']) != {s for s,stage in value['slot_stages'].items() if stage == 'B2'}
             or any(not s or not t for s,t in value['b2_slots'].items())):
         raise ValueError('model_b2_per_ticker_retry_binding_invalid')
@@ -189,12 +201,12 @@ def read_no_send_partition(cycle, *, plan, invocation_journal):
     identity = json.loads(raw.split(b'\n',1)[0])['identity']
     cap = identity.get('timeout_retry_cap', 0)
     per_ticker = identity.get('b2_retry_policy')
-    if per_ticker is not None and (cap or per_ticker != b2_retry_binding(plan)):
+    if per_ticker is not None and (cap or per_ticker != b2_retry_binding(plan,per_ticker['policy'])):
         raise ValueError('research_timeout_cold_per_ticker_scope')
     if type(cap) is not int or cap not in (0,1,2) or (not (cap or per_ticker) and omitted):
         raise ValueError('research_timeout_cold_retry_scope')
     expected = dict(contract='model-invocation-journal-v1',plan_sha256=plan.sha256,
-        maximum=42 if per_ticker else len(plan.slots)+cap)
+        maximum=per_ticker['maximum'] if per_ticker else len(plan.slots)+cap)
     if cap:
         expected['timeout_retry_cap'] = cap
     if per_ticker:

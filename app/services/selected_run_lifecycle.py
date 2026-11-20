@@ -65,10 +65,11 @@ class SelectedRunLedger:
                     raise ValueError('selected_fresh_timeout_retry_provider_caps_required')
                 self.identity['fresh_timeout_retry_market'] = 'us'
         if b2_retry_policy is not None:
-            from app.services.model_timeout_retry import B2_PER_TICKER_ONE_RETRY_V1
-            if (b2_retry_policy != B2_PER_TICKER_ONE_RETRY_V1 or timeout_retry_cap
+            from app.services.model_timeout_retry import retry_policy_limits
+            _,retry_reserves,retry_maximum = retry_policy_limits(b2_retry_policy)
+            if (timeout_retry_cap
                     or not staged_markets or onboarding or set(children) != {'us'}
-                    or wallclock_seconds_max is None or max_models != 42):
+                    or wallclock_seconds_max is None or max_models != retry_maximum):
                 raise ValueError('selected_b2_retry_new_us_campaign_required')
             self.identity['b2_retry_policy'] = b2_retry_policy
             if max_http:
@@ -108,7 +109,7 @@ class SelectedRunLedger:
                 if any(not set(c['subjects']) <= set(UNIVERSE[m]) for m,c in children.items()):
                     raise ValueError('selected_staged_original_roster_required')
                 monitoring = sum(1+3*((len(c['subjects'])+2)//3)+len(c['subjects']) for c in children.values())
-                maximum = min(88, monitoring+self.identity.get('onboarding',{}).get('max_models',0)) + (13 if b2_retry_policy else timeout_retry_cap)
+                maximum = min(88, monitoring+self.identity.get('onboarding',{}).get('max_models',0)) + (retry_reserves if b2_retry_policy else timeout_retry_cap)
             if not runtime_cap.get('endpoints') or max_models>maximum:
                 raise ValueError('runtime_cap_endpoints_and_fourteen_model_max_required')
             self.identity['runtime_cap'] = deepcopy(runtime_cap)
@@ -372,13 +373,13 @@ class SelectedRunLedger:
             if self.identity.get('b2_retry_policy'):
                 from app.services.model_timeout_retry import validate_b2_retry_binding
                 retry = validate_b2_retry_binding(v['b2_retry_binding'])
-                if (m != 'us' or v.get('inherited_market_slot') or retry['plan_sha256'] != v['sha256']
+                if (m != 'us' or retry['policy'] != self.identity['b2_retry_policy'] or v.get('inherited_market_slot') or retry['plan_sha256'] != v['sha256']
                         or v['slots'] != retry['base_slots'] or self.identity['max_models'] != retry['maximum']
                         or v['slot_stages'] != retry['slot_stages'] or set(v['slot_ids']) != set(retry['slot_stages'])):
                     raise ValueError('selected_model_per_ticker_plan_scope')
             s['models'][m] = v
             if (sum(r['slots'] for r in s['models'].values()) + self.identity.get('onboarding', {}).get('max_models', 0)
-                    + (13 if self.identity.get('b2_retry_policy') else self.identity.get('timeout_retry_cap', 0)) > self.identity['max_models']):
+                    + (len(v['b2_retry_binding']['b2_slots']) if self.identity.get('b2_retry_policy') else self.identity.get('timeout_retry_cap', 0)) > self.identity['max_models']):
                 raise ValueError('selected_model_plan_over_cap')
             if required<=set(s['models']): s['state'] = 'MODEL_BUDGETED'
         elif event == 'MODEL_INHERIT_MARKET':
@@ -622,7 +623,7 @@ class SelectedRunLedger:
             extra['slot_stages'] = {s.slot_id:s.stage for s in child.plan.slots}
         if self.identity.get('b2_retry_policy'):
             from app.services.model_timeout_retry import b2_retry_binding
-            extra['b2_retry_binding'] = b2_retry_binding(child.plan)
+            extra['b2_retry_binding'] = b2_retry_binding(child.plan,self.identity['b2_retry_policy'])
         if inherited_market:
             markets = [s.slot_id for s in child.plan.slots if s.stage == 'MARKET']
             if child.market != 'kr' or len(markets) != 1:

@@ -41,7 +41,7 @@ def deny_live(monkeypatch):
     monkeypatch.setattr(asyncio, 'create_subprocess_exec', denied)
 
 
-def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True):
+def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True, subjects=None):
     from app.services import production_message_renderer as render, model_timeout_retry as timeout
     from app.services.accepted_calibration_message_service import AcceptedDetailedCalibrationPlan, AcceptedMarketCalibration
     from app.services.daily_digest_renderer import render_daily_digest
@@ -54,11 +54,11 @@ def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True):
     from tests.test_production_b2_execution import body
     from tests.test_m12ds_r4_r4_market_balance import source as market_source, catalog as market_catalog
 
-    subjects = tuple(sorted(UNIVERSE['us']))
+    subjects = tuple(sorted(UNIVERSE['us'] if subjects is None else subjects))
     base = old.listed_plan(subjects, run='SYNTHETIC_V8_US', source='source-one')
     plan = compile_model_plan(replace(base.cohort, limitation_subjects=('SKHY',) if limited else ()),
                               topology='CANONICAL_PRODUCTION')
-    assert len(plan.slots) == (29 if limited else 30)
+    assert len(plan.slots) == (29 if limited else 1+3*((len(subjects)+2)//3)+len(subjects))
     original = old.SelectedRunLedger
     def fresh_ledger(**kwargs):
         kwargs.update(provider_caps={'kiwoom':1}, max_http=1)
@@ -113,7 +113,7 @@ def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True):
         packets[ticker],stocks[ticker],cores[ticker],pa[ticker],pb[ticker] = packet,src,core,a,baseline.decision
     monkeypatch.setattr(render,'stock_plan',lambda session,ticker,packet:accepted[ticker])
     monkeypatch.setattr(timeout.os,'killpg',lambda *args:(_ for _ in ()).throw(ProcessLookupError()))
-    sequence = [b'{}']*16
+    sequence = [b'{}']*sum(s.stage!='B2' for s in plan.slots)
     for ticker in ordinary:
         if ticker == 'TSM':
             sequence.extend(outcomes)

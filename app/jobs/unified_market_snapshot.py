@@ -25,7 +25,7 @@ from app.services.unified_market_run import KST, RunConfiguration, UnifiedMarket
 from app.services.unified_run_artifacts import SECRET_KEY
 from app.services.unified_snapshot_contract import ContractModel, digest
 from app.services.production_source_configuration import ProtocolFile
-from app.services.model_timeout_retry import B2_PER_TICKER_ONE_RETRY_V1
+from app.services.model_timeout_retry import B2_PER_TICKER_ONE_RETRY_V1, B2_US2_DIAGNOSTIC_V1
 
 
 LOCAL_BASIS = 'LOCAL_OPERATOR_SCHEDULED_NO_SEND'
@@ -35,6 +35,18 @@ LOCAL_CAPS = {
     'kr': dict(kiwoom=190, kis=85, opendart=48, naver_news=8, ecos=1),
 }
 ROOT = Path(__file__).resolve().parents[2]
+US2_SUBJECTS = ('GOOGL','MU')
+US2_CAPS = dict(kiwoom=120,sec_edgar=8,finnhub=4,google_news_rss=2,
+    fred=13,krx_night_futures=7,opendart=0,eia=3,ecos=1)
+
+
+def one_shot_scope(market, tag):
+    if tag is None:
+        return False
+    match = re.fullmatch(r'(us|us2|kr)-20261120-[a-f0-9]{8}',tag)
+    if match is None or ('us' if match[1]=='us2' else match[1]) != market:
+        raise ValueError('local_one_shot_tag_scope_invalid')
+    return match[1]=='us2'
 
 
 class LocalScheduleConfiguration(ContractModel):
@@ -175,10 +187,13 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     from app.services.vnext_execution_profile import SOL_HIGH_V1
 
     market = config.market
+    diagnostic = one_shot_scope(market,one_shot_tag)
+    subjects = US2_SUBJECTS if diagnostic else UNIVERSE[market]
+    caps = US2_CAPS if diagnostic else LOCAL_CAPS[market]
+    max_models = 8 if diagnostic else 42 if market=='us' else 18
+    retry_policy = B2_US2_DIAGNOSTIC_V1 if diagnostic else B2_PER_TICKER_ONE_RETRY_V1 if market=='us' else None
     master = 'local-' + market + '-' + session
     if one_shot_tag is not None:
-        if market != 'us' or not re.fullmatch(r'us-20261120-[a-f0-9]{8}', one_shot_tag):
-            raise ValueError('local_one_shot_tag_scope_invalid')
         master += '-once-' + one_shot_tag
     generation, execution = master+'-source', master+'-consumer'
     runtime = _local_model_runtime(execution)
@@ -233,29 +248,30 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     try:
         approval = registration.record_backend_approval(registration.ApprovalDecision(
             event_id=master, approved=True, user_message_sha256=digest(config.model_dump(mode='json')),
-            effective_at=now, expires_at=now+timedelta(hours=4, minutes=30),
+            effective_at=now, expires_at=min(now+timedelta(hours=4, minutes=30),
+                datetime.fromisoformat('2026-11-21T00:00:00+09:00')) if one_shot_tag else now+timedelta(hours=4,minutes=30),
             subjects=tuple(t for child in children.values() for t in child['subjects']),
             **(dict(routine_us_no_send_source_seconds=1800) if market == 'us' else {})))
         ledger = SelectedRunLedger(path=directory/'campaign.jsonl', approval=approval, master_id=master,
-            children=children, provider_caps=LOCAL_CAPS[market], max_http=sum(LOCAL_CAPS[market].values()),
-            max_models=42 if market == 'us' else 18, staged_markets=True,
-            b2_retry_policy=B2_PER_TICKER_ONE_RETRY_V1 if market == 'us' else None, wallclock_seconds_max=16200,
+            children=children, provider_caps=caps, max_http=sum(caps.values()),
+            max_models=max_models, staged_markets=True,
+            b2_retry_policy=retry_policy, wallclock_seconds_max=16200,
             database_identity=dict(path=str(target), device=device, inode=inode),
             capture_max_private_export_bytes=64*1024**2,
-            runtime_cap=dict(endpoints=endpoints, market_subjects={'us':[*MARKET_SYMBOLS, '000660'], 'kr':[]},
+            runtime_cap=dict(endpoints=endpoints, market_subjects={'us':[*MARKET_SYMBOLS,*(() if diagnostic else ('000660',))], 'kr':[]},
                 stop_on_first_external_failure=True,
                 **(dict(optional_news_429='SELECTED_US_OPTIONAL_NEWS_429_V1') if market == 'us' else {})))
         _, owners, _ = capture_approved_markets(settings=settings, runtime_directory=runtime_db_root,
             approval=approval, generations={market:generation}, policy=POLICY, ledger=ledger,
-            enabled=True, monitoring_only=True, subject_limits={market:len(UNIVERSE[market])},
-            priority_subjects={market:UNIVERSE[market]})
+            enabled=True, monitoring_only=True, subject_limits={market:len(subjects)},
+            priority_subjects={market:subjects}, **(dict(source_subjects={market:subjects}) if diagnostic else {}))
         _, receipt = registration._state(owners[market])
-        if receipt['calendar']['target'] != session or set(receipt['bindings']) != set(UNIVERSE[market]):
+        if receipt['calendar']['target'] != session or set(receipt['bindings']) != set(subjects):
             raise ValueError('local_schedule_completed_session_or_roster_drift')
         listing = json.loads((source_root/'static/kr-list-routing.json').read_bytes())['list'] if market == 'kr' else []
         official = json.loads((source_root/'static/official-security-identity.json').read_bytes())
         auxiliary = (dict(security=json.loads(config.auxiliary_issuer.read()), official_identity_sha256=digest(official))
-            if market == 'us' and config.auxiliary_issuer else None)
+            if market == 'us' and 'SKHY' in subjects and config.auxiliary_issuer else None)
         frozen, compiler, kis, private_seed = freeze_registered_child(registration_owner=owners[market],
             policy=POLICY, code_sha=config.code_commit, native=native, native_owner_root=source_config.native_owner_root,
             config_identities={p:digest(v) for p,v in credentials.items()},
@@ -276,7 +292,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
             require_persisted_plan(source_root, kis, plan)
         budget = request_budget({'plan':plan}, kis)
         if budget['total'] > ledger.identity['max_http'] or any(
-                n > LOCAL_CAPS[market].get(p, 0) for p,n in budget['providers'].items()):
+                n > caps.get(p, 0) for p,n in budget['providers'].items()):
             raise ValueError('local_schedule_frozen_plan_exceeds_original_caps')
         frozen.update(protocol_inputs=protocols, private_export_limit_bytes=64*1024**2,
             available_evidence_policy='FIELD_LOCAL_DATED_USE_V1',
@@ -284,6 +300,18 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
                 for p in (source_root/'static').rglob('*') if p.is_file()})
         durable_json(source_root/'production-frozen-source-plan.json', frozen, exclusive=True)
         ledger.bind_source_plan(market, plan)
+        if diagnostic:
+            if (tuple(plan.subjects)!=US2_SUBJECTS or tuple(compiler['stock'].subjects)!=US2_SUBJECTS
+                    or set(frozen['candidate']['financial_plans'])!=set(US2_SUBJECTS)
+                    or {d.subject for d in plan.descriptors if d.consumer_role.startswith('events:')}!=set(US2_SUBJECTS)
+                    or '000660' in frozen['candidate']['financial_plans']):
+                raise ValueError('local_us2_frozen_scope_before_HTTP')
+            durable_json(directory/'us2-before-http.json',dict(subjects=list(subjects),
+                stock_plan_sha256=digest(frozen['stock_plan']),request_plan_sha256=plan.plan_sha256,
+                financial_subjects=sorted(frozen['candidate']['financial_plans']),
+                actual_plan_budget=budget,defensive_caps=caps,max_HTTP=sum(caps.values()),
+                expected_base_model_slots=6,expected_B2_subjects=list(subjects),max_models=8,
+                financial_HTTP_before_this_receipt=0),exclusive=True)
         source = dict(registration_owner=owners[market], run_ledger=ledger, root=source_root,
             frozen=frozen, compiler=compiler, kis_plan=kis, credentials=credentials, policy=POLICY,
             deadline=time.monotonic()+(1800 if market == 'us' else 600),
@@ -293,7 +321,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
         model = dict(binding=binding, runtime_root=runtime,
             journal_path=runtime/'invocation-ledger'/execution/'events.jsonl', run_ledger=ledger,
             approved_max_invocations=ledger.identity['max_models'],
-            b2_retry_policy=B2_PER_TICKER_ONE_RETRY_V1 if market == 'us' else None,
+            b2_retry_policy=retry_policy,
             artifact_budget=artifacts)
         with artifact_scope(artifacts):
             return await run_registered(settings, source=source, model=model, mode='LIVE_NO_SEND',
@@ -330,6 +358,18 @@ def latest_one_shot_us_session(now):
     return session
 
 
+def latest_one_shot_session(market,now):
+    if market=='us':
+        return latest_one_shot_us_session(now)
+    from app.services.market_session import korea_market_session, _exchange_session_close, SEOUL, is_exchange_session_date
+    if now.utcoffset() is None or now.astimezone(KST).date().isoformat()!='2026-11-20':
+        return None
+    session=korea_market_session(now).latest_completed_regular_session_date
+    close=_exchange_session_close('XKRX',session,SEOUL)
+    return session if (session.isoformat()=='2026-11-20' and is_exchange_session_date('XKRX',session)
+        and close is not None and close<=now) else None
+
+
 async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=None):
     """One market/session through original ports. This function installs nothing."""
     from app.services.unified_market_run import target_session
@@ -342,14 +382,15 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
     if now.utcoffset() is None:
         raise ValueError('local_schedule_timezone_required')
     if one_shot_tag is not None:
-        if not re.fullmatch(r'us-20261120-[a-f0-9]{8}', one_shot_tag) or market != 'us':
-            raise ValueError('local_one_shot_tag_scope_invalid')
+        diagnostic=one_shot_scope(market,one_shot_tag)
         if now.astimezone(KST).date().isoformat() != '2026-11-20':
             return dict(status='NO_RUN', reason='ONE_SHOT_DATE_CLOSED', normal_messages_sent=False)
-    session = latest_one_shot_us_session(now) if one_shot_tag is not None else target_session(market, now)
+    else:
+        diagnostic=False
+    session = latest_one_shot_session(market,now) if one_shot_tag is not None else target_session(market, now)
     if session is None:
         return dict(status='NO_RUN', reason='SESSION_NOT_COMPLETED_OR_CLOSED', normal_messages_sent=False)
-    if one_shot_tag is not None and session.isoformat() != '2026-11-19':
+    if one_shot_tag is not None and session.isoformat() != ('2026-11-19' if market=='us' else '2026-11-20'):
         return dict(status='NO_RUN', reason='ONE_SHOT_SESSION_MISMATCH', normal_messages_sent=False)
     head = subprocess.check_output(['/usr/bin/git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
     dirty = subprocess.check_output(['/usr/bin/git', '-C', str(ROOT), 'status', '--porcelain', '--',
@@ -385,11 +426,14 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
             session=session.isoformat(), code_commit=head, configuration_sha256=digest(config.model_dump(mode='json')),
             consent_basis='LOCAL_USER_MANAGED_CONFIGURATION_NOT_EXTERNAL_OR_DAILY_HUMAN_SIGNATURE',
             source_seconds=1800 if market == 'us' else 600, model_per_call_seconds=600,
-            max_http=sum(LOCAL_CAPS[market].values()), max_models=42 if market == 'us' else 18,
-            b2_retry_policy=B2_PER_TICKER_ONE_RETRY_V1 if market == 'us' else None, normal_messages_sent=False,
+            max_http=sum(US2_CAPS.values()) if diagnostic else sum(LOCAL_CAPS[market].values()),
+            max_models=8 if diagnostic else 42 if market == 'us' else 18,
+            b2_retry_policy=B2_US2_DIAGNOSTIC_V1 if diagnostic else B2_PER_TICKER_ONE_RETRY_V1 if market == 'us' else None,
+            normal_messages_sent=False,
             **(dict(one_shot_tag=one_shot_tag,one_shot_date='2026-11-20') if one_shot_tag else {})), exclusive=True)
         try:
-            async with asyncio.timeout(16200):
+            remaining=(datetime.fromisoformat('2026-11-21T00:00:00+09:00')-datetime.now(KST)).total_seconds() if one_shot_tag else 16200
+            async with asyncio.timeout(min(16200,remaining)):
                 result = await _local_registered_cycle(config, directory, session.isoformat(),
                     **(dict(one_shot_tag=one_shot_tag) if one_shot_tag else {}))
         except BaseException as exc:

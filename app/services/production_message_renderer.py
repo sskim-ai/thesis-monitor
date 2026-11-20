@@ -47,7 +47,9 @@ def market_message(session, *, sector_taxonomy_version=None, macro_display_captu
         text=render_daily_digest(None, accepted_market=plan), plan_sha256=digest(plan.model_dump(mode='json')))
     if session.market == 'us':
         from app.services.selected_news_rate_limit import disclose
-        message = disclose(message, [s.get('event_view', {}) for s in session.fresh_stocks.values()], expected_count=14)
+        subjects=set(session.fresh_stocks)
+        message = disclose(message, [s.get('event_view', {}) for s in session.fresh_stocks.values()],
+            expected_count=2 if subjects=={'GOOGL','MU'} else 14)
     return message
 
 

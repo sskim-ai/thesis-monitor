@@ -45,7 +45,7 @@ class ModelInvocationJournal:
             self.identity['timeout_retry_cap'] = retry_cap
         if b2_retry_policy is not None:
             validate_b2_retry_binding(b2_retry_policy)
-            if retry_cap or inherited_market_slot or maximum != 42 or b2_retry_policy['plan_sha256'] != plan_sha256:
+            if retry_cap or inherited_market_slot or maximum != b2_retry_policy['maximum'] or b2_retry_policy['plan_sha256'] != plan_sha256:
                 raise ValueError('model_b2_retry_journal_scope')
             self.identity['b2_retry_policy'] = b2_retry_policy
         self.transact('OPEN')
@@ -76,7 +76,7 @@ def _apply(state, event, value, identity):
         if policy is not None:
             validate_b2_retry_binding(policy)
             if (identity.get('timeout_retry_cap') or identity.get('inherited_market_slot')
-                    or identity['maximum'] != 42 or identity['plan_sha256'] != policy['plan_sha256']):
+                    or identity['maximum'] != policy['maximum'] or identity['plan_sha256'] != policy['plan_sha256']):
                 raise ValueError('model_b2_retry_journal_identity')
         if event == 'OPEN':
             return

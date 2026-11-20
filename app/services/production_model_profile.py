@@ -83,13 +83,14 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
         self.timeout_retry_cap = timeout_retry_cap
         self.b2_retry_policy = None
         if b2_retry_policy is not None:
-            from app.services.model_timeout_retry import B2_PER_TICKER_ONE_RETRY_V1, b2_retry_binding
-            if (b2_retry_policy != B2_PER_TICKER_ONE_RETRY_V1 or timeout_retry_cap
+            from app.services.model_timeout_retry import retry_policy_limits, b2_retry_binding
+            maximum = retry_policy_limits(b2_retry_policy)[2]
+            if (timeout_retry_cap
                     or plan is None or journal_path is None or run_ledger is None or market_origin is not None
                     or run_ledger.identity.get('b2_retry_policy') != b2_retry_policy
-                    or run_ledger.identity['max_models'] != 42 or approved_max_invocations != 42):
+                    or run_ledger.identity['max_models'] != maximum or approved_max_invocations != maximum):
                 raise ValueError('model_per_ticker_retry_requires_new_us_campaign')
-            self.b2_retry_policy = b2_retry_binding(plan)
+            self.b2_retry_policy = b2_retry_binding(plan,b2_retry_policy)
         elif run_ledger is not None and run_ledger.identity.get('b2_retry_policy'):
             raise ValueError('model_b2_retry_ledger_policy_mismatch')
         self.retry_enabled = bool(timeout_retry_cap or self.b2_retry_policy)

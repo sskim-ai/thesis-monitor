@@ -16,10 +16,12 @@ from tests.test_minimal_class_c_export import database, POLICY
 
 
 def registered(tmp_path, us='NEWUS', source_identity=False):
-    permission = database(tmp_path, [(us,'us'), ('999999','kr')])
+    subjects=(us,) if isinstance(us,str) else tuple(us)
+    permission = database(tmp_path, [(t,'us') for t in subjects]+[('999999','kr')])
     if source_identity:
         with sqlite3.connect(permission.database) as db:
-            db.execute('UPDATE securitymaster SET canonical_security_id=? WHERE ticker=?', ('security-'+us,us))
+            for ticker in subjects:
+                db.execute('UPDATE securitymaster SET canonical_security_id=? WHERE ticker=?', ('security-'+ticker,ticker))
     now = datetime.now(timezone.utc)
     decision = registration.ApprovalDecision(event_id='SYNTHETIC_ONE_EVENT', approved=True,
         user_message_sha256=digest('synthetic only'), effective_at=now-timedelta(seconds=1),
@@ -27,7 +29,7 @@ def registered(tmp_path, us='NEWUS', source_identity=False):
     approval = registration.record_backend_approval(decision)
     settings = SimpleNamespace(database_url='sqlite:///'+str(permission.database))
     path, dev, ino = database_target(settings, runtime_directory=tmp_path)
-    children = dict(us=dict(generation='US_CHILD',subjects=[us]),
+    children = dict(us=dict(generation='US_CHILD',subjects=list(subjects)),
         kr=dict(generation='KR_CHILD',subjects=['999999']))
     ledger = SelectedRunLedger(path=tmp_path/'run.jsonl', approval=approval, master_id='MASTER',
         children=children, provider_caps={'kiwoom':2}, max_http=2, max_models=10,
@@ -69,7 +71,7 @@ def test_repeat_capture_and_wrong_database_denied_before_connection(tmp_path):
         ledger.before_registration(approval=approval,permission=database(tmp_path/'other',[('X','us')]),generations={})
 
 
-def admitted_source(tmp_path, monkeypatch):
+def admitted_source(tmp_path, monkeypatch, subjects=('MU',)):
     # Exercise actual Stock/financial/preflight + original sealed Market kernel.
     # Only projector selection is injected for this dated synthetic fixture;
     # it does NOT prove current Selected build_inputs or a live 4-panel run.
@@ -85,15 +87,17 @@ def admitted_source(tmp_path, monkeypatch):
     from scripts.r2b_r5_market_adapter import project_sealed_market_context
     from app.services.unified_source_policy import UnifiedSourcePolicy
     from app.services.provider_valuation_calibration_context import calibration_context
-    settings, approval, decision, ledger, (_, owners, _) = capture(tmp_path, 'MU', True)
+    settings, approval, decision, ledger, (_, owners, _) = capture(tmp_path, subjects, True)
     p=plan_fixture.__wrapped__().model_copy(update={'run_id':'US_CHILD'})
     policy=UnifiedSourcePolicy(SOURCE_POLICY.allowed_providers|frozenset({'finnhub','kiwoom_rest'}))
-    with wire_clock(p.frozen_at+timedelta(seconds=4)):
-        inputs=fresh_inputs(tmp_path/'wire','MU',verified_identity=True,plan=p,policy=policy)
-    inputs.update(reported_comparison_business=True,source_window=window(p))
-    inputs['valuation_inputs']=native_input(inputs['financial_inputs']['plan']['security'],
-        start=p.frozen_at,run=p.run_id,policy=policy)
-    stock=assemble_fresh_stock(**inputs)
+    stocks,raw_inputs={},{}
+    for ticker in subjects:
+        with wire_clock(p.frozen_at+timedelta(seconds=4)):
+            inputs=fresh_inputs(tmp_path/'wire'/ticker,ticker,verified_identity=True,plan=p,policy=policy)
+        inputs.update(reported_comparison_business=True,source_window=window(p))
+        inputs['valuation_inputs']=native_input(inputs['financial_inputs']['plan']['security'],
+            start=p.frozen_at,run=p.run_id,policy=policy)
+        stocks[ticker]=assemble_fresh_stock(**inputs);raw_inputs[ticker]=inputs
     packet, seed, graph=fixture('us',run=p.run_id)
     from tests.night_owner_fixtures import night_fixture
     night=night_fixture((p.frozen_at+timedelta(seconds=1)).isoformat(),run=p.run_id)
@@ -112,13 +116,13 @@ def admitted_source(tmp_path, monkeypatch):
         projection['projection_sha256']=digest(projection)
         doc['projection']=projection
     graph['publication_context']=deepcopy(packet['publication_context'])
-    graph['stocks']={'MU':build_source_authority(**fresh_authority_inputs(stock,inputs))}
-    packet.update(stocks={'MU':stock},authority_graph_sha256=digest(graph))
+    graph['stocks']={t:build_source_authority(**fresh_authority_inputs(stocks[t],raw_inputs[t])) for t in subjects}
+    packet.update(stocks=stocks,authority_graph_sha256=digest(graph))
     whole=dict(packets={'us':packet},seed=seed,authority_graph=graph,authority_graph_sha256=digest(graph))
     monkeypatch.setattr(scoped,'project_production_market_context',project_sealed_market_context)
-    source, owner, cohort=scoped.prepare_scoped_research_source(enabled=True,market='us',subjects=('MU',),
-        registration_owner=owners['us'],whole=whole,local_seeds={'MU':inputs['technical_inputs']['local_seed']},
-        valuation_contexts={'MU':calibration_context(stock['valuation_view'])},generation=p.run_id,
+    source, owner, cohort=scoped.prepare_scoped_research_source(enabled=True,market='us',subjects=subjects,
+        registration_owner=owners['us'],whole=whole,local_seeds={t:raw_inputs[t]['technical_inputs']['local_seed'] for t in subjects},
+        valuation_contexts={t:calibration_context(stocks[t]['valuation_view']) for t in subjects},generation=p.run_id,
         coverage=None,census=None)
     return source,owner,cohort,owners['us'],ledger,decision
 

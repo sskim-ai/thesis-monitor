@@ -104,7 +104,7 @@ class CollectorReached(RuntimeError):
     pass
 
 
-def original_cycle_probe(folder, market, monkeypatch):
+def original_cycle_probe(folder, market, monkeypatch, *, one_shot_tag=None):
     from app.config import Settings
     from app.services import codex_runtime_binding as binding
     from app.services import kiwoom_global_lane as lane_module
@@ -179,15 +179,16 @@ def original_cycle_probe(folder, market, monkeypatch):
     monkeypatch.setattr(job,'load_adapter',lambda *a,**kw:pytest.fail('model_factory_not_reached'))
     session = registration.completed_clock(market, datetime.now(timezone.utc))['target']
     with pytest.raises(CollectorReached):
-        asyncio.run(job._local_registered_cycle(config, folder, session))
+        asyncio.run(job._local_registered_cycle(config, folder, session,one_shot_tag=one_shot_tag))
     budget = json.loads((folder/'source-time-budget.json').read_bytes())
     rows = [json.loads(line) for line in (folder/'campaign.jsonl').read_bytes().splitlines()]
     assert observed['collector'] and any(r['event']=='PLAN' for r in rows)
     identity = rows[0]['identity']
-    assert identity['max_models'] == (42 if market == 'us' else 18)
-    assert identity['max_http'] == (710 if market == 'us' else 332)
+    diagnostic=bool(one_shot_tag and one_shot_tag.startswith('us2-'))
+    assert identity['max_models'] == (8 if diagnostic else 42 if market == 'us' else 18)
+    assert identity['max_http'] == (sum(job.US2_CAPS.values()) if diagnostic else 710 if market == 'us' else 332)
     assert identity.get('timeout_retry_cap',0) == 0
-    assert identity.get('b2_retry_policy') == ('B2_PER_TICKER_ONE_RETRY_V1' if market=='us' else None)
+    assert identity.get('b2_retry_policy') == ('B2_US2_DIAGNOSTIC_V1' if diagnostic else 'B2_PER_TICKER_ONE_RETRY_V1' if market=='us' else None)
     if market == 'kr':
         from app.services.selected_kis_sources import require_persisted_plan
         from app.services.selected_source_plan import SelectedRequestPlan

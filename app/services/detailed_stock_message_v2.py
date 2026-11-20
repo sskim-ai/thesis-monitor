@@ -60,7 +60,7 @@ def _us_sr_rows(packet, base, axes, security_id):
     import re
     from app.services.dated_multiframe_research import period_end
     from app.services.market_session import us_market_session
-    from app.services.us_dated_source_sr import CONTRACT, REFERENCE
+    from app.services.us_dated_source_sr import CONTRACT, REFERENCE, valid_reference_lineage
     source = base.source_stock
     chart = source["packet"]["stocks"][0]["chart_context"]
     ref = chart.get("structure", {}).get("price_structure_v3", {})
@@ -72,7 +72,7 @@ def _us_sr_rows(packet, base, axes, security_id):
             or not isinstance(ref.get("source_plan_sha256"), str)
             or not re.fullmatch(r"[a-f0-9]{64}", ref["source_plan_sha256"])
             or ref.get("eligible_for_current_price") is not False or ref.get("eligible_for_b2_timing") is not False
-            or ref.get("as_of") != ref.get("target_session")
+            or not valid_reference_lineage(ref)
             or ref.get("as_of") != ref.get("completed_sources", {}).get("daily", {}).get("completed")):
         return ()
     # Dated adjusted S/R has its own receipt/session proof, not the isolated
@@ -84,7 +84,7 @@ def _us_sr_rows(packet, base, axes, security_id):
         target = date.fromisoformat(ref["as_of"])
         if (observed.utcoffset() is None or original != observed
                 or clock.get("run_id") != ref["source_generation"]
-                or us_market_session(observed).latest_completed_regular_session_date != target):
+                or us_market_session(observed).latest_completed_regular_session_date != date.fromisoformat(ref['target_session'])):
             return ()
         completed = ref["completed_sources"]
         if set(completed) != {"daily", "weekly", "monthly"}:
@@ -126,8 +126,9 @@ def _us_sr_rows(packet, base, axes, security_id):
         if low < Decimal("0.01") or low != high and format(low, ".2f") == format(high, ".2f"):
             number = f"${low:f}–${high:f}"
         tier = {"near": "가까운 ", "major": "주요 구조 "}.get(zone.get("tier"), "")
+        excluded = f" ({ref['target_session']} 해당 일봉 불일치 제외)" if ref.get('latest_daily_exclusion') else ''
         rows.append(_row("price", zone["id"],
-            f"{ref['as_of']} 미국 완료 거래일 기준 조정봉 V3 참고 {tier}{labels[zone['side']]} USD: {number} "
+            f"{ref['as_of']} 미국 완료 거래일 기준 조정봉 V3 참고{excluded} {tier}{labels[zone['side']]} USD: {number} "
             "(현재가·평가배수·B2 진입 권한 아님)",
             facts=(zone["id"], *refs), hashes=(digest(ref),),
             formatting="dated-us-v3-no-b2-or-quote-authority-v1"))
