@@ -93,8 +93,8 @@ def test_relative_db_and_capture_share_operating_env_root_without_url_rewrite(fi
     assert f.observed['target']==(expected,expected.stat().st_dev,expected.stat().st_ino)
     assert f.settings.database_url=='sqlite:///./data/thesis_monitor.sqlite3'
     assert all((r/'data/thesis_monitor.sqlite3').read_bytes()==b'EMPTY_NOT_A_DATABASE' for r in (f.operating,f.review))
-    assert [v['max_models'] for v in f.observed['ledger_options']]==[31,18]
-    assert [v['timeout_retry_cap'] for v in f.observed['ledger_options']]==[2,0]
+    assert [v['max_models'] for v in f.observed['ledger_options']]==[42,18]
+    assert [v['b2_retry_policy'] for v in f.observed['ledger_options']]==['B2_PER_TICKER_ONE_RETRY_V1',None]
 
 
 def test_different_pinned_database_or_env_folder_stops_before_owner(fixture):

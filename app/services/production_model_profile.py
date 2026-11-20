@@ -74,13 +74,26 @@ class FourPanelSolHighCallBudgetV1:
 class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
     """Explicit plan cap, shared across markets. The old experiment stays separate."""
     def __init__(self, slots=None, *, plan=None, approved_max_invocations=None, approved_plan_sha256=None,
-                 journal_path=None, run_ledger=None, market_origin=None, timeout_retry_cap=0):
+                 journal_path=None, run_ledger=None, market_origin=None, timeout_retry_cap=0, b2_retry_policy=None):
         self.plan = plan
         self.journal = None
         self.market_origin = market_origin
         self.inherited, self.inherited_market_slot = {}, None
         self.run_ledger, self.run_intents = run_ledger, {}
         self.timeout_retry_cap = timeout_retry_cap
+        self.b2_retry_policy = None
+        if b2_retry_policy is not None:
+            from app.services.model_timeout_retry import B2_PER_TICKER_ONE_RETRY_V1, b2_retry_binding
+            if (b2_retry_policy != B2_PER_TICKER_ONE_RETRY_V1 or timeout_retry_cap
+                    or plan is None or journal_path is None or run_ledger is None or market_origin is not None
+                    or run_ledger.identity.get('b2_retry_policy') != b2_retry_policy
+                    or run_ledger.identity['max_models'] != 42 or approved_max_invocations != 42):
+                raise ValueError('model_per_ticker_retry_requires_new_us_campaign')
+            self.b2_retry_policy = b2_retry_binding(plan)
+        elif run_ledger is not None and run_ledger.identity.get('b2_retry_policy'):
+            raise ValueError('model_b2_retry_ledger_policy_mismatch')
+        self.retry_enabled = bool(timeout_retry_cap or self.b2_retry_policy)
+        self.retry_capacity = len(self.b2_retry_policy['b2_slots']) if self.b2_retry_policy else timeout_retry_cap
         self.exhausted, self.timeouts, self.attempts = set(), {}, {}
         self.physical_calls = self.retry_used = 0
         self.active_attempts = {}
@@ -121,9 +134,10 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
         if journal_path is not None:
             from app.services.model_invocation_journal import ModelInvocationJournal
             self.journal = ModelInvocationJournal(journal_path, plan_sha256=plan.sha256, maximum=self.maximum,
-                inherited_market_slot=self.inherited_market_slot, retry_cap=timeout_retry_cap)
+                inherited_market_slot=self.inherited_market_slot, retry_cap=timeout_retry_cap,
+                b2_retry_policy=self.b2_retry_policy)
             self._journal_state('OPEN')
-            if timeout_retry_cap and self.physical_calls:
+            if self.retry_enabled and self.physical_calls:
                 raise ValueError('model_timeout_campaign_restart_not_allowed')
 
     def _journal_state(self, event, **value):
@@ -210,8 +224,8 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
                 or (self.inherited_market_slot is not None and (
                     slot_id == self.inherited_market_slot or self.inherited_market_slot not in self.inherited))
                 or slot_scope['payload_sha256'] != payload_sha256
-                or bool(self.timeout_retry_cap) != (attempt is not None)
-                or self.timeout_retry_cap and retry and slot_id not in self.active_attempts
+                or self.retry_enabled != (attempt is not None)
+                or self.retry_enabled and retry and slot_id not in self.active_attempts
                 or (slot_id in self.used) != retry
                 or max(len(self.used),self.physical_calls) >= self.maximum):
             raise ValueError('model_slot_scope_drift_used_or_budget_exhausted')
@@ -235,7 +249,7 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
 
     def confirmed_timeout(self, slot_id, proof):
         self._verify_plan()
-        if not self.timeout_retry_cap or self.active_attempts.get(slot_id) != self.attempts[slot_id][-1]:
+        if not self.retry_enabled or self.active_attempts.get(slot_id) != self.attempts[slot_id][-1]:
             raise ValueError('model_timeout_recovery_not_in_active_process')
         self._journal_state('TIMEOUT_CONFIRMED', slot_id=slot_id, proof=proof)
         try:
@@ -244,7 +258,8 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
             self.stop()
             raise
         fresh = self.run_ledger.identity.get('fresh_timeout_retry_market')
-        if (len(self.attempts[slot_id]) == 1 and self.retry_used < self.timeout_retry_cap
+        if (len(self.attempts[slot_id]) == 1
+                and (slot_id in self.b2_retry_policy['b2_slots'] if self.b2_retry_policy else self.retry_used < self.timeout_retry_cap)
                 and (not fresh or self.bound[slot_id]['stage'] == 'B2')):
             return True
         if self.bound[slot_id]['stage'] == 'B2':
@@ -286,7 +301,7 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
             raise ValueError('model_slot_original_acceptance_binding_gap')
         output_sha256 = _sha(output_sha256)
         if self.journal is not None:
-            extra = dict(attempt_id=self.active_attempts[slot_id]['attempt_id']) if self.timeout_retry_cap else {}
+            extra = dict(attempt_id=self.active_attempts[slot_id]['attempt_id']) if self.retry_enabled else {}
             self._journal_state('ACCEPT', slot_id=slot_id, output_sha256=output_sha256, **extra)
         else:
             self.accepted[slot_id] = output_sha256
@@ -299,7 +314,9 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
                       consumed=len(self.used), remaining=self.maximum-len(self.used),
                       inherited=len(self.inherited), remaining_planned_slots=len(self.slots)-len(self.used)-len(self.inherited),
                       plan_sha256=self.plan.sha256 if self.plan is not None else None)
-        if self.timeout_retry_cap:
+        if self.retry_enabled:
             result.update(physical_attempts=self.physical_calls, remaining=self.maximum-self.physical_calls,
                           timeout_retries=self.retry_used, unissued=len(self.exhausted))
+        if self.b2_retry_policy:
+            result['b2_retry_policy'] = self.b2_retry_policy
         return result

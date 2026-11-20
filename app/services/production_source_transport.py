@@ -2,6 +2,7 @@
 import asyncio
 import json
 import os
+import re
 from pathlib import Path
 import sys
 import time
@@ -58,7 +59,7 @@ async def acquire_kis_worker(*, root, frozen, plan, credentials, remaining, run_
         cwd=ROOT, env=env, stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE)
     try:
-        stdout, _ = await asyncio.wait_for(process.communicate(json.dumps(frame).encode()), remaining)
+        stdout, stderr = await asyncio.wait_for(process.communicate(json.dumps(frame).encode()), remaining)
     except BaseException:
         if process.returncode is None:
             process.kill()
@@ -67,10 +68,21 @@ async def acquire_kis_worker(*, root, frozen, plan, credentials, remaining, run_
         raise
     finally:
         frame["credentials"].clear()
-    receipt = dict(status="PASS" if process.returncode == 0 else "FAIL", returncode=process.returncode,
-                   child_reaped=True, generation_id=frozen["generation_id"])
+    try:
+        diagnostic = json.loads(stdout) if len(stdout) <= 4096 else {}
+        if not isinstance(diagnostic, dict):
+            diagnostic = {}
+    except (ValueError, UnicodeError):
+        diagnostic = {}
+    terminal_ok = diagnostic.get('terminal') == 'KIS_FRESH_ACQUISITION_COMPLETE_REPLAY_REQUIRED'
+    error_type = diagnostic.get('error_type', '')
+    receipt = dict(status="PASS" if process.returncode == 0 and terminal_ok else "FAIL",
+        returncode=process.returncode, stage='KIS_WORKER', child_reaped=True, generation_id=frozen["generation_id"],
+        error_type=error_type if type(error_type) is str and re.fullmatch(r'[A-Za-z][A-Za-z0-9_]{0,79}', error_type) else 'UNREPORTED',
+        stdout_bytes=len(stdout), stderr_bytes=len(stderr),
+        stdout_sha256=sha256_bytes(stdout), stderr_sha256=sha256_bytes(stderr))
     durable_json(root / "kis-worker-exit.json", receipt, exclusive=True)
-    if process.returncode != 0 or json.loads(stdout)["terminal"] != "KIS_FRESH_ACQUISITION_COMPLETE_REPLAY_REQUIRED":
+    if process.returncode != 0 or not terminal_ok:
         if run_ledger is not None:run_ledger.stop('KIS_WORKER_FAILED')
         raise ValueError("production_kis_acquisition_failed")
 
@@ -110,6 +122,9 @@ class NativeProductionSourceTransport:
             from app.services.selected_source_dispatch import SelectedSourceDispatcher
             from app.services.selected_source_plan import request_budget,compile_selected_plan
             rebuilt=compile_selected_plan(compiler_args=compiler,kis_plan=kis_plan)
+            if frozen.get('selected_market') == 'kr':
+                from app.services.selected_kis_sources import require_persisted_plan
+                require_persisted_plan(root, kis_plan, rebuilt['plan'])
             if frozen.get('selected_market')=='us' and 'SKHY' in rebuilt['plan'].subjects:
                 require_selected_issuer_scope(root,frozen,rebuilt,self.run_ledger.identity['runtime_cap'])
             dispatcher=SelectedSourceDispatcher(**options,registration_owner=self.registration_owner,

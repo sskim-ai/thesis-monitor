@@ -25,6 +25,7 @@ from app.services.unified_market_run import KST, RunConfiguration, UnifiedMarket
 from app.services.unified_run_artifacts import SECRET_KEY
 from app.services.unified_snapshot_contract import ContractModel, digest
 from app.services.production_source_configuration import ProtocolFile
+from app.services.model_timeout_retry import B2_PER_TICKER_ONE_RETRY_V1
 
 
 LOCAL_BASIS = 'LOCAL_OPERATOR_SCHEDULED_NO_SEND'
@@ -237,8 +238,8 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
             **(dict(routine_us_no_send_source_seconds=1800) if market == 'us' else {})))
         ledger = SelectedRunLedger(path=directory/'campaign.jsonl', approval=approval, master_id=master,
             children=children, provider_caps=LOCAL_CAPS[market], max_http=sum(LOCAL_CAPS[market].values()),
-            max_models=31 if market == 'us' else 18, staged_markets=True,
-            timeout_retry_cap=2 if market == 'us' else 0, wallclock_seconds_max=16200,
+            max_models=42 if market == 'us' else 18, staged_markets=True,
+            b2_retry_policy=B2_PER_TICKER_ONE_RETRY_V1 if market == 'us' else None, wallclock_seconds_max=16200,
             database_identity=dict(path=str(target), device=device, inode=inode),
             capture_max_private_export_bytes=64*1024**2,
             runtime_cap=dict(endpoints=endpoints, market_subjects={'us':[*MARKET_SYMBOLS, '000660'], 'kr':[]},
@@ -267,6 +268,12 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
             include_kr_stock_flow=market == 'kr', kr_stock_chart_v3=market == 'kr',
             us_runtime_settings=settings if market == 'us' else None, issuer_auxiliary=auxiliary)
         plan = SelectedRequestPlan.model_validate(frozen['plan'])
+        if market == 'kr':
+            from app.services.selected_kis_sources import validate_plan, require_persisted_plan
+            if kis is None or digest(kis) != plan.kis_plan_sha256 or validate_plan(kis) != plan.subjects:
+                raise ValueError('local_schedule_kis_plan_binding_gap')
+            durable_json(source_root/'kis-plan.json', kis, exclusive=True)
+            require_persisted_plan(source_root, kis, plan)
         budget = request_budget({'plan':plan}, kis)
         if budget['total'] > ledger.identity['max_http'] or any(
                 n > LOCAL_CAPS[market].get(p, 0) for p,n in budget['providers'].items()):
@@ -285,7 +292,8 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
         artifacts = ResearchArtifactBudget(roots={directory:'source', directory/'results':'result', runtime:'scratch'})
         model = dict(binding=binding, runtime_root=runtime,
             journal_path=runtime/'invocation-ledger'/execution/'events.jsonl', run_ledger=ledger,
-            approved_max_invocations=ledger.identity['max_models'], timeout_retry_cap=2 if market == 'us' else 0,
+            approved_max_invocations=ledger.identity['max_models'],
+            b2_retry_policy=B2_PER_TICKER_ONE_RETRY_V1 if market == 'us' else None,
             artifact_budget=artifacts)
         with artifact_scope(artifacts):
             return await run_registered(settings, source=source, model=model, mode='LIVE_NO_SEND',
@@ -310,6 +318,18 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
             pass  # Keep nonempty current invocation evidence; retire only empty scratch.
 
 
+def latest_one_shot_us_session(now):
+    from app.services.market_session import us_market_session, _exchange_session_close, NEW_YORK, is_exchange_session_date
+
+    if now.utcoffset() is None or now.astimezone(KST).date().isoformat() != '2026-11-20':
+        return None
+    session = us_market_session(now).latest_completed_regular_session_date
+    close = _exchange_session_close('XNYS', session, NEW_YORK)
+    if session.isoformat() != '2026-11-19' or not is_exchange_session_date('XNYS', session) or close is None or close > now:
+        return None
+    return session
+
+
 async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=None):
     """One market/session through original ports. This function installs nothing."""
     from app.services.unified_market_run import target_session
@@ -326,7 +346,7 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
             raise ValueError('local_one_shot_tag_scope_invalid')
         if now.astimezone(KST).date().isoformat() != '2026-11-20':
             return dict(status='NO_RUN', reason='ONE_SHOT_DATE_CLOSED', normal_messages_sent=False)
-    session = target_session(market, now)
+    session = latest_one_shot_us_session(now) if one_shot_tag is not None else target_session(market, now)
     if session is None:
         return dict(status='NO_RUN', reason='SESSION_NOT_COMPLETED_OR_CLOSED', normal_messages_sent=False)
     if one_shot_tag is not None and session.isoformat() != '2026-11-19':
@@ -365,8 +385,8 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
             session=session.isoformat(), code_commit=head, configuration_sha256=digest(config.model_dump(mode='json')),
             consent_basis='LOCAL_USER_MANAGED_CONFIGURATION_NOT_EXTERNAL_OR_DAILY_HUMAN_SIGNATURE',
             source_seconds=1800 if market == 'us' else 600, model_per_call_seconds=600,
-            max_http=sum(LOCAL_CAPS[market].values()), max_models=31 if market == 'us' else 18,
-            timeout_retry_cap=2 if market == 'us' else 0, normal_messages_sent=False,
+            max_http=sum(LOCAL_CAPS[market].values()), max_models=42 if market == 'us' else 18,
+            b2_retry_policy=B2_PER_TICKER_ONE_RETRY_V1 if market == 'us' else None, normal_messages_sent=False,
             **(dict(one_shot_tag=one_shot_tag,one_shot_date='2026-11-20') if one_shot_tag else {})), exclusive=True)
         try:
             async with asyncio.timeout(16200):

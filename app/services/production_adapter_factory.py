@@ -39,7 +39,7 @@ def build_production_adapter(settings, *, clock=None, source_transport=None, mod
                              child=None, binding=None, runtime_root=None, journal_path=None,
                              approved_max_invocations=None, approved_plan_sha256=None, run_ledger=None,
                              market_origin=None, artifact_budget=None, retained_kr_ecos_body=None,
-                             timeout_retry_cap=0):
+                             timeout_retry_cap=0, b2_retry_policy=None):
     if child is not None:
         from app.services.research_no_send_run import build_research_no_send_adapter
 
@@ -49,9 +49,10 @@ def build_production_adapter(settings, *, clock=None, source_transport=None, mod
             runtime_root=runtime_root, journal_path=journal_path, approved_max_invocations=approved_max_invocations,
             approved_plan_sha256=approved_plan_sha256, clock=clock or Clock(), run_ledger=run_ledger,
             market_origin=market_origin, artifact_budget=artifact_budget, retained_kr_ecos_body=retained_kr_ecos_body,
-            timeout_retry_cap=timeout_retry_cap)
+            timeout_retry_cap=timeout_retry_cap, b2_retry_policy=b2_retry_policy)
     if any(value is not None for value in (binding, runtime_root, journal_path, approved_max_invocations,
-            approved_plan_sha256, run_ledger, market_origin, artifact_budget, retained_kr_ecos_body)) or timeout_retry_cap:
+            approved_plan_sha256, run_ledger, market_origin, artifact_budget, retained_kr_ecos_body,
+            b2_retry_policy)) or timeout_retry_cap:
         raise ValueError('prepared_cycle_original_child_required')
     if not settings.unified_snapshot_enabled or settings.unified_snapshot_runtime_contract != "unified-query-time-snapshot-v2":
         raise ValueError("production_adapter_disabled_or_wrong_version")

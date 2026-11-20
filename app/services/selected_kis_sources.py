@@ -31,3 +31,14 @@ def validate_plan(plan):
     if plan!=rebuilt:
         raise ValueError('selected_kis_plan_reproduction_gap')
     return tuple(plan['subjects'])
+
+
+def require_persisted_plan(root, plan, request_plan):
+    from app.services.production_source_seal import read
+    from app.services.research_artifact_budget import plain_path
+    from app.services.unified_snapshot_contract import digest
+
+    if (plan is None or digest(plan) != request_plan.kis_plan_sha256
+            or validate_plan(plan) != request_plan.subjects
+            or read(plain_path(root/'kis-plan.json')) != plan):
+        raise ValueError('selected_kis_persisted_plan_binding_gap')

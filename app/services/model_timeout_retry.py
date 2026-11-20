@@ -4,6 +4,34 @@ import json
 import os
 import re
 
+B2_PER_TICKER_ONE_RETRY_V1 = 'B2_PER_TICKER_ONE_RETRY_V1'
+
+
+def b2_retry_binding(plan):
+    plan.validate()
+    if plan.topology != 'CANONICAL_PRODUCTION' or list(plan.cohort.market_subjects) != ['us']:
+        raise ValueError('model_b2_retry_original_us_plan_required')
+    value = dict(policy=B2_PER_TICKER_ONE_RETRY_V1, plan_sha256=plan.sha256,
+        base_slots=len(plan.slots), maximum=42,
+        slot_stages={s.slot_id:s.stage for s in plan.slots},
+        b2_slots={s.slot_id:s.subjects[0] for s in plan.slots if s.stage == 'B2' and len(s.subjects) == 1})
+    validate_b2_retry_binding(value)
+    return value
+
+
+def validate_b2_retry_binding(value):
+    if (type(value) is not dict or set(value) != {'policy','plan_sha256','base_slots','maximum','slot_stages','b2_slots'}
+            or value['policy'] != B2_PER_TICKER_ONE_RETRY_V1
+            or not re.fullmatch('[a-f0-9]{64}', value['plan_sha256'])
+            or type(value['base_slots']) is not int or value['base_slots'] != 29
+            or type(value['maximum']) is not int or value['maximum'] != 42
+            or len(value['slot_stages']) != 29 or len(value['b2_slots']) != 13
+            or len(set(value['b2_slots'].values())) != 13
+            or set(value['b2_slots']) != {s for s,stage in value['slot_stages'].items() if stage == 'B2'}
+            or any(not s or not t for s,t in value['b2_slots'].items())):
+        raise ValueError('model_b2_per_ticker_retry_binding_invalid')
+    return value
+
 
 def confirmed_timeout(path, *, worker_pid, worker_returncode, receipt, prompt_sha256, schema_sha256):
     if (worker_returncode != 0 or receipt.get('status') != 'FAIL'
@@ -160,12 +188,17 @@ def read_no_send_partition(cycle, *, plan, invocation_journal):
         raise ValueError('research_timeout_cold_empty_journal')
     identity = json.loads(raw.split(b'\n',1)[0])['identity']
     cap = identity.get('timeout_retry_cap', 0)
-    if type(cap) is not int or cap not in (0,1,2) or (not cap and omitted):
+    per_ticker = identity.get('b2_retry_policy')
+    if per_ticker is not None and (cap or per_ticker != b2_retry_binding(plan)):
+        raise ValueError('research_timeout_cold_per_ticker_scope')
+    if type(cap) is not int or cap not in (0,1,2) or (not (cap or per_ticker) and omitted):
         raise ValueError('research_timeout_cold_retry_scope')
     expected = dict(contract='model-invocation-journal-v1',plan_sha256=plan.sha256,
-        maximum=len(plan.slots)+cap)
+        maximum=42 if per_ticker else len(plan.slots)+cap)
     if cap:
         expected['timeout_retry_cap'] = cap
+    if per_ticker:
+        expected['b2_retry_policy'] = per_ticker
     journal = read_invocation_journal(raw, expected)
     verify_render_partition(messages=messages,subjects=plan.cohort.market_subjects['us'],slots=plan.slots,b2=b2,
         journal=journal,accepted_content_sha256=outputs['VALIDATE']['output']['content_sha256'],plan=plan)

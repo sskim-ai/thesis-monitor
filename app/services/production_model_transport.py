@@ -101,22 +101,26 @@ def request_from_frame(frame):
                     or type(value.get('maximum')) is not int or value['maximum'] < physical_slots
                     or not 1 <= value.get('physical_call', 0) <= value['maximum']):
                 raise ValueError('production_worker_dynamic_plan_or_budget_drift')
-            if 'timeout_retry_cap' in value:
+            if 'timeout_retry_cap' in value or 'b2_retry_policy' in value:
                 from app.services.model_invocation_journal import read_invocation_journal
                 from app.services.research_artifact_budget import plain_path
 
-                cap = value['timeout_retry_cap']
+                from app.services.model_timeout_retry import b2_retry_binding
+                per_ticker = value.get('b2_retry_policy')
+                cap = value.get('timeout_retry_cap', 0)
                 slot_id = scope['slot_id']
                 attempt = value['attempt']
-                if (type(cap) is not int or cap not in (1,2) or inherited is not None
+                if (type(cap) is not int or (cap not in (1,2) if per_ticker is None else cap != 0)
+                        or per_ticker is not None and per_ticker != b2_retry_binding(plan) or inherited is not None
                         or list(plan.cohort.market_subjects) != ['us']
-                        or value['maximum'] != len(plan.slots)+cap
+                        or value['maximum'] != (42 if per_ticker else len(plan.slots)+cap)
                         or attempt != dict(attempt_id=frame['request_id'], ordinal=value['ordinal'],
                             prompt_sha256=frame['prompt_sha256'], schema_sha256=frame['schema_sha256'])):
                     raise ValueError('production_worker_timeout_attempt_authorization_drift')
                 journal = plain_path(auth.parent.parent / 'invocation-ledger' / plan.cohort.run_id / 'events.jsonl')
-                state = read_invocation_journal(journal.read_bytes(), dict(contract='model-invocation-journal-v1',
-                    plan_sha256=plan.sha256, maximum=value['maximum'], timeout_retry_cap=cap))
+                identity = dict(contract='model-invocation-journal-v1', plan_sha256=plan.sha256, maximum=value['maximum'])
+                identity.update(b2_retry_policy=per_ticker) if per_ticker else identity.update(timeout_retry_cap=cap)
+                state = read_invocation_journal(journal.read_bytes(), identity)
                 if (state['stopped'] or state['bound'].get(slot_id) != scope
                         or state['used']-state['accepted'].keys()-state['exhausted'] != {slot_id}
                         or state['attempts'][slot_id][-1] != attempt
@@ -129,7 +133,7 @@ def request_from_frame(frame):
         raise ValueError('production_model_worker_contract')
     return ProductionWireRequest(binding_from_json(frame['binding']), frame['request_id'],
         frame['prompt_sha256'], frame['schema_sha256'], policy,
-        frame['slot_scope'] if dynamic else None, dynamic and 'timeout_retry_cap' in value)
+        frame['slot_scope'] if dynamic else None, dynamic and ('timeout_retry_cap' in value or 'b2_retry_policy' in value))
 
 
 def render_prompt(payload, stage):
@@ -184,7 +188,7 @@ class OfficialProductionModelTransport:
 
     async def request(self, payload, *, model, effort, timeout, stage="B2", panel=None, slot_scope=None):
         kwargs = dict(model=model, effort=effort, timeout=timeout, stage=stage, panel=panel, slot_scope=slot_scope)
-        if not getattr(self.call_budget,'timeout_retry_cap',0):
+        if not getattr(self.call_budget,'retry_enabled',False):
             return await self._request_once(payload, **kwargs)
         try:
             return await self._request_once(payload, **kwargs)
@@ -217,13 +221,14 @@ class OfficialProductionModelTransport:
         identity = (stage, slot_scope['slot_id']) if dynamic else (stage, payload_sha256)
         ordinal = self.counts.get(identity, 0) + 1
         retry_cap = getattr(self.call_budget,'timeout_retry_cap',0)
-        if retry_cap:
+        retry_enabled = getattr(self.call_budget,'retry_enabled',False)
+        if retry_enabled:
             from app.services.research_no_send_run import current_stage_timer
             if current_stage_timer() is None:
                 raise ValueError('production_model_retry_requires_campaign_timer')
         maximum = self.call_budget.maximum if self.execution_profile else (90 if self.cycle[0] == "us" else 54)
-        if (ordinal > (1+bool(retry_cap) if self.execution_profile else 3) or self.total >= maximum
-                or retry_cap and ordinal != 1 + retry):
+        if (ordinal > (1+retry_enabled if self.execution_profile else 3) or self.total >= maximum
+                or retry_enabled and ordinal != 1 + retry):
             raise ValueError("production_model_call_budget_exhausted")
         prompt, schema = render_prompt(payload, stage), encoded(payload["response_schema"])
         if any(secret in prompt or secret in schema for secret in self.secrets):
@@ -253,7 +258,7 @@ class OfficialProductionModelTransport:
             if (timer := current_stage_timer()) is not None:
                 timer.check()
             attempt = dict(attempt_id=path.name, ordinal=ordinal, prompt_sha256=sha256_bytes(prompt),
-                schema_sha256=sha256_bytes(schema)) if retry_cap else None
+                schema_sha256=sha256_bytes(schema)) if retry_enabled else None
             extra = dict(attempt=attempt) if attempt is not None else {}
             physical_call = self.call_budget.consume(panel, stage, payload_sha256, slot_scope=slot_scope, **extra)
         else:
@@ -280,6 +285,8 @@ class OfficialProductionModelTransport:
                 authorization['inherited_market_slot'] = self.call_budget.inherited_market_slot
             if retry_cap:
                 authorization.update(timeout_retry_cap=retry_cap, attempt=attempt)
+            if getattr(self.call_budget,'b2_retry_policy',None):
+                authorization.update(b2_retry_policy=self.call_budget.b2_retry_policy, attempt=attempt)
         durable_json(path / "production-authorization.json", authorization, exclusive=True)
         if self.execution_profile:
             frame.update(execution_policy=asdict(policy), authorization_sha256=sha256_bytes(
@@ -356,7 +363,7 @@ class OfficialProductionModelTransport:
                 error.diagnosis=receipt.get('diagnosis')
                 error.cli_returncode=receipt.get('cli_returncode')
                 error.worker_returncode=process.returncode
-                if retry_cap and code == 'TRANSPORT_TIMEOUT':
+                if retry_enabled and code == 'TRANSPORT_TIMEOUT':
                     from app.services.model_timeout_retry import confirmed_timeout
 
                     error.confirmed_timeout = confirmed_timeout(path, worker_pid=process.pid,

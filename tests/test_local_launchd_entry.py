@@ -133,7 +133,7 @@ def original_cycle_probe(folder, market, monkeypatch):
     import hashlib
     item['sha256'] = hashlib.sha256(protocol.read_bytes()).hexdigest()
     source_config = ProductionSourceConfiguration(database_path=str(permission.database), native_owner_root=str(folder),
-        native_python=str(folder/'python'), completed_close=item, issuer_identity=item,
+        native_python=__import__('sys').executable, completed_close=item, issuer_identity=item,
         kr_listing_routing=dict(item,purpose='IDENTITY_ROUTING_ONLY'), kis_protocols={'probe.json':item})
     documents = {'source':source_config.model_dump(mode='json'), 'binding':{},
         'endpoints':{p:[dict(host='offline.invalid',prefix='/',methods=['GET','POST'],endpoint='OFFLINE')]
@@ -166,7 +166,7 @@ def original_cycle_probe(folder, market, monkeypatch):
         (root/'static/kr-list-routing.json').write_text(json.dumps(dict(list=[dict(code=t,marketCode='0') for t in UNIVERSE['kr']])))
         return {'probe':dict(sha256='0'*64,purpose='SYNTHETIC_PROTOCOL_ONLY')}
     monkeypatch.setattr(ProductionSourceConfiguration,'seal_protocols',seal)
-    monkeypatch.setattr(context, 'inspect_native', lambda *a:dict(owner_head='b'*40,
+    monkeypatch.setattr(context, 'inspect_native', lambda *a, **kw:dict(owner_head='b'*40,
         owner_files={'app/main.py':'b'*64},settings_sha256='c'*64,request_environment_sha256='d'*64))
     _, args, _ = compile_market(market, UNIVERSE[market][0])
     credentials = {p:['NOT_A_CREDENTIAL:'+p] for p in args['config_identities']}
@@ -184,9 +184,18 @@ def original_cycle_probe(folder, market, monkeypatch):
     rows = [json.loads(line) for line in (folder/'campaign.jsonl').read_bytes().splitlines()]
     assert observed['collector'] and any(r['event']=='PLAN' for r in rows)
     identity = rows[0]['identity']
-    assert identity['max_models'] == (31 if market == 'us' else 18)
+    assert identity['max_models'] == (42 if market == 'us' else 18)
     assert identity['max_http'] == (710 if market == 'us' else 332)
-    assert identity.get('timeout_retry_cap',0) == (2 if market=='us' else 0)
+    assert identity.get('timeout_retry_cap',0) == 0
+    assert identity.get('b2_retry_policy') == ('B2_PER_TICKER_ONE_RETRY_V1' if market=='us' else None)
+    if market == 'kr':
+        from app.services.selected_kis_sources import require_persisted_plan
+        from app.services.selected_source_plan import SelectedRequestPlan
+        frozen = json.loads((folder/'source/production-frozen-source-plan.json').read_bytes())
+        kis = json.loads((folder/'source/kis-plan.json').read_bytes())
+        require_persisted_plan(folder/'source', kis, SelectedRequestPlan.model_validate(frozen['plan']))
+    else:
+        assert not (folder/'source/kis-plan.json').exists()
     assert budget['ceiling_seconds'] == (1800 if market=='us' else 600)
     assert not any(r['event'].startswith('PHYSICAL_') for r in rows)
     assert all(not values for values in credentials.values())

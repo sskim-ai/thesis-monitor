@@ -215,7 +215,7 @@ class PreparedResearchBridge(ProductionRuntimeBridgeV1):
 def build_research_no_send_adapter(*, enabled=False, child, settings, binding, runtime_root,
                                    journal_path, approved_max_invocations, approved_plan_sha256, clock, run_ledger=None,
                                    market_origin=None, artifact_budget=None, retained_kr_ecos_body=None,
-                                   timeout_retry_cap=0):
+                                   timeout_retry_cap=0, b2_retry_policy=None):
     if enabled is not True:
         raise ValueError('research_no_send_factory_disabled')
     child.verify()
@@ -225,7 +225,7 @@ def build_research_no_send_adapter(*, enabled=False, child, settings, binding, r
     with artifact_scope(artifact_budget):
         budget = SolHighCallBudget(plan=child.plan, approved_max_invocations=approved_max_invocations,
             approved_plan_sha256=approved_plan_sha256, journal_path=journal_path, run_ledger=run_ledger,
-            market_origin=market_origin, timeout_retry_cap=timeout_retry_cap)
+            market_origin=market_origin, timeout_retry_cap=timeout_retry_cap, b2_retry_policy=b2_retry_policy)
     secrets = tuple(v.get_secret_value() if hasattr(v,'get_secret_value') else str(v)
         for k,v in settings.model_dump().items() if v and SECRET_KEY.search(k))
     model = OfficialProductionModelTransport(binding=binding, runtime_root=runtime_root,
@@ -244,7 +244,7 @@ async def run_prepared_research(bridge, *, root, enabled=False, local_output_rej
             or (multi_batch_local_seconds != 600 and split_model_timing is not True)):
         raise ValueError('research_multi_batch_local_limit_not_allowed')
     campaign_end = None
-    if getattr(bridge.model.call_budget,'timeout_retry_cap',0) and split_model_timing is not True:
+    if getattr(bridge.model.call_budget,'retry_enabled',False) and split_model_timing is not True:
         raise ValueError('research_timeout_retry_requires_campaign_timer')
     if split_model_timing is True:
         ledger = bridge.model.call_budget.run_ledger
@@ -301,6 +301,8 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                         retry_cap = getattr(bridge.model.call_budget,'timeout_retry_cap',0)
                         if retry_cap and bound['planned_calls']:
                             bound['campaign_timeout_retry_cap'] = retry_cap
+                        if getattr(bridge.model.call_budget,'b2_retry_policy',None) and stage == 'B2':
+                            bound['b2_retry_policy'] = bridge.model.call_budget.b2_retry_policy
                     request = dict(contract=CONTRACT, run_id=bridge.child.plan.cohort.run_id, stage=stage,
                         snapshot_sha256=snapshot_pin, snapshot=snapshot, inputs=dict(outputs),
                         configuration_sha256=digest(dict(purpose=TERMINAL, child_binding=bridge.child_binding)))
@@ -313,7 +315,10 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                     else:
                         receipt = state['stage_receipts'][-1]
                         loop = asyncio.get_running_loop()
-                        timer = _StageTimer(bound,loop,campaign_end, getattr(bridge.model.call_budget,'timeout_retry_cap',0))
+                        allowance = (bridge.model.call_budget.retry_capacity
+                            if getattr(bridge.model.call_budget,'b2_retry_policy',None) and stage == 'B2'
+                            else getattr(bridge.model.call_budget,'timeout_retry_cap',0))
+                        timer = _StageTimer(bound,loop,campaign_end, allowance)
                         token = _stage_timer.set(timer)
                         try:
                             async with timer.timeout:
@@ -337,7 +342,7 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
             accepted = set(calls.accepted)
             omitted = outputs['B2']['output'].get('unissued',{})
             exhausted = getattr(calls,'exhausted',set())
-            if (omitted and not getattr(calls,'timeout_retry_cap',0)
+            if (omitted and not getattr(calls,'retry_enabled',False)
                     or sorted(m['message_id'] for m in messages) != sorted(set(bridge.child_binding['message_ids'])-set(omitted))
                     or digest(messages) != outputs['VALIDATE']['output']['content_sha256']
                     or exhausted != {v['slot_id'] for v in omitted.values()}
@@ -345,7 +350,7 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                     or calls.used & inherited or accepted != (calls.used-exhausted) | inherited
                     or any(m.get('NO_SEND') is not True or not m.get('text') for m in messages)):
                 raise ValueError('research_render_coverage_or_content_drift')
-            if getattr(calls,'timeout_retry_cap',0):
+            if getattr(calls,'retry_enabled',False):
                 from app.services.model_invocation_journal import read_invocation_journal
                 from app.services.model_timeout_retry import verify_render_partition
 

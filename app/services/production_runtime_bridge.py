@@ -256,7 +256,7 @@ class ProductionRuntimeBridgeV1:
                 try:
                     result = await execute_b2(item, auth, current_binding=binding, transport=self.model, directory=directory/ticker)
                 except ModelTransportError as exc:
-                    if (b2_scope is None or not getattr(budget,'timeout_retry_cap',0)
+                    if (b2_scope is None or not getattr(budget,'retry_enabled',False)
                             or not getattr(exc,'confirmed_timeout',None) or exc.slot_id != b2_scope['slot_id']
                             or exc.slot_id not in budget.exhausted):
                         raise
@@ -284,7 +284,7 @@ class ProductionRuntimeBridgeV1:
             decisions = {ticker:digest(session.limitation_decision(ticker)) for ticker in sorted(limits)}
             if b2.get('limitation_decisions',{}) != decisions or (limits and (omitted or stage == 'DELIVER')):
                 raise ValueError('production_limitation_no_send_decision_binding')
-            if omitted and (stage not in {'VALIDATE','RENDER'} or not getattr(budget,'timeout_retry_cap',0)):
+            if omitted and (stage not in {'VALIDATE','RENDER'} or not getattr(budget,'retry_enabled',False)):
                 raise ValueError('production_partial_b2_no_send_required')
             if omitted:
                 from app.services.model_timeout_retry import verify_b2_coverage
