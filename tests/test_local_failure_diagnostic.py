@@ -43,7 +43,9 @@ def test_original_frame_and_allowlisted_code_without_source_replay(tmp_path, mon
     assert caught.value is original[0]
     folder = tmp_path/'runs/us-2026-11-19'
     receipt = json.loads((folder/'failure-diagnostic.json').read_bytes())
-    assert set(receipt) == {'exception_class', 'stable_error_code', 'last_application_frame', 'stage', 'NO_SEND'}
+    assert set(receipt) == {'exception_class', 'stable_error_code', 'last_application_frame', 'stage', 'NO_SEND',
+        'application_frames', 'market', 'target_session', 'source_generation', 'code_commit',
+        'runtime_module_sha256', 'source_seal_file_sha256', 'recorded_before_owner_cleanup'}
     assert receipt['exception_class'] == 'ValueError'
     assert receipt['stable_error_code'] == 'production_registered_selected_plan_required'
     assert receipt['stage'] == 'SOURCE_PREPARATION_OR_COLLECTION' and receipt['NO_SEND'] is True
@@ -127,3 +129,74 @@ def test_cancel_stays_cancelled_and_success_has_no_failure_receipt(tmp_path, mon
     result = asyncio.run(execute(tmp_path/'success', monkeypatch, success))
     assert result['status'] == 'SYNTHETIC_NO_SEND'
     assert not (tmp_path/'success/runs/us-2026-11-19/failure-diagnostic.json').exists()
+
+
+def test_first_diagnostic_is_sealed_before_cleanup_and_not_overwritten(tmp_path):
+    from hashlib import sha256
+    from types import SimpleNamespace
+    config = SimpleNamespace(market='us', code_commit='3'*40)
+    original = ValueError('selected_whole_original_stock_incomplete')
+    cleanup = ValueError('SYNTHETIC_CLEANUP_PRIVATE_DETAIL')
+    seal_body = b'{"receipt_sha256":"synthetic"}\n'
+    (tmp_path/'source-seal.json').write_bytes(seal_body)
+    with pytest.raises(ValueError) as caught:
+        try:
+            try:
+                raise original
+            except BaseException as exc:
+                job._record_local_failure(tmp_path, exc, config=config, session='2026-11-19',
+                    generation='local-us-2026-11-19-source', before_owner_cleanup=True)
+                raise
+            finally:
+                path = tmp_path/'failure-diagnostic.json'
+                body = path.read_bytes()
+                receipt = json.loads(body)
+                integrity = json.loads((tmp_path/'failure-diagnostic-sha256.json').read_bytes())
+                assert receipt['recorded_before_owner_cleanup'] is True
+                assert integrity == dict(file=path.name, bytes=len(body), sha256=sha256(body).hexdigest())
+                assert receipt['source_seal_file_sha256'] == sha256(seal_body).hexdigest()
+                raise cleanup
+        except BaseException as exc:
+            job._record_local_failure(tmp_path, exc, config=config, session='2026-11-19')
+            raise
+    assert caught.value is cleanup
+    assert (tmp_path/'failure-diagnostic.json').read_bytes() == body
+    assert receipt['stable_error_code'] == original.args[0]
+    assert receipt['code_commit'] == config.code_commit and receipt['market'] == 'us'
+    assert receipt['source_generation'] == 'local-us-2026-11-19-source'
+    assert len(receipt['application_frames']) <= 8
+    assert b'SYNTHETIC_CLEANUP_PRIVATE_DETAIL' not in body
+
+
+def test_registered_cycle_records_in_handler_before_original_finally():
+    import ast
+    import inspect
+    tree = ast.parse(inspect.getsource(job._local_registered_cycle))
+    cycle = tree.body[0]
+    guarded = next(node for node in cycle.body if isinstance(node, ast.Try) and node.finalbody)
+    handler = guarded.handlers[0]
+    assert isinstance(handler.type, ast.Name) and handler.type.id == 'BaseException'
+    call = handler.body[0].value
+    assert call.func.id == '_record_local_failure'
+    assert next(k.value.value for k in call.keywords if k.arg == 'before_owner_cleanup') is True
+    assert isinstance(handler.body[1], ast.Raise) and handler.body[1].exc is None
+    assert any(isinstance(node, ast.Attribute) and node.attr == 'revoke_prospective_owner'
+        for node in ast.walk(guarded.finalbody[0]))
+
+
+def test_precleanup_diagnostic_disk_error_does_not_replace_original(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    from app.services import unified_run_artifacts as artifacts
+    def denied(*args, **kwargs):
+        raise OSError('SYNTHETIC_PRIVATE_DISK_DETAIL')
+    monkeypatch.setattr(artifacts, 'durable_json', denied)
+    original = asyncio.CancelledError('SYNTHETIC_PRIVATE_CANCEL_DETAIL')
+    with pytest.raises(asyncio.CancelledError) as caught:
+        try:
+            raise original
+        except BaseException as exc:
+            job._record_local_failure(tmp_path, exc, config=SimpleNamespace(market='us', code_commit='3'*40),
+                session='2026-11-19', before_owner_cleanup=True)
+            raise
+    assert caught.value is original
+    assert not list(tmp_path.iterdir())
