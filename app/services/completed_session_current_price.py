@@ -43,6 +43,15 @@ class CompletedSessionCurrentPriceProjection(ContractModel):
     out_of_scope_rows: list[dict]
     projection_sha256: str
 
+    def analysis_reference(self):
+        return dict(contract=self.contract, ticker=self.ticker,
+            canonical_security_id=self.canonical_security_id, generation_id=self.generation_id,
+            source_role=self.source_role, basis=self.adjustment_basis, currency=self.currency,
+            target_session=self.target_session, as_of=self.price_as_of, value=self.current_price,
+            availability=self.availability, denial_reasons=list(self.denial_reasons),
+            projection_sha256=self.projection_sha256, source_receipt_sha256=self.source_receipt_sha256,
+            normalized_sha256=self.normalized_sha256, realtime=False, exchange_certified=False)
+
     @model_validator(mode="after")
     def consistent(self):
         value = self.model_dump(mode="json")
@@ -66,11 +75,13 @@ def project_completed_price(*, plan: StockPlan, read: StockRead, receipt: dict,
                             artifact_reader, security: dict, currency: str,
                             adjustment_basis: str = "adjusted_close") -> CompletedSessionCurrentPriceProjection:
     """Source bindings and frozen calendar are verified before inspecting rows."""
-    if read not in plan.reads or read.role != "adjusted_daily" or not read.adjusted or read.timeframe != "daily":
+    if (read not in plan.reads or read.role != "adjusted_daily" or not read.adjusted or read.timeframe != "daily"
+            or read.api_id != {"us":"usa06012","kr":"ka10081"}[read.market]):
         raise ValueError("completed_price_source_role_mismatch")
     exchange = {"NASDAQ": "ND", "NYSE": "NY", "AMEX": "NA"}.get(security.get("exchange"), security.get("exchange"))
     if (security.get("ticker") != read.subject or security.get("canonical_security_id") != read.canonical_security_id
             or exchange != read.exchange or currency != {"us": "USD", "kr": "KRW"}[read.market]
+            or security.get("currency", currency) != currency
             or adjustment_basis != "adjusted_close"):
         raise ValueError("completed_price_security_currency_basis_mismatch")
     target = date.fromisoformat(read.latest_completed_session)
@@ -102,6 +113,12 @@ def project_completed_price(*, plan: StockPlan, read: StockRead, receipt: dict,
     target_integrity = inspect_normalized_ohlcv_rows(selected, timeframe="daily", cutoff=target)
     if len(selected) != 1:
         errors.append("TARGET_ROW_MISSING" if not selected else "TARGET_ROW_DUPLICATE_OR_CONFLICT")
+    for target_row in selected:
+        if str(target_row.get("date")) != str(target):
+            errors.append("TARGET_ROW_NOT_EXACT_SESSION_DATE")
+        if (str(target_row.get("bar_state", "")).upper() in {"PARTIAL", "IN_PROGRESS", "INCOMPLETE"}
+                or target_row.get("is_partial") is True or target_row.get("complete") is False):
+            errors.append("TARGET_ROW_NOT_COMPLETED")
     if not target_integrity.valid:
         errors.append("TARGET_ROW_INTEGRITY_FAILED")
     # An ordering violation at the target cannot be dismissed as a later-row defect.

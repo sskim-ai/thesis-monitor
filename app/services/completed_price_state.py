@@ -227,11 +227,44 @@ def require_runtime(state):
     return state
 
 
-def materialize_state(*, state, roles, ticker, market, cutoff, observed_at):
+def materialize_state(*, state, roles, ticker, market, cutoff, observed_at, completed_bar_reference=None):
     state = require_runtime(state)
     if (state.ticker != ticker or market != 'us' or state.target_session != cutoff):
         raise ValueError('price_state_component_identity')
-    if state.numeric_owner is not None:
+    reference = None
+    if completed_bar_reference is not None:
+        from app.services.completed_session_current_price import CompletedSessionCurrentPriceProjection
+        reference = CompletedSessionCurrentPriceProjection.model_validate(completed_bar_reference)
+        if (reference.ticker, reference.canonical_security_id, reference.generation_id,
+                reference.market, reference.target_session, reference.adjustment_basis) != (
+                ticker, state.security_id, state.source_generation, market, str(cutoff), 'adjusted_close'):
+            raise ValueError('completed_bar_reference_component_identity')
+    if reference is not None and reference.availability == 'AVAILABLE':
+        from app.services.unified_stock_anomaly_scope import materialize_source_components
+        target = [r for r in roles['adjusted_daily'] if str(r.get('date')) == str(cutoff)]
+        if len(target) != 1 or digest(target[0]) != digest(reference.selected_row):
+            raise ValueError('completed_bar_reference_source_row_mismatch')
+        try:
+            result = materialize_source_components(roles=roles, ticker=ticker, market=market,
+                cutoff=cutoff, observed_at=observed_at, completed_session=True)
+        except ValueError as exc:
+            if str(exc) not in {'completed_bar_partial_period_daily_coverage_missing',
+                                'completed_bar_partial_period_daily_integrity'}:
+                raise
+            result = close.materialize_price_context(current_price=reference.current_price,
+                projection_ref=reference.projection_sha256,
+                compatibility=dict(status='UNPROVEN', technical_target_injection_allowed=False,
+                    reason=str(exc), canonical_security_id=state.security_id,
+                    target_session=str(cutoff), raw_price_display_allowed=True,
+                    owner='COMPLETED_BAR_PRICE_WITH_INCOMPLETE_PERIOD_CONTEXT'),
+                roles=roles, ticker=ticker, market=market, cutoff=cutoff, observed_at=observed_at)
+            result['completed_bar_reference_chart_qualified'] = False
+            result['completed_bar_reference_chart_denial'] = str(exc)
+        else:
+            if not result['current_price_eligible'] or result['current_price'] != reference.current_price:
+                raise ValueError('completed_bar_reference_component_price_mismatch')
+            result['completed_bar_reference_chart_qualified'] = True
+    elif state.numeric_owner is not None:
         result = close.materialize(projection=state.numeric_owner, roles=roles, ticker=ticker,
                                    market=market, cutoff=cutoff, observed_at=observed_at)
     else:
@@ -242,12 +275,14 @@ def materialize_state(*, state, roles, ticker, market, cutoff, observed_at):
                 owner='NO_QUALIFIED_US_ACTION_GUARD_IN_DECLARED_CORPUS'),
             roles=roles, ticker=ticker, market=market, cutoff=cutoff, observed_at=observed_at)
     result['completed_price_state_sha256'] = state.receipt_sha256
+    if reference is not None:
+        result['completed_bar_reference_price_sha256'] = reference.projection_sha256
     result['component_projection_sha256'] = None
     result['component_projection_sha256'] = digest(result)
     return result
 
 
-def technical_state(roles, *, target_session):
+def technical_state(roles, *, target_session, completed_bar_reference=None):
     from app.services.ohlcv_provider_integrity_service import inspect_normalized_ohlcv_rows
     rows = [r for r in roles['adjusted_daily'] if str(r.get('date'))[:10] == str(target_session)]
     integrity = inspect_normalized_ohlcv_rows(rows, timeframe='daily', cutoff=target_session)
@@ -257,6 +292,9 @@ def technical_state(roles, *, target_session):
             'TARGET_ROW_INTEGRITY_PASS_AUTHORITY_SEPARATE' if rows else 'TARGET_ROW_UNAVAILABLE',
         integrity=integrity.model_dump(mode='json'), current_price_authority=False,
         timing_state='UNRESOLVED', reason=close.TECHNICAL_DENIAL)
+    if completed_bar_reference is not None and completed_bar_reference.availability == 'AVAILABLE':
+        value.update(reason='COMPLETED_ADJUSTED_BAR_REFERENCE_ENTRY_PERMISSION_SEPARATE',
+            completed_bar_reference_price_sha256=completed_bar_reference.projection_sha256)
     return dict(value, receipt_sha256=digest(value))
 
 
@@ -276,9 +314,12 @@ def bind_source(technical, *, source, artifacts, security):
     state = require_runtime(project_state(source=source, plan=tech['plan'], read=daily,
                                          security=security, artifact_reader=reader))
     roles = {r.role: decode_owned_role(tech['plan'], r, tech['receipts'][r.role], reader) for r in reads}
+    from app.services.completed_session_current_price import project_completed_price
+    reference = project_completed_price(plan=tech['plan'], read=daily, receipt=tech['receipts'][daily.role],
+        artifact_reader=reader, security=security, currency='USD')
     tech['components'] = materialize_state(state=state, roles=roles, ticker=daily.subject,
         market=daily.market, cutoff=date.fromisoformat(daily.latest_completed_session),
-        observed_at=tech['plan'].frozen_at.isoformat())
+        observed_at=tech['plan'].frozen_at.isoformat(), completed_bar_reference=reference)
     tech['completed_price_source'] = source
     tech['expected_hashes'] = dict(tech['expected_hashes'], components=digest(tech['components']),
                                    completed_price_source=digest(source))

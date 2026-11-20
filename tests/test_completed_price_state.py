@@ -85,6 +85,18 @@ def unavailable_inputs(root, ticker, kind='missing', *, native=False):
     policy = UnifiedSourcePolicy(POLICY.allowed_providers | {'finnhub', 'kiwoom_rest'})
     inputs = fresh_inputs(root, ticker, verified_identity=True, completed_price=False, policy=policy)
     tech = inputs['technical_inputs']
+    # This helper exercises missing-price behavior, not the new healthy-bar path.
+    from app.services.unified_snapshot_contract import encoded
+    from app.services.unified_run_artifacts import sha256_bytes
+    receipt=tech['receipts']['adjusted_daily']
+    rows=json.loads(tech['artifacts'][receipt['normalized_artifact']])
+    rows[-1]['close']=rows[-1]['low']-1
+    raw,normalized=encoded(dict(return_code=0,result_list=rows)),encoded(rows)
+    tech['artifacts'][receipt['pages'][0]['artifact']]=raw
+    tech['artifacts'][receipt['normalized_artifact']]=normalized
+    receipt['pages'][0]['source_sha256']=sha256_bytes(raw)
+    receipt['normalized_sha256']=sha256_bytes(normalized)
+    tech['expected_hashes']['receipts']=digest(tech['receipts'])
     security = inputs['financial_inputs']['plan']['security']
     src, artifacts = source(tech['plan'], security, kind=kind)
     inputs['technical_inputs'] = c.bind_source(tech, source=src, artifacts=artifacts, security=security)

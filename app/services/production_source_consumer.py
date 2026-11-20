@@ -61,6 +61,8 @@ def consumer_collection(*, request, policy, whole, monitoring, seal, finished_at
         if stock["status"] != "PASS" or stock["fresh_run_id"] != generation:
             raise ValueError("production_canonical_stock_not_qualified")
         for purpose, fields in source_fields.items():
+            if purpose == "COMPLETED_CLOSE" and "completed_bar_reference_price" in stock:
+                fields = (*fields, "completed_bar_reference_price")
             key = ticker + ":" + purpose
             proofs[key] = dict(kind="CANONICAL_CONSUMER_PROJECTION_COMPLETE", numeric_fact=False,
                 canonical_owner_contract=stock["contract"], canonical_owner_sha256=digest(stock),
