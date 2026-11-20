@@ -41,10 +41,30 @@ US2_CAPS = dict(kiwoom=120,sec_edgar=8,finnhub=4,google_news_rss=2,
 SR5_SUBJECTS = ('CRCL','HUT','SKHY','TSM','WULF')
 SR5_CAPS = dict(kiwoom=228,sec_edgar=40,finnhub=10,google_news_rss=5,
     fred=13,krx_night_futures=7,opendart=6,eia=3,ecos=1)
+US_FULL_20261121_SLOTS = {
+    'us-20261121-0610a1b2': '2026-11-21T06:10:00+09:00',
+    'us-20261121-0810c3d4': '2026-11-21T08:10:00+09:00',
+}
+
+
+def _us_full_one_shot_window(tag):
+    start = US_FULL_20261121_SLOTS.get(tag)
+    if start is None:
+        return None
+    start = datetime.fromisoformat(start)
+    return start, start + timedelta(minutes=10)
+
+
+def _one_shot_deadline(tag):
+    window = _us_full_one_shot_window(tag)
+    return (window[0] + timedelta(hours=4, minutes=30) if window else
+            datetime.fromisoformat('2026-11-21T00:00:00+09:00'))
 
 
 def one_shot_scope(market, tag):
     if tag is None:
+        return False
+    if market == 'us' and tag in US_FULL_20261121_SLOTS:
         return False
     match = re.fullmatch(r'(us|us2|us5|kr)-20261120-[a-f0-9]{8}',tag)
     if match is None or ('us' if match[1] in ('us2','us5') else match[1]) != market:
@@ -253,7 +273,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
         approval = registration.record_backend_approval(registration.ApprovalDecision(
             event_id=master, approved=True, user_message_sha256=digest(config.model_dump(mode='json')),
             effective_at=now, expires_at=min(now+timedelta(hours=4, minutes=30),
-                datetime.fromisoformat('2026-11-21T00:00:00+09:00')) if one_shot_tag else now+timedelta(hours=4,minutes=30),
+                _one_shot_deadline(one_shot_tag)) if one_shot_tag else now+timedelta(hours=4,minutes=30),
             subjects=tuple(t for child in children.values() for t in child['subjects']),
             **(dict(routine_us_no_send_source_seconds=1800) if market == 'us' else {})))
         ledger = SelectedRunLedger(path=directory/'campaign.jsonl', approval=approval, master_id=master,
@@ -351,21 +371,23 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
             pass  # Keep nonempty current invocation evidence; retire only empty scratch.
 
 
-def latest_one_shot_us_session(now):
+def latest_one_shot_us_session(now, *, one_shot_tag=None):
     from app.services.market_session import us_market_session, _exchange_session_close, NEW_YORK, is_exchange_session_date
 
-    if now.utcoffset() is None or now.astimezone(KST).date().isoformat() != '2026-11-20':
+    window = _us_full_one_shot_window(one_shot_tag)
+    local_date, target = ('2026-11-21', '2026-11-20') if window else ('2026-11-20', '2026-11-19')
+    if now.utcoffset() is None or now.astimezone(KST).date().isoformat() != local_date:
         return None
     session = us_market_session(now).latest_completed_regular_session_date
     close = _exchange_session_close('XNYS', session, NEW_YORK)
-    if session.isoformat() != '2026-11-19' or not is_exchange_session_date('XNYS', session) or close is None or close > now:
+    if session.isoformat() != target or not is_exchange_session_date('XNYS', session) or close is None or close > now:
         return None
     return session
 
 
-def latest_one_shot_session(market,now):
+def latest_one_shot_session(market,now, *, one_shot_tag=None):
     if market=='us':
-        return latest_one_shot_us_session(now)
+        return latest_one_shot_us_session(now, one_shot_tag=one_shot_tag)
     from app.services.market_session import korea_market_session, _exchange_session_close, SEOUL, is_exchange_session_date
     if now.utcoffset() is None or now.astimezone(KST).date().isoformat()!='2026-11-20':
         return None
@@ -386,17 +408,22 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
     now = now or datetime.now(KST)
     if now.utcoffset() is None:
         raise ValueError('local_schedule_timezone_required')
+    window = None
     if one_shot_tag is not None:
         diagnostic=one_shot_scope(market,one_shot_tag)
-        if now.astimezone(KST).date().isoformat() != '2026-11-20':
+        window = _us_full_one_shot_window(one_shot_tag)
+        local_date = window[0].date().isoformat() if window else '2026-11-20'
+        if now.astimezone(KST).date().isoformat() != local_date:
             return dict(status='NO_RUN', reason='ONE_SHOT_DATE_CLOSED', normal_messages_sent=False)
+        if window and not window[0] <= now < window[1]:
+            return dict(status='NO_RUN', reason='ONE_SHOT_SLOT_CLOSED', normal_messages_sent=False)
     else:
         diagnostic=False
     sr5=bool(one_shot_tag and one_shot_tag.startswith('us5-'))
-    session = latest_one_shot_session(market,now) if one_shot_tag is not None else target_session(market, now)
+    session = latest_one_shot_session(market,now,one_shot_tag=one_shot_tag) if one_shot_tag is not None else target_session(market, now)
     if session is None:
         return dict(status='NO_RUN', reason='SESSION_NOT_COMPLETED_OR_CLOSED', normal_messages_sent=False)
-    if one_shot_tag is not None and session.isoformat() != ('2026-11-19' if market=='us' else '2026-11-20'):
+    if one_shot_tag is not None and session.isoformat() != ('2026-11-20' if window else '2026-11-19' if market=='us' else '2026-11-20'):
         return dict(status='NO_RUN', reason='ONE_SHOT_SESSION_MISMATCH', normal_messages_sent=False)
     head = subprocess.check_output(['/usr/bin/git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
     dirty = subprocess.check_output(['/usr/bin/git', '-C', str(ROOT), 'status', '--porcelain', '--',
@@ -404,7 +431,7 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
     if head != config.code_commit or dirty:
         raise ValueError('local_schedule_clean_code_pin_required')
     os.umask(0o077)
-    relative = Path(market+'-'+session.isoformat()) if one_shot_tag is None else Path('one-shot/2026-11-20')/one_shot_tag
+    relative = Path(market+'-'+session.isoformat()) if one_shot_tag is None else Path('one-shot')/local_date/one_shot_tag
     directory = _absolute_local_path(str(Path(config.run_root)/relative))
     directory.mkdir(parents=True, exist_ok=True, mode=0o700)
     locks = ExitStack()
@@ -413,7 +440,7 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
         locks.enter_context(_local_lock(directory/'cycle.lock'))
     except BlockingIOError:
         locks.close()
-        return dict(status='NO_RUN', reason='EXISTING_SHARED_OR_SESSION_LOCK_BUSY', normal_messages_sent=False)
+        return dict(status='NO_RUN', reason='NO_RUN_LOCK_BUSY' if window else 'EXISTING_SHARED_OR_SESSION_LOCK_BUSY', normal_messages_sent=False)
     except BaseException:
         locks.close()
         raise
@@ -423,11 +450,11 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
         if any((directory/name).exists() for name in ('intent.json', 'terminal.json', 'campaign.jsonl', 'STOP')):
             return dict(status='NO_RUN', reason='SESSION_ALREADY_CONSUMED', normal_messages_sent=False)
         if one_shot_tag:
-            once_intent = directory.parent/'intent.json'
+            once_intent = directory.parent/(one_shot_tag+'.intent.json' if window else 'intent.json')
             if once_intent.exists():
                 return dict(status='NO_RUN', reason='ONE_SHOT_ALREADY_CONSUMED', normal_messages_sent=False)
             durable_json(once_intent, dict(one_shot_tag=one_shot_tag, session=session.isoformat(),
-                date='2026-11-20', code_commit=head, normal_messages_sent=False), exclusive=True)
+                date=local_date, code_commit=head, normal_messages_sent=False), exclusive=True)
         durable_json(directory/'intent.json', dict(basis=LOCAL_BASIS, market=market,
             session=session.isoformat(), code_commit=head, configuration_sha256=digest(config.model_dump(mode='json')),
             consent_basis='LOCAL_USER_MANAGED_CONFIGURATION_NOT_EXTERNAL_OR_DAILY_HUMAN_SIGNATURE',
@@ -436,9 +463,9 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
             max_models=15 if sr5 else 8 if diagnostic else 42 if market == 'us' else 18,
             b2_retry_policy=B2_SR5_DIAGNOSTIC_V1 if sr5 else B2_US2_DIAGNOSTIC_V1 if diagnostic else B2_PER_TICKER_ONE_RETRY_V1 if market == 'us' else None,
             normal_messages_sent=False,
-            **(dict(one_shot_tag=one_shot_tag,one_shot_date='2026-11-20') if one_shot_tag else {})), exclusive=True)
+            **(dict(one_shot_tag=one_shot_tag,one_shot_date=local_date) if one_shot_tag else {})), exclusive=True)
         try:
-            remaining=(datetime.fromisoformat('2026-11-21T00:00:00+09:00')-datetime.now(KST)).total_seconds() if one_shot_tag else 16200
+            remaining=(_one_shot_deadline(one_shot_tag)-datetime.now(KST)).total_seconds() if one_shot_tag else 16200
             async with asyncio.timeout(min(16200,remaining)):
                 result = await _local_registered_cycle(config, directory, session.isoformat(),
                     **(dict(one_shot_tag=one_shot_tag) if one_shot_tag else {}))
