@@ -284,6 +284,37 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
         except BaseException as exc:
             durable_json(directory/'terminal.json', dict(status='STOPPED_NO_SEND',
                 error_type=type(exc).__name__, normal_messages_sent=False), exclusive=True)
+            # Keep code locations, never exception text, locals or raw traceback.
+            try:
+                last_frame = None
+                source_frame = False
+                trace = exc.__traceback__
+                while trace is not None:
+                    code = trace.tb_frame.f_code
+                    filename = Path(code.co_filename).resolve()
+                    if filename.is_relative_to(ROOT) and filename.relative_to(ROOT).parts[0] in ('app', 'scripts'):
+                        last_frame = dict(basename=filename.name, function=code.co_name, line=trace.tb_lineno)
+                        source_frame |= filename.name == 'production_source_backend.py' and code.co_name == 'prepare_registered'
+                    trace = trace.tb_next
+                allowed_codes = {
+                    'production_registered_selected_plan_required', 'production_source_seal_changed',
+                    'selected_whole_original_stock_incomplete', 'selected_registration_frozen_receipt_drift',
+                    'selected_original_coverage_required_cells_incomplete', 'selected_forward_coverage_context_drift',
+                    'selected_original_issuer_projection_denied', 'scoped_research_registered_source_coverage',
+                    'scoped_research_inconsistent_stock_cutoffs',
+                }
+                error_code = exc.args[0] if len(exc.args) == 1 and type(exc.args[0]) is str else None
+                stage = 'SOURCE_PREPARATION_OR_COLLECTION' if source_frame else 'LOCAL_REGISTERED_CYCLE'
+                marker = directory/'source-time-result.json'
+                if source_frame and marker.is_file() and marker.stat().st_size <= 4096:
+                    if json.loads(marker.read_bytes()).get('status') == 'COLLECTOR_RETURNED_REQUIRES_SOURCE_ADMISSION':
+                        stage = 'SOURCE_POST_COLLECTION'
+                durable_json(directory/'failure-diagnostic.json', dict(
+                    exception_class=type(exc).__name__, last_application_frame=last_frame,
+                    stable_error_code=error_code if error_code in allowed_codes else None,
+                    stage=stage, NO_SEND=True), exclusive=True)
+            except Exception:
+                pass  # Diagnostic failure must not replace the original STOP.
             raise
         durable_json(directory/'terminal.json', result, exclusive=True)
         return result
