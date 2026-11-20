@@ -97,6 +97,7 @@ def _record_local_failure(directory, exc, *, config, session, generation=None, b
             trace = trace.tb_next
         allowed_codes = {
             'production_registered_selected_plan_required', 'production_source_seal_changed',
+            'production_source_systemic_stop',
             'selected_whole_original_stock_incomplete', 'selected_registration_frozen_receipt_drift',
             'selected_original_coverage_required_cells_incomplete', 'selected_forward_coverage_context_drift',
             'selected_original_issuer_projection_denied', 'scoped_research_registered_source_coverage',
