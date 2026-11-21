@@ -688,7 +688,8 @@ def publication_inputs(root, frozen, outcome, policy):
     history = captured(root/'night/history', 'krx_night_futures', night_id)
     probe['bodies'].update(history['bodies'])
     probe['body_hashes'].update(history['body_hashes'])
+    from app.macro.providers.krx import sealed_night_end_date_history
     night = dict(**probe, history_receipts=history['receipts'], observed_at=start, run_id=frozen['generation_id'],
         acquisition_id=night_id, expected_value_sha256=digest(night_value), policy=policy,
-        run_started_at=start, acquisition_cutoff=cutoff)
+        run_started_at=start, acquisition_cutoff=cutoff, night_end_dates=sealed_night_end_date_history(night_value))
     return dict(publications=publications, night=night)

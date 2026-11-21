@@ -62,7 +62,7 @@ def replay_publications(*, documents, hashes, cutoff, policy):
 
 def replay_night(*, receipts, bodies, body_hashes, observed_at, run_id, acquisition_id,
                  expected_value_sha256, policy, run_started_at, acquisition_cutoff,
-                 history_receipts=None):
+                 history_receipts=None, night_end_dates=False):
     policy.require("krx_night_futures")
     if not receipts or set(bodies) != set(body_hashes):
         raise ValueError("night_exact_source_set_required")
@@ -131,7 +131,8 @@ def replay_night(*, receipts, bodies, body_hashes, observed_at, run_id, acquisit
                     fetched_at=datetime.fromisoformat(row['received_at']), http_status=row['http_status'],
                     raw_body=bodies[row['artifact']])
             result = TypeAdapter(MacroProviderResult).dump_python(
-                materialize_night_probe(probe, history_directory=Path(tmp)), mode="json")
+                materialize_night_probe(probe, history_directory=Path(tmp),
+                                        night_end_dates=night_end_dates), mode="json")
         if digest(result) != expected_value_sha256:
             raise ValueError("night_owner_value_mismatch")
         output = {"value": result, "value_sha256": digest(result),

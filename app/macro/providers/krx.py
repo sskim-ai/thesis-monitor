@@ -68,7 +68,21 @@ class KrxNightFuturesProvider:
             observation_time=as_of,
             **options,
         )
-        return materialize_night_probe(probe, history_directory=self.history_directory)
+        return materialize_night_probe(probe, history_directory=self.history_directory, night_end_dates=True)
+
+
+def sealed_night_end_date_history(value: dict) -> bool:
+    """Replay the calendar recorded in sealed DWM, not the current caller default."""
+    contracts = {
+        frames.get('calendar_contract')
+        for row in value.get('observations', [])
+        if isinstance(frames := row.get('raw_payload', {}).get('night_timeframes'), dict)
+    }
+    if not contracts or contracts == {None}:
+        return False
+    if contracts == {'KRX_NIGHT_END_DATE_V1'}:
+        return True
+    raise ValueError('night_sealed_timeframe_calendar_mixed_or_unknown')
 
 
 def materialize_night_probe(probe: KrxNightFuturesProbeResult, *, history_directory: Path | None,

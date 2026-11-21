@@ -201,8 +201,10 @@ async def replay_krx_history_aggregate(*, root: Path, receipt: AggregateReceipt,
                 http_status=original.http_status, raw_body=body)
             if reproduced != original:
                 raise ValueError("krx_history_receipt_not_reproduced")
+        from app.macro.providers.krx import sealed_night_end_date_history
         result = TypeAdapter(MacroProviderResult).dump_python(
-            materialize_night_probe(probe, history_directory=storage), mode="json")
+            materialize_night_probe(probe, history_directory=storage,
+                                   night_end_dates=sealed_night_end_date_history(expected)), mode="json")
     if digest(result) != receipt.normalized_sha256 or result != expected:
         raise ValueError("krx_owner_output_not_reproduced")
     products = []
