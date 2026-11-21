@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 from app.services.unified_snapshot_contract import digest, encoded
-from app.services.model_timeout_retry import validate_timeout, validate_b2_retry_binding
+from app.services.model_timeout_retry import validate_timeout, validate_b2_retry_binding, market_timeout_retry_cap
 
 
 def _empty():
@@ -128,7 +128,9 @@ def _apply(state, event, value, identity):
         elif event == 'RETRY_ATTEMPT':
             if (not retry_enabled or unresolved != {slot} or len(state['attempts'].get(slot, ())) != 1
                     or len(state['timeouts'].get(slot, ())) != 1
-                    or (slot not in policy['b2_slots'] if policy else state['retry_used'] >= cap)
+                    or (slot not in policy['b2_slots'] and not (
+                        state['bound'][slot]['stage'] == 'MARKET' and market_timeout_retry_cap(policy))
+                        if policy else state['retry_used'] >= cap)
                     or state['physical_calls'] >= identity['maximum']):
                 raise ValueError('model_journal_retry_unavailable')
             _model_attempt(state, slot, value, expected=2)

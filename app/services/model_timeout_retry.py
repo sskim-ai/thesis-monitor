@@ -53,6 +53,12 @@ def validate_b2_retry_binding(value):
     return value
 
 
+def market_timeout_retry_cap(binding):
+    # The full US campaign shares its existing 42 starts; diagnostic/KR paths do not opt in.
+    return int(bool(binding and binding['policy'] == B2_PER_TICKER_ONE_RETRY_V1
+        and list(binding['slot_stages'].values()).count('MARKET') == 1))
+
+
 def confirmed_timeout(path, *, worker_pid, worker_returncode, receipt, prompt_sha256, schema_sha256):
     if (worker_returncode != 0 or receipt.get('status') != 'FAIL'
             or receipt.get('error_code') != 'TRANSPORT_TIMEOUT' or receipt.get('process_started') is not True

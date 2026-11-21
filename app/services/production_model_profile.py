@@ -259,9 +259,13 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
             self.stop()
             raise
         fresh = self.run_ledger.identity.get('fresh_timeout_retry_market')
+        from app.services.model_timeout_retry import market_timeout_retry_cap
+        market_retry = (self.bound[slot_id]['stage'] == 'MARKET'
+            and market_timeout_retry_cap(self.b2_retry_policy) and self.physical_calls < self.maximum)
         if (len(self.attempts[slot_id]) == 1
-                and (slot_id in self.b2_retry_policy['b2_slots'] if self.b2_retry_policy else self.retry_used < self.timeout_retry_cap)
-                and (not fresh or self.bound[slot_id]['stage'] == 'B2')):
+                and (slot_id in self.b2_retry_policy['b2_slots'] or market_retry
+                    if self.b2_retry_policy else self.retry_used < self.timeout_retry_cap)
+                and (not fresh or self.bound[slot_id]['stage'] == 'B2' or market_retry)):
             return True
         if self.bound[slot_id]['stage'] == 'B2':
             self._journal_state('RETRY_EXHAUSTED', slot_id=slot_id)

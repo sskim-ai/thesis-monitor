@@ -427,6 +427,8 @@ class SelectedRunLedger:
                 cap = self.identity.get('timeout_retry_cap',0)
                 per_ticker = s['models'][m].get('b2_retry_binding')
                 if cap or per_ticker:
+                    from app.services.model_timeout_retry import market_timeout_retry_cap
+                    market_retry = v['stage'] == 'MARKET' and market_timeout_retry_cap(per_ticker)
                     attempt = v['attempt']
                     bound = s['timeout_attempts'].get(v['slot'], [])
                     if (not isinstance(attempt,dict)
@@ -437,8 +439,9 @@ class SelectedRunLedger:
                             or key != 'MODEL:'+v['attempt']['attempt_id']
                             or attempt['ordinal'] != len(bound)+1 or len(bound)>1
                             or bound and (bound[0] not in s['timed_out']
-                                or (v['slot'] not in per_ticker['b2_slots'] if per_ticker else s['retry_used']>=cap)
-                                or (self.identity.get('fresh_timeout_retry_market') and v['stage']!='B2')
+                                or (v['slot'] not in per_ticker['b2_slots'] and not market_retry
+                                    if per_ticker else s['retry_used']>=cap)
+                                or (self.identity.get('fresh_timeout_retry_market') and v['stage']!='B2' and not market_retry)
                                 or s['used'][bound[0]]['stage']!=v['stage']
                                 or any(s['used'][bound[0]]['attempt'][k]!=attempt[k]
                                     for k in ('prompt_sha256','schema_sha256')))):

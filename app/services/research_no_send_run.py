@@ -303,6 +303,10 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                             bound['campaign_timeout_retry_cap'] = retry_cap
                         if getattr(bridge.model.call_budget,'b2_retry_policy',None) and stage == 'B2':
                             bound['b2_retry_policy'] = bridge.model.call_budget.b2_retry_policy
+                        if stage == 'MARKET':
+                            from app.services.model_timeout_retry import market_timeout_retry_cap
+                            if market_timeout_retry_cap(getattr(bridge.model.call_budget,'b2_retry_policy',None)):
+                                bound['market_timeout_retry_cap'] = 1
                     request = dict(contract=CONTRACT, run_id=bridge.child.plan.cohort.run_id, stage=stage,
                         snapshot_sha256=snapshot_pin, snapshot=snapshot, inputs=dict(outputs),
                         configuration_sha256=digest(dict(purpose=TERMINAL, child_binding=bridge.child_binding)))
@@ -317,7 +321,7 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                         loop = asyncio.get_running_loop()
                         allowance = (bridge.model.call_budget.retry_capacity
                             if getattr(bridge.model.call_budget,'b2_retry_policy',None) and stage == 'B2'
-                            else getattr(bridge.model.call_budget,'timeout_retry_cap',0))
+                            else bound.get('market_timeout_retry_cap',getattr(bridge.model.call_budget,'timeout_retry_cap',0)))
                         timer = _StageTimer(bound,loop,campaign_end, allowance)
                         token = _stage_timer.set(timer)
                         try:
