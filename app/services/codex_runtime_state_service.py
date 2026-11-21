@@ -290,14 +290,17 @@ def prepare_codex_runtime_state(
         if os.environ.get("CODEX_HOME")
         else Path.home() / ".codex" / "auth.json"
     )
-    try:
-        auth_metadata = source.stat()
-    except OSError as exc:
+    if not source.is_file():
         raise CodexRuntimeStateError(
             f"{RUNTIME_STATE_NOT_READY}:signed_in_auth_reference_missing"
+        )
+    try:
+        with source.open('rb'):
+            pass
+    except OSError as exc:
+        raise CodexRuntimeStateError(
+            f"{RUNTIME_STATE_NOT_READY}:signed_in_auth_reference_unreadable"
         ) from exc
-    if auth_metadata.st_uid != os.geteuid() or stat.S_IMODE(auth_metadata.st_mode) & 0o077:
-        raise CodexRuntimeStateError(f"{RUNTIME_STATE_NOT_READY}:signed_in_auth_reference_unsafe")
     auth_reference = codex_home / "auth.json"
     try:
         if auth_reference.is_symlink():
