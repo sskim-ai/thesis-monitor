@@ -5,6 +5,7 @@ import json
 import os
 import shutil
 import subprocess
+import traceback
 from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
@@ -157,6 +158,15 @@ def build_onboarding_decision_evidence_packet(
         ),
         (EvidenceCategory.UNKNOWN, "material_unknowns", evidence.get("material_unknowns")),
     )
+    if evidence.get('dated_reference_price') is not None:
+        from app.services.dated_chart_reference import validate_reference
+        reference = validate_reference(evidence['dated_reference_price'],evidence.get('dated_reference_evidence'),
+            ticker=item.ticker,market=str(evidence.get('market')),as_of=evidence.get('as_of'))
+        # The raw proof remains local/DB-only, never in the model prompt.
+        values += ((EvidenceCategory.PRICE_STRUCTURE,'dated_reference_price',dict(
+            value=reference['value'],currency=reference['currency'],reference_date=reference['reference_date'],
+            adjustment_basis=reference['adjustment_basis'],role=reference['role'],
+            allowed_use=reference['allowed_use'],current_price=False,valuation_denominator=False)),)
     refs = tuple(
         _evidence_ref(
             ticker=item.ticker,
@@ -218,6 +228,7 @@ def _invoke_signed_in_codex(
     schema: Path,
     timeout: int,
     state_namespace: str,
+    execution_profile=None,
 ) -> None:
     prompt = prompt.resolve()
     output = output.resolve()
@@ -246,6 +257,14 @@ def _invoke_signed_in_codex(
         str(output),
         "-",
     ]
+    if execution_profile is not None:
+        from app.services.production_model_profile import sol_high
+        from app.services.official_codex_shadow_transport_service import command_prefix
+        profile = sol_high(execution_profile)
+        if timeout != profile.timeout_seconds:
+            raise ValueError('onboarding_campaign_timeout_profile_mismatch')
+        command = [_signed_in_codex_bin(), *command_prefix(profile),
+            '--output-schema', str(schema), '-o', str(output), '-']
     with prompt.open(encoding="utf-8") as stdin, log.open("w", encoding="utf-8") as stdout:
         process = subprocess.run(
             command,
@@ -262,14 +281,20 @@ def _invoke_signed_in_codex(
         raise ValueError("signed_in_codex_cli_onboarding_decision_failed")
 
 
-def generate_onboarding_accepted_decision(
+def _generate_onboarding_accepted_decision(
     session: Session,
     item: WatchlistItem,
     evidence: Mapping[str, object],
     *,
     timeout: int,
     data_dir: str | Path | None = None,
+    campaign_execution=None,
 ) -> dict[str, object]:
+    def invoke(stage, **kwargs):
+        if campaign_execution is not None:
+            return campaign_execution.invoke(stage=stage, **kwargs)
+        return _invoke_signed_in_codex(**kwargs)
+
     packet = build_onboarding_decision_evidence_packet(session, item, evidence)
     claim_id = f"onboarding-{packet.evidence_sha256[:20]}"
     packet_shell = {
@@ -311,7 +336,7 @@ def generate_onboarding_accepted_decision(
         accepted_v2_fundamental_core_ref_catalog_manifest(context),
     )
     _atomic_text(paths["core_prompt"], accepted_v2_fundamental_core_prompt(context))
-    _invoke_signed_in_codex(
+    invoke('CORE',
         prompt=paths["core_prompt"],
         output=paths["core_output"],
         log=paths["core_log"],
@@ -335,6 +360,8 @@ def generate_onboarding_accepted_decision(
         raise ValueError(
             "onboarding_fundamental_core_invalid:" + ",".join(core_errors)
         )
+    if campaign_execution is not None:
+        campaign_execution.accept(paths['core_output'])
     _atomic_json(
         paths["schema"],
         accepted_v2_stage2_output_schema(context, fundamental_cores=(core,)),
@@ -350,7 +377,7 @@ def generate_onboarding_accepted_decision(
         paths["prompt"],
         accepted_v2_production_prompt(context, fundamental_cores=(core,)),
     )
-    _invoke_signed_in_codex(
+    invoke('DECISION',
         prompt=paths["prompt"],
         output=paths["output"],
         log=paths["log"],
@@ -381,6 +408,8 @@ def generate_onboarding_accepted_decision(
     )
     adjudications = {row.ticker: row for row in output.adjudications}
     if not validation.valid or ownership_errors:
+        if campaign_execution is not None:
+            raise ValueError('onboarding_campaign_stage2_rejected_no_repair')
         _atomic_text(
             paths["repair_prompt"],
             accepted_v2_production_repair_prompt(
@@ -481,8 +510,103 @@ def generate_onboarding_accepted_decision(
         "raw_candidate_grants_ready": False,
         "generated_at": datetime.now(UTC).isoformat(),
     }
+    if campaign_execution is not None:
+        campaign_execution.accept(paths['output'])
+        result['execution_profile'] = campaign_execution.profile.model_request()
+        result['automatic_repair_calls'] = 0
+        result['campaign_ledger_identity_sha256'] = _canonical_sha(campaign_execution.ledger.identity)
     _atomic_json(paths["accepted"], result)
     return result
+
+
+class _CampaignOnboardingExecution:
+    """Bind the original two stages to the existing campaign journal, not a new owner."""
+    def __init__(self, *, ledger, profile, item, timeout, data_dir):
+        from app.services.selected_run_lifecycle import SelectedRunLedger
+        from app.services.production_model_profile import sol_high
+        if not isinstance(ledger, SelectedRunLedger):
+            raise ValueError('onboarding_existing_campaign_ledger_required')
+        self.profile = sol_high(profile)
+        if timeout != self.profile.timeout_seconds:
+            raise ValueError('onboarding_campaign_timeout_profile_mismatch')
+        self.ledger, self.ticker = ledger, item.ticker
+        matches = [m for m,c in ledger.identity['children'].items() if item.ticker in c['subjects']]
+        config = ledger.identity.get('onboarding', {})
+        if len(matches) != 1 or config.get('profile') != self.profile.contract:
+            raise ValueError('onboarding_campaign_subject_or_profile_not_frozen')
+        self.market = matches[0]
+        self.prefix = f'ONBOARDING:{ledger.identity["children"][self.market]["generation"]}:{item.ticker}:'
+        state = ledger.state()
+        if (state['pending'] or self.market+':'+self.ticker in state['onboarding_failed']
+                or any(key.startswith(self.prefix) for key in state['used'])):
+            raise ValueError('onboarding_campaign_already_attempted_no_retry')
+        self.pending = None
+        self.output = None
+        self.root = Path(data_dir or get_settings().data_dir) / 'onboarding' / self.ticker
+
+    def invoke(self, *, stage, **kwargs):
+        prompt, schema, output = (Path(kwargs[key]) for key in ('prompt', 'schema', 'output'))
+        if prompt.stat().st_size > 384*1024 or output.exists():
+            raise ValueError('onboarding_campaign_input_or_existing_output_invalid')
+        payload_hash = _canonical_sha(dict(prompt_sha256=hashlib.sha256(prompt.read_bytes()).hexdigest(),
+            schema_sha256=hashlib.sha256(schema.read_bytes()).hexdigest(),
+            profile=self.profile.model_request(), ticker=self.ticker, stage=stage))
+        self.pending = self.ledger.before_onboarding_model(market=self.market, ticker=self.ticker,
+            stage=stage, payload_sha256=payload_hash)
+        self.output = output
+        _invoke_signed_in_codex(**kwargs, execution_profile=self.profile)
+        if output.stat().st_size > 128*1024:
+            raise ValueError('onboarding_campaign_output_exceeds_128KiB')
+
+    def accept(self, output):
+        if self.pending is None or Path(output) != self.output:
+            raise ValueError('onboarding_campaign_acceptance_without_pending_output')
+        self.ledger.onboarding_model_result(self.pending, ok=True,
+            output_sha256=hashlib.sha256(self.output.read_bytes()).hexdigest())
+        self.pending = None
+
+    def fail(self, error):
+        raw = self.output.read_bytes() if self.output is not None and self.output.is_file() else b''
+        if self.pending is not None:
+            self.ledger.onboarding_model_result(self.pending, ok=False,
+                output_sha256=hashlib.sha256(raw).hexdigest(), error_type=type(error).__name__)
+            self.pending = None
+        else:
+            self.ledger.fail_onboarding_subject(market=self.market, ticker=self.ticker,
+                                               error_type=type(error).__name__)
+        self.root.mkdir(parents=True, exist_ok=True)
+        path = self.root / ('c22ag-failure-'+_canonical_sha(self.ledger.identity)[:20]+'.json')
+        frames = traceback.extract_tb(error.__traceback__)
+        with path.open('x', encoding='utf-8') as stream:
+            json.dump(dict(status='FAILED_NO_RETRY', ticker=self.ticker,
+                error_type=type(error).__name__, exception_detail_exported=False,
+                failure_function=frames[-1].name if frames else None,
+                failure_file=frames[-1].filename if frames else None,
+                failure_line=frames[-1].lineno if frames else None,
+                raw_output_sha256=hashlib.sha256(raw).hexdigest(), raw_output_bytes=len(raw),
+                execution_profile=self.profile.model_request(), automatic_repair_calls=0,
+                ready=False), stream, indent=2)
+
+
+def generate_onboarding_accepted_decision(session, item, evidence, *, timeout,
+                                          data_dir=None, execution_profile=None,
+                                          campaign_ledger=None):
+    """Legacy defaults are unchanged; C22AG opts into Sol/High and no repair."""
+    execution = None
+    if execution_profile is not None or campaign_ledger is not None:
+        execution = _CampaignOnboardingExecution(ledger=campaign_ledger, profile=execution_profile,
+            item=item, timeout=timeout, data_dir=data_dir)
+    try:
+        return _generate_onboarding_accepted_decision(session, item, evidence, timeout=timeout,
+            data_dir=data_dir, campaign_execution=execution)
+    except BaseException as error:
+        if execution is not None:
+            execution.fail(error)
+            if not isinstance(error, Exception):
+                raise
+            # Do not propagate Pydantic input values/private Thesis into reconciler logs.
+            raise ValueError('onboarding_campaign_rejected_no_retry:'+type(error).__name__) from None
+        raise
 
 
 def validate_onboarding_decision_readiness(

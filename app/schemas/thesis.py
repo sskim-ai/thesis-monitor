@@ -2,7 +2,7 @@ from datetime import date, datetime
 from enum import StrEnum
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, model_validator
+from pydantic import BaseModel, ConfigDict, Field, PrivateAttr, model_validator, model_serializer
 
 
 class AssessmentStatus(StrEnum):
@@ -380,6 +380,8 @@ class PriceContext(BaseModel):
     periods: dict[str, PricePeriodSummary] = Field(default_factory=dict)
     rule_evaluation: PriceRuleEvaluation | None = None
     decision: PriceDecisionContext = Field(default_factory=PriceDecisionContext)
+    dated_reference_price: dict[str, object] | None = None
+    dated_reference_evidence: dict[str, object] | None = Field(default=None, repr=False)
     supply: InvestorSupplyContext = Field(default_factory=InvestorSupplyContext)
     chart: ChartContext = Field(default_factory=ChartContext)
     monitoring_state: dict[str, object] = Field(default_factory=dict)
@@ -387,6 +389,14 @@ class PriceContext(BaseModel):
     daily_history: list[HistoricalPricePoint] = Field(default_factory=list, exclude=True)
     valuation_history: list[HistoricalPricePoint] = Field(default_factory=list, exclude=True)
     _technical_context_payload: dict[str, object] = PrivateAttr(default_factory=dict)
+
+    @model_serializer(mode="wrap")
+    def optional_reference_wire(self, handler):
+        payload = handler(self)
+        for key in ('dated_reference_price', 'dated_reference_evidence'):
+            if getattr(self, key) is None:
+                payload.pop(key, None)
+        return payload
 
     def set_technical_context_payload(self, payload: dict[str, object]) -> None:
         self._technical_context_payload = dict(payload)

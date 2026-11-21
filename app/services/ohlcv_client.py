@@ -377,11 +377,14 @@ def _chart_timeframe_context(
 class OhlcvClient:
     def __init__(self, transport: httpx.AsyncBaseTransport | None = None, *,
                  source_observer: OhlcvReceiptObserver | None = None,
-                 completion_verifier=None) -> None:
+                 completion_verifier=None, campaign_no_retry: bool = False) -> None:
         self.settings = get_settings()
         self.transport = transport
         self.completion_verifier = completion_verifier
         self.source_observer = source_observer
+        self.campaign_no_retry = campaign_no_retry
+        self._reference_responses = {}
+        self._reference_observed_at = {}
 
     async def _get_period(self, client: httpx.AsyncClient, params: dict) -> httpx.Response:
         if self.source_observer is not None:
@@ -413,7 +416,7 @@ class OhlcvClient:
         acquisition_audit: dict[str, object] | None = None,
     ) -> tuple[PricePeriodSummary, list[dict[str, object]]]:
         last_error: Exception | None = None
-        attempts = max(1, min(self.settings.monitor_retry_attempts, 5))
+        attempts = 1 if self.campaign_no_retry else max(1, min(self.settings.monitor_retry_attempts, 5))
         provider_count = min(count, OHLCV_PROVIDER_REQUEST_LIMIT)
         deadline = time.monotonic() + max(0.1, self.settings.ohlcv_timeout_seconds)
         params = {
@@ -425,6 +428,8 @@ class OhlcvClient:
             "adjusted": str(adjusted).lower(),
             "include_investor_flows": str(ticker.isdigit() and period == "daily" and adjusted).lower(),
         }
+        if self.campaign_no_retry:
+            params['market']='KR' if ticker.isdigit() else 'US'
         for attempt in range(attempts):
             _increment(acquisition_audit, "request_count")
             if attempt:
@@ -439,6 +444,12 @@ class OhlcvClient:
                     adjusted=adjusted,
                     response_body_sha256=hashlib.sha256(response.content).hexdigest(),
                 )
+                if period == 'daily' and adjusted:
+                    self._reference_responses[period] = response.content
+                    observed_receipt = response.extensions.get('unified_source_receipt')
+                    self._reference_observed_at[period] = (
+                        datetime.fromisoformat(observed_receipt[1]['received_at'])
+                        if observed_receipt else datetime.now(timezone.utc))
                 _increment(acquisition_audit, "success_count")
                 first_inspection = inspect_normalized_ohlcv_rows(
                     bars,
@@ -454,6 +465,8 @@ class OhlcvClient:
                         supply_demand=supply_demand,
                     )
                 _append_failure(acquisition_audit, "malformed_ohlc_content")
+                if self.campaign_no_retry:
+                    raise ValueError('campaign_malformed_ohlcv_no_refetch')
                 _increment(acquisition_audit, "malformed_refetch_count")
                 _increment(acquisition_audit, "request_count")
                 _increment(acquisition_audit, "retry_count")
@@ -681,6 +694,8 @@ class OhlcvClient:
         as_of: datetime | None = None,
         session: Session | None = None,
     ) -> PriceContext:
+        self._reference_responses.clear()
+        self._reference_observed_at.clear()
         api_key = self.settings.ohlcv_api_key or self.settings.action_api_key
         headers = {"X-API-Key": api_key} if api_key else {}
         context = PriceContext(price_source_scope="dated_technical_only")
@@ -831,9 +846,14 @@ class OhlcvClient:
             market_session=session_state.session,
         )
         context.warnings.append("native_technical_only: independent current-price Owner unavailable")
+        reference_observed = self._reference_observed_at.get('daily', observed_at)
         native = build_provider_native_view(ticker=ticker,market='kr' if ticker.isdigit() else 'us',
             periods=adjusted_bars,cutoff=analysis_cutoff,
-            completion_verifier=self.completion_verifier)
+            completion_verifier=self.completion_verifier,observed_at=reference_observed,historical_reference=True)
+        if native.periods['daily'].status == 'AVAILABLE' and 'daily' in self._reference_responses:
+            from app.services.dated_chart_reference import build_reference
+            context.dated_reference_price, context.dated_reference_evidence = build_reference(
+                native=native,response_body=self._reference_responses['daily'],observed_at=reference_observed)
         adjusted_bars = native.completed_periods()
         if ticker.isdigit():
             # Top-level summaries have no independent completion/date binding.

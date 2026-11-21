@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from collections.abc import Mapping
 from datetime import UTC, datetime, timedelta
 
@@ -203,8 +204,20 @@ def validate_initial_evidence(
     if not fingerprint or fingerprint != initial_evidence_fingerprint(evidence):
         return False, "initial_evidence_fingerprint_mismatch"
     current_price = evidence.get("current_price")
-    if not isinstance(current_price, (int, float)) or current_price <= 0:
-        return False, "initial_evidence_current_price_missing"
+    if type(current_price) not in (int, float) or not math.isfinite(current_price) or current_price <= 0:
+        if evidence.get('dated_reference_price') is None:
+            return False, "initial_evidence_current_price_missing"
+        from app.services.dated_chart_reference import validate_reference
+        try:
+            validate_reference(evidence['dated_reference_price'],evidence.get('dated_reference_evidence'),
+                ticker=ticker,market=str(evidence.get('market')),as_of=evidence.get('as_of'))
+            payload = evidence.get('price_context', {})
+            if (payload.get('dated_reference_price') != evidence['dated_reference_price']
+                    or payload.get('dated_reference_evidence') != evidence.get('dated_reference_evidence')
+                    or payload.get('decision', {}).get('current_price') is not None):
+                return False, 'initial_evidence_reference_consumer_binding_mismatch'
+        except (ValueError, TypeError, KeyError, OverflowError):
+            return False, 'initial_evidence_dated_reference_invalid'
     periods = evidence.get("ohlcv_feature_availability")
     if not isinstance(periods, Mapping):
         return False, "initial_evidence_ohlcv_availability_missing"
@@ -240,7 +253,13 @@ async def build_initial_evidence(
     collection_service: CollectionService | None = None,
     price_client: OhlcvClient | None = None,
     valuation_service: ValuationSnapshotService | None = None,
+    campaign_io=None,
 ) -> dict[str, object]:
+    if campaign_io is not None:
+        if not acquire or any(v is not None for v in (collection_service, price_client, valuation_service)):
+            raise ValueError('campaign_initial_evidence_acquire_and_bound_services_required')
+        # Check every lower egress port before even the first collector/DB call.
+        collection_service, price_client, valuation_service = campaign_io.initial_services(item)
     current = as_of.astimezone(UTC)
     thesis = _latest_thesis(session, item.ticker)
     if thesis is None:
@@ -270,6 +289,8 @@ async def build_initial_evidence(
         valuation = ValuationSnapshot.model_validate(
             _json_dict(baseline.valuation_snapshot) if baseline else {}
         )
+    if price.dated_reference_price is not None:
+        current = max(current,datetime.fromisoformat(price.dated_reference_price['observed_at']))
     periods = _price_periods(price)
     unknowns = [str(value) for value in _json_list(baseline.unknowns if baseline else None)]
     evidence: dict[str, object] = {
@@ -312,6 +333,10 @@ async def build_initial_evidence(
         },
     }
     evidence["fingerprint"] = initial_evidence_fingerprint(evidence)
+    if price.dated_reference_price is not None:
+        evidence['dated_reference_price'] = price.dated_reference_price
+        evidence['dated_reference_evidence'] = price.dated_reference_evidence
+        evidence['fingerprint'] = initial_evidence_fingerprint(evidence)
     valid, reason = validate_initial_evidence(
         evidence,
         ticker=item.ticker,
@@ -329,6 +354,12 @@ def ensure_initial_baseline(
     *,
     as_of: datetime,
 ) -> ThesisAssessment:
+    if evidence.get('dated_reference_price') is not None:
+        valid, reason = validate_initial_evidence(evidence,ticker=item.ticker,
+            thesis_version=evidence.get('thesis_version'))
+        if not valid:
+            raise ValueError(reason)
+        as_of = max(as_of,datetime.fromisoformat(str(evidence['as_of'])))
     thesis = _latest_thesis(session, item.ticker)
     if thesis is None:
         raise ValueError("investment_logic_missing")

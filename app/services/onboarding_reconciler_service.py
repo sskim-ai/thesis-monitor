@@ -259,7 +259,11 @@ async def resume_onboarding_subject(
     baseline_builder: BaselineBuilder = ensure_initial_baseline,
     source_intake_owner=None,
     source_intake_generation: str | None = None,
+    decision_timeout_seconds: int | None = None,
+    cycle_event_sink: Callable | None = None,
 ) -> OnboardingAttemptResult:
+    if decision_timeout_seconds is not None and decision_timeout_seconds != 600:
+        raise ValueError('explicit_onboarding_decision_timeout_must_be_600')
     if source_intake_owner is not None or source_intake_generation is not None:
         from app.services.prospective_class_c_owner import require_source_intake
         require_source_intake(source_intake_owner, generation_id=source_intake_generation,
@@ -351,7 +355,8 @@ async def resume_onboarding_subject(
                 session,
                 item,
                 evidence,
-                timeout=int(get_settings().onboarding_background_timeout_seconds),
+                timeout=(decision_timeout_seconds if decision_timeout_seconds is not None else
+                    int(get_settings().onboarding_background_timeout_seconds)),
                 data_dir=data_dir,
             )
             item.onboarding_decision_readiness = json.dumps(
@@ -394,6 +399,10 @@ async def resume_onboarding_subject(
         origin=origin,
         error=error,
     )
+    if cycle_event_sink is not None and error is None and readiness.onboarding_ready and item.active:
+        from app.services.unified_cycle_owner import capture_reconciler_activation
+        cycle_event_sink(capture_reconciler_activation(session, item, market=market,
+            writer_at=current, explicit_override=first_eligible_session))
     return OnboardingAttemptResult(
         ticker=item.ticker,
         market=market,

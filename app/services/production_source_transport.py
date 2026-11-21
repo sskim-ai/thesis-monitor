@@ -52,22 +52,39 @@ async def acquire_kis_worker(*, root, frozen, plan, credentials, remaining, run_
 
 
 class NativeProductionSourceTransport:
-    def __init__(self, settings, *, http_transport_factory=None, kis_worker=acquire_kis_worker):
+    def __init__(self, settings, *, http_transport_factory=None, kis_worker=acquire_kis_worker,
+                 run_ledger=None, registration_owner=None, source_policy=None):
         self.settings = settings
         self.http_transport_factory = http_transport_factory or (lambda: httpx.AsyncHTTPTransport(retries=0))
         self.kis_worker = kis_worker
+        self.run_ledger,self.registration_owner,self.source_policy=run_ledger,registration_owner,source_policy
 
     async def collect(self, *, root, frozen, compiler, kis_plan, credentials, deadline):
         plan_path = root / "production-frozen-source-plan.json"
         initial = sha256_bytes(plan_path.read_bytes())
-        dispatcher = ProductionSourceDispatcher(plan=frozen["plan"], root=root / "dispatch", compiler_args=compiler,
-            kis_plan=kis_plan, config_identities=frozen["config_identities"],
-            credential_presence={k: all(v) for k, v in credentials.items()}, repository_root=ROOT,
-            secrets=tuple(v for values in credentials.values() for v in values if v != "NO_CREDENTIAL_REQUIRED"))
 
         def guard():
             if time.monotonic() >= deadline or sha256_bytes(plan_path.read_bytes()) != initial:
                 raise ValueError("production_source_deadline_or_plan_drift")
+
+        options=dict(plan=frozen['plan'],root=root/'dispatch',compiler_args=compiler,kis_plan=kis_plan,
+            config_identities=frozen['config_identities'],credential_presence={k:all(v) for k,v in credentials.items()},
+            repository_root=ROOT,secrets=tuple(v for values in credentials.values() for v in values if v!='NO_CREDENTIAL_REQUIRED'))
+        selected=frozen.get('scope')=='SELECTED_ORIGINAL_RESEARCH_V1'
+        if selected:
+            if self.run_ledger is None or self.registration_owner is None or self.source_policy is None:
+                raise ValueError('selected_original_transport_ledger_and_registration_required')
+            from app.services.selected_source_dispatch import SelectedSourceDispatcher
+            from app.services.selected_source_plan import request_budget,compile_selected_plan
+            rebuilt=compile_selected_plan(compiler_args=compiler,kis_plan=kis_plan)
+            dispatcher=SelectedSourceDispatcher(**options,registration_owner=self.registration_owner,
+                policy=self.source_policy,approved_plan_sha256=rebuilt['plan'].plan_sha256,
+                approved_provider_caps=request_budget(rebuilt,kis_plan)['providers'],guard=guard,
+                enabled=True,run_ledger=self.run_ledger)
+        else:
+            if self.run_ledger is not None:
+                raise ValueError('selected_campaign_cannot_enter_full22_transport')
+            dispatcher=ProductionSourceDispatcher(**options)
 
         await acquire_all(root=root, frozen=frozen, settings=self.settings, dispatcher=dispatcher,
             inner=self.http_transport_factory(), policy=POLICY, guard=guard)
@@ -77,5 +94,6 @@ class NativeProductionSourceTransport:
         if kis_plan is not None:
             guard()
             await self.kis_worker(root=root, frozen=frozen, plan=kis_plan, credentials=credentials,
-                                  remaining=deadline - time.monotonic())
+                                  remaining=deadline - time.monotonic(),
+                                  **({'run_ledger':self.run_ledger} if selected else {}))
         return outcome

@@ -4,7 +4,8 @@ Count limits are collection ceilings, not admission minima. Completion and
 source identity remain separate from count and from current-price authority.
 """
 from copy import deepcopy
-from datetime import date
+from datetime import date, datetime, timedelta
+import calendar as civil_calendar
 import math
 import re
 from typing import Any, Callable, Literal, Mapping
@@ -102,12 +103,67 @@ def _completed(row, *, timeframe, cutoff, verifier):
     return finality.state == 'FINAL'
 
 
+def historical_period_eligibility(row, *, timeframe, market, cutoff, observed_at, later_dates, calendar=None):
+    """Closed historical chart observations, not official/final close ownership.
+
+    A later native period plus the exchange calendar avoids relying on whether
+    the provider's date labels the start or end session of a historical bucket.
+    The newest W/M bucket is intentionally not admitted by this fallback.
+    """
+    from app.services.price_structure_wave_fibonacci_v3_service import _calendar_for_range
+    if observed_at is None or observed_at.utcoffset() is None:
+        return False
+    capture = row.get('_native_capture', {})
+    if capture.get('provider') != 'kiwoom':
+        return False
+    day = date.fromisoformat(row['date'])
+    marker = str(row.get('bar_state') or row.get('completion_state') or '').upper()
+    if marker in {'PROVISIONAL', 'PARTIAL', 'OPEN', 'LIVE', 'UNCONFIRMED', 'UNKNOWN'}:
+        return False
+    if timeframe == 'daily':
+        start = end = day
+        later = any(d > day for d in later_dates)
+    elif timeframe == 'weekly':
+        start = day - timedelta(days=day.weekday())
+        end = start + timedelta(days=6)
+        later = any(d > end for d in later_dates)
+    elif timeframe == 'monthly':
+        start = day.replace(day=1)
+        end = day.replace(day=civil_calendar.monthrange(day.year, day.month)[1])
+        later = any(d > end for d in later_dates)
+    else:
+        return False
+    if not later:
+        return False
+    exchange = calendar
+    if exchange is None:
+        _, exchange = _calendar_for_range(market.upper(), start=start, end=end)
+    try:
+        sessions = exchange.sessions_in_range(start, end)
+        if not len(sessions) or (timeframe == 'daily' and not exchange.is_session(day)):
+            return False
+        last = sessions[-1]
+        return last.date() <= cutoff and exchange.session_close(last).to_pydatetime() <= observed_at
+    except (ValueError, IndexError, TypeError):
+        return False
+
+
 def build_provider_native_view(*, ticker, market, periods, cutoff,
-                               completion_verifier: Callable | None = None):
+                               completion_verifier: Callable | None = None,
+                               observed_at: datetime | None = None, historical_reference=False):
     output={}
     for tf,maximum in MAX_COUNTS.items():
         raw=deepcopy(list(periods.get(tf,())))
         source_hash=digest(raw);reasons=[];valid=[];dates=[];invalid=False;captures=set()
+        source_dates = []
+        for source in raw:
+            try:source_dates.append(date.fromisoformat(source['date']))
+            except (ValueError, KeyError, TypeError):pass
+        historical_calendar = None
+        if historical_reference and source_dates:
+            from app.services.price_structure_wave_fibonacci_v3_service import _calendar_for_range
+            _, historical_calendar = _calendar_for_range(market.upper(), start=min(source_dates),
+                end=max(max(source_dates), cutoff) + timedelta(days=40))
         for row in raw:
             if not isinstance(row,Mapping):invalid=True;reasons.append('INVALID_ROW');continue
             capture=row.get('_native_capture')
@@ -130,8 +186,16 @@ def build_provider_native_view(*, ticker, market, periods, cutoff,
                 invalid=True;reasons.append('INVALID_OHLCV');continue
             if d>cutoff:
                 reasons.append('FUTURE_OR_UNCOMPLETED_QUARANTINED');continue
-            if not _completed(row,timeframe=tf,cutoff=cutoff,verifier=completion_verifier):
+            completed = _completed(row,timeframe=tf,cutoff=cutoff,verifier=completion_verifier)
+            if historical_reference and completion_verifier is None:
+                completed = False  # An HTTP FINAL marker is not a new price grant.
+            historical = (historical_reference and historical_period_eligibility(row,
+                timeframe=tf,market=market,cutoff=cutoff,observed_at=observed_at,later_dates=source_dates,
+                calendar=historical_calendar))
+            if not completed and not historical:
                 reasons.append('FINALITY_OR_PERIOD_LABEL_UNPROVEN');continue
+            if historical and not completed:
+                reasons.append('HISTORICAL_CHART_REFERENCE_NOT_OFFICIAL_FINAL_CLOSE')
             valid.append(row)
         if dates!=sorted(set(dates)):
             invalid=True;reasons.append('DUPLICATE_OR_UNORDERED_DATE')

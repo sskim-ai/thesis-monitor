@@ -222,6 +222,12 @@ def _build_price_decision(
         decision.current_position = _price_position_text(context)
     elif decision.current_price is not None and decision.price_as_of and decision.price_basis != "unavailable":
         decision.current_position = "독립 현재가격 확인됨 · 구간 내 위치 판단 미산출"
+    elif context.dated_reference_price is not None:
+        from app.services.dated_chart_reference import validate_price_reference
+        reference = validate_price_reference(context, ticker=thesis.ticker,
+            market='kr' if thesis.ticker.isdigit() else 'us')
+        decision.current_position = (f"{reference['reference_date']} 조정 차트 기준가격 "
+            f"{reference['value']} {reference['currency']} · 실시간/비수정 현재가 아님")
     else:
         decision.current_position = "날짜 명시 기술 연구용; 현재가격 미확인 · 위치 판단 미산출"
     decision.registered_rules_available = bool(rules)

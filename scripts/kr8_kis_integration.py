@@ -281,9 +281,36 @@ def semantic_inputs(static, hashes):
         action_docs=json.loads((static/'action-docs.json').read_bytes()))
 
 
+def dispatch_accounted_kis_request(request, send, *, accounting, source_plan_sha256, logical_id):
+    """Original KIS Worker egress; one physical charge, no credential receipts."""
+    if accounting is None:
+        raise ValueError('SELECTED_KIS_PHYSICAL_ACCOUNTING_REQUIRED_BEFORE_SEND')
+    key=accounting.before_http(market='kr',provider='kis',logical_id=logical_id,
+        plan_sha256=source_plan_sha256)
+    runtime=physical_key=None
+    if accounting.identity.get('runtime_cap'):
+        from app.services.campaign_runtime_cap import RuntimeCap,reserve_request
+        runtime=RuntimeCap(accounting.worker_binding())
+        physical_key=reserve_request(runtime,request,provider='kis',market='kr',subject='*',
+            phase='SOURCE',owner='production_kis_worker')
+    try:
+        if runtime is not None:runtime.dispatched(physical_key)
+        response=send(request)
+        response.read()
+    except BaseException as exc:
+        if runtime is not None:runtime.finish(physical_key,error=exc)
+        accounting.result(key,ok=False)
+        raise
+    if runtime is not None:runtime.finish(physical_key,status=response.status_code)
+    accounting.result(key,ok=response.status_code not in (401,403,429))
+    return response
+
+
 def acquire(root, *, plan, credentials, inventories, static, guard,
             physical_accounting=None, source_plan_sha256=None):
     """One fresh acquisition. Transport failures terminate; no fallback/retry."""
+    if plan['contract']!=CONTRACT and physical_accounting is None:
+        raise ValueError('SELECTED_KIS_PHYSICAL_ACCOUNTING_REQUIRED_BEFORE_ACQUIRE')
     subjects = _subjects(plan)
     inputs = semantic_inputs(static, plan['static_hashes'])
     root.mkdir(parents=True, exist_ok=False, mode=0o700)
@@ -298,17 +325,11 @@ def acquire(root, *, plan, credentials, inventories, static, guard,
                 durable_bytes(root/f'physical-{self.attempts:03d}.intent.json',json.dumps(dict(
                     ordinal=self.attempts,plan_sha256=plan['receipt_sha256'],before_io=True,
                     started_at=base.now(),retries=0)).encode(),exclusive=True)
-            key=None
             if physical_accounting is not None:
-                key=physical_accounting.before_http(market='kr',provider='kis',
-                    logical_id='kis-wire:'+str(self.attempts),plan_sha256=source_plan_sha256)
-            try:
-                response=super().handle_request(request)
-            except BaseException:
-                if key is not None:physical_accounting.result(key,ok=False)
-                raise
-            if key is not None:physical_accounting.result(key,ok=response.status_code not in (401,403,429))
-            return response
+                return dispatch_accounted_kis_request(request,super().handle_request,
+                    accounting=physical_accounting,source_plan_sha256=source_plan_sha256,
+                    logical_id='kis-wire:'+str(self.attempts))
+            return super().handle_request(request)
     with httpx.Client(timeout=45, follow_redirects=False, transport=Guarded(retries=0)) as client:
         probe = FreshProbe(root, credentials, client, plan=plan)
         actions = None
