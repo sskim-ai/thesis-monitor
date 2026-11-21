@@ -577,6 +577,12 @@ async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', cl
             adapter_fingerprint=digest(child.binding()), clock=clock)
         result = await engine.run(child.market, datetime.fromisoformat(child.plan.cohort.cutoff).astimezone(KST).date())
         if record_market_terminal:
+            if result.get('status') == 'FAILED_NO_SEND':
+                try:
+                    source['run_ledger'].stop(result.get('first_failure', {}).get('code', 'RESEARCH_STAGE_FAILED'))
+                except Exception as exc:
+                    result.setdefault('ledger_failure', UnifiedMarketRun._error(exc))
+                return result
             source['run_ledger'].rendered_market(child, result)
         return result
     finally:

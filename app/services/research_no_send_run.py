@@ -8,6 +8,8 @@ from contextvars import ContextVar
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 import fcntl
+import json
+import os
 from pathlib import Path
 import re
 
@@ -170,6 +172,55 @@ def current_stage_timer():
     return _stage_timer.get()
 
 
+def _first_failure(exc, stage):
+    failure = dict(type=type(exc).__name__[:80], code='RESEARCH_STAGE_FAILED', stage=stage,
+        at=datetime.now(timezone.utc).isoformat())
+    if isinstance(exc, ArtifactCapacityError):
+        receipt = exc.receipt
+        code = receipt.get('code', '')
+        if re.fullmatch(r'RESEARCH_[A-Z_]{1,80}', code):
+            failure['code'] = code
+        failure['storage'] = {k: receipt[k] for k in ('current_bytes', 'projected_bytes', 'cap_bytes')
+            if type(receipt.get(k)) is int}
+    return failure
+
+
+def _persist_first_failure(path, state):
+    """Only this bounded, payload-free receipt may bypass the artifact free guard."""
+    directory = None
+    pending = False
+    try:
+        raw = json.dumps(state['first_failure'], sort_keys=True, separators=(',', ':')).encode()+b'\n'
+        if len(raw) > 4096:
+            raise ValueError('research_first_failure_receipt_too_large')
+        directory = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        fd = os.open('.first-failure.pending', os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+            0o600, dir_fd=directory)
+        pending = True
+        with os.fdopen(fd, 'wb') as stream:
+            stream.write(raw)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.link('.first-failure.pending', 'first-failure.json', src_dir_fd=directory,
+            dst_dir_fd=directory, follow_symlinks=False)
+        os.fsync(directory)
+        state['first_failure_receipt'] = dict(status='PERSISTED', bytes=len(raw))
+    except Exception as error:
+        state['first_failure_receipt'] = dict(status='UNAVAILABLE', type=type(error).__name__,
+            errno=error.errno if isinstance(error, OSError) else None)
+    finally:
+        if directory is not None:
+            if pending:
+                try:
+                    os.unlink('.first-failure.pending', dir_fd=directory)
+                except OSError:
+                    pass
+            try:
+                os.close(directory)
+            except OSError:
+                pass
+
+
 class PreparedResearchBridge(ProductionRuntimeBridgeV1):
     def __init__(self, *, child, settings, model, clock, retained_kr_ecos_body=None):
         child.verify()
@@ -287,6 +338,7 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
             return load_json(path/'terminal.json')
         state = dict(status='STARTED', child_binding=bridge.child_binding, stage_receipts=[],
             normal_messages_sent=False, failure_notifications_sent=False)
+        stage = 'INITIALIZE'
         try:
             if (path/'intent.json').exists():
                 raise ValueError('interrupted_research_cycle_no_automatic_replay')
@@ -377,7 +429,8 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
             state['storage_inventory'] = artifacts.measure()
         except (Exception, asyncio.CancelledError) as exc:
             from app.services.unified_market_run import UnifiedMarketRun
-            state.update(status='FAILED_NO_SEND',error_chain=UnifiedMarketRun._error(exc))
+            state.update(status='FAILED_NO_SEND',error_chain=UnifiedMarketRun._error(exc),
+                first_failure=_first_failure(exc, stage))
             for key in ('messages', 'messages_sha256', 'limitation_receipts'):
                 state.pop(key, None)
             if isinstance(exc, ArtifactCapacityError):
@@ -392,10 +445,20 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                 bridge.model.call_budget.stop(global_stop=not local)
             except Exception as ledger_error:
                 state['ledger_failure'] = UnifiedMarketRun._error(ledger_error)
+            _persist_first_failure(path, state)
         try:
             durable_json(path/'terminal.json',state,exclusive=True)
-        except ArtifactCapacityError as exc:
-            state.update(status='FAILED_NO_SEND', terminal_write_blocked=exc.receipt)
-            state.pop('messages', None)
-            state.pop('messages_sha256', None)
+        except (ArtifactCapacityError, OSError) as exc:
+            from app.services.unified_market_run import UnifiedMarketRun
+            state.update(status='FAILED_NO_SEND', terminal_write_blocked=(exc.receipt
+                if isinstance(exc, ArtifactCapacityError) else dict(type=type(exc).__name__, errno=exc.errno)))
+            if 'first_failure' not in state:
+                state.update(first_failure=_first_failure(exc, stage), error_chain=UnifiedMarketRun._error(exc))
+                _persist_first_failure(path, state)
+                try:
+                    bridge.model.call_budget.stop(global_stop=True)
+                except Exception as ledger_error:
+                    state['ledger_failure'] = UnifiedMarketRun._error(ledger_error)
+            for key in ('messages', 'messages_sha256', 'limitation_receipts'):
+                state.pop(key, None)
         return state
