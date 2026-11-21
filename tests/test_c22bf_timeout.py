@@ -54,8 +54,8 @@ def proof(row):
 @pytest.mark.parametrize("stage, calls, total, local", [
     ("VALIDATE", 0, 600, 600),
     ("RENDER", 0, 600, 600),
-    ("MARKET", 1, 630, 600),
-    ("CORE", 4, 2430, 900),
+    ("MARKET", 1, 630, None),
+    ("CORE", 4, 2430, None),
 ])
 def test_research_finalization_local_deadline(stage, calls, total, local):
     plan = SimpleNamespace(slots=[SimpleNamespace(stage=stage)] * calls, validate=lambda: None)

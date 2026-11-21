@@ -25,6 +25,7 @@ from app.services.vnext_execution_profile import SOL_HIGH_V1
 TERMINAL = 'RENDER_VERIFIED_NO_SEND'
 PARTIAL = 'RENDER_VERIFIED_PARTIAL_NO_SEND'
 RESEARCH_STAGES = STAGES[:-1]
+MODEL_STAGES = frozenset({'MARKET', 'CORE', 'A', 'B', 'B2'})
 FINALIZATION_STAGES = frozenset({'VALIDATE', 'RENDER'})
 FINALIZATION_LOCAL_SECONDS = 600
 _stage_timer = ContextVar('prepared_research_stage_timer', default=None)
@@ -116,30 +117,29 @@ def stage_deadline(plan, stage):
 
 
 def _split_stage_deadline(bound, multi_batch_local_seconds):
-    stage, calls = bound['stage'], bound['planned_calls']
-    result = dict(bound, local_seconds=(
-        FINALIZATION_LOCAL_SECONDS if stage in FINALIZATION_STAGES
-        else multi_batch_local_seconds if stage in {'CORE','A','B'} and calls > 1
-        else 600 if calls else bound['overhead_seconds']),
-        scope='SEPARATE_LOCAL_AND_WORKER_CAMPAIGN_CAPPED')
+    stage = bound['stage']
+    result = dict(bound, local_seconds=None if stage in MODEL_STAGES else FINALIZATION_LOCAL_SECONDS,
+        scope=('MODEL_LOCAL_UNLIMITED_CAMPAIGN_AND_PER_CALL_CAPPED' if stage in MODEL_STAGES
+            else 'SEPARATE_LOCAL_AND_WORKER_CAMPAIGN_CAPPED'))
     del result['total_seconds']
     return result
 
 
 class _StageTimer:
-    """Pause the cumulative local budget only while the bounded worker runs."""
+    """Bound workers and finalization locally; all phases retain the campaign cap."""
     def __init__(self, deadline, loop, campaign_end, retry_cap=0):
         self.deadline, self.loop, self.campaign_end = deadline, loop, campaign_end
         self.local_seconds = self.worker_seconds = 0.0
         self.phase, self.began, self.calls = 'local', loop.time(), 0
-        self.timeout = asyncio.timeout_at(None)
+        limit = deadline['local_seconds']
+        self.timeout = asyncio.timeout_at(campaign_end if limit is None else min(self.began+limit,campaign_end))
         self.retry_cap = retry_cap
 
     def check(self):
         now = self.loop.time()
         if now >= self.campaign_end:
             raise TimeoutError('research_campaign_deadline')
-        if now >= self.timeout.when():
+        if self.timeout.when() is not None and now >= self.timeout.when():
             raise TimeoutError('research_'+self.phase+'_deadline')
 
     def switch(self, phase):
@@ -153,9 +153,10 @@ class _StageTimer:
             remaining = self.deadline['per_call_seconds']+self.deadline['overhead_seconds']
         else:
             self.worker_seconds += now-self.began
-            remaining = self.deadline['local_seconds']-self.local_seconds
+            limit = self.deadline['local_seconds']
+            remaining = None if limit is None else limit-self.local_seconds
         self.phase, self.began = phase, now
-        self.timeout.reschedule(min(now+remaining,self.campaign_end))
+        self.timeout.reschedule(self.campaign_end if remaining is None else min(now+remaining,self.campaign_end))
         self.check()
 
     def receipt(self):
@@ -326,7 +327,6 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                         token = _stage_timer.set(timer)
                         try:
                             async with timer.timeout:
-                                timer.timeout.reschedule(min(timer.began+bound['local_seconds'],campaign_end))
                                 timer.check()
                                 result = await bridge.stage(request,directory)
                                 timer.check()

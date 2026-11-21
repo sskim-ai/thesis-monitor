@@ -52,7 +52,7 @@ def test_market_timeout_then_success_shared_b2_ledger_timer_and_partition(tmp_pa
     assert f.budget.retry_used == 2 and len(f.budget.accepted) == 29
     stage = f.result['stage_receipts'][0]
     assert stage['deadline']['market_timeout_retry_cap'] == 1 and stage['timing']['worker_windows'] == 2
-    assert stage['deadline']['local_seconds'] == 600 and stage['deadline']['per_call_seconds'] == 600
+    assert stage['deadline']['local_seconds'] is None and stage['deadline']['per_call_seconds'] == 600
     journal = read_invocation_journal(f.budget.journal.path.read_bytes())
     proof = journal['timeouts'][pair[0]['slot_scope']['slot_id']][0]
     assert proof['worker_group_reaped'] and proof['remote_completion_and_billing'] == 'UNOBSERVED'
