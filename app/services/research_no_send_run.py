@@ -120,15 +120,16 @@ def stage_deadline(plan, stage):
 
 def _split_stage_deadline(bound, multi_batch_local_seconds):
     stage = bound['stage']
-    result = dict(bound, local_seconds=None if stage in MODEL_STAGES else FINALIZATION_LOCAL_SECONDS,
+    result = dict(bound, local_seconds=None if stage in MODEL_STAGES | FINALIZATION_STAGES else FINALIZATION_LOCAL_SECONDS,
         scope=('MODEL_LOCAL_UNLIMITED_CAMPAIGN_AND_PER_CALL_CAPPED' if stage in MODEL_STAGES
+            else 'FINALIZATION_LOCAL_UNLIMITED_CAMPAIGN_CAPPED' if stage in FINALIZATION_STAGES
             else 'SEPARATE_LOCAL_AND_WORKER_CAMPAIGN_CAPPED'))
     del result['total_seconds']
     return result
 
 
 class _StageTimer:
-    """Bound workers and finalization locally; all phases retain the campaign cap."""
+    """Keep per-worker bounds; all local work remains campaign-capped."""
     def __init__(self, deadline, loop, campaign_end, retry_cap=0):
         self.deadline, self.loop, self.campaign_end = deadline, loop, campaign_end
         self.local_seconds = self.worker_seconds = 0.0

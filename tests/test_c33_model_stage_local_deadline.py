@@ -188,15 +188,18 @@ def test_campaign_expiry_before_worker_during_worker_and_awaited_local_releases_
             with (f.cycle/'cycle.lock').open('a') as lock:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
 
 
-def test_validate_and_render_local_600_and_worker_630_guards_remain():
+def test_finalization_campaign_only_and_worker_630_guard_remains():
     async def run():
         for stage in ('VALIDATE','RENDER'):
             clock=[asyncio.get_running_loop().time()]
             timer=research._StageTimer(bound(stage,0),SimpleNamespace(time=lambda:clock[0]),clock[0]+10000)
             async with timer.timeout:
-                assert timer.deadline['local_seconds']==600
-                clock[0]+=600.1
-                with pytest.raises(TimeoutError,match='research_local_deadline'):timer.check()
+                assert timer.deadline['local_seconds'] is None
+                clock[0]+=630.296
+                timer.check()
+                assert timer.timeout.when()==timer.campaign_end
+                clock[0]=timer.campaign_end+.1
+                with pytest.raises(TimeoutError,match='research_campaign_deadline'):timer.check()
         clock=[asyncio.get_running_loop().time()]
         timer=research._StageTimer(bound('MARKET',1),SimpleNamespace(time=lambda:clock[0]),clock[0]+10000)
         async with timer.timeout:
