@@ -50,6 +50,7 @@ US_FULL_20261121_SLOTS = {
     'us-20261121-c32b8e4d': '2026-11-21T15:20:00+09:00',
     'us-20261121-c34d6a2f': '2026-11-21T17:40:00+09:00',
     'us-20261121-c36e7a4b': '2026-11-21T22:10:00+09:00',
+    'us-20261124-c38f2a6d': '2026-11-24T08:10:00+09:00',
 }
 
 
@@ -379,9 +380,21 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
 
 def latest_one_shot_us_session(now, *, one_shot_tag=None):
     from app.services.market_session import us_market_session, _exchange_session_close, NEW_YORK, is_exchange_session_date
+    from app.services.unified_market_run import target_session
 
     window = _us_full_one_shot_window(one_shot_tag)
-    local_date, target = ('2026-11-21', '2026-11-20') if window else ('2026-11-20', '2026-11-19')
+    if window:
+        local_date = window[0].astimezone(KST).date().isoformat()
+        # Preserve the closed Nov21 audit windows; new slots use the official calendar.
+        if local_date == '2026-11-21':
+            target = '2026-11-20'
+        else:
+            expected = target_session('us', window[0])
+            if expected is None:
+                return None
+            target = expected.isoformat()
+    else:
+        local_date, target = '2026-11-20', '2026-11-19'
     if now.utcoffset() is None or now.astimezone(KST).date().isoformat() != local_date:
         return None
     session = us_market_session(now).latest_completed_regular_session_date
@@ -429,7 +442,7 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
     session = latest_one_shot_session(market,now,one_shot_tag=one_shot_tag) if one_shot_tag is not None else target_session(market, now)
     if session is None:
         return dict(status='NO_RUN', reason='SESSION_NOT_COMPLETED_OR_CLOSED', normal_messages_sent=False)
-    if one_shot_tag is not None and session.isoformat() != ('2026-11-20' if window else '2026-11-19' if market=='us' else '2026-11-20'):
+    if one_shot_tag is not None and window is None and session.isoformat() != ('2026-11-19' if market=='us' else '2026-11-20'):
         return dict(status='NO_RUN', reason='ONE_SHOT_SESSION_MISMATCH', normal_messages_sent=False)
     head = subprocess.check_output(['/usr/bin/git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
     dirty = subprocess.check_output(['/usr/bin/git', '-C', str(ROOT), 'status', '--porcelain', '--',
