@@ -201,10 +201,11 @@ def test_insufficient_kr18_19_26_and_us42_fail_before_worker(tmp_path):
         assert not any(r['event'] in ('MODEL_PLAN','INTENT') for r in events)
 
 
-def test_caller_rejects_current_caps_before_source_db_or_runtime(tmp_path,monkeypatch):
+def test_caller_rejects_insufficient_caps_before_source_db_or_runtime(tmp_path,monkeypatch):
     from app.jobs import unified_market_snapshot as job
     def denied(*args):raise AssertionError('budget refusal reached a runtime')
     monkeypatch.setattr(job,'_local_model_runtime',denied)
+    monkeypatch.setattr(job,'_local_model_cap',lambda config, tag: 18 if config.market=='kr' else 42)
     for market,required in (('kr',27),('us',43)):
         config=SimpleNamespace(market=market,market_b2_timeout_retry=True,kr_market_timeout_retry=False)
         with pytest.raises(ValueError,match='required='+str(required)):

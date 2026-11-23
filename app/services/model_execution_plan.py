@@ -3,6 +3,7 @@ from dataclasses import asdict, dataclass
 from datetime import date, datetime, timezone
 import json
 import re
+from zoneinfo import ZoneInfo
 
 from app.services.unified_snapshot_contract import digest, encoded
 from app.services.vnext_execution_profile import SOL_HIGH_V1
@@ -48,12 +49,14 @@ class FrozenCohort:
     def __post_init__(self):
         if not self.run_id or not self.source_generation or type(self.planning_only) is not bool:
             raise ValueError('model_cohort_identity_required')
-        date.fromisoformat(self.assessment_date)
+        assessment_date = date.fromisoformat(self.assessment_date)
         object.__setattr__(self, 'effective_at', _instant(self.effective_at))
         object.__setattr__(self, 'cutoff', _instant(self.cutoff))
         if self.effective_at > self.cutoff:
             raise ValueError('model_cohort_effective_after_cutoff')
-        if self.assessment_date > self.cutoff[:10]:
+        # The producer defines the assessment date in KST; UTC instants stay unchanged.
+        cutoff_date = datetime.fromisoformat(self.cutoff).astimezone(ZoneInfo('Asia/Seoul')).date()
+        if assessment_date > cutoff_date:
             raise ValueError('model_cohort_future_assessment')
         rows = []
         for row in self.subjects:

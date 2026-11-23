@@ -262,7 +262,8 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
                 if response.status_code == 200:
                     persist_krx_response(root=root/'night/native-history', query_date=datetime.fromisoformat(day).date(),
                         fetched_at=history.received_at, http_status=200, raw_body=response.content)
-        value = TypeAdapter(MacroProviderResult).dump_python(materialize_night_probe(probe, history_directory=root/'night/native-history'), mode='json')
+        value = TypeAdapter(MacroProviderResult).dump_python(materialize_night_probe(
+            probe, history_directory=root/'night/native-history', night_end_dates=True), mode='json')
         durable_json(root/'night/query.json', {'observed_at': at.isoformat()}, exclusive=True)
         return value
 

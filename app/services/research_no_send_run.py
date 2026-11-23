@@ -354,7 +354,8 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                         bound = _split_stage_deadline(bound, multi_batch_local_seconds)
                         retry_cap = getattr(bridge.model.call_budget,'timeout_retry_cap',0)
                         retry_market = getattr(bridge.model.call_budget,'retry_market','us')
-                        if retry_cap and bound['planned_calls'] and retry_market!='kr':
+                        per_ticker = getattr(bridge.model.call_budget,'b2_retry_policy',None)
+                        if retry_cap and bound['planned_calls'] and retry_market!='kr' and not per_ticker:
                             bound['campaign_timeout_retry_cap'] = retry_cap
                         if getattr(bridge.model.call_budget,'b2_retry_policy',None) and stage == 'B2':
                             bound['b2_retry_policy'] = bridge.model.call_budget.b2_retry_policy
@@ -377,7 +378,7 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                         loop = asyncio.get_running_loop()
                         allowance = (bridge.model.call_budget.retry_capacity
                             if getattr(bridge.model.call_budget,'b2_retry_policy',None) and stage == 'B2'
-                            else bound.get('market_timeout_retry_cap',0) if getattr(bridge.model.call_budget,'retry_market','us')=='kr'
+                            else bound.get('market_timeout_retry_cap',0) if retry_market=='kr' or per_ticker
                             else bound.get('market_timeout_retry_cap',getattr(bridge.model.call_budget,'timeout_retry_cap',0)))
                         timer = _StageTimer(bound,loop,campaign_end, allowance)
                         token = _stage_timer.set(timer)

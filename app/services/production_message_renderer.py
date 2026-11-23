@@ -9,7 +9,7 @@ from app.services.kr_forward_valuation_context import calibration_context
 from app.services.kr_forward_valuation_message import build_plan as build_kr_plan
 from app.services.market_display_plan import build_display_plan
 from app.services.production_b2_execution import parse_authorization
-from app.services.unavailable_price_valuation import parse_view
+from app.services.unavailable_price_valuation import parse_view, shadow_request_context
 from app.services.unified_snapshot_contract import digest
 from scripts import m12ds_r4_r4_market as market_owner
 
@@ -64,9 +64,10 @@ def stock_message(session, ticker, b2_row, *, execution_profile=None):
             raise ValueError('production_kr_forward_render_owner_gap')
         base = build_kr_plan(packet, base, forward)
     request = session.b2_request(ticker)
-    plan = build_detailed_plan_v2(packet=packet, base=base, b2_request=request,
+    entry_context = shadow_request_context(session.bctx[ticker], source)
+    plan = build_detailed_plan_v2(packet=packet, base=base, b2_request=request, entry_context=entry_context,
         b2_result=b2_row['result'], authorization=parse_authorization(b2_row['authorization'], execution_profile=execution_profile))
-    message = dict(message_id=ticker, **render_detailed_v2(packet, plan))
+    message = dict(message_id=ticker, **render_detailed_v2(packet, plan, entry_context=entry_context))
     if session.market == 'us':
         from app.services.selected_news_rate_limit import disclose
         message = disclose(message, [source.get('event_view', {})], expected_count=1)

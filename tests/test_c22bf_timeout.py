@@ -51,21 +51,16 @@ def proof(row):
         worker_group_reaped=True,remote_completion_and_billing='UNOBSERVED',error='TRANSPORT_TIMEOUT')
 
 
-@pytest.mark.parametrize("stage, calls, total, local", [
-    ("VALIDATE", 0, 600, 600),
-    ("RENDER", 0, 600, 600),
-    ("MARKET", 1, 630, 600),
-    ("CORE", 4, 2430, 900),
-])
-def test_research_finalization_local_deadline(stage, calls, total, local):
-    plan = SimpleNamespace(slots=[SimpleNamespace(stage=stage)] * calls, validate=lambda: None)
-    original = stage_deadline(plan, stage)
-    split = _split_stage_deadline(original, 900)
-    assert original["total_seconds"] == total
-    assert split["local_seconds"] == local
-    assert split["planned_calls"] == calls
-    assert split["per_call_seconds"] == 600 and split["overhead_seconds"] == 30
-    assert split["retries"] == 0
+def test_research_finalization_local_deadline():
+    for stage, calls, total in (("VALIDATE",0,600),("RENDER",0,600),("MARKET",1,630),("CORE",4,2430)):
+        plan = SimpleNamespace(slots=[SimpleNamespace(stage=stage)] * calls, validate=lambda: None)
+        original = stage_deadline(plan, stage)
+        split = _split_stage_deadline(original, 900)
+        assert original["total_seconds"] == total
+        assert split["local_seconds"] is None
+        assert split["planned_calls"] == calls
+        assert split["per_call_seconds"] == 600 and split["overhead_seconds"] == 30
+        assert split["retries"] == 0
 
 
 def test_exact_append_only_retry_rejects_replay_or_changed_input(tmp_path):

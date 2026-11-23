@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from app.macro.providers.krx import sealed_night_end_date_history
 from app.services.production_source_plan import ProductionRequestPlan
 from app.services.sealed_fresh_dispatch import _binding_parent, consume_bound_result
 from app.services.sealed_response_binding import resolve_response_binding, SlotNotSelected
@@ -200,7 +201,8 @@ def _verified_night_probe_tail(root, frozen, outcome, plan, finals):
             hashes[artifact] = final['raw_sha256']
         proof = replay_night(receipts=receipts,bodies=bodies,body_hashes=hashes,observed_at=start,
             run_id=plan.generation_id,acquisition_id=acquisition,expected_value_sha256=digest(phase['value']),
-            policy=POLICY,run_started_at=start,acquisition_cutoff=datetime.fromisoformat(outcome['completed_at']))
+            policy=POLICY,run_started_at=start,acquisition_cutoff=datetime.fromisoformat(outcome['completed_at']),
+            night_end_dates=sealed_night_end_date_history(phase['value']))
         telemetry = proof['value']['telemetry']
         if (telemetry['status'] != 'ok' or telemetry['night_session_usable'] is not True
                 or telemetry['queried_dates'] != dates[:len(prefix)] or not proof['value']['observations']

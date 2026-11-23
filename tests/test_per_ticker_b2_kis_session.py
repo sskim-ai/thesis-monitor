@@ -118,9 +118,9 @@ def test_nonconfirmed_or_auth_failure_stops_without_retry(tmp_path, monkeypatch,
     assert f.budget.retry_used == 0
 
 
-def test_non_b2_timeout_does_not_retry(tmp_path, monkeypatch):
+def test_full_us_market_timeout_retries_once_within_42(tmp_path, monkeypatch):
     f = scenario(tmp_path, monkeypatch, {'MARKET':['timeout']})
-    assert f.result['status'] == 'FAILED_NO_SEND' and len(f.calls) == 1 and f.budget.retry_used == 0
+    assert f.result['status'] == 'RENDER_VERIFIED_NO_SEND' and len(f.calls) == 30 and f.budget.retry_used == 1
 
 
 def test_journal_third_attempt_and_43rd_start_forbidden_legacy_readback(tmp_path):

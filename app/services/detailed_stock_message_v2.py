@@ -247,7 +247,145 @@ def _selected_support_row(packet, base, timing, security_id, *, new_buyer=None):
         formatting="accepted-tactical-support-registry-v1")
 
 
-def build_detailed_plan_v2(*, packet, base, b2_request, b2_result, authorization):
+def _entry_quality(model_input, timing, context, market, session):
+    """Explain the frozen B decision context, never the display-only V3 zones."""
+    from app.services.new_buyer_base_contract import number
+    from app.services.new_buyer_input_owner import _statement, tactical_catalog
+
+    if context is None:
+        return "INSUFFICIENT_EVIDENCE", "진입 근거 상세 없음", ()
+    if (digest(context) != model_input["authority_digests"]["context"]
+            or context["ticker"] != model_input["ticker"]
+            or context["source_evidence_binding"]["source_generation_id"] != model_input["source_generation"]):
+        raise ValueError("detailed_v2_entry_context_mismatch")
+    catalog = tactical_catalog(context, model_input["ticker"], model_input["security_id"])
+    candidate = next((r for r in catalog if r["candidate_id"] == timing["selected"]), None)
+    if not candidate:
+        return "INSUFFICIENT_EVIDENCE", "선택된 적격 진입 구간 없음", ()
+    if timing["relation"] == "UNRESOLVED" or not candidate["relation_basis_proven"]:
+        note = ("등록 가격 규칙은 완료봉 지지 근거가 아님" if candidate.get("source_label") == "chart_price_rules"
+                else "선택 구간과 기준가격의 동일 기준을 입증하지 못함")
+        return "INSUFFICIENT_EVIDENCE", note, ()
+    permissions = {r["ref_id"] for r in context["source_use_projection"]["source_permissions"]
+                   if "ENTRY" in r["allowed_uses"]}
+    evidence = {r["ref_id"]: r for r in context["decision_evidence"]
+                if r["as_of"] == session and r["ref_id"] in permissions}
+    quote = context["current_price"]
+    currency = {"kr": "KRW", "us": "USD"}[market]
+    price = number(quote.get("value"))
+    daily_id = "canonical:chart:daily"
+    def matching_frame(frame):
+        data = _statement(evidence.get("canonical:chart:" + str(frame), {}))
+        return (frame in ("daily", "weekly", "monthly") and data.get("quality") == "available"
+                and data.get("currency") == currency and price is not None and price > 0
+                and number(data.get("candle", {}).get("close")) == price
+                and (quote.get("basis"), data.get("price_basis")) in {
+                    ("adjusted_close","adjusted"), ("regular_close","unadjusted"), ("unadjusted_close","unadjusted")})
+
+    frames = {_statement(evidence.get(ref, {})).get("timeframe") for ref in candidate["evidence_refs"]}
+    if (not set(timing["evidence_refs"]) <= evidence.keys() or quote.get("as_of") != session
+            or quote.get("currency") != currency or not matching_frame("daily")
+            or not frames or not all(matching_frame(frame) for frame in frames)):
+        return "INSUFFICIENT_EVIDENCE", "같은 세션·가격 기준의 진입 품질 근거 없음", ()
+    refs = set(timing["evidence_refs"]) | {daily_id} | {"canonical:chart:" + f for f in frames}
+    low, high = number(candidate["low"]), number(candidate["high"])
+    rr_ref = "canonical:chart:structure:risk_reward:current_price"
+    inv_ref = "canonical:chart:structure:invalidation"
+    inv = _statement(evidence.get(inv_ref, {}))
+    linked_invalidation = (evidence.get(inv_ref, {}).get("label") == "chart_invalidation"
+        and inv.get("chart_only") is True and inv.get("timeframe") in frames
+        and inv.get("currency") == currency and number(inv.get("support_low")) == low
+        and number(inv.get("price")) is not None and 0 < number(inv["price"]) < low)
+    if linked_invalidation:
+        refs.add(inv_ref)
+        if inv.get("status") in {"hard_invalid", "accelerated_invalid"}:
+            return "BLOCKED", "해당 지지의 차트 무효화 조건 충족", tuple(sorted(refs))
+        if inv.get("status") == "wick_only_review":
+            return "CAUTION", "무효화 가격 일시 이탈로 종가 재확인 필요", tuple(sorted(refs))
+    for ref, row in evidence.items():
+        fields = _statement(row)
+        if fields.get("currency") != currency:
+            continue
+        if (ref.startswith("canonical:chart:structure:nearest_resistance:") and
+                row["label"] == "chart_resistance_zone" and matching_frame(fields.get("timeframe"))):
+            floor, ceiling = number(fields.get("zone_low")), number(fields.get("zone_high"))
+            if None not in (floor, ceiling) and 0 < floor <= ceiling and floor <= high and low <= ceiling:
+                return "CAUTION", "관찰 지지 구간과 저항이 겹침", tuple(sorted(refs | {ref, "canonical:chart:" + fields["timeframe"]}))
+    rr = _statement(evidence.get(rr_ref, {}))
+    # These are the structure producer's price/volume conclusions on the bound
+    # chart. Its HOLDER and hypothetical support-entry scenarios are not signals here.
+    state_ref = "canonical:chart:structure:state"
+    state = _statement(evidence.get(state_ref, {})) if evidence.get(state_ref, {}).get("label") == "chart_state" else {}
+    reasons = state.get("reasons", ())
+    if state.get("state") == "WAIT" and state.get("user_semantics") == "price_structure_wait_not_sell_command":
+        warnings = {"support_resistance_overlap":"지지·저항 중첩", "strong_or_medium_resistance_within_2pct":"근접 저항",
+                    "distribution":"분산 매도 수급", "rr_below_1_5":"현재가 손익비 주의"}
+        notes = [text for code, text in warnings.items() if code in reasons]
+        if notes:
+            return "CAUTION", "가격 구조 확인 필요: " + ", ".join(notes), tuple(sorted(refs | {state_ref}))
+    if (evidence.get(rr_ref, {}).get("label") == "chart_risk_reward_current_price"
+            and rr.get("currency") == currency and rr.get("rr_basis") == rr.get("scenario") == "current_price"
+            and number(rr.get("entry")) == price and number(rr.get("ratio")) is not None
+            and number(rr.get("invalidation")) is not None and number(rr.get("target")) is not None
+            and 0 < number(rr["invalidation"]) < price < number(rr["target"]) and number(rr["ratio"]) > 0):
+        rating = rr.get("classification")
+        if rating in ("attractive", "conditional", "poor_chase"):
+            if rating == "attractive" and not (linked_invalidation and inv.get("status") == "intact"
+                    and number(inv["price"]) == number(rr["invalidation"])):
+                return "INSUFFICIENT_EVIDENCE", "현재가 손익비와 선택 지지의 무효화 근거 연결 부족", tuple(sorted(refs | {rr_ref}))
+            note = {"attractive":"현재가 기준 손익비 근거가 지지함", "conditional":"현재가 기준 손익비가 조건부임",
+                    "poor_chase":"현재가 기준 추격 손익비가 불리함"}[rating]
+            if (state.get("state") == "CONFIRM_ENTRY" and state.get("user_semantics") == "confirmed_breakout_not_buy_command"
+                    and {"two_close_breakout", "volume_ratio_confirmed"}.issubset(reasons)):
+                note += " · 종가 돌파와 거래량 확인"
+                refs.add(state_ref)
+            return "SUPPORTED" if rating == "attractive" else "CAUTION", note, tuple(sorted(refs | {rr_ref}))
+    return "INSUFFICIENT_EVIDENCE", "현재가 기준의 적격 손익비·확인 근거 부족", ()
+
+
+def _buyer_action(stance, relation, quality):
+    if stance == "AVOID":
+        return "신규 매수 회피"
+    if stance == "WAIT":
+        return "기업가치 확인 대기" if relation == "INSIDE" else "사업·가격 조건 대기"
+    if relation == "BELOW" or quality == "BLOCKED":
+        return "지지 이탈 구조 재검토"
+    if relation == "ABOVE":
+        return "가격 조정 또는 신규 확인 신호 대기"
+    if relation != "INSIDE":
+        return "진입 조건 미확인·대기"
+    return "신규 매수 검토 가능" if quality == "SUPPORTED" else "추가 가격 확인 대기"
+
+
+def _entry_lines(output, model_input, entry_context, market, session):
+    timing = output["timing_context"]
+    quality, note, refs = _entry_quality(model_input, timing, entry_context, market, session)
+    action = _buyer_action(output["new_buyer"], timing["relation"], quality)
+    reason = {"BUSINESS_MIXED":"사업 근거 혼재", "BUSINESS_GATE_NOT_MET":"사업 근거 요건 미충족",
+              "BUSINESS_EVIDENCE_UNCERTAINTY":"사업 근거 불확실", "VALUATION_UNRESOLVED":"가치평가 근거 부족",
+              "CONFIDENCE_UNCERTAINTY":"확신을 제한하는 근거", "ACTIVE_ADVERSE_UNCOMPENSATED":"활성 중대 위험",
+              "VALUATION_NEUTRAL":"중립적 가치평가", "VALUATION_BURDENSOME":"부담스러운 가치평가",
+              "QUALIFIED_VALUATION_CONTEXT_SUPPORTIVE":"사업과 가치평가 근거가 지지"}.get(output["reason_class"],output["reason_class"])
+    return (f"신규매수 근거: {reason} ({output['reason_class']}, {output['valuation_context']['state']})",
+            f"관찰 구간: {timing['relation']} ({timing['reason']}) · {note}",
+            f"최종 신규매수 행동: {action}"), refs
+
+
+def _judgment_text(decision, axes, entry_lines):
+    score = decision["directional_buy_score"]
+    return "\n".join([
+        "AI 분석 판단: " + decision["overall_direction"],
+        f"판단 균형: BUY {score:.1f} : SELL {10-score:.1f}",
+        "판단 확신도: " + {"HIGH": "높음", "MEDIUM": "중간", "LOW": "낮음"}[decision["confidence"]],
+        "신규 매수자: " + axes["fundamental_attractiveness"],
+        "진입 시점: " + axes["entry_timing"]["state"],
+        *entry_lines,
+        "보유자: " + {"HOLDABLE": "HOLD", "REVIEW": "REVIEW", "REDUCE": "REDUCE"}[decision["holder"]],
+        decision["holder_reason"],
+    ])
+
+
+def build_detailed_plan_v2(*, packet, base, b2_request, b2_result, authorization, entry_context=None):
     presentation = base
     if isinstance(base, KrForwardMessagePlan):
         render_kr(packet, base)
@@ -283,18 +421,11 @@ def build_detailed_plan_v2(*, packet, base, b2_request, b2_result, authorization
     output = b2_result["output"]["new_buyer_shadow"]
     axes = b2.presentation_plan(output, context)
     decision = base.accepted_calibration.decision
-    score = decision["directional_buy_score"]
-    text = "\n".join([
-        "AI 분석 판단: " + decision["overall_direction"],
-        f"판단 균형: BUY {score:.1f} : SELL {10-score:.1f}",
-        "판단 확신도: " + {"HIGH": "높음", "MEDIUM": "중간", "LOW": "낮음"}[decision["confidence"]],
-        "신규 매수자: " + axes["fundamental_attractiveness"],
-        "진입 시점: " + axes["entry_timing"]["state"],
-        "보유자: " + {"HOLDABLE": "HOLD", "REVIEW": "REVIEW", "REDUCE": "REDUCE"}[decision["holder"]],
-        decision["holder_reason"],
-    ])
+    entry_lines, entry_refs = _entry_lines(output, context, entry_context, packet.market, packet.assessment_date)
+    text = _judgment_text(decision, axes, entry_lines)
     row = _row("judgment", "axes-v2", text,
-        facts=tuple(sorted(set(output["reason_evidence_refs"] + output["active_risk_refs"]))),
+        facts=tuple(sorted(set(output["reason_evidence_refs"] + output["active_risk_refs"]
+            + output["valuation_context"]["valuation_evidence_refs"] + axes["entry_timing"]["evidence_refs"]) | set(entry_refs))),
         hashes=(base.acceptance_sha256, digest(b2_result), digest(authorization.model_dump(mode="json"))),
         formatting="accepted-independent-b2-axes-v2")
     rows = (row, *(r for r in presentation.rows if r.section != "judgment"))
@@ -311,9 +442,9 @@ def build_detailed_plan_v2(*, packet, base, b2_request, b2_result, authorization
         authorization=authorization, rows=rows, acceptance_sha256=digest(binding))
 
 
-def render_detailed_v2(packet, plan):
+def render_detailed_v2(packet, plan, *, entry_context=None):
     expected = build_detailed_plan_v2(packet=packet, base=plan.base, b2_request=plan.b2_request,
-        b2_result=plan.b2_result, authorization=plan.authorization)
+        b2_result=plan.b2_result, authorization=plan.authorization, entry_context=entry_context)
     if expected != plan:
         raise ValueError("detailed_v2_plan_changed")
     text = _render_rows(packet, plan.rows)

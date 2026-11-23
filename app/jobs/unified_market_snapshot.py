@@ -44,6 +44,13 @@ SR5_CAPS = dict(kiwoom=228,sec_edgar=40,finnhub=10,google_news_rss=5,
 US_FULL_20261121_SLOTS = {
     'us-20261121-0610a1b2': '2026-11-21T06:10:00+09:00',
     'us-20261121-0810c3d4': '2026-11-21T08:10:00+09:00',
+    'us-20261121-c28d7e1f': '2026-11-21T11:00:00+09:00',
+    'us-20261121-c29a6b3d': '2026-11-21T11:40:00+09:00',
+    'us-20261121-c31a9f6e': '2026-11-21T13:25:00+09:00',
+    'us-20261121-c32b8e4d': '2026-11-21T15:20:00+09:00',
+    'us-20261121-c34d6a2f': '2026-11-21T17:40:00+09:00',
+    'us-20261121-c36e7a4b': '2026-11-21T22:10:00+09:00',
+    'us-20261124-c38f2a6d': '2026-11-24T08:10:00+09:00',
 }
 KR_RECOVERY_20261123_TAG = 'kr-20261123-c39a7f2d'
 KR_C42_20261123_TAG = 'kr-20261123-c42b84e7a'
@@ -203,6 +210,18 @@ def _record_local_failure(directory, exc, *, config, session, generation=None, b
         pass  # Diagnostic failure must not replace the original STOP.
 
 
+def _local_model_cap(config, one_shot_tag):
+    diagnostic = one_shot_scope(config.market, one_shot_tag)
+    if config.market_b2_timeout_retry:
+        if diagnostic or config.kr_market_timeout_retry or (
+                config.market == 'us' and one_shot_tag in US_FULL_20261121_SLOTS):
+            raise ValueError('local_schedule_combined_retry_flag_or_diagnostic_conflict')
+        return 43 if config.market == 'us' else 27
+    if diagnostic:
+        return 15 if one_shot_tag.startswith('us5-') else 8
+    return 42 if config.market == 'us' else 18
+
+
 async def _local_registered_cycle(config, directory, session, *, one_shot_tag=None):
     from app.config import Settings
     from app.macro.providers.market import MARKET_SYMBOLS
@@ -224,11 +243,9 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     sr5 = bool(one_shot_tag and one_shot_tag.startswith('us5-'))
     subjects = SR5_SUBJECTS if sr5 else US2_SUBJECTS if diagnostic else UNIVERSE[market]
     caps = SR5_CAPS if sr5 else US2_CAPS if diagnostic else LOCAL_CAPS[market]
-    max_models = 15 if sr5 else 8 if diagnostic else 42 if market=='us' else 27 if config.market_b2_timeout_retry else 18
+    max_models = _local_model_cap(config, one_shot_tag)
     combined_retry = config.market_b2_timeout_retry
     if combined_retry:
-        if diagnostic or sr5 or config.kr_market_timeout_retry:
-            raise ValueError('local_schedule_combined_retry_flag_or_diagnostic_conflict')
         from app.services.canonical_monitoring_helpers import _batch_topology
         # A refusal-only forecast from the existing registered topology, not Source admission.
         # The actual frozen ModelPlan is checked again by the existing ledger/budget.
@@ -405,9 +422,21 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
 
 def latest_one_shot_us_session(now, *, one_shot_tag=None):
     from app.services.market_session import us_market_session, _exchange_session_close, NEW_YORK, is_exchange_session_date
+    from app.services.unified_market_run import target_session
 
     window = _us_full_one_shot_window(one_shot_tag)
-    local_date, target = ('2026-11-21', '2026-11-20') if window else ('2026-11-20', '2026-11-19')
+    if window:
+        local_date = window[0].astimezone(KST).date().isoformat()
+        # Preserve the closed Nov21 audit windows; new slots use the official calendar.
+        if local_date == '2026-11-21':
+            target = '2026-11-20'
+        else:
+            expected = target_session('us', window[0])
+            if expected is None:
+                return None
+            target = expected.isoformat()
+    else:
+        local_date, target = '2026-11-20', '2026-11-19'
     if now.utcoffset() is None or now.astimezone(KST).date().isoformat() != local_date:
         return None
     session = us_market_session(now).latest_completed_regular_session_date
@@ -443,6 +472,7 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
     config = read_local_configuration(configuration, market)
     if not config.enabled:
         return dict(status='DISABLED', basis=LOCAL_BASIS, normal_messages_sent=False)
+    max_models = _local_model_cap(config, one_shot_tag)
     now = now or datetime.now(KST)
     if now.utcoffset() is None:
         raise ValueError('local_schedule_timezone_required')
@@ -464,9 +494,9 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
     session = latest_one_shot_session(market,now,one_shot_tag=one_shot_tag) if one_shot_tag is not None else target_session(market, now)
     if session is None:
         return dict(status='NO_RUN', reason='SESSION_NOT_COMPLETED_OR_CLOSED', normal_messages_sent=False)
-    expected_one_shot_session = ('2026-11-23' if market=='kr' and one_shot_tag in (KR_RECOVERY_20261123_TAG, KR_C42_20261123_TAG)
-        else '2026-11-20' if window else '2026-11-19' if market=='us' else '2026-11-20')
-    if one_shot_tag is not None and session.isoformat() != expected_one_shot_session:
+    expected_fixed = ('2026-11-23' if market == 'kr' and one_shot_tag in (KR_RECOVERY_20261123_TAG, KR_C42_20261123_TAG)
+        else '2026-11-19' if market == 'us' else '2026-11-20')
+    if one_shot_tag is not None and window is None and session.isoformat() != expected_fixed:
         return dict(status='NO_RUN', reason='ONE_SHOT_SESSION_MISMATCH', normal_messages_sent=False)
     head = subprocess.check_output(['/usr/bin/git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
     dirty = subprocess.check_output(['/usr/bin/git', '-C', str(ROOT), 'status', '--porcelain', '--',
@@ -503,7 +533,7 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
             consent_basis='LOCAL_USER_MANAGED_CONFIGURATION_NOT_EXTERNAL_OR_DAILY_HUMAN_SIGNATURE',
             source_seconds=1800 if market == 'us' else 600, model_per_call_seconds=600,
             max_http=sum(SR5_CAPS.values()) if sr5 else sum(US2_CAPS.values()) if diagnostic else sum(LOCAL_CAPS[market].values()),
-            max_models=15 if sr5 else 8 if diagnostic else 42 if market == 'us' else 27 if config.market_b2_timeout_retry else 18,
+            max_models=max_models,
             market_timeout_retry_cap=int(config.market_b2_timeout_retry or market=='kr' and config.kr_market_timeout_retry),
             b2_retry_policy=B2_SR5_DIAGNOSTIC_V1 if sr5 else B2_US2_DIAGNOSTIC_V1 if diagnostic else B2_PER_TICKER_ONE_RETRY_V1 if market == 'us' or config.market_b2_timeout_retry else None,
             normal_messages_sent=False,

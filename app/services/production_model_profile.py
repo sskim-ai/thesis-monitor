@@ -273,7 +273,7 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
         from app.services.model_timeout_retry import market_timeout_retry_cap
         market_retry = self.bound[slot_id]['stage']=='MARKET' and market_timeout_retry_cap(
             self.b2_retry_policy,retry_cap=self.timeout_retry_cap,retry_market=self.retry_market)
-        if (len(self.attempts[slot_id]) == 1
+        if (self.physical_calls < self.maximum and len(self.attempts[slot_id]) == 1
                 and (slot_id in self.b2_retry_policy['b2_slots'] or market_retry
                     if self.b2_retry_policy else self.retry_used < self.timeout_retry_cap)
                 and (self.retry_market!='kr' or market_retry or self.b2_retry_policy and slot_id in self.b2_retry_policy['b2_slots'])
