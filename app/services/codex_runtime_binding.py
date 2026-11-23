@@ -58,9 +58,14 @@ def binding_from_json(value):
 
 
 def auth_identity(path):
-    path=Path(path).resolve();s=path.stat()
-    _require(path.is_file() and s.st_uid==os.getuid() and not stat.S_IMODE(s.st_mode)&0o077,'AUTH_REFERENCE_UNSAFE')
-    return dict(path=str(path),device=s.st_dev,inode=s.st_ino,uid=s.st_uid,mode=oct(stat.S_IMODE(s.st_mode)),content_read=False)
+    path=Path(path).resolve()
+    _require(path.is_file(),'AUTH_REFERENCE_MISSING')
+    try:
+        with path.open('rb'):
+            pass
+    except OSError as exc:
+        raise OfficialShadowError('CURRENT_RUNTIME_AUTH_REFERENCE_UNREADABLE') from exc
+    return dict(path=str(path),exists=True,readable=True,content_read=False)
 
 
 def freeze_current_binding(*, inspection_path, qualification_path, profile):
@@ -83,7 +88,7 @@ def freeze_current_binding(*, inspection_path, qualification_path, profile):
     _require(commands['version']['version']=='codex-cli '+metadata['version']
         and metadata['variant']=='codex' and metadata['entrypoint']=='bin/codex','PACKAGE_VERSION_OR_LAYOUT')
     auth=auth_identity(inspection['auth_reference']['path'])
-    _require(auth==inspection['auth_reference'],'AUTH_REFERENCE_DRIFT')
+    _require(auth['path']==inspection['auth_reference']['path'],'AUTH_REFERENCE_DRIFT')
     qualification=dict(contract=QUALIFICATION,executable=str(path),display_path=display,
         executable_sha256=observed['sha256'],version=commands['version']['version'],
         package_path=str(package),package_sha256=file_sha256(package),
@@ -133,7 +138,7 @@ def _review(binding,profile):
     _require(q['execution_profile']==profile.model_request() and q['profile_contract']==profile.contract
         and q['command_prefix']==list(command_prefix(profile)) and all(q['flags'].get(f) is True for f in FLAGS),
         'PROFILE_OR_OPTIONS_DRIFT')
-    _require(q['auth_reference']==auth_identity(binding.auth_source) and q['auth_method']==binding.auth_method
+    _require(q['auth_reference']['path']==auth_identity(binding.auth_source)['path'] and q['auth_method']==binding.auth_method
         and binding.auth_method=='CHATGPT_LOCAL_CONFIRMED' and binding.user_config_sha256 is None,
         'AUTH_REFERENCE_DRIFT')
     _require(q['environment']['HOME']==binding.home and q['environment'].get('CODEX_HOME')==binding.codex_home,
@@ -149,7 +154,7 @@ def validate_binding(binding,codex_bin,*,profile=None):
     _require(not any(os.environ.get(key) for key in OVERRIDES),'AUTH_OR_PROVIDER_OVERRIDE')
     _require(os.environ.get('HOME')==binding.home,'HOME_DRIFT')
     current=Path(os.environ.get('CODEX_HOME',str(Path(binding.home)/'.codex')))/'auth.json'
-    _require(auth_identity(current)==q['auth_reference'],'CREDENTIAL_STORE_DRIFT')
+    _require(auth_identity(current)['path']==q['auth_reference']['path'],'CREDENTIAL_STORE_DRIFT')
     override=os.environ.get('CODEX_CLI_BIN')
     _require(not override or Path(override).resolve()==binding.executable,'CLI_OVERRIDE_DRIFT')
     _require(os.environ.get('PATH')==q['environment']['PATH'],'PATH_DRIFT')

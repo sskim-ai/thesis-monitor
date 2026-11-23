@@ -45,6 +45,7 @@ US_FULL_20261121_SLOTS = {
     'us-20261121-0610a1b2': '2026-11-21T06:10:00+09:00',
     'us-20261121-0810c3d4': '2026-11-21T08:10:00+09:00',
 }
+KR_RECOVERY_20261123_TAG = 'kr-20261123-c39a7f2d'
 
 
 def _us_full_one_shot_window(tag):
@@ -56,6 +57,8 @@ def _us_full_one_shot_window(tag):
 
 
 def _one_shot_deadline(tag):
+    if tag == KR_RECOVERY_20261123_TAG:
+        return datetime.fromisoformat('2026-11-24T00:00:00+09:00')
     window = _us_full_one_shot_window(tag)
     return (window[0] + timedelta(hours=4, minutes=30) if window else
             datetime.fromisoformat('2026-11-21T00:00:00+09:00'))
@@ -63,6 +66,8 @@ def _one_shot_deadline(tag):
 
 def one_shot_scope(market, tag):
     if tag is None:
+        return False
+    if market == 'kr' and tag == KR_RECOVERY_20261123_TAG:
         return False
     if market == 'us' and tag in US_FULL_20261121_SLOTS:
         return False
@@ -388,6 +393,12 @@ def latest_one_shot_us_session(now, *, one_shot_tag=None):
 def latest_one_shot_session(market,now, *, one_shot_tag=None):
     if market=='us':
         return latest_one_shot_us_session(now, one_shot_tag=one_shot_tag)
+    if market=='kr' and one_shot_tag==KR_RECOVERY_20261123_TAG:
+        from app.services.unified_market_run import target_session
+        if now.utcoffset() is None or now.astimezone(KST).date().isoformat()!='2026-11-23':
+            return None
+        session=target_session('kr',now)
+        return session if session is not None and session.isoformat()=='2026-11-23' else None
     from app.services.market_session import korea_market_session, _exchange_session_close, SEOUL, is_exchange_session_date
     if now.utcoffset() is None or now.astimezone(KST).date().isoformat()!='2026-11-20':
         return None
@@ -412,7 +423,8 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
     if one_shot_tag is not None:
         diagnostic=one_shot_scope(market,one_shot_tag)
         window = _us_full_one_shot_window(one_shot_tag)
-        local_date = window[0].date().isoformat() if window else '2026-11-20'
+        local_date = ('2026-11-23' if market=='kr' and one_shot_tag==KR_RECOVERY_20261123_TAG
+            else window[0].date().isoformat() if window else '2026-11-20')
         if now.astimezone(KST).date().isoformat() != local_date:
             return dict(status='NO_RUN', reason='ONE_SHOT_DATE_CLOSED', normal_messages_sent=False)
         if window and not window[0] <= now < window[1]:
@@ -423,7 +435,9 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
     session = latest_one_shot_session(market,now,one_shot_tag=one_shot_tag) if one_shot_tag is not None else target_session(market, now)
     if session is None:
         return dict(status='NO_RUN', reason='SESSION_NOT_COMPLETED_OR_CLOSED', normal_messages_sent=False)
-    if one_shot_tag is not None and session.isoformat() != ('2026-11-20' if window else '2026-11-19' if market=='us' else '2026-11-20'):
+    expected_one_shot_session = ('2026-11-23' if market=='kr' and one_shot_tag==KR_RECOVERY_20261123_TAG
+        else '2026-11-20' if window else '2026-11-19' if market=='us' else '2026-11-20')
+    if one_shot_tag is not None and session.isoformat() != expected_one_shot_session:
         return dict(status='NO_RUN', reason='ONE_SHOT_SESSION_MISMATCH', normal_messages_sent=False)
     head = subprocess.check_output(['/usr/bin/git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
     dirty = subprocess.check_output(['/usr/bin/git', '-C', str(ROOT), 'status', '--porcelain', '--',
