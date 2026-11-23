@@ -197,8 +197,10 @@ def test_actual_launcher_composition(tmp_path, monkeypatch, market, case):
                 messages = {m["message_id"]: m for m in read(run / "render/response.json")["output"]["messages"]}
                 for ticker, value in pairs.items():
                     text = messages[ticker]["text"]
-                    assert "신규 매수자: ATTRACTIVE" in text
-                    assert "진입 시점: " + timing_state in text
+                    assert "신규 매수자: 기업 매력 있음" in text
+                    assert timing_state not in text
+                    assert ("진입 판단: " if value["timing_context"]["relation"] == "UNRESOLVED"
+                            else "가격 위치: ") in text
                     if market == "us":
                         assert value["timing_context"]["reason"] in {
                             "PRICE_ZONE_IDENTITY_BASIS_OR_VALUE_UNRESOLVED", "NO_ELIGIBLE_SELECTED_CANDIDATE"}

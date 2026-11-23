@@ -33,7 +33,8 @@ def test_future_job_reaches_existing_cycle_only_inside_frozen_window(tmp_path, m
     from app.services.unified_run_artifacts import load_json
 
     start, end = job._us_full_one_shot_window(TAG)
-    config = SimpleNamespace(enabled=True, code_commit='a' * 40, run_root=str(tmp_path / 'runs'),
+    config = SimpleNamespace(enabled=True, market='us', market_b2_timeout_retry=False,
+        kr_market_timeout_retry=False, code_commit='a' * 40, run_root=str(tmp_path / 'runs'),
         shared_lease_path=str(tmp_path / 'lease'), model_dump=lambda **k: {'test': 'no-live'})
     (tmp_path / 'lease').touch()
     monkeypatch.setattr(job, 'read_local_configuration', lambda *a: config)

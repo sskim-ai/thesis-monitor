@@ -124,7 +124,8 @@ def test_action_axes_and_reason_matrix():
     ctx=fixture();inp,t,_=evaluate(ctx)
     output=dict(new_buyer='WAIT',reason_class='VALUATION_BURDENSOME',valuation_context=dict(state='BURDENSOME'),timing_context=t)
     lines,refs=_entry_lines(output,inp,ctx,'us','2026-11-23')
-    assert 'VALUATION_BURDENSOME' in lines[0] and 'INSIDE' in lines[1] and '기업가치 확인 대기' in lines[2]
+    assert '부담스러운 가치평가' in lines[0] and '지지 구간 안' in lines[1] and '기업가치 확인 대기' in lines[2]
+    assert 'VALUATION_BURDENSOME' not in '\n'.join(lines) and 'INSIDE' not in '\n'.join(lines)
     assert refs and output['timing_context']==t
 
 

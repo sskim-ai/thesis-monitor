@@ -1,0 +1,13 @@
+{
+  "target": "/Users/sskim/Documents/Codex/2026-07-04/the/maintenance/20261122-pr52-c38-postrun/FINAL_COMMAND_PIN.json",
+  "update_only": {
+    "script_sha256": "a496520648115a5c1004412eb9baab1c23a23c5ea6b1475ea4aeac00dcbdad74"
+  },
+  "expected_previous_script_sha256": "96018c3aa724e79eef49042d8d5fe81c83377a037a342af6a59669f1e2d7aa9f",
+  "preserve_fields": [
+    "script",
+    "registered_command",
+    "initial_install_script_sha256"
+  ],
+  "scope": "Candidate instructions only; not applied to Mac"
+}

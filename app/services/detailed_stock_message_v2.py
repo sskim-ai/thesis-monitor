@@ -186,7 +186,7 @@ def _us_accepted_support_row(packet, base, axes, security_id, session):
         formatting="accepted-tactical-support-registry-v1")
 
 
-def _selected_support_row(packet, base, timing, security_id, *, new_buyer=None):
+def _selected_support_row(packet, base, timing, security_id, *, new_buyer=None, price_session=None):
     """Keep the accepted tactical selection separate from a V3 structural zone."""
     accepted = base.accepted_calibration
     entries = accepted.entries
@@ -217,7 +217,7 @@ def _selected_support_row(packet, base, timing, security_id, *, new_buyer=None):
     labels = {"daily": "일봉", "weekly": "주봉", "monthly": "월봉"}
     frame = stock["chart_context"].get("timeframes", {}).get(timeframe, {})
     basis = quote.get("price_basis")
-    session = packet.assessment_date
+    session = price_session
     if (fact["fact_type"] != "chart_support_zone" or fact.get("source") != "deterministic_ohlcv_structure"
             or node.get("ticker") != packet.ticker or not evidence.source_time
             or evidence.source_time.subject_ticker != packet.ticker
@@ -247,6 +247,24 @@ def _selected_support_row(packet, base, timing, security_id, *, new_buyer=None):
         formatting="accepted-tactical-support-registry-v1")
 
 
+def _completed_price_session(packet, base, security_id):
+    """Read the calendar-owned target from the already accepted source stock."""
+    from datetime import date
+
+    projection = base.source_stock.get("completed_session_current_price")
+    if projection is None:
+        return None
+    if (projection.get("generation_id") != base.source_generation_id
+            or projection.get("market") != packet.market
+            or projection.get("ticker") != packet.ticker
+            or projection.get("canonical_security_id") != security_id):
+        raise ValueError("detailed_v2_price_session_identity_mismatch")
+    session = projection.get("target_session")
+    if not isinstance(session, str) or date.fromisoformat(session).isoformat() != session:
+        raise ValueError("detailed_v2_price_session_required")
+    return session
+
+
 def _entry_quality(model_input, timing, context, market, session):
     """Explain the frozen B decision context, never the display-only V3 zones."""
     from app.services.new_buyer_base_contract import number
@@ -258,6 +276,10 @@ def _entry_quality(model_input, timing, context, market, session):
             or context["ticker"] != model_input["ticker"]
             or context["source_evidence_binding"]["source_generation_id"] != model_input["source_generation"]):
         raise ValueError("detailed_v2_entry_context_mismatch")
+    if session is None:
+        return "INSUFFICIENT_EVIDENCE", "완료 거래일 근거 확인 필요", ()
+    if context["current_price"].get("as_of") not in (None, session):
+        return "INSUFFICIENT_EVIDENCE", "완료 거래일과 가격·차트 세션 불일치", ()
     catalog = tactical_catalog(context, model_input["ticker"], model_input["security_id"])
     candidate = next((r for r in catalog if r["candidate_id"] == timing["selected"]), None)
     if not candidate:
@@ -343,7 +365,7 @@ def _entry_quality(model_input, timing, context, market, session):
     return "INSUFFICIENT_EVIDENCE", "현재가 기준의 적격 손익비·확인 근거 부족", ()
 
 
-def _buyer_action(stance, relation, quality):
+def _buyer_action(stance, relation, quality, *, confirmed_breakout=False):
     if stance == "AVOID":
         return "신규 매수 회피"
     if stance == "WAIT":
@@ -351,23 +373,103 @@ def _buyer_action(stance, relation, quality):
     if relation == "BELOW" or quality == "BLOCKED":
         return "지지 이탈 구조 재검토"
     if relation == "ABOVE":
+        if confirmed_breakout:
+            return "돌파·거래량 확인 완료, 선택된 지지 구간 기준의 진입은 가격 조정 대기"
         return "가격 조정 또는 신규 확인 신호 대기"
     if relation != "INSIDE":
         return "진입 조건 미확인·대기"
     return "신규 매수 검토 가능" if quality == "SUPPORTED" else "추가 가격 확인 대기"
 
 
+def _entry_location(model_input, timing, context, market, session):
+    """Explain a frozen timing gap without upgrading display-only S/R to ENTRY."""
+    from app.services.new_buyer_base_contract import number
+    from app.services.new_buyer_input_owner import _statement, tactical_catalog
+
+    if context is None:
+        return "진입 판단: 진입 근거 확인 필요"
+    if session is None:
+        return "진입 판단: 완료 거래일 근거 확인 필요"
+    evidence = {row["ref_id"]: row for row in context["decision_evidence"]}
+    daily = evidence.get("canonical:chart:daily", {})
+    fields = _statement(daily)
+    if fields.get("quality") != "available":
+        return "진입 판단: 일봉 데이터 부족"
+    quote = context["current_price"]
+    currency = {"kr": "KRW", "us": "USD"}[market]
+    if quote.get("as_of") != session or daily.get("as_of") != session:
+        return "진입 판단: 가격 기준 확인 필요 — 완료 거래일과 가격·차트 세션 불일치"
+    if quote.get("currency") != currency or fields.get("currency") != currency:
+        return "진입 판단: 가격 기준 확인 필요 — 통화 불일치"
+    if (quote.get("basis"), fields.get("price_basis")) not in {
+            ("adjusted_close", "adjusted"), ("regular_close", "unadjusted"), ("unadjusted_close", "unadjusted")}:
+        return "진입 판단: 가격 기준 확인 필요 — 조정 기준 불일치"
+    price = number(quote.get("value"))
+    if price is None or price <= 0 or number(fields.get("candle", {}).get("close")) != price:
+        return "진입 판단: 가격 기준 확인 필요 — 기준가격과 일봉 종가 연결 확인 필요"
+    permissions = {row["ref_id"] for row in context["source_use_projection"]["source_permissions"]
+                   if "ENTRY" in row["allowed_uses"]}
+    supports = [row for row in evidence.values()
+                if row.get("label") == "chart_support_zone" and row["ref_id"] in permissions]
+    if not supports:
+        return "진입 판단: 현재 적격 지지 구간 없음"
+    catalog = tactical_catalog(context, model_input["ticker"], model_input["security_id"])
+    candidate = next((row for row in catalog if row["candidate_id"] == timing["selected"]), None)
+    if candidate is None:
+        return "진입 판단: 선택된 진입 구간 확인 필요"
+    if (candidate["ticker"] != model_input["ticker"] or candidate["security_id"] != model_input["security_id"]):
+        return "진입 판단: 가격 기준 확인 필요 — 종목·증권 연결 불일치"
+    if candidate["currency"] != currency:
+        return "진입 판단: 가격 기준 확인 필요 — 통화 불일치"
+    for ref in candidate["evidence_refs"]:
+        row = evidence.get(ref, {})
+        zone = _statement(row)
+        frame = evidence.get("canonical:chart:" + str(zone.get("timeframe")), {})
+        chart = _statement(frame)
+        if row.get("label") != "chart_support_zone" or ref not in permissions:
+            return "진입 판단: 선택된 진입 구간 확인 필요"
+        if row.get("as_of") != session or frame.get("as_of") != session:
+            return "진입 판단: 가격 기준 확인 필요 — 완료 거래일과 지지·차트 세션 불일치"
+        if zone.get("currency") != currency or chart.get("currency") != currency:
+            return "진입 판단: 가격 기준 확인 필요 — 통화 불일치"
+        if (quote.get("basis"), chart.get("price_basis")) not in {
+                ("adjusted_close", "adjusted"), ("regular_close", "unadjusted"), ("unadjusted_close", "unadjusted")}:
+            return "진입 판단: 가격 기준 확인 필요 — 조정 기준 불일치"
+    if candidate["relation_basis_proven"] and timing["relation"] in {"INSIDE", "ABOVE", "BELOW"}:
+        return "가격 위치: 선택된 관찰 지지 구간 " + {
+            "INSIDE": "안", "ABOVE": "위", "BELOW": "아래 — 구조 재확인"}[timing["relation"]]
+    return "진입 판단: 선택된 진입 구간 확인 필요"
+
+
+def _confirmed_breakout(context, refs):
+    """Only a typed confirmation already accepted by _entry_quality can qualify."""
+    from app.services.new_buyer_input_owner import _statement
+
+    state_ref = "canonical:chart:structure:state"
+    if context is None or state_ref not in refs:
+        return False
+    row = next((row for row in context["decision_evidence"] if row["ref_id"] == state_ref), {})
+    state = _statement(row)
+    return (row.get("label") == "chart_state" and state.get("state") == "CONFIRM_ENTRY"
+            and state.get("user_semantics") == "confirmed_breakout_not_buy_command"
+            and {"two_close_breakout", "volume_ratio_confirmed"}.issubset(state.get("reasons", ())))
+
+
 def _entry_lines(output, model_input, entry_context, market, session):
     timing = output["timing_context"]
     quality, note, refs = _entry_quality(model_input, timing, entry_context, market, session)
-    action = _buyer_action(output["new_buyer"], timing["relation"], quality)
+    action = _buyer_action(output["new_buyer"], timing["relation"], quality,
+                           confirmed_breakout=_confirmed_breakout(entry_context, refs))
     reason = {"BUSINESS_MIXED":"사업 근거 혼재", "BUSINESS_GATE_NOT_MET":"사업 근거 요건 미충족",
               "BUSINESS_EVIDENCE_UNCERTAINTY":"사업 근거 불확실", "VALUATION_UNRESOLVED":"가치평가 근거 부족",
               "CONFIDENCE_UNCERTAINTY":"확신을 제한하는 근거", "ACTIVE_ADVERSE_UNCOMPENSATED":"활성 중대 위험",
               "VALUATION_NEUTRAL":"중립적 가치평가", "VALUATION_BURDENSOME":"부담스러운 가치평가",
-              "QUALIFIED_VALUATION_CONTEXT_SUPPORTIVE":"사업과 가치평가 근거가 지지"}.get(output["reason_class"],output["reason_class"])
-    return (f"신규매수 근거: {reason} ({output['reason_class']}, {output['valuation_context']['state']})",
-            f"관찰 구간: {timing['relation']} ({timing['reason']}) · {note}",
+              "QUALIFIED_VALUATION_CONTEXT_SUPPORTIVE":"사업과 가치평가 근거가 지지"}.get(
+                  output["reason_class"], "신규매수 판단 근거 확인 필요")
+    location = _entry_location(model_input, timing, entry_context, market, session)
+    detail = location if note in location else f"{location} · {note}"
+    return (f"신규매수 근거: {reason}",
+            detail,
             f"최종 신규매수 행동: {action}"), refs
 
 
@@ -377,8 +479,8 @@ def _judgment_text(decision, axes, entry_lines):
         "AI 분석 판단: " + decision["overall_direction"],
         f"판단 균형: BUY {score:.1f} : SELL {10-score:.1f}",
         "판단 확신도: " + {"HIGH": "높음", "MEDIUM": "중간", "LOW": "낮음"}[decision["confidence"]],
-        "신규 매수자: " + axes["fundamental_attractiveness"],
-        "진입 시점: " + axes["entry_timing"]["state"],
+        "신규 매수자: " + {"ATTRACTIVE": "기업 매력 있음", "WAIT": "조건 확인 대기", "AVOID": "신규 매수 회피"}[
+            axes["fundamental_attractiveness"]],
         *entry_lines,
         "보유자: " + {"HOLDABLE": "HOLD", "REVIEW": "REVIEW", "REDUCE": "REDUCE"}[decision["holder"]],
         decision["holder_reason"],
@@ -421,7 +523,8 @@ def build_detailed_plan_v2(*, packet, base, b2_request, b2_result, authorization
     output = b2_result["output"]["new_buyer_shadow"]
     axes = b2.presentation_plan(output, context)
     decision = base.accepted_calibration.decision
-    entry_lines, entry_refs = _entry_lines(output, context, entry_context, packet.market, packet.assessment_date)
+    price_session = _completed_price_session(packet, base, authorization.security_id)
+    entry_lines, entry_refs = _entry_lines(output, context, entry_context, packet.market, price_session)
     text = _judgment_text(decision, axes, entry_lines)
     row = _row("judgment", "axes-v2", text,
         facts=tuple(sorted(set(output["reason_evidence_refs"] + output["active_risk_refs"]
@@ -433,7 +536,7 @@ def build_detailed_plan_v2(*, packet, base, b2_request, b2_result, authorization
         rows += (*_reported_quarter_rows(packet, base), *_us_sr_rows(packet, base, axes, authorization.security_id))
     if packet.market == "kr":
         support = _selected_support_row(packet, base, axes["entry_timing"], authorization.security_id,
-                                        new_buyer=axes["fundamental_attractiveness"])
+                                        new_buyer=axes["fundamental_attractiveness"], price_session=price_session)
         if support is not None:
             rows += (support,)
     binding = dict(base=presentation.acceptance_sha256, request=digest(b2_request), result=digest(b2_result),
