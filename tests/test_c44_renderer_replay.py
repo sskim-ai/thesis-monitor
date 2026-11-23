@@ -6,6 +6,7 @@ No provider, worker, database, or historical acceptance is invoked or rewritten.
 """
 from copy import deepcopy
 from datetime import date
+import json
 from types import SimpleNamespace
 
 import pytest
@@ -15,6 +16,8 @@ from app.services import new_buyer_request_owner as b2
 from app.services import production_message_renderer as renderer
 from app.services.accepted_calibration_message_service import AcceptedDetailedCalibrationPlan
 from app.services.current_fresh_valuation import CurrentValuationView
+from app.services.canonical_evidence_time_service import project_canonical_time
+from app.services.cross_market_decision_engine_service import DecisionEvidenceRef
 from app.services.kr_forward_valuation_context import KrForwardValuationView, calibration_context
 from app.services.new_buyer_input_owner import tactical_catalog
 from app.services.numeric_semantic_registry import build_numeric_registry
@@ -30,7 +33,8 @@ from tests.test_newbuyer_b2_v2 import inputs as b2_inputs, outputs
 from tests.test_r9_rev7_detailed_renderer import inputs as detailed_inputs
 
 
-def synthetic_renderer_case(market, *, target_session="2026-11-23"):
+def synthetic_renderer_case(market, *, target_session="2026-11-23", include_support=False,
+                            support_timeframe="daily"):
     """Compose existing fictional fixtures into one frozen renderer input."""
     ticker = "123456" if market == "kr" else "C44_SYNTHETIC"
     currency = "KRW" if market == "kr" else "USD"
@@ -53,6 +57,27 @@ def synthetic_renderer_case(market, *, target_session="2026-11-23"):
     fact["fields"].update(current_price=10, currency=currency)
     stock["numeric_registry"] = build_numeric_registry(stock["fact_catalog"])
     source["source_graph"][fact["fact_id"]]["fact_sha256"] = digest(fact)
+    support_ref = "canonical:chart:structure:nearest_supports:1"
+    if include_support:
+        support = dict(fact_id=support_ref.removeprefix("canonical:"),
+            fact_type="chart_support_zone", ticker=ticker, as_of_date="2026-11-23",
+            source="deterministic_ohlcv_structure",
+            fields=dict(timeframe=support_timeframe, zone_low=9, zone_high=11, currency=currency))
+        stock["fact_catalog"].append(support)
+        stock["numeric_registry"] = build_numeric_registry(stock["fact_catalog"])
+        source["source_graph"][support["fact_id"]] = dict(ticker=ticker, fact_sha256=digest(support))
+        stock["chart_context"] = dict(timeframes=dict(daily=dict(timeframe="daily",
+            quality="available", as_of_date="2026-11-23", price_basis="adjusted", candle=dict(close=10))))
+        if support_timeframe == "weekly":
+            stock["chart_context"]["timeframes"]["weekly"] = dict(timeframe="weekly",
+                quality="available", as_of_date="2026-11-20", price_basis="adjusted", candle=dict(close=9.5),
+                completed_bar_only=True, evaluation_as_of="2026-11-23")
+        evidence = DecisionEvidenceRef(ref_id=support_ref, category="price_structure",
+            label="chart_support_zone", statement=json.dumps(support["fields"]), as_of="2026-11-23",
+            source_ref="stock.fact_catalog." + support["fact_id"],
+            source_time=project_canonical_time(support, ticker=ticker, projection_at="2026-11-24"))
+        packet = packet.model_copy(update={"evidence": (*packet.evidence, evidence)})
+        source["evidence_packet"] = packet.model_dump(mode="json")
     valuation = setup["valuation"].model_copy(update={
         "ticker": ticker, "security_id": security, "currency": currency,
         "price": 10, "price_session": date(2026, 11, 23), "price_basis": "adjusted_close",
@@ -71,6 +96,13 @@ def synthetic_renderer_case(market, *, target_session="2026-11-23"):
     )
     source["packet_sha256"] = digest(source["packet"])
     baseline = plan_for(packet)
+    if include_support:
+        decision = dict(baseline.decision, tactical_choice="watch")
+        entries = dict(tactical_watch_status="RESOLVED", tactical_watch_low=9,
+            tactical_watch_high=11, tactical_currency=currency, tactical_watch_basis=[support_ref])
+        receipt = dict(baseline.acceptance, decision_sha256=digest(decision), entries_sha256=digest(entries))
+        baseline = baseline.model_copy(update=dict(decision=decision, entries=entries,
+            acceptance=receipt, acceptance_sha256=digest(receipt)))
     provenance = dict(core_sha256=digest(core), pass_a_sha256=digest(pass_a),
         pass_b_sha256=digest(baseline.decision), pass_b_input_sha256=digest("synthetic B"),
         fresh_stock_sha256=digest(source))
@@ -86,6 +118,14 @@ def synthetic_renderer_case(market, *, target_session="2026-11-23"):
         row["statement"]["currency"] = currency
     for candidate in context["r2_eligible_range_catalog"]["tactical_candidates"]:
         candidate["currency"] = currency
+    if include_support and support_timeframe == "weekly":
+        context["decision_evidence"][2]["statement"]["timeframe"] = "weekly"
+        context["decision_evidence"][3]["statement"]["timeframe"] = "weekly"
+        context["decision_evidence"].append(dict(ref_id="canonical:chart:weekly", as_of="2026-11-20",
+            label="weekly", statement=dict(timeframe="weekly", quality="available", currency=currency,
+                price_basis="adjusted", candle=dict(close=9.5), completed_bar_only=True, evaluation_as_of="2026-11-23")))
+        context["source_use_projection"]["source_permissions"].append(
+            dict(ref_id="canonical:chart:weekly", allowed_uses=["ENTRY"]))
 
     data = b2_inputs(legacy=False)
     subject = data["v1_request"]["subject"]

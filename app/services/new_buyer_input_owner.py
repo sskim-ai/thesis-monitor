@@ -6,6 +6,7 @@ module cannot acquire sources, invoke a model, persist an assessment or deliver.
 from copy import deepcopy
 import json
 
+from app.services.entry_price_basis import frame_matches_price
 from app.services.provider_valuation_calibration_context import parse_context
 from app.services.provider_native_valuation_snapshot import (
     ProviderNativeForwardValuationSnapshot, ProviderNativeValuationSnapshot,
@@ -87,6 +88,9 @@ def tactical_catalog(context, ticker, security):
     price = context['current_price']
     price_row = evidence.get(price.get('ref_id'), {})
     price_value = _statement(price_row)
+    daily = evidence.get('canonical:chart:daily', {})
+    daily_matches_price = frame_matches_price(_statement(daily), timeframe='daily',
+        frame_as_of=daily.get('as_of'), price=price, session=price.get('as_of'))
     result = []
     for candidate in context['r2_eligible_range_catalog']['tactical_candidates']:
         row = deepcopy(candidate)
@@ -97,9 +101,6 @@ def tactical_catalog(context, ticker, security):
             chart_ref = 'canonical:chart:' + str(zone.get('timeframe'))
             chart = evidence.get(chart_ref, {})
             chart_value = _statement(chart)
-            basis_match = (price.get('basis'), chart_value.get('price_basis')) in {
-                ('adjusted_close', 'adjusted'), ('unadjusted_close', 'unadjusted'),
-                ('regular_close', 'unadjusted')}
             passed = (
                 row.get('ticker', ticker) == ticker
                 and row.get('security_id', security) == security
@@ -107,17 +108,16 @@ def tactical_catalog(context, ticker, security):
                 and contract.number(zone.get('zone_low')) == contract.number(row['low'])
                 and contract.number(zone.get('zone_high')) == contract.number(row['high'])
                 and zone.get('currency') == row['currency'] == price.get('currency')
-                and chart_value.get('currency') == price.get('currency')
                 and price_value.get('currency') == price.get('currency')
-                and ev.get('as_of') == chart.get('as_of') == price.get('as_of')
+                and ev.get('as_of') == price.get('as_of')
                 and price_row.get('as_of') == price.get('as_of')
-                and contract.number(chart_value.get('candle', {}).get('close'))
-                == contract.number(price.get('value'))
+                and daily_matches_price
+                and frame_matches_price(chart_value, timeframe=zone.get('timeframe'),
+                    frame_as_of=chart.get('as_of'), price=price, session=price.get('as_of'))
                 and contract.number(price_value.get('current_price'))
                 == contract.number(price.get('value'))
                 and price_value.get('price_basis') == price.get('basis')
                 and price_value.get('price_as_of') == price.get('as_of')
-                and chart_value.get('quality') == 'available' and basis_match
                 and 'ENTRY' in permissions.get(ref, {}).get('allowed_uses', [])
             )
             proofs.append(dict(ref=ref, chart_ref=chart_ref, zone_sha256=digest(ev),

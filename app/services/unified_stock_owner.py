@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from datetime import date, datetime
+from decimal import Decimal
 import json
 
 from app.models.financial import FinancialSnapshot
@@ -24,6 +25,9 @@ from app.services.financial_quality_service import build_financial_quality_state
 from app.services.financial_freshness_service import evaluate_financial_freshness_records
 from app.services.numeric_semantic_registry import build_numeric_registry
 from app.services.ohlcv_client import _chart_timeframe_context, _summarize_bars
+from app.services.ohlcv_completed_bar_finality_service import (
+    BarFinality, assess_completed_bar_finality,
+)
 from app.services.ohlcv_structure_service import analyze_chart_structure
 from app.services.packet_owned_technical_context_service import (
     PacketOwnedTechnicalContext, build_packet_owned_technical_context,
@@ -36,7 +40,9 @@ from app.services.unified_snapshot_contract import digest
 from app.services.unified_source_composition import SourceRole
 from app.services.unified_source_policy import UnifiedSourcePolicy
 from app.services.unified_stock_acquisition import ROLES, StockPlan, decode_owned_role
-from app.services.unified_stock_anomaly_scope import materialize_source_components
+from app.services.unified_stock_anomaly_scope import (
+    ConsumerRows, assess_consumer, materialize_source_components, role_consumers,
+)
 from app.services.unified_stock_event_input import BoundNewsInput, replay_news
 
 
@@ -364,24 +370,68 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
                         price_as_of=price_projection.price_as_of, price_basis=price_projection.adjustment_basis)
     elif price_state is not None:
         decision.update(current_price=None, price_as_of=None, price_basis='UNAVAILABLE_COMPLETED_CLOSE')
+    # The calendar owner has already labelled this separate analysis view. Keep
+    # partial bars in the original periods/V3 input, never in confirmed legacy
+    # pivots, ATR, boxes or the timeframe candle that proves those structures.
+    structure_periods = {
+        tf: [row for row in rows
+             if assess_completed_bar_finality(row, cutoff=cutoff).state == BarFinality.FINAL]
+        for tf, rows in periods.items()
+    }
+    # Removing partial rows can move a bounded legacy window farther back.
+    # Reassess its real selection against the unchanged source, so malformed
+    # holes in that wider span are not hidden by the completed-only view.
+    structure_consumers = {}
+    for tf, rows in structure_periods.items():
+        if not rows:
+            continue
+        selected = role_consumers(rows, role="adjusted_" + tf, timeframe=tf,
+            cutoff=cutoff, market=market, observed_at=plan.frozen_at.isoformat())
+        structure_consumers[tf] = {c["consumer"]: assess_consumer(periods[tf],
+            timeframe=tf, cutoff=cutoff, consumer=ConsumerRows(
+                consumer=c["consumer"], owner=c["owner"], selection=c["selection"],
+                dates=c["selected_dates"], fields=frozenset(c["required_fields"]),
+                requirement=c["requirement"], dependency_span=c["dependency_span"],
+                existing_row_integrity_prerequisite=c["existing_row_integrity_prerequisite"]))
+            for c in selected}
     timeframes = {}
-    for tf in periods:
+    for tf in structure_periods:
         consumers = {c["consumer"]: c for c in components["role_consumer_matrix"]["adjusted_" + tf]}
         # Native embedded indicators are not canonical dependency-owned features.
         rows = [{k: r[k] for k in ("date", "open", "high", "low", "close", "volume", "value") if k in r}
-                for r in periods[tf]]
-        if not consumers["latest_candle_volume_value"]["eligible"]:
+                for r in structure_periods[tf]]
+        if (not rows or not consumers["latest_candle_volume_value"]["eligible"]
+                or not structure_consumers[tf]["latest_candle_volume_value"]["eligible"]):
             timeframes[tf] = {"quality": "unavailable"}
             continue
-        summary = _summarize_bars(len(rows), rows) if consumers["period_range_position"]["eligible"] else _summarize_bars(1, rows[-1:])
+        range_eligible = (consumers["period_range_position"]["eligible"]
+            and structure_consumers[tf]["period_range_position"]["eligible"])
+        summary = _summarize_bars(len(rows), rows) if range_eligible else _summarize_bars(1, rows[-1:])
         value = _chart_timeframe_context(tf, rows[-1:], summary).model_dump(mode="json")
-        if not consumers["period_range_position"]["eligible"]:
+        value.update(completed_bar_only=True, evaluation_as_of=session_key)
+        if not range_eligible:
             value["range_position_pct"] = None
             value["period_return_pct"] = None
         timeframes[tf] = value
+    daily = timeframes.get("daily", {})
+    if daily.get("quality") == "available" and daily.get("as_of_date") == session_key:
+        volume_ratio = next((fact for fact in technical.features.daily.facts
+            if fact.semantic == "volume_ratio_20" and fact.ticker == ticker
+            and fact.timeframe == "daily" and fact.as_of == session_key
+            and fact.input_basis == "adjusted_close" and fact.unit == "ratio"
+            and fact.completed_bar_only and isinstance(fact.value, Decimal)
+            and fact.value.is_finite()), None)
+        if volume_ratio is not None:
+            # Reuse the current-effective feature and its existing formula;
+            # stripped provider indicator columns do not supply this value.
+            daily["volume_ratio_20"] = float(volume_ratio.value)
+            daily["indicator_source_semantics"]["volume_ratio_20"] = volume_ratio.formula
     structure_ready = all(c["eligible"] for rows in components["role_consumer_matrix"].values() for c in rows
         if c["consumer"] in {"legacy_local_pivots", "legacy_major_swings_atr", "legacy_boxes"})
-    structure = analyze_chart_structure(periods, timeframe_contexts=timeframes) if structure_ready else {}
+    structure_ready = structure_ready and all(c["eligible"]
+        for consumers in structure_consumers.values() for c in consumers.values()
+        if c["consumer"] in {"legacy_local_pivots", "legacy_major_swings_atr", "legacy_boxes"})
+    structure = analyze_chart_structure(structure_periods, timeframe_contexts=timeframes) if structure_ready else {}
     if kr_stock_chart_v3 is not False:
         _exact(kr_stock_chart_v3, expected_hashes["kr_stock_chart_v3"])
         if kr_stock_chart_v3 is not True or market != "kr":

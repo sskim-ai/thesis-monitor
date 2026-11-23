@@ -9,6 +9,7 @@ from app.services.kr_forward_valuation_message import KrForwardMessagePlan, rend
 from app.services.unified_snapshot_contract import ContractModel, digest
 from app.services import new_buyer_v2_contract as b2
 from app.services import new_buyer_request_owner as canonical
+from app.services.entry_price_basis import frame_matches_price
 
 
 class DetailedStockMessagePlanV2(ContractModel):
@@ -132,58 +133,8 @@ def _us_sr_rows(packet, base, axes, security_id):
             "(현재가·평가배수·B2 진입 권한 아님)",
             facts=(zone["id"], *refs), hashes=(digest(ref),),
             formatting="dated-us-v3-no-b2-or-quote-authority-v1"))
-    support = _us_accepted_support_row(packet, base, axes, security_id, ref["as_of"])
-    return (*rows, support) if support is not None else tuple(rows)
+    return tuple(rows)
 
-
-def _us_accepted_support_row(packet, base, axes, security_id, session):
-    """Reuse the accepted KR9 registry invariants, without taking a V3 quote."""
-    timing = axes["entry_timing"]
-    accepted = base.accepted_calibration
-    entries = accepted.entries
-    refs = entries.get("tactical_watch_basis") or []
-    if (timing["state"] not in {"WAIT_FOR_ZONE", "FAVORABLE_NOW"}
-            or timing["reason"] != "EXACT_SELECTED_ZONE_RELATION"
-            or timing["selected"] != accepted.decision.get("tactical_choice")
-            or entries.get("tactical_watch_status") != "RESOLVED"
-            or base.valuation.security_id != security_id or len(refs) != 1
-            or refs[0] not in timing["evidence_refs"]):
-        return None
-    matches = [e for e in packet.evidence if e.ref_id == refs[0] and e.label == "chart_support_zone"]
-    if len(matches) != 1 or not matches[0].source_ref.startswith("stock.fact_catalog."):
-        return None
-    evidence = matches[0]
-    fact_id = evidence.source_ref.removeprefix("stock.fact_catalog.")
-    source = base.source_stock
-    stock = source["packet"]["stocks"][0]
-    quote = stock["current_price_context"]
-    try:
-        fact, node, low_reg, low = _source_number(fact_id, "fields.zone_low", source)
-        _, _, high_reg, high = _source_number(fact_id, "fields.zone_high", source)
-    except (KeyError, ValueError):
-        return None
-    frame = stock["chart_context"].get("timeframes", {}).get(fact["fields"].get("timeframe"), {})
-    if (fact["fact_type"] != "chart_support_zone" or fact.get("source") != "deterministic_ohlcv_structure"
-            or node.get("ticker") != packet.ticker or not evidence.source_time
-            or evidence.source_time.subject_ticker != packet.ticker
-            or evidence.source_time.canonical_fact_sha256 != digest(fact)
-            or fact["as_of_date"] != evidence.as_of or evidence.as_of != session
-            or quote.get("as_of_date") != session or frame.get("as_of_date") != session
-            or frame.get("candle", {}).get("close") != quote.get("current_price")
-            or source.get("fresh_run_id") != source["packet"].get("source_time_domains", {}).get("run_id")
-            or frame.get("quality") != "available"
-            or (quote.get("price_basis"), frame.get("price_basis")) not in {
-                ("adjusted_close", "adjusted"), ("unadjusted_close", "unadjusted"), ("regular_close", "unadjusted")}
-            or any(value != "USD" for value in (fact["fields"].get("currency"), quote.get("currency"),
-                entries.get("tactical_currency"), low_reg["unit"], high_reg["unit"]))
-            or low != entries.get("tactical_watch_low") or high != entries.get("tactical_watch_high") or not 0 < low <= high):
-        return None
-    warning = " (가격 관찰 참고, 신규 매수 권고 아님)" if axes["fundamental_attractiveness"] == "AVOID" else ""
-    return _row("price", "accepted-tactical-support",
-        f"B2 수락 관찰 지지({session} USD): ${low:,.2f}–${high:,.2f}{warning}",
-        facts=tuple(refs), hashes=(digest(fact), digest(node), digest(low_reg), digest(high_reg)),
-        numeric=(fact_id + ":fields.zone_low", fact_id + ":fields.zone_high"),
-        formatting="accepted-tactical-support-registry-v1")
 
 
 def _selected_support_row(packet, base, timing, security_id, *, new_buyer=None, price_session=None):
@@ -218,13 +169,16 @@ def _selected_support_row(packet, base, timing, security_id, *, new_buyer=None, 
     frame = stock["chart_context"].get("timeframes", {}).get(timeframe, {})
     basis = quote.get("price_basis")
     session = price_session
+    price = dict(value=quote.get("current_price"), currency=quote.get("currency"),
+                 basis=basis, as_of=quote.get("as_of_date"))
     if (fact["fact_type"] != "chart_support_zone" or fact.get("source") != "deterministic_ohlcv_structure"
             or node.get("ticker") != packet.ticker or not evidence.source_time
             or evidence.source_time.subject_ticker != packet.ticker
             or evidence.source_time.canonical_fact_sha256 != digest(fact)
             or fact["as_of_date"] != evidence.as_of or evidence.as_of != session
-            or quote.get("as_of_date") != session or frame.get("as_of_date") != session
-            or frame.get("candle", {}).get("close") != quote.get("current_price")
+            or not frame_matches_price(dict(frame, currency=fact["fields"].get("currency")),
+                                       timeframe=timeframe, frame_as_of=frame.get("as_of_date"),
+                                       price=price, session=session)
             or source["fresh_run_id"] != source["packet"]["source_time_domains"]["run_id"]
             or timeframe not in labels or frame.get("quality") != "available"
             or (basis, frame.get("price_basis")) not in {
@@ -237,7 +191,10 @@ def _selected_support_row(packet, base, timing, security_id, *, new_buyer=None, 
     from app.services.price_structure_v3_renderer_service import _price_display
 
     basis_label = "조정봉" if basis == "adjusted_close" else "비조정봉"
-    text = f"진입 관찰 지지 구간({session} {labels[timeframe]}·{basis_label}): " \
+    period = f"{session} {labels[timeframe]}·{basis_label}"
+    if timeframe != "daily" and frame.get("as_of_date") != session:
+        period = f"{session} 평가·{frame['as_of_date']} {labels[timeframe]} 완료봉·{basis_label}"
+    text = f"진입 관찰 지지 구간({period}): " \
            f"{_price_display(low, currency)}–{_price_display(high, currency)}"
     if new_buyer == "AVOID":
         text += " (가격 관찰 참고, 신규 매수 권고 아님)"
@@ -290,19 +247,19 @@ def _entry_quality(model_input, timing, context, market, session):
         return "INSUFFICIENT_EVIDENCE", note, ()
     permissions = {r["ref_id"] for r in context["source_use_projection"]["source_permissions"]
                    if "ENTRY" in r["allowed_uses"]}
-    evidence = {r["ref_id"]: r for r in context["decision_evidence"]
-                if r["as_of"] == session and r["ref_id"] in permissions}
     quote = context["current_price"]
     currency = {"kr": "KRW", "us": "USD"}[market]
     price = number(quote.get("value"))
     daily_id = "canonical:chart:daily"
+    evidence = {r["ref_id"]: r for r in context["decision_evidence"]
+                if r["ref_id"] in permissions and (r["as_of"] == session or
+                    r["ref_id"] in {"canonical:chart:weekly", "canonical:chart:monthly"}
+                    and frame_matches_price(_statement(r), timeframe=r["ref_id"].rsplit(":", 1)[1],
+                                            frame_as_of=r["as_of"], price=quote, session=session))}
     def matching_frame(frame):
-        data = _statement(evidence.get("canonical:chart:" + str(frame), {}))
-        return (frame in ("daily", "weekly", "monthly") and data.get("quality") == "available"
-                and data.get("currency") == currency and price is not None and price > 0
-                and number(data.get("candle", {}).get("close")) == price
-                and (quote.get("basis"), data.get("price_basis")) in {
-                    ("adjusted_close","adjusted"), ("regular_close","unadjusted"), ("unadjusted_close","unadjusted")})
+        row = evidence.get("canonical:chart:" + str(frame), {})
+        return frame_matches_price(_statement(row), timeframe=frame, frame_as_of=row.get("as_of"),
+                                   price=quote, session=session)
 
     frames = {_statement(evidence.get(ref, {})).get("timeframe") for ref in candidate["evidence_refs"]}
     if (not set(timing["evidence_refs"]) <= evidence.keys() or quote.get("as_of") != session
@@ -365,13 +322,22 @@ def _entry_quality(model_input, timing, context, market, session):
     return "INSUFFICIENT_EVIDENCE", "현재가 기준의 적격 손익비·확인 근거 부족", ()
 
 
-def _buyer_action(stance, relation, quality, *, confirmed_breakout=False):
+def _buyer_action(stance, relation, quality, *, reason_class=None, confirmed_breakout=False):
     if stance == "AVOID":
         return "신규 매수 회피"
-    if stance == "WAIT":
-        return "기업가치 확인 대기" if relation == "INSIDE" else "사업·가격 조건 대기"
     if relation == "BELOW" or quality == "BLOCKED":
         return "지지 이탈 구조 재검토"
+    if stance == "WAIT":
+        reasons = {
+            "BUSINESS_MIXED": "사업 근거 혼재 해소 대기",
+            "BUSINESS_GATE_NOT_MET": "사업 근거 확인 대기",
+            "BUSINESS_EVIDENCE_UNCERTAINTY": "사업 근거의 불확실성 해소 대기",
+            "VALUATION_UNRESOLVED": "가치평가 자료 확인 대기",
+            "VALUATION_NEUTRAL": "가치평가 매력 개선 대기",
+            "VALUATION_BURDENSOME": "가치평가 부담 완화 대기",
+            "CONFIDENCE_UNCERTAINTY": "판단을 제한하는 근거 확인 대기",
+        }
+        return reasons.get(reason_class, "신규매수 판단 근거 확인 대기")
     if relation == "ABOVE":
         if confirmed_breakout:
             return "돌파·거래량 확인 완료, 선택된 지지 구간 기준의 진입은 가격 조정 대기"
@@ -428,13 +394,16 @@ def _entry_location(model_input, timing, context, market, session):
         chart = _statement(frame)
         if row.get("label") != "chart_support_zone" or ref not in permissions:
             return "진입 판단: 선택된 진입 구간 확인 필요"
-        if row.get("as_of") != session or frame.get("as_of") != session:
+        if row.get("as_of") != session:
             return "진입 판단: 가격 기준 확인 필요 — 완료 거래일과 지지·차트 세션 불일치"
         if zone.get("currency") != currency or chart.get("currency") != currency:
             return "진입 판단: 가격 기준 확인 필요 — 통화 불일치"
         if (quote.get("basis"), chart.get("price_basis")) not in {
                 ("adjusted_close", "adjusted"), ("regular_close", "unadjusted"), ("unadjusted_close", "unadjusted")}:
             return "진입 판단: 가격 기준 확인 필요 — 조정 기준 불일치"
+        if not frame_matches_price(chart, timeframe=zone.get("timeframe"), frame_as_of=frame.get("as_of"),
+                                   price=quote, session=session):
+            return "진입 판단: 가격 기준 확인 필요 — 완료봉과 현재 평가일 연결 확인 필요"
     if candidate["relation_basis_proven"] and timing["relation"] in {"INSIDE", "ABOVE", "BELOW"}:
         return "가격 위치: 선택된 관찰 지지 구간 " + {
             "INSIDE": "안", "ABOVE": "위", "BELOW": "아래 — 구조 재확인"}[timing["relation"]]
@@ -459,6 +428,7 @@ def _entry_lines(output, model_input, entry_context, market, session):
     timing = output["timing_context"]
     quality, note, refs = _entry_quality(model_input, timing, entry_context, market, session)
     action = _buyer_action(output["new_buyer"], timing["relation"], quality,
+                           reason_class=output["reason_class"],
                            confirmed_breakout=_confirmed_breakout(entry_context, refs))
     reason = {"BUSINESS_MIXED":"사업 근거 혼재", "BUSINESS_GATE_NOT_MET":"사업 근거 요건 미충족",
               "BUSINESS_EVIDENCE_UNCERTAINTY":"사업 근거 불확실", "VALUATION_UNRESOLVED":"가치평가 근거 부족",
@@ -534,11 +504,10 @@ def build_detailed_plan_v2(*, packet, base, b2_request, b2_result, authorization
     rows = (row, *(r for r in presentation.rows if r.section != "judgment"))
     if packet.market == "us":
         rows += (*_reported_quarter_rows(packet, base), *_us_sr_rows(packet, base, axes, authorization.security_id))
-    if packet.market == "kr":
-        support = _selected_support_row(packet, base, axes["entry_timing"], authorization.security_id,
-                                        new_buyer=axes["fundamental_attractiveness"], price_session=price_session)
-        if support is not None:
-            rows += (support,)
+    support = _selected_support_row(packet, base, axes["entry_timing"], authorization.security_id,
+                                    new_buyer=axes["fundamental_attractiveness"], price_session=price_session)
+    if support is not None:
+        rows += (support,)
     binding = dict(base=presentation.acceptance_sha256, request=digest(b2_request), result=digest(b2_result),
         authorization=digest(authorization.model_dump(mode="json")), rows=[r.model_dump(mode="json") for r in rows])
     return DetailedStockMessagePlanV2(base=presentation, b2_request=b2_request, b2_result=b2_result,
