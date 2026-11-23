@@ -8,6 +8,8 @@ from contextvars import ContextVar
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 import fcntl
+import json
+import os
 from pathlib import Path
 import re
 
@@ -25,6 +27,7 @@ from app.services.vnext_execution_profile import SOL_HIGH_V1
 TERMINAL = 'RENDER_VERIFIED_NO_SEND'
 PARTIAL = 'RENDER_VERIFIED_PARTIAL_NO_SEND'
 RESEARCH_STAGES = STAGES[:-1]
+MODEL_STAGES = frozenset({'MARKET', 'CORE', 'A', 'B', 'B2'})
 FINALIZATION_STAGES = frozenset({'VALIDATE', 'RENDER'})
 FINALIZATION_LOCAL_SECONDS = 600
 _stage_timer = ContextVar('prepared_research_stage_timer', default=None)
@@ -116,30 +119,30 @@ def stage_deadline(plan, stage):
 
 
 def _split_stage_deadline(bound, multi_batch_local_seconds):
-    stage, calls = bound['stage'], bound['planned_calls']
-    result = dict(bound, local_seconds=(
-        FINALIZATION_LOCAL_SECONDS if stage in FINALIZATION_STAGES
-        else multi_batch_local_seconds if stage in {'CORE','A','B'} and calls > 1
-        else 600 if calls else bound['overhead_seconds']),
-        scope='SEPARATE_LOCAL_AND_WORKER_CAMPAIGN_CAPPED')
+    stage = bound['stage']
+    result = dict(bound, local_seconds=None if stage in MODEL_STAGES | FINALIZATION_STAGES else FINALIZATION_LOCAL_SECONDS,
+        scope=('MODEL_LOCAL_UNLIMITED_CAMPAIGN_AND_PER_CALL_CAPPED' if stage in MODEL_STAGES
+            else 'FINALIZATION_LOCAL_UNLIMITED_CAMPAIGN_CAPPED' if stage in FINALIZATION_STAGES
+            else 'SEPARATE_LOCAL_AND_WORKER_CAMPAIGN_CAPPED'))
     del result['total_seconds']
     return result
 
 
 class _StageTimer:
-    """Pause the cumulative local budget only while the bounded worker runs."""
+    """Keep per-worker bounds; all local work remains campaign-capped."""
     def __init__(self, deadline, loop, campaign_end, retry_cap=0):
         self.deadline, self.loop, self.campaign_end = deadline, loop, campaign_end
         self.local_seconds = self.worker_seconds = 0.0
         self.phase, self.began, self.calls = 'local', loop.time(), 0
-        self.timeout = asyncio.timeout_at(None)
+        limit = deadline['local_seconds']
+        self.timeout = asyncio.timeout_at(campaign_end if limit is None else min(self.began+limit,campaign_end))
         self.retry_cap = retry_cap
 
     def check(self):
         now = self.loop.time()
         if now >= self.campaign_end:
             raise TimeoutError('research_campaign_deadline')
-        if now >= self.timeout.when():
+        if self.timeout.when() is not None and now >= self.timeout.when():
             raise TimeoutError('research_'+self.phase+'_deadline')
 
     def switch(self, phase):
@@ -153,9 +156,10 @@ class _StageTimer:
             remaining = self.deadline['per_call_seconds']+self.deadline['overhead_seconds']
         else:
             self.worker_seconds += now-self.began
-            remaining = self.deadline['local_seconds']-self.local_seconds
+            limit = self.deadline['local_seconds']
+            remaining = None if limit is None else limit-self.local_seconds
         self.phase, self.began = phase, now
-        self.timeout.reschedule(min(now+remaining,self.campaign_end))
+        self.timeout.reschedule(self.campaign_end if remaining is None else min(now+remaining,self.campaign_end))
         self.check()
 
     def receipt(self):
@@ -167,6 +171,55 @@ class _StageTimer:
 
 def current_stage_timer():
     return _stage_timer.get()
+
+
+def _first_failure(exc, stage):
+    failure = dict(type=type(exc).__name__[:80], code='RESEARCH_STAGE_FAILED', stage=stage,
+        at=datetime.now(timezone.utc).isoformat())
+    if isinstance(exc, ArtifactCapacityError):
+        receipt = exc.receipt
+        code = receipt.get('code', '')
+        if re.fullmatch(r'RESEARCH_[A-Z_]{1,80}', code):
+            failure['code'] = code
+        failure['storage'] = {k: receipt[k] for k in ('current_bytes', 'projected_bytes', 'cap_bytes')
+            if type(receipt.get(k)) is int}
+    return failure
+
+
+def _persist_first_failure(path, state):
+    """Only this bounded, payload-free receipt may bypass the artifact free guard."""
+    directory = None
+    pending = False
+    try:
+        raw = json.dumps(state['first_failure'], sort_keys=True, separators=(',', ':')).encode()+b'\n'
+        if len(raw) > 4096:
+            raise ValueError('research_first_failure_receipt_too_large')
+        directory = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        fd = os.open('.first-failure.pending', os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+            0o600, dir_fd=directory)
+        pending = True
+        with os.fdopen(fd, 'wb') as stream:
+            stream.write(raw)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.link('.first-failure.pending', 'first-failure.json', src_dir_fd=directory,
+            dst_dir_fd=directory, follow_symlinks=False)
+        os.fsync(directory)
+        state['first_failure_receipt'] = dict(status='PERSISTED', bytes=len(raw))
+    except Exception as error:
+        state['first_failure_receipt'] = dict(status='UNAVAILABLE', type=type(error).__name__,
+            errno=error.errno if isinstance(error, OSError) else None)
+    finally:
+        if directory is not None:
+            if pending:
+                try:
+                    os.unlink('.first-failure.pending', dir_fd=directory)
+                except OSError:
+                    pass
+            try:
+                os.close(directory)
+            except OSError:
+                pass
 
 
 class PreparedResearchBridge(ProductionRuntimeBridgeV1):
@@ -286,6 +339,7 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
             return load_json(path/'terminal.json')
         state = dict(status='STARTED', child_binding=bridge.child_binding, stage_receipts=[],
             normal_messages_sent=False, failure_notifications_sent=False)
+        stage = 'INITIALIZE'
         try:
             if (path/'intent.json').exists():
                 raise ValueError('interrupted_research_cycle_no_automatic_replay')
@@ -299,10 +353,16 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                     if campaign_end is not None:
                         bound = _split_stage_deadline(bound, multi_batch_local_seconds)
                         retry_cap = getattr(bridge.model.call_budget,'timeout_retry_cap',0)
-                        if retry_cap and bound['planned_calls']:
+                        retry_market = getattr(bridge.model.call_budget,'retry_market','us')
+                        if retry_cap and bound['planned_calls'] and retry_market!='kr':
                             bound['campaign_timeout_retry_cap'] = retry_cap
                         if getattr(bridge.model.call_budget,'b2_retry_policy',None) and stage == 'B2':
                             bound['b2_retry_policy'] = bridge.model.call_budget.b2_retry_policy
+                        if stage == 'MARKET':
+                            from app.services.model_timeout_retry import market_timeout_retry_cap
+                            if market_timeout_retry_cap(getattr(bridge.model.call_budget,'b2_retry_policy',None),
+                                    retry_cap=retry_cap,retry_market=retry_market):
+                                bound['market_timeout_retry_cap'] = 1
                     request = dict(contract=CONTRACT, run_id=bridge.child.plan.cohort.run_id, stage=stage,
                         snapshot_sha256=snapshot_pin, snapshot=snapshot, inputs=dict(outputs),
                         configuration_sha256=digest(dict(purpose=TERMINAL, child_binding=bridge.child_binding)))
@@ -317,12 +377,12 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                         loop = asyncio.get_running_loop()
                         allowance = (bridge.model.call_budget.retry_capacity
                             if getattr(bridge.model.call_budget,'b2_retry_policy',None) and stage == 'B2'
-                            else getattr(bridge.model.call_budget,'timeout_retry_cap',0))
+                            else bound.get('market_timeout_retry_cap',0) if getattr(bridge.model.call_budget,'retry_market','us')=='kr'
+                            else bound.get('market_timeout_retry_cap',getattr(bridge.model.call_budget,'timeout_retry_cap',0)))
                         timer = _StageTimer(bound,loop,campaign_end, allowance)
                         token = _stage_timer.set(timer)
                         try:
                             async with timer.timeout:
-                                timer.timeout.reschedule(min(timer.began+bound['local_seconds'],campaign_end))
                                 timer.check()
                                 result = await bridge.stage(request,directory)
                                 timer.check()
@@ -350,7 +410,7 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                     or calls.used & inherited or accepted != (calls.used-exhausted) | inherited
                     or any(m.get('NO_SEND') is not True or not m.get('text') for m in messages)):
                 raise ValueError('research_render_coverage_or_content_drift')
-            if getattr(calls,'retry_enabled',False):
+            if getattr(calls,'retry_enabled',False) and getattr(calls,'retry_market','us')!='kr':
                 from app.services.model_invocation_journal import read_invocation_journal
                 from app.services.model_timeout_retry import verify_render_partition
 
@@ -373,7 +433,8 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
             state['storage_inventory'] = artifacts.measure()
         except (Exception, asyncio.CancelledError) as exc:
             from app.services.unified_market_run import UnifiedMarketRun
-            state.update(status='FAILED_NO_SEND',error_chain=UnifiedMarketRun._error(exc))
+            state.update(status='FAILED_NO_SEND',error_chain=UnifiedMarketRun._error(exc),
+                first_failure=_first_failure(exc, stage))
             for key in ('messages', 'messages_sha256', 'limitation_receipts'):
                 state.pop(key, None)
             if isinstance(exc, ArtifactCapacityError):
@@ -388,10 +449,20 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                 bridge.model.call_budget.stop(global_stop=not local)
             except Exception as ledger_error:
                 state['ledger_failure'] = UnifiedMarketRun._error(ledger_error)
+            _persist_first_failure(path, state)
         try:
             durable_json(path/'terminal.json',state,exclusive=True)
-        except ArtifactCapacityError as exc:
-            state.update(status='FAILED_NO_SEND', terminal_write_blocked=exc.receipt)
-            state.pop('messages', None)
-            state.pop('messages_sha256', None)
+        except (ArtifactCapacityError, OSError) as exc:
+            from app.services.unified_market_run import UnifiedMarketRun
+            state.update(status='FAILED_NO_SEND', terminal_write_blocked=(exc.receipt
+                if isinstance(exc, ArtifactCapacityError) else dict(type=type(exc).__name__, errno=exc.errno)))
+            if 'first_failure' not in state:
+                state.update(first_failure=_first_failure(exc, stage), error_chain=UnifiedMarketRun._error(exc))
+                _persist_first_failure(path, state)
+                try:
+                    bridge.model.call_budget.stop(global_stop=True)
+                except Exception as ledger_error:
+                    state['ledger_failure'] = UnifiedMarketRun._error(ledger_error)
+            for key in ('messages', 'messages_sha256', 'limitation_receipts'):
+                state.pop(key, None)
         return state

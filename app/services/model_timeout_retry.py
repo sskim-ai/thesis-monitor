@@ -9,8 +9,19 @@ B2_US2_DIAGNOSTIC_V1 = 'B2_US2_DIAGNOSTIC_V1'
 B2_SR5_DIAGNOSTIC_V1 = 'B2_SR5_DIAGNOSTIC_V1'
 
 
-def retry_policy_limits(policy):
+def retry_policy_limits(policy, *, plan=None):
     if policy == B2_PER_TICKER_ONE_RETRY_V1:
+        if plan is not None:
+            plan.validate()
+            if (plan.topology != 'CANONICAL_PRODUCTION'
+                    or len(plan.cohort.market_subjects) != 1
+                    or next(iter(plan.cohort.market_subjects)) not in ('kr','us')
+                    or sum(s.stage=='MARKET' for s in plan.slots)!=1
+                    or any(len(s.subjects)!=1 or len(s.security_ids)!=1 for s in plan.slots if s.stage=='B2')):
+                raise ValueError('model_b2_retry_single_market_plan_required')
+            base, reserves = len(plan.slots),sum(s.stage=='B2' for s in plan.slots)
+            return base,reserves,base+reserves
+        # Legacy callers without a frozen plan retain the original US contract.
         return 29,13,42
     if policy == B2_US2_DIAGNOSTIC_V1:
         return 6,2,8
@@ -21,7 +32,8 @@ def retry_policy_limits(policy):
 
 def b2_retry_binding(plan, policy=B2_PER_TICKER_ONE_RETRY_V1):
     plan.validate()
-    if plan.topology != 'CANONICAL_PRODUCTION' or list(plan.cohort.market_subjects) != ['us']:
+    if (plan.topology != 'CANONICAL_PRODUCTION' or len(plan.cohort.market_subjects)!=1
+            or (policy!=B2_PER_TICKER_ONE_RETRY_V1 and list(plan.cohort.market_subjects)!=['us'])):
         raise ValueError('model_b2_retry_original_us_plan_required')
     if policy == B2_US2_DIAGNOSTIC_V1 and tuple(plan.cohort.market_subjects['us']) != ('GOOGL','MU'):
         raise ValueError('model_b2_retry_exact_diagnostic_subjects_required')
@@ -29,8 +41,9 @@ def b2_retry_binding(plan, policy=B2_PER_TICKER_ONE_RETRY_V1):
             tuple(plan.cohort.market_subjects['us']) != ('CRCL','HUT','SKHY','TSM','WULF')
             or tuple(plan.cohort.limitation_subjects) != ('SKHY',)):
         raise ValueError('model_b2_retry_exact_sr5_limitation_scope_required')
+    base,_,maximum=retry_policy_limits(policy,plan=plan)
     value = dict(policy=policy, plan_sha256=plan.sha256,
-        base_slots=len(plan.slots), maximum=len(plan.slots)+sum(s.stage=='B2' for s in plan.slots),
+        base_slots=base, maximum=maximum,
         slot_stages={s.slot_id:s.stage for s in plan.slots},
         b2_slots={s.slot_id:s.subjects[0] for s in plan.slots if s.stage == 'B2' and len(s.subjects) == 1})
     validate_b2_retry_binding(value)
@@ -38,12 +51,17 @@ def b2_retry_binding(plan, policy=B2_PER_TICKER_ONE_RETRY_V1):
 
 
 def validate_b2_retry_binding(value):
-    base,reserves,maximum = retry_policy_limits(value.get('policy') if isinstance(value,dict) else None)
+    policy=value.get('policy') if isinstance(value,dict) else None
+    base,reserves,maximum = retry_policy_limits(policy)
+    if policy==B2_PER_TICKER_ONE_RETRY_V1:
+        base=len(value.get('slot_stages',{}));reserves=len(value.get('b2_slots',{}));maximum=base+reserves
     if (type(value) is not dict or set(value) != {'policy','plan_sha256','base_slots','maximum','slot_stages','b2_slots'}
             or not re.fullmatch('[a-f0-9]{64}', value['plan_sha256'])
             or type(value['base_slots']) is not int or value['base_slots'] != base
             or type(value['maximum']) is not int or value['maximum'] != maximum
             or len(value['slot_stages']) != base or len(value['b2_slots']) != reserves
+            or base<1 or list(value['slot_stages'].values()).count('MARKET')!=1
+            or any(stage not in {'MARKET','CORE','A','B','B2'} for stage in value['slot_stages'].values())
             or len(set(value['b2_slots'].values())) != reserves
             or value['policy'] == B2_US2_DIAGNOSTIC_V1 and set(value['b2_slots'].values()) != {'GOOGL','MU'}
             or value['policy'] == B2_SR5_DIAGNOSTIC_V1 and set(value['b2_slots'].values()) != {'CRCL','HUT','TSM','WULF'}
@@ -51,6 +69,23 @@ def validate_b2_retry_binding(value):
             or any(not s or not t for s,t in value['b2_slots'].items())):
         raise ValueError('model_b2_per_ticker_retry_binding_invalid')
     return value
+
+
+def market_timeout_retry_cap(binding, *, retry_cap=0, retry_market='us'):
+    if binding is not None:
+        validate_b2_retry_binding(binding)
+        if (retry_market not in ('kr','us') or type(retry_cap) is not int or retry_cap not in (0,1)
+                or retry_cap and binding['policy']!=B2_PER_TICKER_ONE_RETRY_V1):
+            raise ValueError('model_combined_retry_scope_invalid')
+        # Explicit cap1 reserves MARKET independently; legacy US cap0 stays unchanged.
+        return int(binding['policy']==B2_PER_TICKER_ONE_RETRY_V1 and (retry_cap==1 or retry_market=='us'))
+    if retry_market == 'kr':
+        if binding is not None or type(retry_cap) is not int or retry_cap != 1:
+            raise ValueError('model_kr_market_retry_scope_invalid')
+        return 1
+    if retry_market != 'us':
+        raise ValueError('model_market_retry_market_invalid')
+    return 0
 
 
 def confirmed_timeout(path, *, worker_pid, worker_returncode, receipt, prompt_sha256, schema_sha256):
@@ -143,8 +178,8 @@ def verify_render_partition(*, messages, subjects, slots, b2, journal, accepted_
         if type(plan) is not ModelExecutionPlan:
             raise ValueError('research_timeout_original_model_plan_required')
         plan.validate()
-        if (list(plan.cohort.market_subjects) != ['us'] or tuple(slots) != plan.slots
-                or tuple(subjects) != plan.cohort.market_subjects['us']):
+        if (len(plan.cohort.market_subjects)!=1 or tuple(slots) != plan.slots
+                or tuple(subjects) != next(iter(plan.cohort.market_subjects.values()))):
             raise ValueError('research_timeout_plan_scope_drift')
         limits = set(plan.cohort.limitation_subjects)
         if limits and omitted:
@@ -152,10 +187,11 @@ def verify_render_partition(*, messages, subjects, slots, b2, journal, accepted_
         ordinary = tuple(t for t in subjects if t not in limits)
     verify_b2_coverage(b2, subjects=ordinary, slots=slots, exhausted=journal['exhausted'],
         bound=journal['bound'], attempts=journal['attempts'])
+    market=next(iter(plan.cohort.market_subjects)) if plan is not None else 'us'
     if (journal['stopped'] or journal['inherited']
             or set(journal['accepted']) != {s.slot_id for s in slots}-journal['exhausted']
             or journal['used'] != set(journal['accepted']) | journal['exhausted']
-            or sorted(m['message_id'] for m in messages) != sorted({'MARKET_US',*subjects}-set(omitted))
+            or sorted(m['message_id'] for m in messages) != sorted({'MARKET_'+market.upper(),*subjects}-set(omitted))
             or digest(messages) != accepted_content_sha256
             or any(m.get('NO_SEND') is not True or not m.get('text') for m in messages)):
         raise ValueError('research_timeout_render_partition_drift')
@@ -209,18 +245,24 @@ def read_no_send_partition(cycle, *, plan, invocation_journal):
     identity = json.loads(raw.split(b'\n',1)[0])['identity']
     cap = identity.get('timeout_retry_cap', 0)
     per_ticker = identity.get('b2_retry_policy')
-    if per_ticker is not None and (cap or per_ticker != b2_retry_binding(plan,per_ticker['policy'])):
+    market=next(iter(plan.cohort.market_subjects))
+    retry_market=identity.get('timeout_retry_market','us')
+    if per_ticker is not None and (per_ticker != b2_retry_binding(plan,per_ticker['policy'])
+            or cap not in (0,1) or cap and per_ticker['policy']!=B2_PER_TICKER_ONE_RETRY_V1
+            or retry_market!=market):
         raise ValueError('research_timeout_cold_per_ticker_scope')
     if type(cap) is not int or cap not in (0,1,2) or (not (cap or per_ticker) and omitted):
         raise ValueError('research_timeout_cold_retry_scope')
     expected = dict(contract='model-invocation-journal-v1',plan_sha256=plan.sha256,
-        maximum=per_ticker['maximum'] if per_ticker else len(plan.slots)+cap)
+        maximum=per_ticker['maximum']+cap if per_ticker else len(plan.slots)+cap)
     if cap:
         expected['timeout_retry_cap'] = cap
     if per_ticker:
         expected['b2_retry_policy'] = per_ticker
+    if retry_market=='kr':
+        expected['timeout_retry_market']='kr'
     journal = read_invocation_journal(raw, expected)
-    verify_render_partition(messages=messages,subjects=plan.cohort.market_subjects['us'],slots=plan.slots,b2=b2,
+    verify_render_partition(messages=messages,subjects=plan.cohort.market_subjects[market],slots=plan.slots,b2=b2,
         journal=journal,accepted_content_sha256=outputs['VALIDATE']['output']['content_sha256'],plan=plan)
     for ticker, row in b2['rows'].items():
         folder = plain_path(cycle/'b2'/ticker)

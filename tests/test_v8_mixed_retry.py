@@ -41,7 +41,7 @@ def deny_live(monkeypatch):
     monkeypatch.setattr(asyncio, 'create_subprocess_exec', denied)
 
 
-def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True, subjects=None):
+def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True, subjects=None, market='us'):
     from app.services import production_message_renderer as render, model_timeout_retry as timeout
     from app.services.accepted_calibration_message_service import AcceptedDetailedCalibrationPlan, AcceptedMarketCalibration
     from app.services.daily_digest_renderer import render_daily_digest
@@ -54,8 +54,16 @@ def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True, subj
     from tests.test_production_b2_execution import body
     from tests.test_m12ds_r4_r4_market_balance import source as market_source, catalog as market_catalog
 
-    subjects = tuple(sorted(UNIVERSE['us'] if subjects is None else subjects))
-    base = old.listed_plan(subjects, run='SYNTHETIC_V8_US', source='source-one')
+    subjects = tuple(sorted(UNIVERSE[market] if subjects is None else subjects))
+    if market == 'kr':
+        from app.services.model_execution_plan import CohortSubject, FrozenCohort
+        at = '2026-11-11T00:00:00+00:00'
+        cohort = FrozenCohort('SYNTHETIC_C40_KR','source-one','2026-11-11',at,at,
+            tuple(CohortSubject('kr',t,'OFFLINE:'+t,at,digest(t)) for t in subjects),
+            (('kr',digest('test-owner')),),digest('scope'))
+        base = compile_model_plan(cohort,topology='CANONICAL_PRODUCTION')
+    else:
+        base = old.listed_plan(subjects, run='SYNTHETIC_V8_US', source='source-one')
     plan = compile_model_plan(replace(base.cohort, limitation_subjects=('SKHY',) if limited else ()),
                               topology='CANONICAL_PRODUCTION')
     batches=(len(subjects)+2)//3
@@ -71,8 +79,22 @@ def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True, subj
     ordinary = tuple(t for t in subjects if t not in plan.cohort.limitation_subjects)
     for ticker in ordinary:
         setup = detailed_inputs.__wrapped__()
-        packet = setup['packet'].model_copy(update={'ticker':ticker})
+        packet = setup['packet'].model_copy(update={'ticker':ticker,**({'market':'kr'} if market=='kr' else {})})
         src = setup['source_stock']
+        if market == 'kr':
+            from tests.test_kr_forward_valuation_integration import view
+            from app.services.kr_forward_valuation_context import KrForwardValuationView, calibration_context
+            forward = view(missing=True).model_dump(mode='json')
+            quote = src['packet']['stocks'][0]['current_price_context']
+            quote['currency'] = 'KRW'
+            forward['native'].update(ticker=ticker,security_id='OFFLINE:'+ticker,run_id='source-one',
+                price_session=quote['as_of_date'],price_context_sha256=digest(quote))
+            forward['kis']['security_code'] = ticker
+            forward = KrForwardValuationView.model_validate(forward)
+            src['valuation_view'] = forward.native.model_dump(mode='json')
+            src['packet']['stocks'][0]['current_price_context']['currency'] = 'KRW'
+            src['packet']['stocks'][0]['fact_catalog'][0]['fields']['currency'] = 'KRW'
+            src['fixture_forward'] = forward.model_dump(mode='json')
         src.update(ticker=ticker,evidence_packet=packet.model_dump(mode='json'))
         src['packet']['stocks'][0]['ticker'] = ticker
         src['packet']['stocks'][0]['chart_context'] = {}
@@ -151,17 +173,19 @@ def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True, subj
     bridge = object.__new__(PreparedResearchBridge)
     source = dict(source_generation_id='source-one')
     owner = SimpleNamespace(source=lambda market:source)
-    bridge.child = SimpleNamespace(plan=plan,owner=owner,market='us',verify=lambda:None)
+    bridge.child = SimpleNamespace(plan=plan,owner=owner,market=market,verify=lambda:None)
     bridge.execution_profile, bridge._native_owner_parents = SOL_HIGH_V1, {}
     bridge._retained_kr_ecos_body = None
     bridge.model = model
     model.cohort_source_owner = owner
-    bridge.child_binding = dict(plan_sha256=plan.sha256,cohort_sha256=plan.cohort.sha256,market='us',
+    bridge.child_binding = dict(plan_sha256=plan.sha256,cohort_sha256=plan.cohort.sha256,market=market,
         run_id=plan.cohort.run_id,source_generation='source-one',assessment_date=plan.cohort.assessment_date,
-        cutoff=plan.cohort.cutoff,message_ids=['MARKET_US',*subjects],
+        cutoff=plan.cohort.cutoff,message_ids=['MARKET_'+market.upper(),*subjects],
         **(dict(limitation_subjects=['SKHY']) if limited else {}))
     envelope = PreparedResearchEnvelope(generation_id=plan.cohort.run_id,subjects=subjects)
-    snapshot = dict(child_binding=bridge.child_binding,collection=dict(market='us',
+    if market == 'kr':
+        source['forward_views'] = {t:s['fixture_forward'] for t,s in stocks.items()}
+    snapshot = dict(child_binding=bridge.child_binding,collection=dict(market=market,
         production_envelope=envelope.model_dump(mode='json'),monitoring_input=source))
     bridge.snapshot = lambda:snapshot
     decision = dict(status='UNKNOWN_LIMIT',fixture='existing limitation output, not economic revalidation')
@@ -170,15 +194,21 @@ def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True, subj
         plan_sha256=digest('preaccepted synthetic limitation plan'),limitation_decision_sha256=digest(decision))
     monkeypatch.setattr(render,'limitation_message',lambda session,ticker:dict(limited_message))
     market_context = market_source()
-    market_decision = dict(market='US',regime='MIXED',confidence='MEDIUM',breadth_state='Market breadth is mixed.',
+    market_context['session']['market'] = market
+    market_decision = dict(market=market.upper(),regime='MIXED',confidence='MEDIUM',breadth_state='Market breadth is mixed.',
         leadership='Leadership is selective.',flows_or_participation='Participation is mixed.',
         rates_or_macro_context='Macro context remains mixed.')
-    catalog = market_catalog(market_context)
-    market_receipt = dict(status='PASS',errors=[],market='us',assessment_date='2026-09-22',
+    if market == 'kr':
+        from app.services.market_numeric_claim_service import numeric_catalog
+        catalog = numeric_catalog(market_context,market='kr',assessment_date='2026-09-22',
+            eligible_refs=[f['fact_id'] for f in market_context['fact_catalog']])
+    else:
+        catalog = market_catalog(market_context)
+    market_receipt = dict(status='PASS',errors=[],market=market,assessment_date='2026-09-22',
         source_context_sha256=digest(market_context),decision_sha256=digest(market_decision),numeric_catalog_sha256=digest(catalog))
-    market_plan = AcceptedMarketCalibration(market='us',assessment_date='2026-09-22',source_context=market_context,
+    market_plan = AcceptedMarketCalibration(market=market,assessment_date='2026-09-22',source_context=market_context,
         decision=market_decision,acceptance=market_receipt,acceptance_sha256=digest(market_receipt),numeric_catalog=catalog)
-    bridge._render_market = lambda session:dict(message_id='MARKET_US',generation_id=plan.cohort.run_id,
+    bridge._render_market = lambda session:dict(message_id='MARKET_'+market.upper(),generation_id=plan.cohort.run_id,
         text=render_daily_digest(None,accepted_market=market_plan),plan_sha256=digest(market_plan.model_dump(mode='json')))
     def session(request,directory):
         def build(stage):
@@ -192,7 +222,8 @@ def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True, subj
                 row['batch'] = 1 if stage=='MARKET' else slot.batch_id
                 result.append(row)
             return result
-        values = SimpleNamespace(market='us',gen=plan.cohort.run_id,source_gen='source-one',
+        values = SimpleNamespace(market=market,gen=plan.cohort.run_id,source_gen='source-one',source=source,
+            valuation_context=lambda ticker:calibration_context(source['forward_views'][ticker]),
             fresh_stocks=stocks,cores=cores,arows=pa,brows=pb,b2_request=lambda t:requests[t],
             verify_model_build=lambda *args:None,accept=lambda *args:None,build=build,
             limitation_subjects=frozenset(plan.cohort.limitation_subjects),ordinary_subjects=lambda:ordinary,
@@ -202,7 +233,7 @@ def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True, subj
     config = RunConfiguration(root=tmp_path/'preview',debug_destination=None,repo_commit='synthetic',
         scheduler_identity='synthetic',adapter_fingerprint=digest('fixture'),runtime_contract=CONTRACT,
         stage_timeout_seconds=600,collection_timeout_seconds=600)
-    result = asyncio.run(UnifiedMarketRun(config,bridge).run('us',date(2026,11,11)))
+    result = asyncio.run(UnifiedMarketRun(config,bridge).run(market,date(2026,11,11)))
     return SimpleNamespace(result=result,budget=budget,plan=plan,calls=calls,cycle=config.root/plan.cohort.run_id)
 
 

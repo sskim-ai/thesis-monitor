@@ -108,18 +108,28 @@ def request_from_frame(frame):
                 from app.services.model_timeout_retry import b2_retry_binding
                 per_ticker = value.get('b2_retry_policy')
                 cap = value.get('timeout_retry_cap', 0)
+                retry_market = value.get('timeout_retry_market','us')
+                kr_market_retry = (retry_market=='kr' and (cap==1 or per_ticker is not None)
+                    and list(plan.cohort.market_subjects)==['kr'])
                 slot_id = scope['slot_id']
                 attempt = value['attempt']
-                if (type(cap) is not int or (cap not in (1,2) if per_ticker is None else cap != 0)
+                if (type(cap) is not int or (cap not in (1,2) if per_ticker is None else cap not in (0,1))
                         or per_ticker is not None and per_ticker != b2_retry_binding(plan,per_ticker['policy']) or inherited is not None
-                        or list(plan.cohort.market_subjects) != ['us']
-                        or value['maximum'] != (per_ticker['maximum'] if per_ticker else len(plan.slots)+cap)
+                        or retry_market not in ('us','kr')
+                        or (list(plan.cohort.market_subjects) != ['us'] and not kr_market_retry)
+                        or retry_market=='kr' and not kr_market_retry
+                        or value['maximum'] != (per_ticker['maximum'] if per_ticker else len(plan.slots))+cap
                         or attempt != dict(attempt_id=frame['request_id'], ordinal=value['ordinal'],
                             prompt_sha256=frame['prompt_sha256'], schema_sha256=frame['schema_sha256'])):
                     raise ValueError('production_worker_timeout_attempt_authorization_drift')
                 journal = plain_path(auth.parent.parent / 'invocation-ledger' / plan.cohort.run_id / 'events.jsonl')
                 identity = dict(contract='model-invocation-journal-v1', plan_sha256=plan.sha256, maximum=value['maximum'])
-                identity.update(b2_retry_policy=per_ticker) if per_ticker else identity.update(timeout_retry_cap=cap)
+                if per_ticker:
+                    identity['b2_retry_policy']=per_ticker
+                if cap:
+                    identity['timeout_retry_cap']=cap
+                if kr_market_retry:
+                    identity['timeout_retry_market']='kr'
                 state = read_invocation_journal(journal.read_bytes(), identity)
                 if (state['stopped'] or state['bound'].get(slot_id) != scope
                         or state['used']-state['accepted'].keys()-state['exhausted'] != {slot_id}
@@ -285,8 +295,12 @@ class OfficialProductionModelTransport:
                 authorization['inherited_market_slot'] = self.call_budget.inherited_market_slot
             if retry_cap:
                 authorization.update(timeout_retry_cap=retry_cap, attempt=attempt)
+                if getattr(self.call_budget,'retry_market','us')=='kr':
+                    authorization['timeout_retry_market']='kr'
             if getattr(self.call_budget,'b2_retry_policy',None):
                 authorization.update(b2_retry_policy=self.call_budget.b2_retry_policy, attempt=attempt)
+                if getattr(self.call_budget,'retry_market','us')=='kr':
+                    authorization['timeout_retry_market']='kr'
         durable_json(path / "production-authorization.json", authorization, exclusive=True)
         if self.execution_profile:
             frame.update(execution_policy=asdict(policy), authorization_sha256=sha256_bytes(

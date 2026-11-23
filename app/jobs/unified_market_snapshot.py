@@ -91,6 +91,8 @@ class LocalScheduleConfiguration(ContractModel):
     model_binding: ProtocolFile
     endpoint_rules: ProtocolFile
     auxiliary_issuer: ProtocolFile | None = None
+    kr_market_timeout_retry: bool = Field(default=False, strict=True)
+    market_b2_timeout_retry: bool = Field(default=False, strict=True)
 
 
 def _absolute_local_path(value):
@@ -108,6 +110,8 @@ def read_local_configuration(path, market):
     config = LocalScheduleConfiguration.model_validate_json(path.read_bytes())
     if market != config.market:
         raise ValueError('local_schedule_market_scope_mismatch')
+    if market!='kr' and config.kr_market_timeout_retry:
+        raise ValueError('local_schedule_kr_market_retry_scope')
     for value in (config.run_root, config.settings_env_file, config.shared_lease_path):
         _absolute_local_path(value)
     return config
@@ -220,7 +224,26 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     subjects = SR5_SUBJECTS if sr5 else US2_SUBJECTS if diagnostic else UNIVERSE[market]
     caps = SR5_CAPS if sr5 else US2_CAPS if diagnostic else LOCAL_CAPS[market]
     max_models = 15 if sr5 else 8 if diagnostic else 42 if market=='us' else 18
-    retry_policy = B2_SR5_DIAGNOSTIC_V1 if sr5 else B2_US2_DIAGNOSTIC_V1 if diagnostic else B2_PER_TICKER_ONE_RETRY_V1 if market=='us' else None
+    combined_retry = config.market_b2_timeout_retry
+    if combined_retry:
+        if diagnostic or sr5 or config.kr_market_timeout_retry:
+            raise ValueError('local_schedule_combined_retry_flag_or_diagnostic_conflict')
+        from app.services.canonical_monitoring_helpers import _batch_topology
+        # A refusal-only forecast from the existing registered topology, not Source admission.
+        # The actual frozen ModelPlan is checked again by the existing ledger/budget.
+        batches=[r for r in _batch_topology() if r['market']==market]
+        if sorted(t for r in batches for t in r['subjects'])!=sorted(subjects):
+            raise ValueError('local_schedule_retry_forecast_topology_drift')
+        ordinary=set(subjects)-({'SKHY'} if market=='us' else set())
+        base=1+2*len(batches)+sum(bool(set(r['subjects']) & ordinary) for r in batches)+len(ordinary)
+        required=base+1+len(ordinary)
+        if max_models<required:
+            raise ValueError('MODEL_RETRY_BUDGET_APPROVAL_REQUIRED:required='+str(required)+':approved='+str(max_models))
+    kr_market_retry = bool(market=='kr' and config.kr_market_timeout_retry)
+    if kr_market_retry and max_models < 19:
+        raise ValueError('KR_MARKET_RETRY_BUDGET_APPROVAL_REQUIRED')
+    retry_policy = B2_SR5_DIAGNOSTIC_V1 if sr5 else B2_US2_DIAGNOSTIC_V1 if diagnostic else B2_PER_TICKER_ONE_RETRY_V1 if market=='us' or combined_retry else None
+    market_retry_cap=int(kr_market_retry or combined_retry)
     master = 'local-' + market + '-' + session
     if one_shot_tag is not None:
         master += '-once-' + one_shot_tag
@@ -284,6 +307,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
         ledger = SelectedRunLedger(path=directory/'campaign.jsonl', approval=approval, master_id=master,
             children=children, provider_caps=caps, max_http=sum(caps.values()),
             max_models=max_models, staged_markets=True,
+            timeout_retry_cap=market_retry_cap, timeout_retry_market=market if combined_retry else 'kr' if kr_market_retry else 'us',
             b2_retry_policy=retry_policy, wallclock_seconds_max=16200,
             database_identity=dict(path=str(target), device=device, inode=inode),
             capture_max_private_export_bytes=64*1024**2,
@@ -351,6 +375,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
         model = dict(binding=binding, runtime_root=runtime,
             journal_path=runtime/'invocation-ledger'/execution/'events.jsonl', run_ledger=ledger,
             approved_max_invocations=ledger.identity['max_models'],
+            timeout_retry_cap=market_retry_cap,
             b2_retry_policy=retry_policy,
             artifact_budget=artifacts)
         with artifact_scope(artifacts):
@@ -586,6 +611,12 @@ async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', cl
             adapter_fingerprint=digest(child.binding()), clock=clock)
         result = await engine.run(child.market, datetime.fromisoformat(child.plan.cohort.cutoff).astimezone(KST).date())
         if record_market_terminal:
+            if result.get('status') == 'FAILED_NO_SEND':
+                try:
+                    source['run_ledger'].stop(result.get('first_failure', {}).get('code', 'RESEARCH_STAGE_FAILED'))
+                except Exception as exc:
+                    result.setdefault('ledger_failure', UnifiedMarketRun._error(exc))
+                return result
             source['run_ledger'].rendered_market(child, result)
         return result
     finally:

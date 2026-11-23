@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 from app.services.unified_snapshot_contract import digest, encoded
-from app.services.model_timeout_retry import validate_timeout, validate_b2_retry_binding
+from app.services.model_timeout_retry import validate_timeout, validate_b2_retry_binding, market_timeout_retry_cap
 
 
 def _empty():
@@ -31,7 +31,8 @@ def read_invocation_journal(raw, identity=None):
 
 
 class ModelInvocationJournal:
-    def __init__(self, path, *, plan_sha256, maximum, inherited_market_slot=None, retry_cap=0, b2_retry_policy=None):
+    def __init__(self, path, *, plan_sha256, maximum, inherited_market_slot=None, retry_cap=0, b2_retry_policy=None,
+                 retry_market='us'):
         self.path = Path(path)
         if any(p.is_symlink() for p in (self.path, *self.path.parents)):
             raise ValueError('model_journal_symlink')
@@ -43,10 +44,18 @@ class ModelInvocationJournal:
             raise ValueError('model_timeout_retry_cap_invalid')
         if retry_cap:
             self.identity['timeout_retry_cap'] = retry_cap
+        if retry_market not in ('us','kr') or retry_market=='kr' and (
+                retry_cap not in (0,1) or not (retry_cap or b2_retry_policy)
+                or inherited_market_slot or not b2_retry_policy and maximum<2):
+            raise ValueError('model_kr_market_retry_journal_scope')
+        if retry_market=='kr':
+            self.identity['timeout_retry_market']='kr'
         if b2_retry_policy is not None:
             validate_b2_retry_binding(b2_retry_policy)
-            if retry_cap or inherited_market_slot or maximum != b2_retry_policy['maximum'] or b2_retry_policy['plan_sha256'] != plan_sha256:
+            if (retry_cap not in (0,1) or inherited_market_slot
+                    or maximum != b2_retry_policy['maximum']+retry_cap or b2_retry_policy['plan_sha256'] != plan_sha256):
                 raise ValueError('model_b2_retry_journal_scope')
+            market_timeout_retry_cap(b2_retry_policy,retry_cap=retry_cap,retry_market=retry_market)
             self.identity['b2_retry_policy'] = b2_retry_policy
         self.transact('OPEN')
 
@@ -72,12 +81,19 @@ class ModelInvocationJournal:
             return state
 
 def _apply(state, event, value, identity):
+        if identity.get('timeout_retry_market') is not None and (
+                identity['timeout_retry_market']!='kr' or identity.get('timeout_retry_cap',0) not in (0,1)
+                or not (identity.get('timeout_retry_cap') or identity.get('b2_retry_policy'))
+                or identity.get('inherited_market_slot')):
+            raise ValueError('model_kr_market_retry_journal_scope')
         policy = identity.get('b2_retry_policy')
         if policy is not None:
             validate_b2_retry_binding(policy)
-            if (identity.get('timeout_retry_cap') or identity.get('inherited_market_slot')
-                    or identity['maximum'] != policy['maximum'] or identity['plan_sha256'] != policy['plan_sha256']):
+            cap=identity.get('timeout_retry_cap',0)
+            if (cap not in (0,1) or identity.get('inherited_market_slot')
+                    or identity['maximum'] != policy['maximum']+cap or identity['plan_sha256'] != policy['plan_sha256']):
                 raise ValueError('model_b2_retry_journal_identity')
+            market_timeout_retry_cap(policy,retry_cap=cap,retry_market=identity.get('timeout_retry_market','us'))
         if event == 'OPEN':
             return
         if event == 'STOP':
@@ -92,7 +108,9 @@ def _apply(state, event, value, identity):
         if event == 'BIND':
             scope = value['scope']
             if (slot in state['bound'] or slot != scope['slot_id']
+                    or identity.get('timeout_retry_market')=='kr' and scope.get('market')!='kr'
                     or policy and (scope['stage'] != policy['slot_stages'].get(slot)
+                        or scope.get('market')!=identity.get('timeout_retry_market','us')
                         or scope['stage'] == 'B2' and scope.get('subjects') != [policy['b2_slots'][slot]])
                     or any(state['accepted'].get(k) != v for k,v in scope['dependency_outputs'].items())):
                 raise ValueError('model_journal_binding_or_dependency_gap')
@@ -126,9 +144,12 @@ def _apply(state, event, value, identity):
                 raise ValueError('model_journal_timeout_binding')
             state['timeouts'][slot] = [*existing, proof]
         elif event == 'RETRY_ATTEMPT':
+            market_retry = state['bound'][slot]['stage']=='MARKET' and market_timeout_retry_cap(
+                policy,retry_cap=cap,retry_market=identity.get('timeout_retry_market','us'))
             if (not retry_enabled or unresolved != {slot} or len(state['attempts'].get(slot, ())) != 1
                     or len(state['timeouts'].get(slot, ())) != 1
-                    or (slot not in policy['b2_slots'] if policy else state['retry_used'] >= cap)
+                    or (slot not in policy['b2_slots'] and not market_retry if policy else state['retry_used'] >= cap)
+                    or identity.get('timeout_retry_market')=='kr' and not (market_retry or policy and slot in policy['b2_slots'])
                     or state['physical_calls'] >= identity['maximum']):
                 raise ValueError('model_journal_retry_unavailable')
             _model_attempt(state, slot, value, expected=2)
@@ -137,6 +158,8 @@ def _apply(state, event, value, identity):
         elif event == 'RETRY_EXHAUSTED':
             attempts = state['attempts'].get(slot, ())
             if (not retry_enabled or unresolved != {slot} or state['bound'][slot]['stage'] != 'B2'
+                    or identity.get('timeout_retry_market')=='kr'
+                    or policy and cap
                     or not attempts or len(state['timeouts'].get(slot, ())) != len(attempts)
                     or (len(attempts) != 2 if policy else len(attempts) == 1 and state['retry_used'] < cap)):
                 raise ValueError('model_journal_b2_exhaustion_unproven')

@@ -81,16 +81,26 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
         self.inherited, self.inherited_market_slot = {}, None
         self.run_ledger, self.run_intents = run_ledger, {}
         self.timeout_retry_cap = timeout_retry_cap
+        self.retry_market = run_ledger.identity.get('timeout_retry_market','us') if run_ledger is not None else 'us'
+        kr_market_retry = self.retry_market=='kr'
+        if kr_market_retry and timeout_retry_cap and (plan is None or approved_max_invocations is None or approved_max_invocations<len(plan.slots)+1):
+            raise ValueError('KR_MARKET_RETRY_BUDGET_APPROVAL_REQUIRED')
         self.b2_retry_policy = None
         if b2_retry_policy is not None:
             from app.services.model_timeout_retry import retry_policy_limits, b2_retry_binding
-            maximum = retry_policy_limits(b2_retry_policy)[2]
-            if (timeout_retry_cap
-                    or plan is None or journal_path is None or run_ledger is None or market_origin is not None
+            if plan is None:
+                raise ValueError('model_per_ticker_retry_original_plan_required')
+            maximum = retry_policy_limits(b2_retry_policy,plan=plan)[2]+timeout_retry_cap
+            if (timeout_retry_cap not in (0,1)
+                    or journal_path is None or run_ledger is None or market_origin is not None
                     or run_ledger.identity.get('b2_retry_policy') != b2_retry_policy
                     or run_ledger.identity['max_models'] != maximum or approved_max_invocations != maximum):
-                raise ValueError('model_per_ticker_retry_requires_new_us_campaign')
+                raise ValueError('model_per_ticker_retry_requires_new_campaign_cap:'+str(maximum))
             self.b2_retry_policy = b2_retry_binding(plan,b2_retry_policy)
+            from app.services.model_timeout_retry import market_timeout_retry_cap
+            market_timeout_retry_cap(self.b2_retry_policy,retry_cap=timeout_retry_cap,retry_market=self.retry_market)
+            if list(plan.cohort.market_subjects)!=[self.retry_market]:
+                raise ValueError('model_retry_market_identity_mismatch')
         elif run_ledger is not None and run_ledger.identity.get('b2_retry_policy'):
             raise ValueError('model_b2_retry_ledger_policy_mismatch')
         self.retry_enabled = bool(timeout_retry_cap or self.b2_retry_policy)
@@ -105,8 +115,9 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
                     or market_origin is not None or run_ledger.identity.get('timeout_retry_cap') != timeout_retry_cap
                     or run_ledger.identity.get('max_models') != approved_max_invocations
                     or plan.topology != 'CANONICAL_PRODUCTION'
-                    or list(plan.cohort.market_subjects) != ['us']
-                    or approved_max_invocations != len(plan.slots)+timeout_retry_cap)):
+                    or list(plan.cohort.market_subjects) != [self.retry_market]
+                    or kr_market_retry and timeout_retry_cap!=1
+                    or approved_max_invocations != (self.b2_retry_policy['maximum'] if self.b2_retry_policy else len(plan.slots))+timeout_retry_cap)):
             raise ValueError('model_timeout_retry_requires_approved_new_us_campaign')
         if plan is None:
             if approved_max_invocations is not None or approved_plan_sha256 is not None or journal_path is not None or run_ledger is not None or market_origin is not None:
@@ -136,7 +147,7 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
             from app.services.model_invocation_journal import ModelInvocationJournal
             self.journal = ModelInvocationJournal(journal_path, plan_sha256=plan.sha256, maximum=self.maximum,
                 inherited_market_slot=self.inherited_market_slot, retry_cap=timeout_retry_cap,
-                b2_retry_policy=self.b2_retry_policy)
+                b2_retry_policy=self.b2_retry_policy,retry_market=self.retry_market)
             self._journal_state('OPEN')
             if self.retry_enabled and self.physical_calls:
                 raise ValueError('model_timeout_campaign_restart_not_allowed')
@@ -259,11 +270,16 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
             self.stop()
             raise
         fresh = self.run_ledger.identity.get('fresh_timeout_retry_market')
+        from app.services.model_timeout_retry import market_timeout_retry_cap
+        market_retry = self.bound[slot_id]['stage']=='MARKET' and market_timeout_retry_cap(
+            self.b2_retry_policy,retry_cap=self.timeout_retry_cap,retry_market=self.retry_market)
         if (len(self.attempts[slot_id]) == 1
-                and (slot_id in self.b2_retry_policy['b2_slots'] if self.b2_retry_policy else self.retry_used < self.timeout_retry_cap)
-                and (not fresh or self.bound[slot_id]['stage'] == 'B2')):
+                and (slot_id in self.b2_retry_policy['b2_slots'] or market_retry
+                    if self.b2_retry_policy else self.retry_used < self.timeout_retry_cap)
+                and (self.retry_market!='kr' or market_retry or self.b2_retry_policy and slot_id in self.b2_retry_policy['b2_slots'])
+                and (not fresh or self.bound[slot_id]['stage'] == 'B2' or market_retry)):
             return True
-        if self.bound[slot_id]['stage'] == 'B2':
+        if self.bound[slot_id]['stage'] == 'B2' and self.retry_market!='kr' and not (self.b2_retry_policy and self.timeout_retry_cap):
             self._journal_state('RETRY_EXHAUSTED', slot_id=slot_id)
             try:
                 self.run_ledger.model_b2_timeout_exhausted(self.bound[slot_id])
