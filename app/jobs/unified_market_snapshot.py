@@ -46,6 +46,7 @@ US_FULL_20261121_SLOTS = {
     'us-20261121-0810c3d4': '2026-11-21T08:10:00+09:00',
 }
 KR_RECOVERY_20261123_TAG = 'kr-20261123-c39a7f2d'
+KR_C42_20261123_TAG = 'kr-20261123-c42b84e7a'
 
 
 def _us_full_one_shot_window(tag):
@@ -57,7 +58,7 @@ def _us_full_one_shot_window(tag):
 
 
 def _one_shot_deadline(tag):
-    if tag == KR_RECOVERY_20261123_TAG:
+    if tag in (KR_RECOVERY_20261123_TAG, KR_C42_20261123_TAG):
         return datetime.fromisoformat('2026-11-24T00:00:00+09:00')
     window = _us_full_one_shot_window(tag)
     return (window[0] + timedelta(hours=4, minutes=30) if window else
@@ -67,7 +68,7 @@ def _one_shot_deadline(tag):
 def one_shot_scope(market, tag):
     if tag is None:
         return False
-    if market == 'kr' and tag == KR_RECOVERY_20261123_TAG:
+    if market == 'kr' and tag in (KR_RECOVERY_20261123_TAG, KR_C42_20261123_TAG):
         return False
     if market == 'us' and tag in US_FULL_20261121_SLOTS:
         return False
@@ -223,7 +224,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     sr5 = bool(one_shot_tag and one_shot_tag.startswith('us5-'))
     subjects = SR5_SUBJECTS if sr5 else US2_SUBJECTS if diagnostic else UNIVERSE[market]
     caps = SR5_CAPS if sr5 else US2_CAPS if diagnostic else LOCAL_CAPS[market]
-    max_models = 15 if sr5 else 8 if diagnostic else 42 if market=='us' else 18
+    max_models = 15 if sr5 else 8 if diagnostic else 42 if market=='us' else 27 if config.market_b2_timeout_retry else 18
     combined_retry = config.market_b2_timeout_retry
     if combined_retry:
         if diagnostic or sr5 or config.kr_market_timeout_retry:
@@ -254,6 +255,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
         mode=stat.S_IMODE(runtime.stat().st_mode), git_markers=[],
         journal_path=str(runtime/'invocation-ledger'/execution/'events.jsonl'),
         artifact_roots={str(directory):'source', str(directory/'results'):'result', str(runtime):'scratch'},
+        max_models=max_models,market_timeout_retry_cap=market_retry_cap,b2_retry_policy=retry_policy,
         before_registration_and_financial_HTTP=True), exclusive=True)
     source_config = ProductionSourceConfiguration.model_validate_json(config.source_configuration.read())
     binding = json.loads(config.model_binding.read())
@@ -418,7 +420,7 @@ def latest_one_shot_us_session(now, *, one_shot_tag=None):
 def latest_one_shot_session(market,now, *, one_shot_tag=None):
     if market=='us':
         return latest_one_shot_us_session(now, one_shot_tag=one_shot_tag)
-    if market=='kr' and one_shot_tag==KR_RECOVERY_20261123_TAG:
+    if market=='kr' and one_shot_tag in (KR_RECOVERY_20261123_TAG, KR_C42_20261123_TAG):
         from app.services.unified_market_run import target_session
         if now.utcoffset() is None or now.astimezone(KST).date().isoformat()!='2026-11-23':
             return None
@@ -448,19 +450,21 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
     if one_shot_tag is not None:
         diagnostic=one_shot_scope(market,one_shot_tag)
         window = _us_full_one_shot_window(one_shot_tag)
-        local_date = ('2026-11-23' if market=='kr' and one_shot_tag==KR_RECOVERY_20261123_TAG
+        local_date = ('2026-11-23' if market=='kr' and one_shot_tag in (KR_RECOVERY_20261123_TAG, KR_C42_20261123_TAG)
             else window[0].date().isoformat() if window else '2026-11-20')
         if now.astimezone(KST).date().isoformat() != local_date:
             return dict(status='NO_RUN', reason='ONE_SHOT_DATE_CLOSED', normal_messages_sent=False)
         if window and not window[0] <= now < window[1]:
             return dict(status='NO_RUN', reason='ONE_SHOT_SLOT_CLOSED', normal_messages_sent=False)
+        if one_shot_tag==KR_C42_20261123_TAG and now+timedelta(seconds=16200)>_one_shot_deadline(one_shot_tag):
+            return dict(status='NO_RUN',reason='ONE_SHOT_FULL_CAMPAIGN_WINDOW_CLOSED',normal_messages_sent=False)
     else:
         diagnostic=False
     sr5=bool(one_shot_tag and one_shot_tag.startswith('us5-'))
     session = latest_one_shot_session(market,now,one_shot_tag=one_shot_tag) if one_shot_tag is not None else target_session(market, now)
     if session is None:
         return dict(status='NO_RUN', reason='SESSION_NOT_COMPLETED_OR_CLOSED', normal_messages_sent=False)
-    expected_one_shot_session = ('2026-11-23' if market=='kr' and one_shot_tag==KR_RECOVERY_20261123_TAG
+    expected_one_shot_session = ('2026-11-23' if market=='kr' and one_shot_tag in (KR_RECOVERY_20261123_TAG, KR_C42_20261123_TAG)
         else '2026-11-20' if window else '2026-11-19' if market=='us' else '2026-11-20')
     if one_shot_tag is not None and session.isoformat() != expected_one_shot_session:
         return dict(status='NO_RUN', reason='ONE_SHOT_SESSION_MISMATCH', normal_messages_sent=False)
@@ -479,7 +483,7 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
         locks.enter_context(_local_lock(directory/'cycle.lock'))
     except BlockingIOError:
         locks.close()
-        return dict(status='NO_RUN', reason='NO_RUN_LOCK_BUSY' if window else 'EXISTING_SHARED_OR_SESSION_LOCK_BUSY', normal_messages_sent=False)
+        return dict(status='NO_RUN', reason='NO_RUN_LOCK_BUSY' if window or one_shot_tag==KR_C42_20261123_TAG else 'EXISTING_SHARED_OR_SESSION_LOCK_BUSY', normal_messages_sent=False)
     except BaseException:
         locks.close()
         raise
@@ -489,7 +493,7 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
         if any((directory/name).exists() for name in ('intent.json', 'terminal.json', 'campaign.jsonl', 'STOP')):
             return dict(status='NO_RUN', reason='SESSION_ALREADY_CONSUMED', normal_messages_sent=False)
         if one_shot_tag:
-            once_intent = directory.parent/(one_shot_tag+'.intent.json' if window else 'intent.json')
+            once_intent = directory.parent/(one_shot_tag+'.intent.json' if window or one_shot_tag==KR_C42_20261123_TAG else 'intent.json')
             if once_intent.exists():
                 return dict(status='NO_RUN', reason='ONE_SHOT_ALREADY_CONSUMED', normal_messages_sent=False)
             durable_json(once_intent, dict(one_shot_tag=one_shot_tag, session=session.isoformat(),
@@ -499,8 +503,9 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
             consent_basis='LOCAL_USER_MANAGED_CONFIGURATION_NOT_EXTERNAL_OR_DAILY_HUMAN_SIGNATURE',
             source_seconds=1800 if market == 'us' else 600, model_per_call_seconds=600,
             max_http=sum(SR5_CAPS.values()) if sr5 else sum(US2_CAPS.values()) if diagnostic else sum(LOCAL_CAPS[market].values()),
-            max_models=15 if sr5 else 8 if diagnostic else 42 if market == 'us' else 18,
-            b2_retry_policy=B2_SR5_DIAGNOSTIC_V1 if sr5 else B2_US2_DIAGNOSTIC_V1 if diagnostic else B2_PER_TICKER_ONE_RETRY_V1 if market == 'us' else None,
+            max_models=15 if sr5 else 8 if diagnostic else 42 if market == 'us' else 27 if config.market_b2_timeout_retry else 18,
+            market_timeout_retry_cap=int(config.market_b2_timeout_retry or market=='kr' and config.kr_market_timeout_retry),
+            b2_retry_policy=B2_SR5_DIAGNOSTIC_V1 if sr5 else B2_US2_DIAGNOSTIC_V1 if diagnostic else B2_PER_TICKER_ONE_RETRY_V1 if market == 'us' or config.market_b2_timeout_retry else None,
             normal_messages_sent=False,
             **(dict(one_shot_tag=one_shot_tag,one_shot_date=local_date) if one_shot_tag else {})), exclusive=True)
         try:
