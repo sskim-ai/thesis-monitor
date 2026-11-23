@@ -1,6 +1,6 @@
 """C44 closeout control flow only; no Mac commands, receipt replay, or network.
 
-The script has a process-wide audit hook, so extract its unchanged main function
+The script has a process-wide audit hook, so extract its main and schedule loader
 instead of importing the module. All process, observation, receipt verification,
 cleanup, and delivery boundaries are fakes; file writes use pytest's temp tree.
 """
@@ -54,7 +54,8 @@ def run_closeout(tmp_path, *, full, receipt_error=False, cleanup_error=False, mu
     config = tmp_path / "config.json"
     data(config, {"shared_lease_path": str(lease)})
     data(lane, {"in_flight": False, "halted": False, "sequence": 1})
-    data(c38 / "SCHEDULE.json", {"configuration_path": str(config), "run_root": str(run)})
+    data(c38 / "SCHEDULE.json", {"configuration_path": str(config), "run_root": str(run),
+        "code_root": str(tmp_path / "code"), "code_commit": "synthetic-original-C38"})
     data(c38 / "PREFLIGHT.json", {"protected": {
         key: {"path": str(path), "sha256": "0" * 64} for key, path in kr_files.items()
     }})
@@ -113,7 +114,8 @@ def run_closeout(tmp_path, *, full, receipt_error=False, cleanup_error=False, mu
         calls.append(tuple(args))
 
     tree = ast.parse(SCRIPT.read_text())
-    main, = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "main"]
+    functions = [node for node in tree.body if isinstance(node, ast.FunctionDef)
+        and node.name in {"main", "load_execution_schedule"}]
     env = dict(datetime=FrozenDateTime, KST=KST,
         DUE=datetime(2026, 11, 24, 12, 45, tzinfo=KST), HERE=here, C38=c38,
         Path=mapped_path, __file__=str(SCRIPT), SELF_LABEL=POSTRUN_LABEL,
@@ -123,9 +125,10 @@ def run_closeout(tmp_path, *, full, receipt_error=False, cleanup_error=False, mu
         fcntl=SimpleNamespace(flock=lambda *_: None, LOCK_EX=2, LOCK_NB=4),
         os=SimpleNamespace(getuid=lambda: 501,
             statvfs=lambda _: SimpleNamespace(f_bavail=10**10, f_frsize=1)),
-        subprocess=SimpleNamespace(run=fake_subprocess), json=json,
+        subprocess=SimpleNamespace(run=fake_subprocess), json=json, sha256=sha256,
+        sys=SimpleNamespace(path=[]),
         re=__import__("re"))
-    exec(compile(ast.Module(body=[main], type_ignores=[]), str(SCRIPT), "exec"), env)
+    exec(compile(ast.Module(body=functions, type_ignores=[]), str(SCRIPT), "exec"), env)
     env["main"]()
     out = here / "actual-20261124"
     return read(out / "SUMMARY.json"), calls, out

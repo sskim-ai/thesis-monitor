@@ -79,11 +79,34 @@ def observe(out,s):
     module.HERE=out;module.schedule=s;module.run=Path(s['run_root'])
     return module.snapshot()
 
+def load_execution_schedule(installation,final_pin):
+    """Keep C38 registration intact; optionally bind its approved C45 execution."""
+    raw=(C38/'SCHEDULE.json').read_bytes();original_sha=sha256(raw).hexdigest()
+    assert original_sha==installation['original_C38_schedule_sha256']
+    schedule=json.loads(raw);binding_path=HERE/'CURRENT_EXECUTION_BINDING.json'
+    if binding_path.exists():
+        raw=binding_path.read_bytes()
+        assert sha256(raw).hexdigest()==final_pin['current_execution_binding_sha256']
+        binding=json.loads(raw)
+        assert binding['prior_C38_schedule_sha256']==original_sha
+        overrides=binding['schedule_overrides']
+        assert set(overrides)=={'code_root','code_commit','configuration_sha256',
+            'plist_sha256','C37_timer_sha256','after_terminal'}
+        assert overrides['code_commit']=='374145c4337d50673db672c73a49e071b1801b5b'
+        assert overrides['after_terminal']=='US_REGULAR_OFF'
+        pins=binding['code_pins'];assert isinstance(pins.get('files'),dict) and pins['files']
+        schedule={**schedule,**overrides,'_current_code_pins':pins}
+    else:
+        assert not final_pin.get('current_execution_binding_sha256')
+    # observe() also imports project code: select the effective checkout first.
+    sys.path.insert(0,str(Path(schedule['code_root'])))
+    return schedule
+
 def verify_receipts(out,s,observed):
     """Existing stage loaders, journal reader and B2 validators; no Owner reconstruction."""
     root=Path(s['code_root']);sys.path.insert(0,str(root))
     assert command('git','-C',str(root),'rev-parse','HEAD').strip()==s['code_commit']
-    pins=read(C38/'CODE_PINS.json')
+    pins=s['_current_code_pins'] if '_current_code_pins' in s else read(C38/'CODE_PINS.json')
     assert all(pin(root/n)==r['sha256'] for n,r in pins['files'].items())
     assert pin(root/'app/services/research_no_send_run.py')==s['C37_timer_sha256']
     from app.services.research_request_storage import load_stage_request,load_stage_response
@@ -209,11 +232,12 @@ def main():
         out.mkdir(mode=0o700);installation=read(HERE/'INSTALL_INTENT.json')
         final_pin=read(HERE/'FINAL_COMMAND_PIN.json')
         assert pin(Path(__file__))==final_pin['script_sha256']
-        assert pin(C38/'SCHEDULE.json')==installation['original_C38_schedule_sha256']
-        s=read(C38/'SCHEDULE.json');pre=read(C38/'PREFLIGHT.json')
+        s=load_execution_schedule(installation,final_pin);pre=read(C38/'PREFLIGHT.json')
         # Compare this postrun's start and end, not the older C38 registration.
         kr_before={k:pin(pre['protected'][k]['path']) for k in ('kr_config','kr_plist')}
-        write(out,'POSTRUN_INTENT.json',dict(at_kst=now.isoformat(),new_financial_HTTP=0,new_model_CLI=0,new_DB=0))
+        write(out,'POSTRUN_INTENT.json',dict(at_kst=now.isoformat(),code_commit=s['code_commit'],
+            code_root=s['code_root'],current_execution_binding_sha256=final_pin.get('current_execution_binding_sha256'),
+            new_financial_HTTP=0,new_model_CLI=0,new_DB=0))
         writers=[]
         for path in (HERE,Path('/private/tmp'),Path('/Users/sskim/Library/Mobile Documents/com~apple~CloudDocs/Codex Results')):
             fs=os.statvfs(path);writers.append(dict(path=str(path),device=path.stat().st_dev,free_bytes=fs.f_bavail*fs.f_frsize))
@@ -265,6 +289,7 @@ def main():
         kr_after={k:pin(pre['protected'][k]['path']) for k in kr_before}
         kr={k:kr_after[k]==kr_before[k] for k in kr_before}
         summary=dict(status=status,at_kst=datetime.now(KST).isoformat(),actual15of15=full,US_regular_activated=False,
+            code_commit=s['code_commit'],current_execution_binding_sha256=final_pin.get('current_execution_binding_sha256'),
             financial_HTTP=observed['financial_HTTP'],model_intents=observed['model_calls'],model_acceptances=observed['model_acceptances'],
             final_messages=observed['messages'],first_failure=observed.get('first_failure',observed.get('failure-diagnostic.json')),
             postrun_error=error,KR_unchanged=kr,KR_hashes_before=kr_before,KR_hashes_after=kr_after,

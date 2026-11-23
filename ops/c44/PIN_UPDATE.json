@@ -1,13 +1,13 @@
 {
   "target": "/Users/sskim/Documents/Codex/2026-07-04/the/maintenance/20261122-pr52-c38-postrun/FINAL_COMMAND_PIN.json",
   "update_only": {
-    "script_sha256": "a496520648115a5c1004412eb9baab1c23a23c5ea6b1475ea4aeac00dcbdad74"
+    "script_sha256": "dca7fb3d12210cfb657acc29fc5ee4c603956a774107afbb18cc7d2886fbcadb"
   },
-  "expected_previous_script_sha256": "96018c3aa724e79eef49042d8d5fe81c83377a037a342af6a59669f1e2d7aa9f",
+  "expected_previous_script_sha256": "a496520648115a5c1004412eb9baab1c23a23c5ea6b1475ea4aeac00dcbdad74",
   "preserve_fields": [
     "script",
     "registered_command",
     "initial_install_script_sha256"
   ],
-  "scope": "Candidate instructions only; not applied to Mac"
+  "scope": "C46 candidate instructions only; not applied to Mac. For C45 retargeting also set current_execution_binding_sha256 to the actual CURRENT_EXECUTION_BINDING.json bytes, per docs/C46_CODEX_HANDOFF.md."
 }
