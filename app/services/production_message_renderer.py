@@ -69,6 +69,9 @@ def stock_message(session, ticker, b2_row, *, execution_profile=None):
         b2_result=b2_row['result'], authorization=parse_authorization(b2_row['authorization'], execution_profile=execution_profile))
     message = dict(message_id=ticker, **render_detailed_v2(packet, plan, entry_context=entry_context))
     if session.market == 'us':
+        context = getattr(session, 'projected', {}).get('us', {}).get('context', {})
+        if market_owner.excluded_night_narrative_errors(message, context, fields=('text',)):
+            raise ValueError('production_stock_excluded_night_narrative')
         from app.services.selected_news_rate_limit import disclose
         message = disclose(message, [source.get('event_view', {})], expected_count=1)
     return message

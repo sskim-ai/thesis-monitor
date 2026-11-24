@@ -87,6 +87,9 @@ def compose_source_owners(*, seed: SourceRunBinding, market_inputs, stock_inputs
     if selected:
         validate_composition(seed,stock_inputs=stock_inputs,market_inputs=market_inputs,
             composition_metadata=composition_metadata,fresh_context_inputs=fresh_context_inputs)
+        from app.services.selected_source_plan import US_NIGHT_EXCLUDED, excluded_night_receipt
+        if seed.us_night_policy == US_NIGHT_EXCLUDED and optional_denials.get('night_futures') != excluded_night_receipt(seed.parent_run_id):
+            raise ValueError('selected_us_night_exclusion_receipt_mismatch')
     if seed.us_only and not selected:
         if fresh_context_inputs is None or fresh_context_inputs['publications'].get('market_scope') != 'US14_ONLY':
             raise ValueError('us14_publication_scope_required')
@@ -248,13 +251,14 @@ def compose_source_owners(*, seed: SourceRunBinding, market_inputs, stock_inputs
         from app.services.fresh_publication_replay import replay_fresh_publications
         from app.services.unified_sealed_context import replay_night
         pub, night_source = (fresh_context_inputs[k] for k in ('publications', 'night'))
-        for inputs in (pub, night_source):
-            if inputs is None and selected and seed.kr_only:
+        omit_night = selected and (seed.kr_only or seed.us_night_policy == US_NIGHT_EXCLUDED)
+        for name, inputs in (('publications', pub), ('night', night_source)):
+            if name == 'night' and inputs is None and omit_night:
                 continue
             validate_fresh_context_generation(inputs,parent_run_id=seed.parent_run_id,
                 started_at=seed.started_at,source_policy_sha256=seed.source_policy_sha256)
         publications = replay_fresh_publications(**pub)
-        night = None if selected and seed.kr_only and night_source is None else replay_night(**night_source)
+        night = None if omit_night and night_source is None else replay_night(**night_source)
         if (digest(publications) != seed.run_acquisitions.get('publications')
                 or (digest(None) if night is None else night['value_sha256']) != seed.run_acquisitions.get('night')
                 or (digest(None) if night is None else digest({'probe': night['original_receipts'], 'history': night.get('history_receipts', [])}))

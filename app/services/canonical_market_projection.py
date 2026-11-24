@@ -166,7 +166,20 @@ def _authority(packet, seed, graph, expected):
     require(start <= datetime.fromisoformat(component['original_source_time']) <= cutoff, 'market_query_time_invalid')
     if market == 'us':
         night = packet['night_and_publication_context']
-        require(night == graph['night'] and night['value_sha256'] == digest(night['value']) == seed['run_acquisitions']['night'],
+        from app.services.selected_source_plan import US_NIGHT_EXCLUDED, excluded_night_receipt
+        if seed.get('us_night_policy') == US_NIGHT_EXCLUDED:
+            require(seed.get('contract') == 'selected-original-source-run-binding-v1'
+                and seed.get('market') == 'us'
+                and graph.get('contract') == 'selected-original-source-authority-graph-v1'
+                and night is None and graph['night'] is None
+                and seed['run_acquisitions']['night'] == digest(None)
+                and seed.get('night_publication_receipt_sha256') == digest(None)
+                and packet['optional_denials'].get('night_futures')
+                    == excluded_night_receipt(seed['parent_run_id']),
+                'night_precollection_exclusion_binding_mismatch')
+        else:
+            require(isinstance(night, dict) and night == graph['night']
+                and night['value_sha256'] == digest(night['value']) == seed['run_acquisitions']['night'],
                 'night_authority_mismatch')
     return component, cutoff
 
@@ -413,8 +426,13 @@ def _project_market_context(packet, seed, graph, *, expected_authority_sha256, e
     night_rows, night_cautions = [], []
     night_ownership = None
     if market == 'us':
-        eligible, night_ownership = project_optional_night(packet['night_and_publication_context'],
-            seed=seed, cutoff=cutoff)
+        from app.services.selected_source_plan import US_NIGHT_EXCLUDED
+        if seed.get('us_night_policy') == US_NIGHT_EXCLUDED:
+            eligible = []
+            night_ownership = deepcopy(packet['optional_denials']['night_futures'])
+        else:
+            eligible, night_ownership = project_optional_night(packet['night_and_publication_context'],
+                seed=seed, cutoff=cutoff)
         coverage['night_futures'] = dict(status='available' if eligible else 'unavailable',
             state=night_ownership['state'], optional=True, coverage_resolved=True)
         for producer_index, item in eligible:
@@ -425,7 +443,8 @@ def _project_market_context(packet, seed, graph, *, expected_authority_sha256, e
             for ref in [row['fact_id'], *[f['fact_id'] for f in night_futures_timeframe_facts(item)]]:
                 refs[ref] = ['night_and_publication_context/value/observations/' + str(producer_index)]
         if not eligible:
-            night_cautions = ['한국 야간선물은 현재 최종 행을 확인하지 못해 수치와 방향 신호에서 제외했습니다.']
+            night_cautions = [consumer.NIGHT_EXCLUSION_NOTICE if night_ownership['state'] == US_NIGHT_EXCLUDED
+                else '한국 야간선물은 현재 최종 행을 확인하지 못해 수치와 방향 신호에서 제외했습니다.']
     facts = [with_fact_consumer_scopes(f, NIGHT_FUTURES_CONSUMER_SCOPES
         if f['fact_type'].startswith('night_futures') else MARKET_CONTEXT_CONSUMER_SCOPES) for f in facts]
     facts, numeric_denials = registered_projection(facts)

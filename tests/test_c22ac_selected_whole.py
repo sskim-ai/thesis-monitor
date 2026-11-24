@@ -86,10 +86,8 @@ def test_selected_required_budget_omits_only_unconsumed_optional_roles():
         assert len(args['stock'].reads)==4
         assert all(d.transient_retry_max==0 for d in selected['plan'].descriptors)
     assert legacy==255 and total==186
-    from app.services.selected_market_collection import SelectedKrMarketCollection
-    service=SelectedKrMarketCollection(None,consumer_policy=SelectedConsumerPolicy())
-    detail=asyncio.run(service._ka10066_pages(market_code='001'))
-    assert not detail.complete and detail.rows==[] and detail.pages==0
+    # Optional detail omission is enforced by the compiled reads consumed by
+    # collect(); calling the private page fetch bypasses that production gate.
 
 
 def test_missing_market_and_raw_owner_are_not_source_authority():

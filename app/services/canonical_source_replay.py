@@ -654,10 +654,15 @@ def market_inputs(root, frozen, outcome, policy):
 def publication_inputs(root, frozen, outcome, policy):
     selected=frozen.get('scope')=='SELECTED_ORIGINAL_RESEARCH_V1'
     kr=selected and frozen['selected_market']=='kr'
+    from app.services.selected_source_plan import us_night_excluded
+    excluded = us_night_excluded(frozen)
+    if excluded and ('night' in outcome.get('phases', {}) or (root/'phase-night.json').exists()):
+        raise ValueError('selected_us_excluded_night_was_collected')
     providers = ('ecos',) if frozen.get('scope') == 'KR8_ONLY' or kr else ('fred', 'eia', 'ecos')
     for provider in providers:
         captured_phase_value(root, frozen, outcome, provider)
-    night_value = None if kr and not frozen['candidate']['night_query_dates'] else captured_phase_value(root, frozen, outcome, 'night')
+    night_value = (None if excluded or kr and not frozen['candidate']['night_query_dates']
+                   else captured_phase_value(root, frozen, outcome, 'night'))
     def captured(path, provider, acquisition=None):
         rows = [read(p) for p in sorted(path.glob('receipt-*.json'))]
         sealed = decode_request_plan(frozen['plan'])

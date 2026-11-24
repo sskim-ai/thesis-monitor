@@ -1,13 +1,14 @@
 {
   "target": "/Users/sskim/Documents/Codex/2026-07-04/the/maintenance/20261122-pr52-c38-postrun/FINAL_COMMAND_PIN.json",
   "update_only": {
-    "script_sha256": "dca7fb3d12210cfb657acc29fc5ee4c603956a774107afbb18cc7d2886fbcadb"
+    "script_sha256": "5607f91c74664b76819c938e6382ee5098f37ff01576eb01de389ebaf093c3ef"
   },
-  "expected_previous_script_sha256": "a496520648115a5c1004412eb9baab1c23a23c5ea6b1475ea4aeac00dcbdad74",
+  "expected_previous_script_sha256": "dca7fb3d12210cfb657acc29fc5ee4c603956a774107afbb18cc7d2886fbcadb",
   "preserve_fields": [
     "script",
     "registered_command",
-    "initial_install_script_sha256"
+    "initial_install_script_sha256",
+    "current_execution_binding_sha256"
   ],
-  "scope": "C46 candidate instructions only; not applied to Mac. For C45 retargeting also set current_execution_binding_sha256 to the actual CURRENT_EXECUTION_BINDING.json bytes, per docs/C46_CODEX_HANDOFF.md."
+  "scope": "C47 candidate script-only maintenance for the original C38/C46 closeout; not applied to Mac. Preserve CURRENT_EXECUTION_BINDING.json, its C45 code root/commit, the original run/tag, and the 12:45 reservation. Do not retarget this closeout to the new C47 one-shot."
 }

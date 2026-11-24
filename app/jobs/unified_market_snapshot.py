@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from contextlib import contextmanager, ExitStack
 import fcntl
 import json
@@ -18,7 +18,7 @@ import tempfile
 import time
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, model_serializer, model_validator
 
 from app.config import get_settings
 from app.services.unified_market_run import KST, RunConfiguration, UnifiedMarketRun
@@ -26,6 +26,7 @@ from app.services.unified_run_artifacts import SECRET_KEY
 from app.services.unified_snapshot_contract import ContractModel, digest
 from app.services.production_source_configuration import ProtocolFile
 from app.services.model_timeout_retry import B2_PER_TICKER_ONE_RETRY_V1, B2_US2_DIAGNOSTIC_V1, B2_SR5_DIAGNOSTIC_V1
+from app.services.selected_source_plan import UsNightPolicy, US_NIGHT_EXCLUDED
 
 
 LOCAL_BASIS = 'LOCAL_OPERATOR_SCHEDULED_NO_SEND'
@@ -56,7 +57,13 @@ KR_RECOVERY_20261123_TAG = 'kr-20261123-c39a7f2d'
 KR_C42_20261123_TAG = 'kr-20261123-c42b84e7a'
 
 
-def _us_full_one_shot_window(tag):
+def _us_full_one_shot_window(tag, config=None):
+    configured = getattr(config, 'one_shot', None)
+    if configured is not None:
+        if tag != configured.tag or config.market != 'us':
+            raise ValueError('local_one_shot_configuration_tag_mismatch')
+        start = configured.scheduled_at.astimezone(KST)
+        return start, start + timedelta(minutes=10)
     start = US_FULL_20261121_SLOTS.get(tag)
     if start is None:
         return None
@@ -64,15 +71,19 @@ def _us_full_one_shot_window(tag):
     return start, start + timedelta(minutes=10)
 
 
-def _one_shot_deadline(tag):
+def _one_shot_deadline(tag, config=None):
     if tag in (KR_RECOVERY_20261123_TAG, KR_C42_20261123_TAG):
         return datetime.fromisoformat('2026-11-24T00:00:00+09:00')
-    window = _us_full_one_shot_window(tag)
+    window = _us_full_one_shot_window(tag, config)
     return (window[0] + timedelta(hours=4, minutes=30) if window else
             datetime.fromisoformat('2026-11-21T00:00:00+09:00'))
 
 
-def one_shot_scope(market, tag):
+def one_shot_scope(market, tag, *, config=None):
+    if getattr(config, 'one_shot', None) is not None:
+        if market != 'us' or tag != config.one_shot.tag:
+            raise ValueError('local_one_shot_configuration_tag_mismatch')
+        return False
     if tag is None:
         return False
     if market == 'kr' and tag in (KR_RECOVERY_20261123_TAG, KR_C42_20261123_TAG):
@@ -83,6 +94,21 @@ def one_shot_scope(market, tag):
     if match is None or ('us' if match[1] in ('us2','us5') else match[1]) != market:
         raise ValueError('local_one_shot_tag_scope_invalid')
     return match[1] in ('us2','us5')
+
+
+class LocalUsOneShot(ContractModel):
+    """A single prospective US slot in the existing operator configuration."""
+    tag: str = Field(pattern=r'^us-[0-9]{8}-[a-z0-9]{8}$')
+    scheduled_at: datetime
+    target_session: date
+
+    @model_validator(mode='after')
+    def dated_tag(self):
+        if (self.scheduled_at.utcoffset() is None
+                or not self.tag.startswith('us-' + self.scheduled_at.astimezone(KST).strftime('%Y%m%d') + '-')
+                or self.tag in US_FULL_20261121_SLOTS):
+            raise ValueError('local_one_shot_new_dated_slot_required')
+        return self
 
 
 class LocalScheduleConfiguration(ContractModel):
@@ -101,6 +127,23 @@ class LocalScheduleConfiguration(ContractModel):
     auxiliary_issuer: ProtocolFile | None = None
     kr_market_timeout_retry: bool = Field(default=False, strict=True)
     market_b2_timeout_retry: bool = Field(default=False, strict=True)
+    us_night_policy: UsNightPolicy = 'ORIGINAL_CURRENT_PROBE_ONLY'
+    one_shot: LocalUsOneShot | None = None
+
+    @model_validator(mode='after')
+    def us_optional_settings(self):
+        if self.market != 'us' and (self.us_night_policy == US_NIGHT_EXCLUDED or self.one_shot is not None):
+            raise ValueError('local_schedule_us_optional_settings_scope')
+        return self
+
+    @model_serializer(mode='wrap')
+    def original_wire_unless_configured(self, handler):
+        value = handler(self)
+        if self.us_night_policy == 'ORIGINAL_CURRENT_PROBE_ONLY':
+            value.pop('us_night_policy', None)
+        if self.one_shot is None:
+            value.pop('one_shot', None)
+        return value
 
 
 def _absolute_local_path(value):
@@ -211,7 +254,7 @@ def _record_local_failure(directory, exc, *, config, session, generation=None, b
 
 
 def _local_model_cap(config, one_shot_tag):
-    diagnostic = one_shot_scope(config.market, one_shot_tag)
+    diagnostic = one_shot_scope(config.market, one_shot_tag, config=config)
     if config.market_b2_timeout_retry:
         if diagnostic or config.kr_market_timeout_retry or (
                 config.market == 'us' and one_shot_tag in US_FULL_20261121_SLOTS):
@@ -239,7 +282,8 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     from app.services.vnext_execution_profile import SOL_HIGH_V1
 
     market = config.market
-    diagnostic = one_shot_scope(market,one_shot_tag)
+    diagnostic = one_shot_scope(market,one_shot_tag,config=config)
+    consumer_policy = SelectedConsumerPolicy(us_night=getattr(config, 'us_night_policy', 'ORIGINAL_CURRENT_PROBE_ONLY'))
     sr5 = bool(one_shot_tag and one_shot_tag.startswith('us5-'))
     subjects = SR5_SUBJECTS if sr5 else US2_SUBJECTS if diagnostic else UNIVERSE[market]
     caps = SR5_CAPS if sr5 else US2_CAPS if diagnostic else LOCAL_CAPS[market]
@@ -309,7 +353,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     source_root = directory/'source'
     protocols = source_config.seal_protocols(source_root, market)
     native = inspect_native(source_config, source_root, settings_env_file=config.settings_env_file, settings=settings)
-    credentials = credential_binding(settings, market)
+    credentials = credential_binding(settings, market, consumer_policy=consumer_policy)
     now = datetime.now(timezone.utc)
     children = {m: dict(generation=generation if m == market else master+'-reference',
         execution_generation=execution, subjects=list(UNIVERSE[m]))
@@ -320,7 +364,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
         approval = registration.record_backend_approval(registration.ApprovalDecision(
             event_id=master, approved=True, user_message_sha256=digest(config.model_dump(mode='json')),
             effective_at=now, expires_at=min(now+timedelta(hours=4, minutes=30),
-                _one_shot_deadline(one_shot_tag)) if one_shot_tag else now+timedelta(hours=4,minutes=30),
+                _one_shot_deadline(one_shot_tag, config)) if one_shot_tag else now+timedelta(hours=4,minutes=30),
             subjects=tuple(t for child in children.values() for t in child['subjects']),
             **(dict(routine_us_no_send_source_seconds=1800) if market == 'us' else {})))
         ledger = SelectedRunLedger(path=directory/'campaign.jsonl', approval=approval, master_id=master,
@@ -351,7 +395,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
             kis_static_hashes={n:p.sha256 for n,p in source_config.kis_protocols.items()},
             completed_close_documentation=(dict(path='static/completed-close-documentation.json',
                 sha256=source_config.completed_close.sha256) if market == 'us' else None),
-            consumer_policy=SelectedConsumerPolicy(), master_id=master,
+            consumer_policy=consumer_policy, master_id=master,
             ohlcv_source_url=settings.ohlcv_base_url.rstrip('/')+'/ohlcv', run_ledger=ledger, enabled=True,
             include_kr_stock_flow=market == 'kr', kr_stock_chart_v3=market == 'kr',
             us_runtime_settings=settings if market == 'us' else None, issuer_auxiliary=auxiliary)
@@ -420,15 +464,20 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
             pass  # Keep nonempty current invocation evidence; retire only empty scratch.
 
 
-def latest_one_shot_us_session(now, *, one_shot_tag=None):
+def latest_one_shot_us_session(now, *, one_shot_tag=None, config=None):
     from app.services.market_session import us_market_session, _exchange_session_close, NEW_YORK, is_exchange_session_date
     from app.services.unified_market_run import target_session
 
-    window = _us_full_one_shot_window(one_shot_tag)
+    window = _us_full_one_shot_window(one_shot_tag, config)
     if window:
         local_date = window[0].astimezone(KST).date().isoformat()
         # Preserve the closed Nov21 audit windows; new slots use the official calendar.
-        if local_date == '2026-11-21':
+        if getattr(config, 'one_shot', None) is not None:
+            target = config.one_shot.target_session.isoformat()
+            planned = us_market_session(window[0]).latest_completed_regular_session_date
+            if planned.isoformat() != target:
+                return None
+        elif local_date == '2026-11-21':
             target = '2026-11-20'
         else:
             expected = target_session('us', window[0])
@@ -446,9 +495,9 @@ def latest_one_shot_us_session(now, *, one_shot_tag=None):
     return session
 
 
-def latest_one_shot_session(market,now, *, one_shot_tag=None):
+def latest_one_shot_session(market,now, *, one_shot_tag=None, config=None):
     if market=='us':
-        return latest_one_shot_us_session(now, one_shot_tag=one_shot_tag)
+        return latest_one_shot_us_session(now, one_shot_tag=one_shot_tag, config=config)
     if market=='kr' and one_shot_tag in (KR_RECOVERY_20261123_TAG, KR_C42_20261123_TAG):
         from app.services.unified_market_run import target_session
         if now.utcoffset() is None or now.astimezone(KST).date().isoformat()!='2026-11-23':
@@ -478,8 +527,8 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
         raise ValueError('local_schedule_timezone_required')
     window = None
     if one_shot_tag is not None:
-        diagnostic=one_shot_scope(market,one_shot_tag)
-        window = _us_full_one_shot_window(one_shot_tag)
+        diagnostic=one_shot_scope(market,one_shot_tag,config=config)
+        window = _us_full_one_shot_window(one_shot_tag, config)
         local_date = ('2026-11-23' if market=='kr' and one_shot_tag in (KR_RECOVERY_20261123_TAG, KR_C42_20261123_TAG)
             else window[0].date().isoformat() if window else '2026-11-20')
         if now.astimezone(KST).date().isoformat() != local_date:
@@ -491,7 +540,7 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
     else:
         diagnostic=False
     sr5=bool(one_shot_tag and one_shot_tag.startswith('us5-'))
-    session = latest_one_shot_session(market,now,one_shot_tag=one_shot_tag) if one_shot_tag is not None else target_session(market, now)
+    session = latest_one_shot_session(market,now,one_shot_tag=one_shot_tag,config=config) if one_shot_tag is not None else target_session(market, now)
     if session is None:
         return dict(status='NO_RUN', reason='SESSION_NOT_COMPLETED_OR_CLOSED', normal_messages_sent=False)
     expected_fixed = ('2026-11-23' if market == 'kr' and one_shot_tag in (KR_RECOVERY_20261123_TAG, KR_C42_20261123_TAG)
@@ -537,9 +586,10 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
             market_timeout_retry_cap=int(config.market_b2_timeout_retry or market=='kr' and config.kr_market_timeout_retry),
             b2_retry_policy=B2_SR5_DIAGNOSTIC_V1 if sr5 else B2_US2_DIAGNOSTIC_V1 if diagnostic else B2_PER_TICKER_ONE_RETRY_V1 if market == 'us' or config.market_b2_timeout_retry else None,
             normal_messages_sent=False,
+            **(dict(us_night_policy=US_NIGHT_EXCLUDED) if getattr(config, 'us_night_policy', None)==US_NIGHT_EXCLUDED else {}),
             **(dict(one_shot_tag=one_shot_tag,one_shot_date=local_date) if one_shot_tag else {})), exclusive=True)
         try:
-            remaining=(_one_shot_deadline(one_shot_tag)-datetime.now(KST)).total_seconds() if one_shot_tag else 16200
+            remaining=(_one_shot_deadline(one_shot_tag, config)-datetime.now(KST)).total_seconds() if one_shot_tag else 16200
             async with asyncio.timeout(min(16200,remaining)):
                 result = await _local_registered_cycle(config, directory, session.isoformat(),
                     **(dict(one_shot_tag=one_shot_tag) if one_shot_tag else {}))

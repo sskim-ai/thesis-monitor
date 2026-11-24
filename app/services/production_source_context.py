@@ -31,7 +31,7 @@ PROVIDERS = frozenset({"local", "local+openfigi", "canonical_local", "kiwoom", "
 POLICY = UnifiedSourcePolicy(PROVIDERS)
 
 
-def credential_binding(settings, market):
+def credential_binding(settings, market, *, consumer_policy=None):
     result = dict(kiwoom=[settings.kiwoom_app_key, settings.kiwoom_secret_key],
         sec_edgar=[settings.sec_user_agent], opendart=[settings.opendart_api_key],
         fred=[settings.fred_api_key], eia=[settings.eia_api_key], ecos=[settings.ecos_api_key],
@@ -44,6 +44,13 @@ def credential_binding(settings, market):
         result["kis"] = [settings.kis_app_key.get_secret_value(), secret.get_secret_value()]
     else:
         result.pop("naver_news")
+    if consumer_policy is not None:
+        from app.services.selected_source_plan import SelectedConsumerPolicy, US_NIGHT_EXCLUDED
+        consumer_policy = SelectedConsumerPolicy.model_validate(consumer_policy)
+        if consumer_policy.us_night == US_NIGHT_EXCLUDED:
+            if market != 'us':
+                raise ValueError('selected_us_night_exclusion_us_only')
+            result.pop('krx_night_futures')
     if not all(all(isinstance(v, str) and v.strip() for v in values) for values in result.values()):
         raise ValueError("production_source_credential_missing")
     return result

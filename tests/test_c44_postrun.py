@@ -21,7 +21,7 @@ REGULAR_LABEL = "local.thesis-monitor.canonical.us.no-send"
 POSTRUN_LABEL = "local.thesis-monitor.us.postrun.once.c38.20261124"
 
 
-def run_closeout(tmp_path, *, full, receipt_error=False, cleanup_error=False, mutate_kr=False):
+def run_closeout(tmp_path, *, full, receipt_error=False, cleanup_error=False, mutate_kr=False, lease_busy=False):
     """Run the real main body with every external boundary replaced."""
     here = tmp_path / "postrun"
     c38 = tmp_path / "c38"
@@ -113,6 +113,10 @@ def run_closeout(tmp_path, *, full, receipt_error=False, cleanup_error=False, mu
         assert REGULAR_LABEL not in " ".join(args)
         calls.append(tuple(args))
 
+    def flock(stream, *_):
+        if lease_busy and Path(stream.name) == lease:
+            raise BlockingIOError("synthetic other run owns shared lease")
+
     tree = ast.parse(SCRIPT.read_text())
     functions = [node for node in tree.body if isinstance(node, ast.FunctionDef)
         and node.name in {"main", "load_execution_schedule"}]
@@ -122,7 +126,7 @@ def run_closeout(tmp_path, *, full, receipt_error=False, cleanup_error=False, mu
         read=read, pin=pin, write=write, observe=lambda *_: observed,
         verify_receipts=verify, clean_one_shot=clean, command=command,
         package=lambda out: calls.append(("package",)),
-        fcntl=SimpleNamespace(flock=lambda *_: None, LOCK_EX=2, LOCK_NB=4),
+        fcntl=SimpleNamespace(flock=flock, LOCK_EX=2, LOCK_NB=4),
         os=SimpleNamespace(getuid=lambda: 501,
             statvfs=lambda _: SimpleNamespace(f_bavail=10**10, f_frsize=1)),
         subprocess=SimpleNamespace(run=fake_subprocess), json=json, sha256=sha256,

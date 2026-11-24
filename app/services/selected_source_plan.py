@@ -24,13 +24,38 @@ SCOPE = 'SELECTED_ORIGINAL_RESEARCH_V1'
 STOCK_CONTRACT = 'selected-original-stock-plan-v1'
 WIRE_CONTRACT = 'selected-original-source-request-plan-v1'
 COUNTS = dict(adjusted_daily=1000,adjusted_weekly=700,adjusted_monthly=300,unadjusted_weekly_valuation=700)
+US_NIGHT_EXCLUDED = 'EXCLUDED_BEFORE_COLLECTION'
+UsNightPolicy = Literal['ORIGINAL_CURRENT_PROBE_ONLY', 'EXCLUDED_BEFORE_COLLECTION']
 
 
 class SelectedConsumerPolicy(ContractModel):
     contract: Literal['selected-required-consumer-policy-v1'] = 'selected-required-consumer-policy-v1'
     kr_investor_detail: Literal['OPTIONAL_NOT_CAPTURED'] = 'OPTIONAL_NOT_CAPTURED'
-    us_night: Literal['ORIGINAL_CURRENT_PROBE_ONLY'] = 'ORIGINAL_CURRENT_PROBE_ONLY'
+    us_night: UsNightPolicy = 'ORIGINAL_CURRENT_PROBE_ONLY'
     kr_night: Literal['NOT_CONSUMED'] = 'NOT_CONSUMED'
+
+
+def excluded_night_receipt(run_id):
+    """An explicit omitted input, with no price or provider-failure inference."""
+    return dict(state=US_NIGHT_EXCLUDED, optional=True, coverage_resolved=True,
+        value=None, run_id=run_id)
+
+
+def us_night_excluded(frozen):
+    """Read the frozen choice; an empty input alone never authorizes exclusion."""
+    candidate = frozen.get('candidate', {})
+    raw = candidate.get('consumer_policy') or {}
+    if raw.get('us_night') != US_NIGHT_EXCLUDED:
+        return False
+    SelectedConsumerPolicy.model_validate(raw)
+    plan = frozen['plan']
+    if (frozen.get('scope') != SCOPE or frozen.get('selected_market') != 'us'
+            or candidate.get('selected_market') != 'us' or plan.get('market') != 'us'
+            or candidate.get('night_query_dates') != []
+            or any(d['provider'] == 'krx_night_futures' or d['consumer_role'].startswith('night:')
+                   for d in plan['descriptors'])):
+        raise ValueError('selected_us_night_exclusion_plan_mismatch')
+    return True
 
 
 class SelectedStockPlan(ContractModel):
@@ -127,8 +152,11 @@ def acquisition_plan(stock,identities,*,kr_max_pages,exact_financial_owner=False
     days=[(begin+timedelta(days=i)).isoformat() for i in range((day-begin).days+1)]
     if consumer_policy is not None:
         consumer_policy=SelectedConsumerPolicy.model_validate(consumer_policy)
+        if stock.market != 'us' and consumer_policy.us_night == US_NIGHT_EXCLUDED:
+            raise ValueError('selected_us_night_exclusion_us_only')
         kr=tuple(r for r in kr if r.api_id!='ka10066')
-        days=[(day-timedelta(days=i)).isoformat() for i in range(7)] if stock.market=='us' else []
+        days=([(day-timedelta(days=i)).isoformat() for i in range(7)]
+              if stock.market=='us' and consumer_policy.us_night != US_NIGHT_EXCLUDED else [])
     macro={'ecos':{'route':'KeyStatisticList','start':1,'end':100,'period_field':'CYCLE'}}
     if stock.market=='us':
         macro.update(fred={'series':list(FRED_SERIES),'limit':5,'sort_order':'desc','observation_end':stock.frozen_at.date().isoformat()},

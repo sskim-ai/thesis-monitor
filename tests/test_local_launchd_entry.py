@@ -104,7 +104,7 @@ class CollectorReached(RuntimeError):
     pass
 
 
-def original_cycle_probe(folder, market, monkeypatch, *, one_shot_tag=None):
+def original_cycle_probe(folder, market, monkeypatch, *, one_shot_tag=None, config_overrides=None):
     from app.config import Settings
     from app.services import codex_runtime_binding as binding
     from app.services import kiwoom_global_lane as lane_module
@@ -147,6 +147,7 @@ def original_cycle_probe(folder, market, monkeypatch, *, one_shot_tag=None):
         config[key] = dict(path=str(p),sha256=hashlib.sha256(p.read_bytes()).hexdigest(),purpose='PROTOCOL_CONTROL')
     if market == 'kr':
         config.pop('auxiliary_issuer')
+    config.update(config_overrides or {})
     config = job.LocalScheduleConfiguration.model_validate(config)
     class OfflineSettings(Settings):
         def __init__(self, **kw):
@@ -170,7 +171,11 @@ def original_cycle_probe(folder, market, monkeypatch, *, one_shot_tag=None):
         owner_files={'app/main.py':'b'*64},settings_sha256='c'*64,request_environment_sha256='d'*64))
     _, args, _ = compile_market(market, UNIVERSE[market][0])
     credentials = {p:['NOT_A_CREDENTIAL:'+p] for p in args['config_identities']}
-    monkeypatch.setattr(context,'credential_binding',lambda *a:credentials)
+    def fixture_credentials(*args, consumer_policy=None):
+        if consumer_policy is not None and consumer_policy.us_night == 'EXCLUDED_BEFORE_COLLECTION':
+            credentials.pop('krx_night_futures')
+        return credentials
+    monkeypatch.setattr(context,'credential_binding',fixture_credentials)
     observed = {}
     async def stop_before_wire(self, **kw):
         observed['collector'] = True

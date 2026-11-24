@@ -116,6 +116,9 @@ def verify_receipts(out,s,observed):
     from app.services.unified_stock_acquisition import UNIVERSE
     run=Path(s['run_root']);terminal=read(run/'terminal.json');intent=read(run/'intent.json')
     assert intent['session']==s['target_session'] and intent['code_commit']==s['code_commit']
+    failure_path=run/'failure-diagnostic.json'
+    failure=read(failure_path) if failure_path.is_file() else None
+    if failure is not None:write(out,'FAILURE_DIAGNOSTIC.json',failure)
     rows=[json.loads(line) for line in (run/'campaign.jsonl').read_bytes().splitlines()]
     assert observed.get('journal_chain')=='PASS'
     intents={r['value']['attempt_id']:r for r in rows if r['event']=='PHYSICAL_INTENT'}
@@ -128,7 +131,34 @@ def verify_receipts(out,s,observed):
             method=request['value']['method'],requested_at=request['recorded_at'],status=result.get('status'),outcome=result.get('outcome')))
     write(out,'PHYSICAL_CALL_LEDGER.json',dict(rows=physical,count=len(physical),
         original_campaign_sha256=pin(run/'campaign.jsonl'),chain='PASS',URLs_or_auth_bodies_exported=False))
+    assert observed['financial_HTTP']<=710
+    assert all(n<=s['provider_caps'][p] for p,n in observed['providers'].items())
     info=read(run/'model-runtime-preflight.json');inner=run/'results/unified-snapshot-runs'/info['execution']
+    # Source can stop before an engine or invocation journal is created. Its
+    # original diagnostic is the failure; absent model artifacts are expected.
+    if (terminal.get('status')=='STOPPED_NO_SEND' and failure is not None
+            and failure.get('stage') in {'SOURCE_PREPARATION_OR_COLLECTION','SOURCE_POST_COLLECTION'}
+            and observed['source_accepted'] is False and observed['model_plan_accepted'] is False):
+        assert not any(r['event'] in {'SOURCE','MODEL_PLAN'} for r in rows)
+        assert all(observed[k]==0 for k in ('model_calls','model_acceptances','model_retries'))
+        assert terminal.get('normal_messages_sent') is False and not terminal.get('messages')
+        assert failure.get('NO_SEND') is True and failure.get('recorded_before_owner_cleanup') is True
+        assert failure.get('market')=='us' and failure.get('target_session')==s['target_session']
+        assert failure.get('code_commit')==s['code_commit']
+        assert not any((inner/name).exists() for name in ('terminal.json','state.json'))
+        assert not Path(info['journal_path']).exists()
+        write(out,'ORIGINAL_TERMINAL_SUMMARY.json',dict(terminal,origin='ACTUAL_OUTER_TERMINAL'))
+        write(out,'FIRST_FAILURE_LOCATION.json',dict(first_failure=failure,
+            last_original_frame=failure.get('last_application_frame'),proof='RECORDED_ORIGINAL_ERROR_ONLY'))
+        write(out,'STAGES.json',dict(Source=False,ModelPlan=False,
+            stages=[dict(stage=stage,status='NOT_REACHED') for stage in ('MARKET','CORE','A','B','B2','VALIDATE','RENDER')],
+            Cold=read(run/'source/phase-stock-native-replay.json') if (run/'source/phase-stock-native-replay.json').is_file() else None,
+            Source_and_Owner_reissued=False))
+        write(out,'MODEL_ATTEMPTS.json',dict(status='NOT_REACHED',attempts=[],physical_intents=0,
+            actual_CLI_starts=0,accepted=0,retries=0,maximum=42,remote_billing='UNOBSERVED'))
+        write(out,'FINAL_MESSAGES.json',dict(status=terminal['status'],messages=[],NO_SEND=True,
+            origin='ACTUAL_C38_TERMINAL_ONLY',model_status='NOT_REACHED'))
+        return False
     original=read(inner/'terminal.json') if (inner/'terminal.json').is_file() else read(inner/'state.json')
     write(out,'ORIGINAL_TERMINAL_SUMMARY.json',{k:original.get(k) for k in
         ('status','stage_receipts','first_failure','first_failure_receipt','error_chain','storage_failure','messages_sha256')})
@@ -136,9 +166,7 @@ def verify_receipts(out,s,observed):
     write(out,'FIRST_FAILURE_LOCATION.json',dict(first_failure=original.get('first_failure'),
         original_error_chain=original.get('error_chain'),last_original_frame=frames[-1] if frames else None,
         proof='RECORDED_ORIGINAL_ERROR_ONLY' if frames else 'LOCATION_UNAVAILABLE_NOT_INVENTED'))
-    for name in ('first-failure.json','failure-diagnostic.json'):
-        p=inner/name if name=='first-failure.json' else run/name
-        if p.is_file():write(out,'FIRST_FAILURE.json' if name=='first-failure.json' else 'FAILURE_DIAGNOSTIC.json',read(p))
+    if (inner/'first-failure.json').is_file():write(out,'FIRST_FAILURE.json',read(inner/'first-failure.json'))
     stage_outputs={};stages=[]
     for row in original.get('stage_receipts',[]):
         item={k:row[k] for k in ('stage','status','timing','deadline') if k in row}
@@ -170,8 +198,7 @@ def verify_receipts(out,s,observed):
     write(out,'MODEL_ATTEMPTS.json',dict(attempts=attempts,physical_intents=journal['physical_calls'],
         actual_CLI_starts=sum(a['CLI_started'] is True for a in attempts),accepted=len(journal['accepted']),
         retries=journal['retry_used'],maximum=42,remote_billing='UNOBSERVED'))
-    assert journal['physical_calls']<=42 and observed['financial_HTTP']<=710
-    assert all(n<=s['provider_caps'][p] for p,n in observed['providers'].items())
+    assert journal['physical_calls']<=42
     messages=terminal.get('messages',[])
     write(out,'FINAL_MESSAGES.json',dict(status=terminal['status'],messages=messages,
         messages_sha256=terminal.get('messages_sha256'),NO_SEND=True,origin='ACTUAL_C38_TERMINAL_ONLY'))
@@ -246,7 +273,7 @@ def main():
             decision='PRE_GC_NOOP_SUFFICIENT' if min(r['free_bytes'] for r in writers)>=64*1024**2+2*1024**3 else 'PRE_GC_NO_SAFE_CANDIDATE',
             no_large_artifacts=True,no_new_live_execution=True))
         observed=observe(out,s);write(out,'OBSERVATION.json',observed)
-        full=False;error=None;status='C38_LIVE_PARTIAL_US_OFF'
+        full=False;error=None;status='C38_LIVE_PARTIAL_US_OFF';cleanup_status='NOT_ATTEMPTED'
         def record_error(exc):
             trace=exc.__traceback__;frames=[]
             while trace:
@@ -264,14 +291,22 @@ def main():
                 lease=Path(read(s['configuration_path'])['shared_lease_path'])
                 lane=Path('/Users/sskim/Library/Application Support/ThesisMonitor/KiwoomGlobalLane/state.json')
                 with lease.open('rb') as a,(lane.parent/'lane.lock').open('rb') as b:
-                    fcntl.flock(a,fcntl.LOCK_EX|fcntl.LOCK_NB);fcntl.flock(b,fcntl.LOCK_EX|fcntl.LOCK_NB)
-                    state=read(lane);assert not state['in_flight']
-                    processes=command('ps','-axo','pid=,args=')
-                    assert not any(marker in processes for marker in ('-m app.jobs.unified_market_snapshot',
-                        '-m app.jobs.production_model_worker','-m app.jobs.production_kis_worker','scripts/r9_rev11_native_worker'))
-                    clean_one_shot(out,s)
-                    write(out,'RESOURCE_RELEASE.json',dict(lease_free=True,Lane_sequence=state['sequence'],
-                        Lane_halted=state['halted'],Lane_sha256=pin(lane),Lane_writes=0))
+                    try:
+                        fcntl.flock(a,fcntl.LOCK_EX|fcntl.LOCK_NB);fcntl.flock(b,fcntl.LOCK_EX|fcntl.LOCK_NB)
+                    except BlockingIOError:
+                        cleanup_status='DEFERRED_OTHER_RUN_ACTIVE'
+                        write(out,'RESOURCE_RELEASE.json',dict(status=cleanup_status,cleanup_performed=False,
+                            Lane_writes=0,reason='SHARED_EXECUTION_OR_PROVIDER_LEASE_BUSY'))
+                    else:
+                        state=read(lane);assert not state['in_flight']
+                        processes=command('ps','-axo','pid=,args=')
+                        assert not any(marker in processes for marker in ('-m app.jobs.unified_market_snapshot',
+                            '-m app.jobs.production_model_worker','-m app.jobs.production_kis_worker','scripts/r9_rev11_native_worker'))
+                        cleanup_status='ATTEMPTED'
+                        clean_one_shot(out,s);cleanup_status='COMPLETED'
+                        write(out,'RESOURCE_RELEASE.json',dict(status=cleanup_status,cleanup_performed=True,
+                            lease_free=True,Lane_sequence=state['sequence'],
+                            Lane_halted=state['halted'],Lane_sha256=pin(lane),Lane_writes=0))
                 if full:status='C38_US_LIVE_15_15_PASS_US_REGULAR_DEFERRED'
         except BaseException as exc:
             error=record_error(exc)
@@ -292,7 +327,7 @@ def main():
             code_commit=s['code_commit'],current_execution_binding_sha256=final_pin.get('current_execution_binding_sha256'),
             financial_HTTP=observed['financial_HTTP'],model_intents=observed['model_calls'],model_acceptances=observed['model_acceptances'],
             final_messages=observed['messages'],first_failure=observed.get('first_failure',observed.get('failure-diagnostic.json')),
-            postrun_error=error,KR_unchanged=kr,KR_hashes_before=kr_before,KR_hashes_after=kr_after,
+            postrun_error=error,one_shot_cleanup=cleanup_status,KR_unchanged=kr,KR_hashes_before=kr_before,KR_hashes_after=kr_after,
             new_financial_HTTP=0,new_model_CLI=0,new_DB=0,new_campaign=0,tests=0,sends=0,orders=0)
         write(out,'SUMMARY.json',summary)
         with (out/'RESULT.md').open('x') as f:f.write('# C38 실물 사후 확인\n\n'+json.dumps(summary,ensure_ascii=False,indent=2)+'\n\n원래 문안/수락 기록만 검증. 매수·진입 적격성은 BUY_ENTRY_ELIGIBILITY.json에 기존 B2 축으로 구분하며 가격을 새로 만들지 않음.\n')

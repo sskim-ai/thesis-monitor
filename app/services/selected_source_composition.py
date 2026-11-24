@@ -7,12 +7,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, model_validator
+from pydantic import Field, model_serializer, model_validator
 
 from app.services.canonical_source_composition import SourceRunBinding
 from app.services.market_session import korea_market_session, us_market_session
 from app.services.unified_run_artifacts import sha256_bytes
 from app.services.unified_snapshot_contract import digest,encoded
+from app.services.selected_source_plan import UsNightPolicy, US_NIGHT_EXCLUDED, excluded_night_receipt, us_night_excluded
 
 CONTRACT='selected-original-source-run-binding-v1'
 GRAPH='selected-original-source-authority-graph-v1'
@@ -47,6 +48,14 @@ class SelectedSourceRunBinding(SourceRunBinding):
     selected_code_sha256: str=Field(pattern=r'^[a-f0-9]{64}$')
     fresh_stock_owner_set_sha256: str=Field(pattern=r'^[a-f0-9]{64}$')
     raw_owner_bindings: dict[str,str]
+    us_night_policy: UsNightPolicy = 'ORIGINAL_CURRENT_PROBE_ONLY'
+
+    @model_serializer(mode='wrap')
+    def original_wire_unless_night_excluded(self, handler):
+        value = handler(self)
+        if self.us_night_policy == 'ORIGINAL_CURRENT_PROBE_ONLY':
+            value.pop('us_night_policy', None)
+        return value
 
     @property
     def universe(self):return {self.market:self.subjects}
@@ -61,6 +70,10 @@ class SelectedSourceRunBinding(SourceRunBinding):
 
     @model_validator(mode='after')
     def selected_binding(self):
+        if self.us_night_policy == US_NIGHT_EXCLUDED and (
+                self.market != 'us' or self.run_acquisitions.get('night') != digest(None)
+                or self.night_publication_receipt_sha256 != digest(None)):
+            raise ValueError('selected_us_night_exclusion_binding_mismatch')
         if self.execution_purpose == 'ROUTINE_US_NO_SEND_SOURCE' and self.market != 'us':
             raise ValueError('selected_routine_source_binding_us_only')
         session=(us_market_session if self.market=='us' else korea_market_session)(self.started_at)
@@ -124,7 +137,7 @@ def validate_composition(seed,*,stock_inputs,market_inputs,composition_metadata,
             or composition_metadata.get('selected_request_plan_sha256')!=seed.request_plan_sha256
             or composition_metadata.get('selected_registration_receipt_sha256')!=seed.registration_receipt_sha256
             or fresh_context_inputs['publications'].get('market_scope')!='SELECTED_'+seed.market.upper()
-            or (fresh_context_inputs['night'] is None)!=(seed.market=='kr')
+            or (fresh_context_inputs['night'] is None)!=(seed.market=='kr' or seed.us_night_policy==US_NIGHT_EXCLUDED)
             or set(stock_inputs)!=set(seed.subjects) or set(market_inputs)!={seed.market}):
         raise ValueError('selected_source_context_or_code_scope')
     for ticker,value in stock_inputs.items():
@@ -172,6 +185,7 @@ def build_inputs(root,frozen,outcome,policy,*,prospective_owners,master_id):
         raise ValueError('selected_whole_original_stock_incomplete')
     markets=market_inputs(root,frozen,outcome,policy)
     context=publication_inputs(root,frozen,outcome,policy)
+    excluded=us_night_excluded(frozen)
     pub=replay_fresh_publications(**context['publications'])
     night=None if context['night'] is None else replay_night(**context['night'])
     rows={t:assemble_fresh_stock(**i) for t,i in inputs.items()}
@@ -184,12 +198,15 @@ def build_inputs(root,frozen,outcome,policy,*,prospective_owners,master_id):
         security_valuation_transfer=False,per_share_transfer=False)
     denials=dict(kr_market_investor_flows=dict(status='OPTIONAL_UNAVAILABLE',value=None,
         denial='DETAIL_NOT_CAPTURED_OR_COMPLETED_DATE_NOT_QUALIFIED',run_id=plan.run_id))
+    if excluded:
+        denials['night_futures']=excluded_night_receipt(plan.run_id)
     if native.get('kr',{}).get('aggregate_flows',{}).get('status')=='AVAILABLE_AGGREGATE_ONLY':
         denials['kr_market_investor_flows']=dict(status='AVAILABLE_AGGREGATE_ONLY',
             value_sha256=native['kr']['aggregate_flows']['value_sha256'],run_id=plan.run_id,
             concentration='UNAVAILABLE',stock_contribution='UNAVAILABLE')
     seed=SelectedSourceRunBinding(parent_run_id=plan.run_id,child_id=plan.run_id,master_id=master_id,
         execution_purpose=frozen.get('execution_purpose','MANUAL_SHADOW_UNSENT'),
+        us_night_policy=US_NIGHT_EXCLUDED if excluded else 'ORIGINAL_CURRENT_PROBE_ONLY',
         market=plan.market,subjects=plan.subjects,target_session=frozen['sessions'][plan.market],started_at=plan.frozen_at,
         source_policy_sha256=digest(sorted(policy.allowed_providers)),inventory_sha256=digest(inventory),
         **registry.seed_bindings,universe_sha256=digest(plan.universe),
