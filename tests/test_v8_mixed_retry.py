@@ -16,7 +16,7 @@ from app.services.model_execution_plan import compile_model_plan, verify_mixed_r
 from app.services.model_invocation_journal import read_invocation_journal
 from app.services.model_timeout_retry import verify_render_partition
 from app.services.production_model_profile import SolHighCallBudget
-from app.services.research_no_send_run import PreparedResearchBridge, PreparedResearchEnvelope, TERMINAL
+from app.services.research_no_send_run import PARTIAL, PreparedResearchBridge, PreparedResearchEnvelope, TERMINAL
 from app.services.unified_market_run import UnifiedMarketRun, RunConfiguration
 from app.services.unified_runtime_v2 import CONTRACT
 from app.services.unified_snapshot_contract import digest
@@ -43,6 +43,7 @@ def deny_live(monkeypatch):
 
 def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True, subjects=None, market='us'):
     from app.services import production_message_renderer as render, model_timeout_retry as timeout
+    from app.services import research_artifact_budget as artifacts
     from app.services.accepted_calibration_message_service import AcceptedDetailedCalibrationPlan, AcceptedMarketCalibration
     from app.services.daily_digest_renderer import render_daily_digest
     from app.services.numeric_semantic_registry import build_numeric_registry
@@ -53,6 +54,16 @@ def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True, subj
     from tests.test_m12ds_r4_r1_production_calibration import plan_for
     from tests.test_production_b2_execution import body
     from tests.test_m12ds_r4_r4_market_balance import source as market_source, catalog as market_catalog
+
+    # These tiny synthetic model artifacts exercise retry/rendering, not disk
+    # capacity. Keep the production guard and inject only this fixture's disk.
+    statvfs = artifacts.os.statvfs
+    def synthetic_disk(path):
+        values = list(statvfs(path))
+        blocks = max(values[4], (artifacts.FREE_GUARD+artifacts.WORK_CAP)//values[1]+1)
+        values[4] = blocks
+        return artifacts.os.statvfs_result(values)
+    monkeypatch.setattr(artifacts.os,'statvfs',synthetic_disk)
 
     subjects = tuple(sorted(UNIVERSE[market] if subjects is None else subjects))
     if market == 'kr':
@@ -76,6 +87,7 @@ def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True, subj
     monkeypatch.setattr(old, 'SelectedRunLedger', fresh_ledger)
     budget, runtime = old.admitted_budget(tmp_path, plan, cap)
     packets, stocks, cores, pa, pb, requests, accepted = {}, {}, {}, {}, {}, {}, {}
+    entry_contexts = {}
     ordinary = tuple(t for t in subjects if t not in plan.cohort.limitation_subjects)
     for ticker in ordinary:
         setup = detailed_inputs.__wrapped__()
@@ -115,9 +127,14 @@ def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True, subj
             acceptance=receipt,acceptance_sha256=digest(receipt)))
         data = b2_inputs(legacy=False)
         sub = data['v1_request']['subject']
+        entry_contexts[ticker] = dict(ticker=ticker,
+            source_evidence_binding=dict(ticker=ticker,source_generation_id='source-one'),
+            current_price=deepcopy(sub['current_price']), decision_evidence=[],
+            source_use_projection=dict(source_permissions=[]),
+            r2_eligible_range_catalog=dict(tactical_candidates=[]))
         sub.update(ticker=ticker,security_id='OFFLINE:'+ticker,source_generation_id='source-one',
             frozen_authority={'core':digest(core),'pass_a':digest(a),'accepted_b':digest(baseline.decision),
-                              'context':digest('synthetic context')})
+                              'context':digest(entry_contexts[ticker])})
         sub['tactical_catalog'][0].update(ticker=ticker,security_id='OFFLINE:'+ticker)
         for fact in sub['facts'].values():
             fact.update(ticker=ticker,security_id='OFFLINE:'+ticker)
@@ -224,7 +241,7 @@ def fixture_run(tmp_path, monkeypatch, outcomes=(), *, cap=1, limited=True, subj
             return result
         values = SimpleNamespace(market=market,gen=plan.cohort.run_id,source_gen='source-one',source=source,
             valuation_context=lambda ticker:calibration_context(source['forward_views'][ticker]),
-            fresh_stocks=stocks,cores=cores,arows=pa,brows=pb,b2_request=lambda t:requests[t],
+            fresh_stocks=stocks,cores=cores,arows=pa,brows=pb,bctx=entry_contexts,b2_request=lambda t:requests[t],
             verify_model_build=lambda *args:None,accept=lambda *args:None,build=build,
             limitation_subjects=frozenset(plan.cohort.limitation_subjects),ordinary_subjects=lambda:ordinary,
             limitation_decision=lambda ticker:decision)
@@ -290,14 +307,44 @@ def test_mixed_full_real_stage_render_chain(tmp_path,monkeypatch,outcomes,attemp
                 verify_render_partition(**changed)
 
 
-def test_mixed_retry_exhaustion_stays_failed(tmp_path,monkeypatch):
+def test_mixed_retry_exhaustion_preserves_verified_partial_messages(tmp_path,monkeypatch):
     fixture = fixture_run(tmp_path,monkeypatch,['timeout','timeout'])
-    assert fixture.result['status']=='FAILED_NO_SEND' and 'messages' not in fixture.result
-    assert fixture.budget.retry_used==1 and fixture.budget.stopped
-    assert not (fixture.cycle/'render/response.json').exists()
+    result = fixture.result
+    assert result['status']==PARTIAL, result.get('error_chain')
+    assert fixture.budget.retry_used==1 and not fixture.budget.stopped
+    assert len(result['messages'])==14 and result['expected_message_count']==15
+    assert {m['message_id'] for m in result['messages']}==set(result['child_binding']['message_ids'])-{'TSM'}
+    assert next(m for m in result['messages'] if m['message_id']=='SKHY')['decision_mode']=='UNKNOWN_LIMIT'
+    assert all(m['NO_SEND'] is True for m in result['messages']) and result['normal_messages_sent'] is False
+    assert (fixture.cycle/'render/response.json').exists()
     omitted = json.loads((fixture.cycle/'b2/TSM/unissued.json').read_bytes())
-    assert omitted['status']=='B2_UNISSUED_TIMEOUT'
+    assert omitted['status']=='B2_UNISSUED_TIMEOUT' and omitted['attempts']==2
+    assert result['unissued']=={'TSM':omitted}
+    assert not (fixture.cycle/'b2/TSM/accepted.json').exists()
     assert not (fixture.cycle/'b2/SKHY').exists()
+    b2 = json.loads((fixture.cycle/'b2/response.json').read_bytes())['output']
+    args = dict(messages=result['messages'],subjects=fixture.plan.cohort.market_subjects['us'],
+        slots=fixture.plan.slots,b2=b2,journal=read_invocation_journal(fixture.budget.journal.path.read_bytes()),
+        accepted_content_sha256=result['messages_sha256'],plan=fixture.plan)
+    verify_render_partition(**args)
+    verify_mixed_render(fixture.plan,result['messages'],result['limitation_receipts'],omitted=result['unissued'])
+    for mutation in ('limited_omission','wrong_slot','one_timeout','missing_message','wrong_hash'):
+        changed = deepcopy(args)
+        if mutation=='limited_omission':
+            changed['b2']['unissued']['SKHY'] = dict(omitted)
+        elif mutation=='wrong_slot':
+            changed['b2']['unissued']['TSM']['slot_id'] = 'not-the-original-slot'
+        elif mutation=='one_timeout':
+            changed['b2']['unissued']['TSM']['attempts'] = 1
+        elif mutation=='missing_message':
+            changed['messages'] = changed['messages'][1:]
+            changed['accepted_content_sha256'] = digest(changed['messages'])
+        else:
+            changed['accepted_content_sha256'] = digest('changed content')
+        with pytest.raises(ValueError):
+            verify_render_partition(**changed)
+    with pytest.raises(ValueError,match='model_render_mixed_census'):
+        verify_mixed_render(fixture.plan,result['messages'],result['limitation_receipts'],omitted={'TSM','SKHY'})
 
 
 def test_current_caller_shared_retry_wiring_is_default_off():

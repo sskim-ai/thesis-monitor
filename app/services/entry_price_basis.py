@@ -19,8 +19,8 @@ def _day(value):
     return parsed if parsed.isoformat() == value else None
 
 
-def frame_matches_price(frame, *, timeframe, frame_as_of, price, session):
-    """Check one accepted chart frame against a B-context quote.
+def frame_price_failures(frame, *, timeframe, frame_as_of, price, session):
+    """Explain the existing completed-frame check without relaxing its basis.
 
     ``price`` uses ``value/currency/basis/as_of``. Callers must separately bind
     the source identity, ENTRY permission and daily quote before using a
@@ -28,29 +28,45 @@ def frame_matches_price(frame, *, timeframe, frame_as_of, price, session):
     same-session, same-close path; it cannot make an older reference current.
     """
     if not isinstance(frame, dict) or not isinstance(price, dict):
-        return False
+        return ('FRAME_OR_PRICE_MISSING',)
     session_day, frame_day = _day(session), _day(frame_as_of)
     candle = frame.get('candle')
     close = number(candle.get('close')) if isinstance(candle, dict) else None
     current = number(price.get('value'))
-    if (timeframe not in ('daily', 'weekly', 'monthly')
-            or session_day is None or frame_day is None or frame_day > session_day
-            or price.get('as_of') != session or frame.get('quality') != 'available'
-            or not price.get('currency') or frame.get('currency') != price['currency']
-            or frame.get('timeframe', timeframe) != timeframe
-            or ('as_of_date' in frame and frame['as_of_date'] != frame_as_of)
-            or current is None or current <= 0 or close is None or close <= 0
-            or (price.get('basis'), frame.get('price_basis')) not in {
+    failures = []
+    checks = (
+        ('TIMEFRAME_MISSING_OR_MISMATCH', timeframe in ('daily', 'weekly', 'monthly')
+            and frame.get('timeframe', timeframe) == timeframe),
+        ('FRAME_SESSION_MISMATCH', session_day is not None and frame_day is not None
+            and frame_day <= session_day and price.get('as_of') == session
+            and ('as_of_date' not in frame or frame['as_of_date'] == frame_as_of)),
+        ('FRAME_UNAVAILABLE', frame.get('quality') == 'available'),
+        ('FRAME_CURRENCY_MISMATCH', bool(price.get('currency'))
+            and frame.get('currency') == price['currency']),
+        ('FRAME_PRICE_INVALID', current is not None and current > 0 and close is not None and close > 0),
+        ('FRAME_PRICE_BASIS_MISMATCH', (price.get('basis'), frame.get('price_basis')) in {
                 ('adjusted_close', 'adjusted'), ('unadjusted_close', 'unadjusted'),
-                ('regular_close', 'unadjusted')}):
-        return False
+                ('regular_close', 'unadjusted')}),
+    )
+    failures.extend(code for code, passed in checks if not passed)
     if any(row.get(key) in ('PARTIAL', 'UNCONFIRMED')
-           for row in (frame, candle) for key in ('bar_state', 'completion_state')):
-        return False
+           for row in (frame, candle if isinstance(candle, dict) else {})
+           for key in ('bar_state', 'completion_state')):
+        failures.append('FRAME_INCOMPLETE')
     metadata_present = 'completed_bar_only' in frame or 'evaluation_as_of' in frame
-    if metadata_present and (frame.get('completed_bar_only') is not True
-                             or frame.get('evaluation_as_of') != session):
-        return False
+    if metadata_present:
+        if frame.get('completed_bar_only') is not True:
+            failures.append('FRAME_INCOMPLETE')
+        if frame.get('evaluation_as_of') != session:
+            failures.append('FRAME_EVALUATION_MISMATCH')
     if timeframe == 'daily' or not metadata_present:
-        return frame_as_of == session and close == current
-    return True
+        if frame_as_of != session:
+            failures.append('FRAME_SESSION_MISMATCH')
+        if close != current:
+            failures.append('FRAME_CLOSE_MISMATCH')
+    return tuple(dict.fromkeys(failures))
+
+
+def frame_matches_price(frame, *, timeframe, frame_as_of, price, session):
+    return not frame_price_failures(frame, timeframe=timeframe, frame_as_of=frame_as_of,
+                                    price=price, session=session)

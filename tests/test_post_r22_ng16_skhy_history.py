@@ -152,11 +152,12 @@ def test_archived_bridge_cannot_issue_current_context_without_original_inputs(ar
               financial_inputs=None, _permit=_BUILDER_PERMIT)
 
 
-def test_current_consumer_synthetic_context_ceiling_and_scope_broadening_denial(tmp_path):
+def test_current_consumer_synthetic_comparison_scope_and_valuation_denial(tmp_path):
     from app.services.canonical_source_inputs import fresh_authority_inputs
     from app.services.cross_market_decision_engine_service import build_decision_evidence_packet
     from app.services.direction_timing_ownership_service import build_owned_evidence_packet
     from app.services.fresh_financial_stock_owner import assemble_fresh_stock
+    from app.services.reported_business_projection import COMPARISON_USES
     from scripts.m12dr_financial_source_authority import build_source_authority
     from tests.rev9_source_fixtures import bridge_inputs
     from tests.rev10_source_fixtures import wire_clock
@@ -174,15 +175,16 @@ def test_current_consumer_synthetic_context_ceiling_and_scope_broadening_denial(
     authority = build_source_authority(**fresh_authority_inputs(result, inputs))
     records = {r['ref_id']: r for r in authority['authority']['authority_records']}
     contexts = [r for r in evidence.evidence if r.reported_business]
-    assert contexts and {r.reported_business.kind for r in contexts} == {'ISSUER_CONTEXT', 'QUALITY'}
+    assert contexts and {r.reported_business.kind for r in contexts} == {'COMPARISON', 'QUALITY'}
     for row in contexts:
-        assert row.reported_business.allowed_uses == ('CONTEXT',)
+        comparison = row.reported_business.kind == 'COMPARISON'
+        assert row.reported_business.allowed_uses == (COMPARISON_USES if comparison else ('CONTEXT',))
         assert row.reported_business.security_valuation_transfer is False
-        assert row.source_use.core_current_fact is False
-        assert records[row.ref_id]['allowed_uses'] == ['CONTEXT']
-        assert 'OVERALL_DIRECTION' in records[row.ref_id]['prohibited_uses']
+        assert row.source_use.core_current_fact is comparison
+        assert set(records[row.ref_id]['allowed_uses']) == (set(COMPARISON_USES) if comparison else {'CONTEXT', 'CONFIDENCE'})
+        assert 'VALUATION' in records[row.ref_id]['prohibited_uses']
     assert stock['current_valuation_denial'] == 'ISSUER_BRIDGE_HAS_NO_SECURITY_VALUATION_AUTHORITY'
-    ref = next(r for r in contexts if r.reported_business.kind == 'ISSUER_CONTEXT')
+    ref = next(r for r in contexts if r.reported_business.kind == 'COMPARISON')
     altered = ref.model_copy(update={'reported_business': ref.reported_business.model_copy(
         update={'allowed_uses': ('CONTEXT', 'OVERALL_DIRECTION')})})
     changed = evidence.model_copy(update={'evidence': tuple(

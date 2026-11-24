@@ -2,6 +2,7 @@
 from app.services.direction_timing_ownership_service import verified_owned_packet_view
 from scripts import r2b_r2_contract as c
 from app.services import canonical_monitoring_owner as owner
+from app.services.entry_candidate_basis import restrict_entry_candidates
 from scripts.m12co_entry_range_contract import build_subject_candidate_coverage
 from scripts.m12cr_r1_typed_quality_contract import project_business_evidence_quality, project_security_valuation_basis
 from scripts.m12dj_source_authority_preflight import preflight_current_pass_a_subject
@@ -41,4 +42,7 @@ def b_input(view, cat, sub, chain, classification, capability):
     transform = validate_pass_b_transformation(context=ctx, raw_source_metadata=sub["decision_evidence"], **common)
     c._require(transform["status"] == "PASS", "pass_b_transformation_failed")
     ctx.update(r2_policy_capability=capability, r2_valuation=valuation, r2_eligible_range_catalog=entries)
+    ctx, entries = restrict_entry_candidates(ctx, entries, ticker=view['ticker'],
+        security_id=(view.get('valuation_view') or {}).get('security_id'),
+        source_generation_id=chain['source_generation_id'])
     return ctx, entries, valuation

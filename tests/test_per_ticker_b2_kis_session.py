@@ -54,21 +54,22 @@ def admitted(tmp_path, plan, cap):
     return budget, runtime
 
 
-def scenario(tmp_path, monkeypatch, failures):
+def scenario(tmp_path, monkeypatch, failures, *, limited=True):
     monkeypatch.setattr(old, 'admitted_budget', admitted)
     transport = old.transport
     def injected(folder, patch, budget, runtime, outcomes, recorded):
         subjects = [s.subjects[0] for s in budget.plan.slots if s.stage == 'B2']
+        upstream = sum(s.stage!='B2' for s in budget.plan.slots)
         stream = []
         for i, value in enumerate(outcomes):
-            ticker = subjects[i-16] if i >= 16 else 'MARKET' if i == 0 else None
+            ticker = subjects[i-upstream] if i >= upstream else 'MARKET' if i == 0 else None
             errors = failures.get(ticker, [])
             stream.extend(errors)
             if errors != ['timeout', 'timeout']:
                 stream.append(value)
         return transport(folder, patch, budget, runtime, iter(stream), recorded)
     monkeypatch.setattr(old, 'transport', injected)
-    return mixed.fixture_run(tmp_path, monkeypatch, cap=1)
+    return mixed.fixture_run(tmp_path, monkeypatch, cap=1, limited=limited)
 
 
 def test_all_13_b2_retry_once_42_starts_29_accepts_15_messages_and_cold(tmp_path, monkeypatch):
@@ -100,14 +101,23 @@ def test_third_distinct_ticker_not_blocked_by_old_shared_cap(tmp_path, monkeypat
 
 
 def test_second_timeout_preserves_mixed_contract_and_no_third_attempt(tmp_path, monkeypatch):
+    from app.services.research_no_send_run import MarketResearchChild, PARTIAL
     f = scenario(tmp_path, monkeypatch, {'TSM':['timeout','timeout']})
-    assert f.result['status'] == 'FAILED_NO_SEND' and 'messages' not in f.result
+    assert f.result['status'] == PARTIAL, f.result.get('error_chain')
+    assert len(f.result['messages'])==14 and f.result['expected_message_count']==15
     assert sum(c['slot_scope']['subjects']==['TSM'] for c in f.calls) == 2
-    assert not (f.cycle/'render/response.json').exists()
-    assert f.result['stage_receipts'][-1]['stage'] == 'VALIDATE'
+    assert (f.cycle/'render/response.json').exists()
+    assert f.result['stage_receipts'][-1]['stage'] == 'RENDER'
     assert json.loads((f.cycle/'b2/response.json').read_bytes())['output']['unissued']['TSM']['attempts'] == 2
-    assert any(frame['file']=='production_runtime_bridge.py' and frame['function']=='stage'
-        for error in f.result['error_chain'] for frame in error.get('frames',[]))
+    cold = read_no_send_partition(f.cycle,plan=f.plan,invocation_journal=f.budget.journal.path)
+    assert cold['count']==14 and cold['expected']==15 and cold['unissued']==['TSM']
+    assert cold['physical_attempts']==30 and cold['timeout_retries']==1
+    class FixtureChild(MarketResearchChild):
+        def binding(self):
+            return f.result['child_binding']
+    ledger = f.budget.run_ledger
+    assert ledger.rendered_market(FixtureChild(f.plan,None),f.result)==f.result
+    assert ledger.state()['state']=='RENDERED_NO_SEND'
 
 
 @pytest.mark.parametrize('failure', ['ambiguous','auth'])

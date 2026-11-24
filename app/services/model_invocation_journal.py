@@ -5,7 +5,9 @@ import os
 from pathlib import Path
 
 from app.services.unified_snapshot_contract import digest, encoded
-from app.services.model_timeout_retry import validate_timeout, validate_b2_retry_binding, market_timeout_retry_cap
+from app.services.model_timeout_retry import (
+    validate_timeout, validate_b2_retry_binding, market_timeout_retry_cap, b2_retry_budget_bounds,
+)
 
 
 def _empty():
@@ -52,8 +54,11 @@ class ModelInvocationJournal:
             self.identity['timeout_retry_market']='kr'
         if b2_retry_policy is not None:
             validate_b2_retry_binding(b2_retry_policy)
+            minimum, full_maximum = b2_retry_budget_bounds(b2_retry_policy,
+                retry_cap=retry_cap, retry_market=retry_market)
             if (retry_cap not in (0,1) or inherited_market_slot
-                    or maximum != b2_retry_policy['maximum']+retry_cap or b2_retry_policy['plan_sha256'] != plan_sha256):
+                    or type(maximum) is not int or not minimum <= maximum <= full_maximum
+                    or b2_retry_policy['plan_sha256'] != plan_sha256):
                 raise ValueError('model_b2_retry_journal_scope')
             market_timeout_retry_cap(b2_retry_policy,retry_cap=retry_cap,retry_market=retry_market)
             self.identity['b2_retry_policy'] = b2_retry_policy
@@ -90,8 +95,11 @@ def _apply(state, event, value, identity):
         if policy is not None:
             validate_b2_retry_binding(policy)
             cap=identity.get('timeout_retry_cap',0)
+            minimum, full_maximum = b2_retry_budget_bounds(policy, retry_cap=cap,
+                retry_market=identity.get('timeout_retry_market','us'))
             if (cap not in (0,1) or identity.get('inherited_market_slot')
-                    or identity['maximum'] != policy['maximum']+cap or identity['plan_sha256'] != policy['plan_sha256']):
+                    or type(identity['maximum']) is not int or not minimum <= identity['maximum'] <= full_maximum
+                    or identity['plan_sha256'] != policy['plan_sha256']):
                 raise ValueError('model_b2_retry_journal_identity')
             market_timeout_retry_cap(policy,retry_cap=cap,retry_market=identity.get('timeout_retry_market','us'))
         if event == 'OPEN':
@@ -149,6 +157,7 @@ def _apply(state, event, value, identity):
             if (not retry_enabled or unresolved != {slot} or len(state['attempts'].get(slot, ())) != 1
                     or len(state['timeouts'].get(slot, ())) != 1
                     or (slot not in policy['b2_slots'] and not market_retry if policy else state['retry_used'] >= cap)
+                    or policy and state['retry_used'] >= identity['maximum']-policy['base_slots']
                     or identity.get('timeout_retry_market')=='kr' and not (market_retry or policy and slot in policy['b2_slots'])
                     or state['physical_calls'] >= identity['maximum']):
                 raise ValueError('model_journal_retry_unavailable')

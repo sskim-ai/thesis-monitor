@@ -15,7 +15,7 @@ from app.services.sec_business_field_quality_service import reported_comparison_
 from scripts.m12da_source_use_contract import SourceUse, canonical_sha256
 from scripts.m12dk_current_source_authority import build_current_source_authority
 from scripts.m12dp_observed_business_coverage import _validate_issuer_binding
-from app.services.reported_business_projection import comparative_admission_errors, ISSUER_CONTRACT
+from app.services.reported_business_projection import comparative_admission_errors, COMPARISON_USES, ISSUER_CONTRACT
 from app.services.reported_comparison_facts import comparative_facts
 
 
@@ -210,10 +210,11 @@ def build_source_authority(*, quality_bundles, issuer_bindings, versioned_busine
             statement=row.get("statement"), expected_statement=_compact(fact["fields"]) if fact else None,
             category=row.get("category"), as_of=row.get("as_of"), source_family=record["source_family"])
         # Purpose follows the replayed owner, not presence of a caller-visible tag.
-        issuer_context = bool((fresh and fresh.get('issuer_business_bridge'))
-                              or projection or (fact or {}).get('issuer_projection'))
-        tagged_context = (row.get('reported_business') or {}).get('kind') == 'ISSUER_CONTEXT'
-        if tagged_context:
+        issuer_source = bool((fresh and fresh.get('issuer_business_bridge'))
+                             or projection or (fact or {}).get('issuer_projection'))
+        business = row.get('reported_business') or {}
+        current_issuer_comparison = False
+        if business.get('contract') == ISSUER_CONTRACT:
             from app.services.reported_business_projection import projection_for_fact
             if fresh is None or not fresh.get('issuer_business_bridge') or fact is None:
                 raise ValueError('issuer_context_original_fresh_owner_required')
@@ -221,8 +222,11 @@ def build_source_authority(*, quality_bundles, issuer_bindings, versioned_busine
                 packet_id=kwargs['evidence_packet']['packet_id'], assessment_date=packet['assessment_date'],
                 market=packet['market'])
             if (owned_context is None or owned_context.model_dump(mode='json') != row['reported_business']
-                    or owned_context.contract != ISSUER_CONTRACT or owned_context.allowed_uses != ('CONTEXT',)):
+                    or owned_context.contract != ISSUER_CONTRACT):
                 raise ValueError('issuer_context_authority_mismatch')
+            current_issuer_comparison = (owned_context.kind == 'COMPARISON'
+                                        and owned_context.allowed_uses == COMPARISON_USES)
+        issuer_context = issuer_source and not current_issuer_comparison
         owner = quality["contract"] if quality else CONTRACT
         receipt.update(source_family=FAMILY, errors=errors, quality_contract=owner,
                        quality_receipt_sha256=quality["receipt_sha256"] if quality else None)
@@ -278,10 +282,21 @@ def build_source_authority(*, quality_bundles, issuer_bindings, versioned_busine
                     raise ValueError('issuer_context_authority_mismatch')
                 kind = owned.kind
             record = records[ref]
+            if not legacy_quality and kind == 'COMPARISON':
+                if (record['source_family'] != FAMILY or record['authority_state'] != 'RESOLVED'
+                        or set(record['allowed_uses']) != _ALLOWED):
+                    raise ValueError('issuer_comparison_authority_mismatch')
+                continue
             quality_narrowing = (kind == 'QUALITY'
                 and record['source_family'] == 'typed_quality'
                 and record['authority_state'] == 'RESOLVED'
                 and set(record['allowed_uses']) == {'CONTEXT', 'CONFIDENCE'})
+            if not legacy_quality and kind == 'QUALITY':
+                # Keep the original selected issuer source's quality limits in
+                # the normal quality channel. They never become direction.
+                if not quality_narrowing:
+                    raise ValueError('issuer_quality_original_authority_required')
+                continue
             if not quality_narrowing and record['source_family'] not in {'unclassified', ISSUER_CONTEXT_FAMILY}:
                 raise ValueError('issuer_context_existing_restrictive_owner')
             allowed = {SourceUse.CONTEXT.value}

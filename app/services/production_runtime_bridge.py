@@ -282,14 +282,15 @@ class ProductionRuntimeBridgeV1:
             omitted = b2.get('unissued',{})
             limits = session.limitation_subjects
             decisions = {ticker:digest(session.limitation_decision(ticker)) for ticker in sorted(limits)}
-            if b2.get('limitation_decisions',{}) != decisions or (limits and (omitted or stage == 'DELIVER')):
+            if b2.get('limitation_decisions',{}) != decisions or (limits and stage == 'DELIVER'):
                 raise ValueError('production_limitation_no_send_decision_binding')
             if omitted and (stage not in {'VALIDATE','RENDER'} or not getattr(budget,'retry_enabled',False)):
                 raise ValueError('production_partial_b2_no_send_required')
             if omitted:
                 from app.services.model_timeout_retry import verify_b2_coverage
 
-                verify_b2_coverage(b2, subjects=subjects, slots=budget.slots, exhausted=budget.exhausted,
+                verify_b2_coverage(b2, subjects=tuple(t for t in subjects if t not in limits),
+                    slots=budget.slots, exhausted=budget.exhausted,
                     bound=budget.bound, attempts=budget.attempts)
             elif set(b2_rows) != set(subjects) - limits:
                 raise ValueError('production_b2_complete_current_cohort_required')
@@ -312,7 +313,7 @@ class ProductionRuntimeBridgeV1:
                         decision_sha256=m['limitation_decision_sha256']) for m in messages if m['message_id'] in limits}
                     if {t:r['decision_sha256'] for t,r in receipts.items()} != decisions:
                         raise ValueError('production_render_limitation_decision_drift')
-                    verify_mixed_render(budget.plan, messages, receipts)
+                    verify_mixed_render(budget.plan, messages, receipts, omitted=omitted)
                     output['limitation_receipts'] = receipts
             else:
                 messages = request['inputs']['RENDER']['output']['messages']

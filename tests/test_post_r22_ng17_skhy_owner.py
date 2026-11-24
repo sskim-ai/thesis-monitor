@@ -179,6 +179,7 @@ def test_synthetic_original_selected_fresh_projection_authority_chain_retains_sc
     from app.services.bounded_financial_stock_owner import _issuer_business_facts
     from app.services.canonical_source_inputs import fresh_authority_inputs
     from app.services.fresh_financial_stock_owner import assemble_fresh_stock
+    from app.services.reported_business_projection import COMPARISON_USES
     from app.services.selected_financial_owner import validate
     from scripts.m12dr_financial_source_authority import build_source_authority
 
@@ -202,16 +203,16 @@ def test_synthetic_original_selected_fresh_projection_authority_chain_retains_sc
         assert chain['original_fact_sha256'] == digest(source_fact)
         assert chain['source_provider'] == 'opendart'
         row = records['canonical:' + fact['fact_id']]
-        assert row['allowed_uses'] == ['CONTEXT']
-        assert 'OVERALL_DIRECTION' in row['prohibited_uses']
+        assert set(row['allowed_uses']) == set(COMPARISON_USES)
+        assert 'VALUATION' in row['prohibited_uses']
     stock = result['packet']['stocks'][0]
     assert stock['current_valuation_denial'] == 'ISSUER_BRIDGE_HAS_NO_SECURITY_VALUATION_AUTHORITY'
-    assert {e['kind'] for e in stock['reported_business_projection']['payload']['entries'].values()} == {'ISSUER_CONTEXT', 'QUALITY'}
+    assert {e['kind'] for e in stock['reported_business_projection']['payload']['entries'].values()} == {'COMPARISON', 'QUALITY'}
     record_property('ng17_skhy_synthetic_owner_chain', dict(
         synthetic_only=True, historical_public_mixed_in=False, current_SKHY_grant=False,
         original_owners=['_issuer_business_facts', 'assemble_fresh_stock', 'selected_financial_owner.validate',
                          'reported_business_projection.issue', 'fresh_authority_inputs', 'build_source_authority'],
-        allowed_use='CONTEXT', security_transfer=False))
+        allowed_uses=COMPARISON_USES, security_transfer=False))
 
 
 @pytest.mark.parametrize('change,error', [

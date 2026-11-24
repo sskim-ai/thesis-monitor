@@ -9,13 +9,14 @@ from app.services.cross_market_decision_engine_service import build_decision_evi
 from app.services.direction_timing_ownership_service import build_owned_evidence_packet
 from app.services.fresh_financial_stock_owner import assemble_fresh_stock
 from app.services.fundamental_input_policy import InputSourceClass
+from app.services.reported_business_projection import COMPARISON_USES
 from app.services.unified_snapshot_contract import digest
 from scripts.m12dr_financial_source_authority import build_source_authority
 from tests.rev9_source_fixtures import bridge_inputs
 from tests.rev10_source_fixtures import wire_clock
 from tests.test_reported_business_native_projection import window
 from tests.test_unified_stock_acquisition import plan as plan_fixture
-from scripts.m12ds_r2_judgment_policy import attribution_only_refs, materialize_core
+from scripts.m12ds_r2_judgment_policy import attribution_only_refs, frozen_fact_fields, materialize_core, observations
 from scripts.m12ds_r2_schemas import core_schema
 
 
@@ -28,7 +29,9 @@ def source(tmp_path):
     return target
 
 
-def test_real_owner_chain_issues_only_issuer_context(source):
+def test_real_current_issuer_owner_reaches_comparisons_observations_and_preflight(source):
+    from scripts.r2b_r9_full_fresh_requalification import prepare_fresh_subject
+
     result = assemble_fresh_stock(**source)
     stock = result['packet']['stocks'][0]
     evidence = build_decision_evidence_packet(packet=result['packet'], stock=stock)
@@ -38,22 +41,65 @@ def test_real_owner_chain_issues_only_issuer_context(source):
     refs = set(result['comparative_fact_refs'])
     assert refs and refs <= owned.core_refs
     for ref in evidence.evidence:
-        if ref.reported_business:
-            assert ref.source_use.source_class == InputSourceClass.REPORTED_ISSUER_CONTEXT
-            assert ref.source_use.core_current_fact is False
-    for ref in evidence.evidence:
         if ref.ref_id not in refs:
             continue
-        assert ref.reported_business.kind == 'ISSUER_CONTEXT'
-        assert ref.reported_business.allowed_uses == ('CONTEXT',)
-        assert ref.source_use.source_class == InputSourceClass.REPORTED_ISSUER_CONTEXT
-        assert ref.source_use.core_current_fact is False
-        assert records[ref.ref_id]['allowed_uses'] == ['CONTEXT']
-        assert 'OVERALL_DIRECTION' in records[ref.ref_id]['prohibited_uses']
+        assert ref.reported_business.kind == 'COMPARISON'
+        assert ref.reported_business.allowed_uses == COMPARISON_USES
+        assert ref.source_use.source_class == InputSourceClass.REPORTED_BUSINESS_COMPARISON
+        assert ref.source_use.core_current_fact is True
+        assert set(records[ref.ref_id]['allowed_uses']) == set(COMPARISON_USES)
+        assert {'VALUATION', 'ENTRY', 'PRICE_ENTRY_CONTEXT'} <= set(records[ref.ref_id]['prohibited_uses'])
         assert not ref.reported_business.security_valuation_transfer
         assert not ref.reported_business.recurrence_verified
+    quality_ref = result['quality_view']['receipt']['canonical_ref']
+    assert set(records[quality_ref]['allowed_uses']) == {'CONTEXT', 'CONFIDENCE'}
+    assert 'OVERALL_DIRECTION' in records[quality_ref]['prohibited_uses']
     assert stock['current_valuation_denial']
+    assert not result['issuer_business_bridge']['SECURITY_VALUATION_BRIDGE_ELIGIBLE']
+    assert not result['issuer_business_bridge']['SECURITY_PER_SHARE_BRIDGE_ELIGIBLE']
     assert owned == build_owned_evidence_packet(evidence, stock=stock)
+    inputs = fresh_authority_inputs(result, source)
+    fields = frozen_fact_fields(result['packet'], result['ticker'], inputs['source_metadata'])
+    observed = observations(inputs['source_metadata'], authority['authority'], fields)
+    assert {row['metric'] for row in observed.values()} == {'revenue', 'operating_income'}
+    assert {row['source_ref'] for row in observed.values()} <= refs
+    assert not refs & attribution_only_refs(inputs['source_metadata'], authority['authority'])
+
+    prepared = prepare_fresh_subject(source, execution_generation_id='c49-current-issuer-offline')
+    assert prepared['prepared']['mode'] == 'EVIDENCE_BASED'
+    assert prepared['prepared']['core_input']['observed_propositions']
+    assert prepared['readiness']['status'] == 'PASS'
+    assert all(prepared['readiness'][stage] == 'PASS' for stage in ('Core', 'A', 'B', 'NewBuyer', 'Holder'))
+    assert prepared['readiness']['a_materialization']['status'] == 'PASS'
+
+
+def test_denied_original_income_never_becomes_an_issuer_observation(source, tmp_path):
+    from app.services.bounded_financial_stock_owner import assemble
+    from app.services.fresh_financial_stock_owner import fresh_stock_baseline
+    from tests.rev8_source_fixtures import fresh_inputs
+
+    plan = source['technical_inputs']['plan']
+    with wire_clock(plan.frozen_at + timedelta(seconds=4)):
+        underlying = fresh_inputs(tmp_path / 'denied-issuer', '000660', denied_quality=True, plan=plan)
+    source_owner = dict(baseline=fresh_stock_baseline(underlying['technical_inputs']),
+        local_seed=underlying['technical_inputs']['local_seed'], **underlying['financial_inputs'])
+    original = assemble(**source_owner)
+    assert any(bundle['quality']['fields']['current.net_income']['state'] == 'denied'
+               for bundle in original['projection']['quality_bundles'])
+    bridge = source['financial_inputs']['issuer_business']
+    bridge.update(source_inputs=source_owner, source_result_sha256=digest(original))
+    result = assemble_fresh_stock(**source)
+    inputs = fresh_authority_inputs(result, source)
+    authority = build_source_authority(**inputs)['authority']
+    fields = frozen_fact_fields(result['packet'], result['ticker'], inputs['source_metadata'])
+    observed = observations(inputs['source_metadata'], authority, fields)
+    assert result['quality_view']['receipt']['state'] == 'denied'
+    assert not any(row['metric'] == 'net_income' for row in observed.values())
+    quality_ref = result['quality_view']['receipt']['canonical_ref']
+    record = next(row for row in authority['authority_records'] if row['ref_id'] == quality_ref)
+    assert record['source_family'] == 'typed_quality'
+    assert set(record['allowed_uses']) == {'CONTEXT', 'CONFIDENCE'}
+    assert 'OVERALL_DIRECTION' in record['prohibited_uses']
 
 
 @pytest.mark.parametrize('mutation', ['issuer', 'underlying', 'exchange', 'security_type',
@@ -91,8 +137,8 @@ def test_actual_native_consumer_rejects_scope_broadening(source, change):
     result = assemble_fresh_stock(**source)
     stock = result['packet']['stocks'][0]
     evidence = build_decision_evidence_packet(packet=result['packet'], stock=stock)
-    ref = next(r for r in evidence.evidence if r.reported_business and r.reported_business.kind == 'ISSUER_CONTEXT')
-    update = {'kind': 'COMPARISON'} if change == 'kind' else {'allowed_uses': ('CONTEXT', 'OVERALL_DIRECTION')}
+    ref = next(r for r in evidence.evidence if r.reported_business and r.reported_business.kind == 'COMPARISON')
+    update = {'kind': 'ISSUER_CONTEXT'} if change == 'kind' else {'allowed_uses': (*COMPARISON_USES, 'VALUATION')}
     if change == 'issuer':
         update = {'issuer_id': 'CIK:wrong'}
     elif change == 'generation':
@@ -115,26 +161,23 @@ def test_caller_rehash_cannot_issue_bridge_context(source):
 
 
 @pytest.mark.parametrize('effect', ['CONFIDENCE_ONLY', 'DATA_QUALITY_ONLY'])
-@pytest.mark.parametrize('kind', ['ISSUER_CONTEXT', 'QUALITY'])
-def test_issuer_attribution_cannot_change_security_economic_judgment(source, effect, kind):
+def test_current_issuer_quality_keeps_nondirectional_quality_channel(source, effect):
     result = assemble_fresh_stock(**source)
     inputs = fresh_authority_inputs(result, source)
     authority = build_source_authority(**inputs)['authority']
     metadata = inputs['source_metadata']
-    refs = {r['ref_id'] for r in metadata if (r.get('reported_business') or {}).get('kind') == kind}
+    refs = {r['ref_id'] for r in metadata if (r.get('reported_business') or {}).get('kind') == 'QUALITY'}
     assert refs
-    assert refs <= attribution_only_refs(metadata, authority)
+    assert not refs & attribution_only_refs(metadata, authority)
     context = {result['ticker']: dict(metadata=metadata, authority=authority)}
-    try:
-        schema = core_schema(context)
-    except ValueError as exc:
-        assert str(exc) == 'core_source_empty'
-    else:
-        import json
-        assert all(ref not in json.dumps(schema) for ref in refs)
-    raw = dict(claims=[dict(effect=effect, text='Issuer-only uncertainty cannot change this security stance',
+    assert core_schema(context)
+    raw = dict(claims=[dict(effect=effect, text='Source-owned issuer financial quality limit.',
         evidence_refs=[sorted(refs)[0]], observation_ids=[], materiality='CONTEXT_ONLY')])
-    with pytest.raises(ValueError, match='historical_attribution_not_economic_claim_authority'):
+    core = materialize_core(result['ticker'], raw, metadata, authority)
+    assert {row['effect'] for row in core['effects'].values()} == {effect}
+    assert not any(row['source_ref'] in refs for row in core['observations'].values())
+    raw['claims'][0]['effect'] = 'DIRECTIONAL_POSITIVE'
+    with pytest.raises(ValueError, match='direction_effect_observation_mismatch'):
         materialize_core(result['ticker'], raw, metadata, authority)
 
 

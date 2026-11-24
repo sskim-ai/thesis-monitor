@@ -191,7 +191,8 @@ def timing_input():
              statement=dict(candle=dict(close=100), currency='USD', price_basis='unadjusted',
                             quality='available'))]
     return dict(current_price=price, decision_evidence=evidence,
-        source_use_projection=dict(source_permissions=[dict(ref_id='zone:current', allowed_uses=['ENTRY'])]),
+        source_use_projection=dict(source_permissions=[dict(ref_id=ref, allowed_uses=['ENTRY'])
+            for ref in ('zone:current', 'price:current', 'canonical:chart:daily')]),
         r2_eligible_range_catalog=dict(tactical_candidates=[dict(candidate_id='zone',
             ticker='SYN_A', security_id='security-A', low=90, high=110, currency='USD',
             evidence_refs=['zone:current'])]))

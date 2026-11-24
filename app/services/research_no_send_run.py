@@ -426,7 +426,7 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                 receipts = outputs['RENDER']['output']['limitation_receipts']
                 if receipts != outputs['VALIDATE']['output']['limitation_receipts']:
                     raise ValueError('research_limitation_validate_render_drift')
-                verify_mixed_render(bridge.child.plan, messages, receipts)
+                verify_mixed_render(bridge.child.plan, messages, receipts, omitted=omitted)
                 state['limitation_receipts'] = receipts
             if omitted:
                 state.update(unissued=omitted, expected_message_count=len(bridge.child_binding['message_ids']))

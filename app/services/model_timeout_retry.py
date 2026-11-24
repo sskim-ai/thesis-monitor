@@ -88,6 +88,16 @@ def market_timeout_retry_cap(binding, *, retry_cap=0, retry_market='us'):
     return 0
 
 
+def b2_retry_budget_bounds(binding, *, retry_cap=0, retry_market='us'):
+    """US retries share the approved remainder after every initial call is reserved."""
+    market_timeout_retry_cap(binding, retry_cap=retry_cap, retry_market=retry_market)
+    maximum = binding['maximum'] + retry_cap
+    minimum = (binding['base_slots']
+        if retry_market == 'us' and retry_cap == 0 and binding['policy'] == B2_PER_TICKER_ONE_RETRY_V1
+        else maximum)
+    return minimum, maximum
+
+
 def confirmed_timeout(path, *, worker_pid, worker_returncode, receipt, prompt_sha256, schema_sha256):
     if (worker_returncode != 0 or receipt.get('status') != 'FAIL'
             or receipt.get('error_code') != 'TRANSPORT_TIMEOUT' or receipt.get('process_started') is not True
@@ -182,8 +192,6 @@ def verify_render_partition(*, messages, subjects, slots, b2, journal, accepted_
                 or tuple(subjects) != next(iter(plan.cohort.market_subjects.values()))):
             raise ValueError('research_timeout_plan_scope_drift')
         limits = set(plan.cohort.limitation_subjects)
-        if limits and omitted:
-            raise ValueError('production_limitation_no_send_decision_binding')
         ordinary = tuple(t for t in subjects if t not in limits)
     verify_b2_coverage(b2, subjects=ordinary, slots=slots, exhausted=journal['exhausted'],
         bound=journal['bound'], attempts=journal['attempts'])
@@ -253,8 +261,13 @@ def read_no_send_partition(cycle, *, plan, invocation_journal):
         raise ValueError('research_timeout_cold_per_ticker_scope')
     if type(cap) is not int or cap not in (0,1,2) or (not (cap or per_ticker) and omitted):
         raise ValueError('research_timeout_cold_retry_scope')
-    expected = dict(contract='model-invocation-journal-v1',plan_sha256=plan.sha256,
-        maximum=per_ticker['maximum']+cap if per_ticker else len(plan.slots)+cap)
+    maximum = per_ticker['maximum']+cap if per_ticker else len(plan.slots)+cap
+    if per_ticker:
+        minimum, full_maximum = b2_retry_budget_bounds(per_ticker, retry_cap=cap, retry_market=retry_market)
+        maximum = terminal.get('model_acceptances',{}).get('approved_max_invocations',maximum)
+        if type(maximum) is not int or not minimum <= maximum <= full_maximum:
+            raise ValueError('research_timeout_cold_retry_budget_scope')
+    expected = dict(contract='model-invocation-journal-v1',plan_sha256=plan.sha256, maximum=maximum)
     if cap:
         expected['timeout_retry_cap'] = cap
     if per_ticker:

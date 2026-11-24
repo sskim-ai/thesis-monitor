@@ -4,9 +4,7 @@ Inputs must be accepted, frozen Core/A/B artifacts from the caller's run. This
 module cannot acquire sources, invoke a model, persist an assessment or deliver.
 """
 from copy import deepcopy
-import json
-
-from app.services.entry_price_basis import frame_matches_price
+from app.services.entry_candidate_basis import assess_entry_candidates, statement as _statement
 from app.services.provider_valuation_calibration_context import parse_context
 from app.services.provider_native_valuation_snapshot import (
     ProviderNativeForwardValuationSnapshot, ProviderNativeValuationSnapshot,
@@ -72,63 +70,9 @@ def qualified_facts(context, ticker, generation):
     return facts
 
 
-def _statement(row):
-    value = row.get('statement', {})
-    if isinstance(value, str):
-        try:
-            value = json.loads(value)
-        except (json.JSONDecodeError, TypeError):
-            return {}
-    return value if isinstance(value, dict) else {}
-
-
-def tactical_catalog(context, ticker, security):
-    permissions = _unique(context['source_use_projection']['source_permissions'], 'ref_id')
-    evidence = _unique(context['decision_evidence'], 'ref_id')
-    price = context['current_price']
-    price_row = evidence.get(price.get('ref_id'), {})
-    price_value = _statement(price_row)
-    daily = evidence.get('canonical:chart:daily', {})
-    daily_matches_price = frame_matches_price(_statement(daily), timeframe='daily',
-        frame_as_of=daily.get('as_of'), price=price, session=price.get('as_of'))
-    result = []
-    for candidate in context['r2_eligible_range_catalog']['tactical_candidates']:
-        row = deepcopy(candidate)
-        proofs = []
-        for ref in row['evidence_refs']:
-            ev = evidence.get(ref, {})
-            zone = _statement(ev)
-            chart_ref = 'canonical:chart:' + str(zone.get('timeframe'))
-            chart = evidence.get(chart_ref, {})
-            chart_value = _statement(chart)
-            passed = (
-                row.get('ticker', ticker) == ticker
-                and row.get('security_id', security) == security
-                and ev.get('label') == 'chart_support_zone'
-                and contract.number(zone.get('zone_low')) == contract.number(row['low'])
-                and contract.number(zone.get('zone_high')) == contract.number(row['high'])
-                and zone.get('currency') == row['currency'] == price.get('currency')
-                and price_value.get('currency') == price.get('currency')
-                and ev.get('as_of') == price.get('as_of')
-                and price_row.get('as_of') == price.get('as_of')
-                and daily_matches_price
-                and frame_matches_price(chart_value, timeframe=zone.get('timeframe'),
-                    frame_as_of=chart.get('as_of'), price=price, session=price.get('as_of'))
-                and contract.number(price_value.get('current_price'))
-                == contract.number(price.get('value'))
-                and price_value.get('price_basis') == price.get('basis')
-                and price_value.get('price_as_of') == price.get('as_of')
-                and 'ENTRY' in permissions.get(ref, {}).get('allowed_uses', [])
-            )
-            proofs.append(dict(ref=ref, chart_ref=chart_ref, zone_sha256=digest(ev),
-                               chart_sha256=digest(chart), price_sha256=digest(price_row),
-                               passed=passed))
-        row.update(ticker=row.get('ticker', ticker), security_id=row.get('security_id', security),
-                   as_of=price.get('as_of'), price_basis=price.get('basis'), eligible=True,
-                   relation_basis_proven=bool(proofs) and all(p['passed'] for p in proofs),
-                   basis_proofs=proofs)
-        result.append(row)
-    return result
+def tactical_catalog(context, ticker, security, *, source_generation_id=None):
+    return assess_entry_candidates(context, ticker=ticker, security_id=security,
+                                   source_generation_id=source_generation_id)
 
 
 def absolute_discount(context):
@@ -199,7 +143,8 @@ def build_request(*, settings, context, accepted, core, pass_a, source_generatio
                    facts=facts, absolute_discount=absolute_discount(context),
                    current_price=deepcopy(context['current_price']),
                    tactical_catalog=tactical_catalog(context, ticker,
-                                                     context['valuation_context']['security_id']),
+                        context['valuation_context']['security_id'],
+                        source_generation_id=source_generation_id),
                    selected_tactical_candidate=accepted['tactical_choice'],
                    frozen_business_claims=deepcopy(core['atomic_claims']),
                    frozen_classification=deepcopy(pass_a),

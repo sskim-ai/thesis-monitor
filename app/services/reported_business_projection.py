@@ -126,8 +126,11 @@ def issue(*, stock, packet, facts, plan, acquisition, projection, selected_owner
             statement=_compact(catalog.get(fact["fact_id"], {}).get("fields", {})),
             expected_statement=_compact(fact["fields"]), category="earnings", as_of=fact["as_of_date"],
             source_family="unclassified"), "business_source_fact_mismatch")
-        entries[fact["fact_id"]] = ((fact, "ISSUER_CONTEXT", ("CONTEXT",)) if bridge else
-                                    (fact, "COMPARISON", COMPARISON_USES))
+        # A current comparison belongs to the legal issuer's business even
+        # when this monitored security is a different instrument. The replay
+        # above proves the issuer, original field quality and source generation;
+        # it does not transfer the underlying security's price or valuation.
+        entries[fact["fact_id"]] = (fact, "COMPARISON", COMPARISON_USES)
     qfact = quality["fact"]
     if qfact is not None:
         _require(catalog.get(qfact["fact_id"]) == qfact, "business_quality_fact_mismatch")
@@ -164,7 +167,7 @@ def projection_for_fact(stock, fact, *, ticker, packet_id, assessment_date, mark
     result = ReportedBusinessProjection.model_validate(value)
     _require(result.contract == payload['contract']
              and (result.kind != 'ISSUER_CONTEXT' or result.contract == ISSUER_CONTRACT)
-             and (result.contract != ISSUER_CONTRACT or result.kind in {'ISSUER_CONTEXT', 'QUALITY'})
+             and (result.contract != ISSUER_CONTRACT or result.kind in {'COMPARISON', 'ISSUER_CONTEXT', 'QUALITY'})
              and result.ticker == ticker and result.market == market and result.packet_id == packet_id and result.fact_sha256 == digest(fact)
              and result.allowed_uses == (COMPARISON_USES if result.kind == "COMPARISON" else ("CONTEXT",)),
              "business_projection_fact_or_use_mismatch")

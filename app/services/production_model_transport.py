@@ -105,7 +105,7 @@ def request_from_frame(frame):
                 from app.services.model_invocation_journal import read_invocation_journal
                 from app.services.research_artifact_budget import plain_path
 
-                from app.services.model_timeout_retry import b2_retry_binding
+                from app.services.model_timeout_retry import b2_retry_binding, b2_retry_budget_bounds
                 per_ticker = value.get('b2_retry_policy')
                 cap = value.get('timeout_retry_cap', 0)
                 retry_market = value.get('timeout_retry_market','us')
@@ -118,7 +118,9 @@ def request_from_frame(frame):
                         or retry_market not in ('us','kr')
                         or (list(plan.cohort.market_subjects) != ['us'] and not kr_market_retry)
                         or retry_market=='kr' and not kr_market_retry
-                        or value['maximum'] != (per_ticker['maximum'] if per_ticker else len(plan.slots))+cap
+                        or (not b2_retry_budget_bounds(per_ticker,retry_cap=cap,retry_market=retry_market)[0]
+                            <= value['maximum'] <= per_ticker['maximum']+cap
+                            if per_ticker else value['maximum'] != len(plan.slots)+cap)
                         or attempt != dict(attempt_id=frame['request_id'], ordinal=value['ordinal'],
                             prompt_sha256=frame['prompt_sha256'], schema_sha256=frame['schema_sha256'])):
                     raise ValueError('production_worker_timeout_attempt_authorization_drift')

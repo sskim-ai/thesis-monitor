@@ -386,19 +386,20 @@ class SelectedRunLedger:
                     or retry_market=='kr' and list(v['slot_stages'].values()).count('MARKET')!=1):
                 raise ValueError('selected_model_retry_plan_scope')
             if self.identity.get('b2_retry_policy'):
-                from app.services.model_timeout_retry import validate_b2_retry_binding
+                from app.services.model_timeout_retry import validate_b2_retry_binding, b2_retry_budget_bounds
                 retry = validate_b2_retry_binding(v['b2_retry_binding'])
-                required_maximum=retry['maximum']+self.identity.get('timeout_retry_cap',0)
-                if self.identity['max_models']<required_maximum:
-                    raise ValueError('MODEL_RETRY_BUDGET_APPROVAL_REQUIRED:required='+str(required_maximum))
+                minimum, maximum = b2_retry_budget_bounds(retry,
+                    retry_cap=self.identity.get('timeout_retry_cap',0), retry_market=retry_market)
+                if self.identity['max_models']<minimum:
+                    raise ValueError('MODEL_RETRY_BUDGET_APPROVAL_REQUIRED:required='+str(minimum))
                 if (m != retry_market or retry['policy'] != self.identity['b2_retry_policy'] or v.get('inherited_market_slot') or retry['plan_sha256'] != v['sha256']
-                        or v['slots'] != retry['base_slots'] or self.identity['max_models'] != required_maximum
+                        or v['slots'] != retry['base_slots'] or self.identity['max_models'] > maximum
                         or v['slot_stages'] != retry['slot_stages'] or set(v['slot_ids']) != set(retry['slot_stages'])):
                     raise ValueError('selected_model_per_ticker_plan_scope')
             s['models'][m] = v
             if (sum(r['slots'] for r in s['models'].values()) + self.identity.get('onboarding', {}).get('max_models', 0)
-                    + (len(v['b2_retry_binding']['b2_slots']) if self.identity.get('b2_retry_policy') else 0)
-                    + self.identity.get('timeout_retry_cap', 0) > self.identity['max_models']):
+                    + (0 if self.identity.get('b2_retry_policy') else self.identity.get('timeout_retry_cap', 0))
+                    > self.identity['max_models']):
                 raise ValueError('selected_model_plan_over_cap')
             if required<=set(s['models']): s['state'] = 'MODEL_BUDGETED'
         elif event == 'MODEL_INHERIT_MARKET':
@@ -462,6 +463,7 @@ class SelectedRunLedger:
                             or bound and (bound[0] not in s['timed_out']
                                 or (v['slot'] not in per_ticker['b2_slots'] and not market_retry
                                     if per_ticker else s['retry_used']>=cap)
+                                or per_ticker and s['retry_used']>=self.identity['max_models']-per_ticker['base_slots']
                                 or retry_market=='kr' and not (market_retry or per_ticker and v['slot'] in per_ticker['b2_slots'])
                                 or (self.identity.get('fresh_timeout_retry_market') and v['stage']!='B2' and not market_retry)
                                 or s['used'][bound[0]]['stage']!=v['stage']
@@ -783,14 +785,14 @@ class SelectedRunLedger:
             raise ValueError('selected_original_market_child_required')
         binding = child.binding()
         messages = result.get('messages',[])
+        partial = result.get('status') == PARTIAL
+        omissions = result.get('unissued',{}) if partial else {}
         if child.plan.cohort.limitation_subjects:
             from app.services.model_execution_plan import verify_mixed_render
 
-            if result.get('status') != TERMINAL:
+            if result.get('status') not in {TERMINAL, PARTIAL}:
                 raise ValueError('selected_mixed_limitation_terminal_required')
-            verify_mixed_render(child.plan, messages, result.get('limitation_receipts',{}))
-        partial = result.get('status') == PARTIAL
-        omissions = result.get('unissued',{}) if partial else {}
+            verify_mixed_render(child.plan, messages, result.get('limitation_receipts',{}), omitted=omissions)
         b2_slots = {s.subjects[0]:s.slot_id for s in child.plan.slots if s.stage=='B2'}
         if (partial and (not (self.identity.get('timeout_retry_cap') or self.identity.get('b2_retry_policy')) or not omissions
                 or not set(omissions)<=set(b2_slots)

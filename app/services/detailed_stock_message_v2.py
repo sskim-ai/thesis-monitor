@@ -137,7 +137,8 @@ def _us_sr_rows(packet, base, axes, security_id):
 
 
 
-def _selected_support_row(packet, base, timing, security_id, *, new_buyer=None, price_session=None):
+def _selected_support_row(packet, base, timing, security_id, *, new_buyer=None, price_session=None,
+                          entry_context=None):
     """Keep the accepted tactical selection separate from a V3 structural zone."""
     accepted = base.accepted_calibration
     entries = accepted.entries
@@ -149,6 +150,12 @@ def _selected_support_row(packet, base, timing, security_id, *, new_buyer=None, 
             or base.valuation.security_id != security_id
             or len(refs) != 1 or refs[0] not in timing["evidence_refs"]):
         return None
+    if entry_context is not None:
+        from app.services.entry_candidate_basis import assess_entry_candidates
+        catalog = assess_entry_candidates(entry_context, ticker=packet.ticker,
+            security_id=security_id, source_generation_id=base.source_generation_id)
+        if not any(row['candidate_id'] == timing['selected'] and row['eligible'] for row in catalog):
+            return None
     ref = refs[0]
     matches = [row for row in packet.evidence if row.ref_id == ref and row.label == "chart_support_zone"]
     if len(matches) != 1 or not matches[0].source_ref.startswith("stock.fact_catalog."):
@@ -222,6 +229,51 @@ def _completed_price_session(packet, base, security_id):
     return session
 
 
+def _entry_gap_note(catalog, context, selected):
+    """Explain the same candidate exclusions used before B's selection."""
+    candidate = next((row for row in catalog if row['candidate_id'] == selected), None)
+    if candidate is None and any(row['eligible'] for row in catalog):
+        return '선택된 진입 구간 확인 필요'
+    rows = [candidate] if candidate is not None else context.get('entry_candidate_diagnostics', [])
+    reason_sets = [set(row.get('failure_reasons', [])) for row in rows]
+    common = set.intersection(*reason_sets) if reason_sets else set()
+    # A shared price/frame problem explains why every candidate failed. Avoid
+    # replacing it with incidental gaps in an unrelated reference candidate.
+    reasons = common or {code for codes in reason_sets for code in codes}
+    labels = (
+        ({'SOURCE_GENERATION_MISMATCH'}, '가격 기준 확인 필요 — 수집 실행 연결 불일치'),
+        ({'TICKER_MISMATCH', 'SECURITY_MISMATCH', 'SECURITY_IDENTITY_MISSING'},
+         '가격 기준 확인 필요 — 종목·증권 연결 불일치'),
+        ({'DAILY_FRAME_UNAVAILABLE', 'PRICE_EVIDENCE_MISSING'}, '일봉 데이터 부족'),
+        ({'DAILY_FRAME_PRICE_INVALID', 'SUPPORT_FRAME_PRICE_INVALID'}, '완료봉 종가 자료 확인 필요'),
+        ({'DAILY_FRAME_CURRENCY_MISMATCH', 'SUPPORT_FRAME_CURRENCY_MISMATCH',
+          'PRICE_CURRENCY_MISMATCH', 'ZONE_CURRENCY_MISMATCH'}, '가격 기준 확인 필요 — 통화 불일치'),
+        ({'DAILY_FRAME_PRICE_BASIS_MISMATCH', 'SUPPORT_FRAME_PRICE_BASIS_MISMATCH',
+          'PRICE_BASIS_MISMATCH', 'ZONE_PRICE_BASIS_MISMATCH'}, '가격 기준 확인 필요 — 조정 기준 불일치'),
+        ({'DAILY_FRAME_SESSION_MISMATCH', 'PRICE_SESSION_MISMATCH'},
+         '가격 기준 확인 필요 — 완료 거래일과 가격·차트 세션 불일치'),
+        ({'ZONE_SESSION_MISMATCH'}, '가격 기준 확인 필요 — 완료 거래일과 지지·차트 세션 불일치'),
+        ({'DAILY_FRAME_CLOSE_MISMATCH', 'PRICE_VALUE_MISMATCH'},
+         '가격 기준 확인 필요 — 기준가격과 일봉 종가 연결 확인 필요'),
+        ({'SUPPORT_TIMEFRAME_MISSING_OR_MISMATCH'}, '지지 봉 기간 미확정'),
+        ({'DAILY_FRAME_INCOMPLETE', 'SUPPORT_FRAME_INCOMPLETE'}, '완료되지 않은 봉은 진입 근거에서 제외'),
+        ({'DAILY_FRAME_EVALUATION_MISMATCH', 'SUPPORT_FRAME_EVALUATION_MISMATCH',
+          'SUPPORT_FRAME_SESSION_MISMATCH', 'SUPPORT_FRAME_CLOSE_MISMATCH'},
+         '가격 기준 확인 필요 — 완료봉과 현재 평가일 연결 확인 필요'),
+        ({'STORED_PRICE_RULE_REFERENCE_ONLY'}, '등록 가격 규칙은 완료봉 지지 근거가 아님'),
+        ({'V3_COMPLETED_FRAME_BASIS_MISSING'}, '참고 지지의 완료봉·가격 기준 연결 없음'),
+        ({'PRICE_ENTRY_DENIED', 'DAILY_ENTRY_DENIED', 'SUPPORT_ENTRY_DENIED',
+          'SUPPORT_FRAME_ENTRY_DENIED'}, '현재 적격 지지 구간 없음'),
+        ({'ZONE_BOUNDS_MISMATCH', 'ZONE_VALUE_INVALID'}, '선택 구간과 원본 지지 가격 연결 확인 필요'),
+        ({'SUPPORT_EVIDENCE_MISSING_OR_UNSUPPORTED', 'ZONE_EVIDENCE_MISSING_OR_DUPLICATE',
+          'SUPPORT_FRAME_UNAVAILABLE'}, '선택된 지지 근거 또는 완료봉 자료 부족'),
+    )
+    notes = [text for codes, text in labels if reasons & codes]
+    if notes:
+        return ' · '.join(notes[:2])
+    return '선택된 진입 구간 확인 필요' if catalog else '현재 적격 지지 구간 없음'
+
+
 def _entry_quality(model_input, timing, context, market, session):
     """Explain the frozen B decision context, never the display-only V3 zones."""
     from app.services.new_buyer_base_contract import number
@@ -237,14 +289,11 @@ def _entry_quality(model_input, timing, context, market, session):
         return "INSUFFICIENT_EVIDENCE", "완료 거래일 근거 확인 필요", ()
     if context["current_price"].get("as_of") not in (None, session):
         return "INSUFFICIENT_EVIDENCE", "완료 거래일과 가격·차트 세션 불일치", ()
-    catalog = tactical_catalog(context, model_input["ticker"], model_input["security_id"])
+    catalog = tactical_catalog(context, model_input["ticker"], model_input["security_id"],
+                               source_generation_id=model_input['source_generation'])
     candidate = next((r for r in catalog if r["candidate_id"] == timing["selected"]), None)
-    if not candidate:
-        return "INSUFFICIENT_EVIDENCE", "선택된 적격 진입 구간 없음", ()
-    if timing["relation"] == "UNRESOLVED" or not candidate["relation_basis_proven"]:
-        note = ("등록 가격 규칙은 완료봉 지지 근거가 아님" if candidate.get("source_label") == "chart_price_rules"
-                else "선택 구간과 기준가격의 동일 기준을 입증하지 못함")
-        return "INSUFFICIENT_EVIDENCE", note, ()
+    if not candidate or timing["relation"] == "UNRESOLVED" or not candidate["relation_basis_proven"]:
+        return "INSUFFICIENT_EVIDENCE", _entry_gap_note(catalog, context, timing['selected']), ()
     permissions = {r["ref_id"] for r in context["source_use_projection"]["source_permissions"]
                    if "ENTRY" in r["allowed_uses"]}
     quote = context["current_price"]
@@ -349,65 +398,25 @@ def _buyer_action(stance, relation, quality, *, reason_class=None, confirmed_bre
 
 def _entry_location(model_input, timing, context, market, session):
     """Explain a frozen timing gap without upgrading display-only S/R to ENTRY."""
-    from app.services.new_buyer_base_contract import number
-    from app.services.new_buyer_input_owner import _statement, tactical_catalog
+    from app.services.new_buyer_input_owner import tactical_catalog
 
     if context is None:
         return "진입 판단: 진입 근거 확인 필요"
     if session is None:
         return "진입 판단: 완료 거래일 근거 확인 필요"
-    evidence = {row["ref_id"]: row for row in context["decision_evidence"]}
-    daily = evidence.get("canonical:chart:daily", {})
-    fields = _statement(daily)
-    if fields.get("quality") != "available":
-        return "진입 판단: 일봉 데이터 부족"
     quote = context["current_price"]
     currency = {"kr": "KRW", "us": "USD"}[market]
-    if quote.get("as_of") != session or daily.get("as_of") != session:
+    if quote.get("as_of") != session:
         return "진입 판단: 가격 기준 확인 필요 — 완료 거래일과 가격·차트 세션 불일치"
-    if quote.get("currency") != currency or fields.get("currency") != currency:
+    if quote.get("currency") != currency:
         return "진입 판단: 가격 기준 확인 필요 — 통화 불일치"
-    if (quote.get("basis"), fields.get("price_basis")) not in {
-            ("adjusted_close", "adjusted"), ("regular_close", "unadjusted"), ("unadjusted_close", "unadjusted")}:
-        return "진입 판단: 가격 기준 확인 필요 — 조정 기준 불일치"
-    price = number(quote.get("value"))
-    if price is None or price <= 0 or number(fields.get("candle", {}).get("close")) != price:
-        return "진입 판단: 가격 기준 확인 필요 — 기준가격과 일봉 종가 연결 확인 필요"
-    permissions = {row["ref_id"] for row in context["source_use_projection"]["source_permissions"]
-                   if "ENTRY" in row["allowed_uses"]}
-    supports = [row for row in evidence.values()
-                if row.get("label") == "chart_support_zone" and row["ref_id"] in permissions]
-    if not supports:
-        return "진입 판단: 현재 적격 지지 구간 없음"
-    catalog = tactical_catalog(context, model_input["ticker"], model_input["security_id"])
+    catalog = tactical_catalog(context, model_input["ticker"], model_input["security_id"],
+                               source_generation_id=model_input['source_generation'])
     candidate = next((row for row in catalog if row["candidate_id"] == timing["selected"]), None)
-    if candidate is None:
-        return "진입 판단: 선택된 진입 구간 확인 필요"
-    if (candidate["ticker"] != model_input["ticker"] or candidate["security_id"] != model_input["security_id"]):
-        return "진입 판단: 가격 기준 확인 필요 — 종목·증권 연결 불일치"
-    if candidate["currency"] != currency:
-        return "진입 판단: 가격 기준 확인 필요 — 통화 불일치"
-    for ref in candidate["evidence_refs"]:
-        row = evidence.get(ref, {})
-        zone = _statement(row)
-        frame = evidence.get("canonical:chart:" + str(zone.get("timeframe")), {})
-        chart = _statement(frame)
-        if row.get("label") != "chart_support_zone" or ref not in permissions:
-            return "진입 판단: 선택된 진입 구간 확인 필요"
-        if row.get("as_of") != session:
-            return "진입 판단: 가격 기준 확인 필요 — 완료 거래일과 지지·차트 세션 불일치"
-        if zone.get("currency") != currency or chart.get("currency") != currency:
-            return "진입 판단: 가격 기준 확인 필요 — 통화 불일치"
-        if (quote.get("basis"), chart.get("price_basis")) not in {
-                ("adjusted_close", "adjusted"), ("regular_close", "unadjusted"), ("unadjusted_close", "unadjusted")}:
-            return "진입 판단: 가격 기준 확인 필요 — 조정 기준 불일치"
-        if not frame_matches_price(chart, timeframe=zone.get("timeframe"), frame_as_of=frame.get("as_of"),
-                                   price=quote, session=session):
-            return "진입 판단: 가격 기준 확인 필요 — 완료봉과 현재 평가일 연결 확인 필요"
-    if candidate["relation_basis_proven"] and timing["relation"] in {"INSIDE", "ABOVE", "BELOW"}:
+    if candidate and candidate['eligible'] and timing["relation"] in {"INSIDE", "ABOVE", "BELOW"}:
         return "가격 위치: 선택된 관찰 지지 구간 " + {
             "INSIDE": "안", "ABOVE": "위", "BELOW": "아래 — 구조 재확인"}[timing["relation"]]
-    return "진입 판단: 선택된 진입 구간 확인 필요"
+    return "진입 판단: " + _entry_gap_note(catalog, context, timing['selected'])
 
 
 def _confirmed_breakout(context, refs):
@@ -505,7 +514,7 @@ def build_detailed_plan_v2(*, packet, base, b2_request, b2_result, authorization
     if packet.market == "us":
         rows += (*_reported_quarter_rows(packet, base), *_us_sr_rows(packet, base, axes, authorization.security_id))
     support = _selected_support_row(packet, base, axes["entry_timing"], authorization.security_id,
-                                    new_buyer=axes["fundamental_attractiveness"], price_session=price_session)
+        new_buyer=axes["fundamental_attractiveness"], price_session=price_session, entry_context=entry_context)
     if support is not None:
         rows += (support,)
     binding = dict(base=presentation.acceptance_sha256, request=digest(b2_request), result=digest(b2_result),

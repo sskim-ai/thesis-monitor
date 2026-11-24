@@ -155,12 +155,12 @@ def source_use(*, source_ref: str, security_id: str, canonical: bool = False,
     elif canonical and reported_comparison:
         kind, owner = InputSourceClass.REPORTED_COMPARISON_CONTEXT, "reported_comparison_context"
     elif canonical and reported_business_kind in {"COMPARISON", "QUALITY", "ISSUER_CONTEXT"}:
-        from app.services.reported_business_projection import ISSUER_CONTRACT
         kind = {"COMPARISON": InputSourceClass.REPORTED_BUSINESS_COMPARISON,
                 "QUALITY": InputSourceClass.REPORTED_BUSINESS_QUALITY,
                 "ISSUER_CONTEXT": InputSourceClass.REPORTED_ISSUER_CONTEXT}[reported_business_kind]
-        if reported_business_contract == ISSUER_CONTRACT:
-            kind = InputSourceClass.REPORTED_ISSUER_CONTEXT
+        # The native owner authenticates kind and permitted use. A verified
+        # current issuer comparison is not historical attribution merely
+        # because it crossed between two securities of the same legal issuer.
         owner = "reported_business_projection"
     elif canonical and typed_financial:
         kind, owner = InputSourceClass.CANONICAL_FINANCIAL, "financial_context_adapter"
