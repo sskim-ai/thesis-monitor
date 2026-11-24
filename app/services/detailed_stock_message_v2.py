@@ -241,6 +241,12 @@ def _entry_gap_note(catalog, context, selected):
     # replacing it with incidental gaps in an unrelated reference candidate.
     reasons = common or {code for codes in reason_sets for code in codes}
     labels = (
+        ({'PRICE_STATEMENT_INVALID_JSON', 'DAILY_STATEMENT_INVALID_JSON',
+          'ZONE_STATEMENT_INVALID_JSON', 'SUPPORT_STATEMENT_INVALID_JSON'},
+         '가격·차트 근거 JSON 형식 손상'),
+        ({'PRICE_STATEMENT_NOT_OBJECT', 'DAILY_STATEMENT_NOT_OBJECT',
+          'ZONE_STATEMENT_NOT_OBJECT', 'SUPPORT_STATEMENT_NOT_OBJECT'},
+         '가격·차트 근거의 구조화 형식 확인 필요'),
         ({'SOURCE_GENERATION_MISMATCH'}, '가격 기준 확인 필요 — 수집 실행 연결 불일치'),
         ({'TICKER_MISMATCH', 'SECURITY_MISMATCH', 'SECURITY_IDENTITY_MISSING'},
          '가격 기준 확인 필요 — 종목·증권 연결 불일치'),

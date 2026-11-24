@@ -4,7 +4,9 @@ from decimal import Decimal, InvalidOperation
 from enum import StrEnum
 import json
 
-from app.services.cross_market_decision_engine_service import EvidenceClaim, _compact
+from app.services.cross_market_decision_engine_service import (
+    EvidenceClaim, _compact, canonical_fact_statement,
+)
 from app.services.canonical_evidence_time_service import validate_canonical_time
 from app.services.stage2_maturity_polarity_adapter_service import maturity_atomic_claim_ref
 from app.services.logical_condition_service import SourceLogicalCondition, ClaimLogicalCondition, source_claim_expression
@@ -53,7 +55,7 @@ def frozen_fact_fields(packet, ticker, metadata):
     for row in metadata:
         fact = facts.get(row['ref_id'])
         if fact:
-            if row.get('statement') != _compact(fact['fields']):
+            if row.get('statement') != canonical_fact_statement(fact):
                 raise ValueError('frozen_fact_projection_mismatch')
             validate_canonical_time(fact, row, ticker=ticker)
             result[row['ref_id']] = {'fields':deepcopy(fact['fields']), 'fact_sha256':canonical_sha256(fact)}

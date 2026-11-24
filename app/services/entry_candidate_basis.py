@@ -11,14 +11,21 @@ from app.services.new_buyer_base_contract import number
 from app.services.unified_snapshot_contract import digest
 
 
-def statement(row):
+def _parse_statement(row):
     value = row.get('statement', {})
     if isinstance(value, str):
         try:
             value = json.loads(value)
         except (json.JSONDecodeError, TypeError):
-            return {}
-    return value if isinstance(value, dict) else {}
+            return {}, 'STATEMENT_INVALID_JSON'
+    if not isinstance(value, dict):
+        return {}, 'STATEMENT_NOT_OBJECT'
+    return value, None
+
+
+def statement(row):
+    """Preserve the existing mapping-only reader without repairing source text."""
+    return _parse_statement(row)[0]
 
 
 def _index(rows):
@@ -57,12 +64,15 @@ def assess_entry_candidates(context, *, ticker, security_id, source_generation_i
     price = context.get('current_price') or {}
     price_ref = price.get('ref_id')
     price_row = evidence.get(price_ref, {})
-    price_value = statement(price_row)
+    price_value, price_error = _parse_statement(price_row)
     daily_ref = 'canonical:chart:daily'
     daily = evidence.get(daily_ref, {})
-    common = _identity_failures((context, binding, projection, price, price_row, price_value,
-                                daily, statement(daily)),
-        ticker=ticker, security_id=security_id, generation=generation)
+    daily_value, daily_error = _parse_statement(daily)
+    common = [prefix + error for prefix, error in (('PRICE_',price_error), ('DAILY_',daily_error))
+              if error is not None]
+    common.extend(_identity_failures((context, binding, projection, price, price_row, price_value,
+                                     daily, daily_value),
+        ticker=ticker, security_id=security_id, generation=generation))
     if source_generation_id is not None and binding.get('source_generation_id') != source_generation_id:
         common.append('SOURCE_GENERATION_MISMATCH')
     if not ticker or not security_id:
@@ -80,9 +90,11 @@ def assess_entry_candidates(context, *, ticker, security_id, source_generation_i
             and price_row.get('as_of') == price['as_of']
             and price_value.get('price_as_of') == price['as_of']),
     )
-    common.extend(code for code, passed in checks if not passed)
-    common.extend('DAILY_' + code for code in frame_price_failures(statement(daily),
-        timeframe='daily', frame_as_of=daily.get('as_of'), price=price, session=price.get('as_of')))
+    if price_error is None:
+        common.extend(code for code, passed in checks if not passed)
+    if daily_error is None:
+        common.extend('DAILY_' + code for code in frame_price_failures(daily_value,
+            timeframe='daily', frame_as_of=daily.get('as_of'), price=price, session=price.get('as_of')))
     for ref, name in ((price_ref, 'PRICE'), (daily_ref, 'DAILY')):
         if 'ENTRY' not in permissions.get(ref, {}).get('allowed_uses', []):
             common.append(name + '_ENTRY_DENIED')
@@ -109,10 +121,11 @@ def assess_entry_candidates(context, *, ticker, security_id, source_generation_i
         candidate_failures = list(failures)
         for ref in refs:
             ev = evidence.get(ref, {})
-            zone = statement(ev)
-            chart_ref = 'canonical:chart:' + str(zone.get('timeframe'))
+            zone, zone_error = _parse_statement(ev)
+            chart_ref = 'canonical:chart:' + str(zone.get('timeframe')) if zone_error is None else None
             chart = evidence.get(chart_ref, {})
-            local = _identity_failures((ev, zone, chart, statement(chart)), ticker=ticker,
+            chart_value, chart_error = _parse_statement(chart)
+            local = _identity_failures((ev, zone, chart, chart_value), ticker=ticker,
                 security_id=security_id, generation=generation)
             label = ev.get('label')
             if label == 'chart_price_rules':
@@ -124,17 +137,23 @@ def assess_entry_candidates(context, *, ticker, security_id, source_generation_i
             elif label != 'chart_support_zone':
                 local.append('SUPPORT_EVIDENCE_MISSING_OR_UNSUPPORTED')
             else:
-                if (number(zone.get('zone_low')), number(zone.get('zone_high'))) != (low, high):
-                    local.append('ZONE_BOUNDS_MISMATCH')
-                if zone.get('currency') != price.get('currency'):
-                    local.append('ZONE_CURRENCY_MISMATCH')
                 if ev.get('as_of') != price.get('as_of'):
                     local.append('ZONE_SESSION_MISMATCH')
-                local.extend('SUPPORT_' + code for code in frame_price_failures(statement(chart),
-                    timeframe=zone.get('timeframe'), frame_as_of=chart.get('as_of'),
-                    price=price, session=price.get('as_of')))
-                if 'ENTRY' not in permissions.get(chart_ref, {}).get('allowed_uses', []):
-                    local.append('SUPPORT_FRAME_ENTRY_DENIED')
+                if zone_error is not None:
+                    local.append('ZONE_' + zone_error)
+                else:
+                    if (number(zone.get('zone_low')), number(zone.get('zone_high'))) != (low, high):
+                        local.append('ZONE_BOUNDS_MISMATCH')
+                    if zone.get('currency') != price.get('currency'):
+                        local.append('ZONE_CURRENCY_MISMATCH')
+                    if chart_error is not None:
+                        local.append('SUPPORT_' + chart_error)
+                    else:
+                        local.extend('SUPPORT_' + code for code in frame_price_failures(chart_value,
+                            timeframe=zone.get('timeframe'), frame_as_of=chart.get('as_of'),
+                            price=price, session=price.get('as_of')))
+                    if 'ENTRY' not in permissions.get(chart_ref, {}).get('allowed_uses', []):
+                        local.append('SUPPORT_FRAME_ENTRY_DENIED')
             if 'ENTRY' not in permissions.get(ref, {}).get('allowed_uses', []):
                 local.append('SUPPORT_ENTRY_DENIED')
             local = list(dict.fromkeys(local))

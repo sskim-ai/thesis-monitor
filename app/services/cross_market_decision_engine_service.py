@@ -473,6 +473,20 @@ def _compact(value: object, limit: int = 900) -> str:
     return text if len(text) <= limit else text[: limit - 1] + "…"
 
 
+def canonical_fact_statement(fact: Mapping[str, object]) -> str:
+    """Keep completed-frame inputs parseable without expanding other evidence.
+
+    Entry comparisons consume the whole D/W/M JSON, including fields after a
+    display excerpt's boundary. All other fact and prose compacting is unchanged.
+    """
+    fields = fact.get("fields") or {}
+    if fact.get("fact_type") == "chart_timeframe" and fact.get("fact_id") in {
+        "chart:daily", "chart:weekly", "chart:monthly",
+    }:
+        return json.dumps(fields, ensure_ascii=False, sort_keys=True, default=str)
+    return _compact(fields)
+
+
 def _category_for_fact(row: Mapping[str, object]) -> EvidenceCategory:
     fact_type = str(row.get("fact_type") or "").lower()
     fact_id = str(row.get("fact_id") or "").lower()
@@ -729,7 +743,7 @@ def build_decision_evidence_packet(
                     ref_id=f"canonical:{fact_id}",
                     category=_category_for_fact(row),
                     label=_model_facing_label_for_fact(row),
-                    statement=_compact(row.get("fields") or {}),
+                    statement=canonical_fact_statement(row),
                     as_of=source_as_of(row),
                     source_time=project_canonical_time(
                         row, ticker=ticker,
