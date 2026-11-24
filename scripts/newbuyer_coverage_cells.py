@@ -1,4 +1,8 @@
-"""Reviewed REV56B category decisions, independent of audit/model lineage."""
+"""Category applicability from current typed metric contracts and branches.
+
+Code identity does not establish a financial fact or prove review. A category
+can be inapplicable only within its validated metric's actual calculation path.
+"""
 from scripts.newbuyer_fper_prerequisite_scope import CATEGORIES
 
 CONTRACT = "newbuyer-security-basis-applicability-coverage-v1"
@@ -9,7 +13,7 @@ BUSINESS = "app/services/canonical_business_quality_owner.py"
 
 
 def requirements(metric, family, security=None):
-    """Family dataflow first; no ticker, output label, or legacy ref input."""
+    """Category requirements for a metric family, checked by each cell builder."""
     result = []
     for category in CATEGORIES:
         required, reason, path = True, 'Existing producer consumes or gates this semantic domain.', NATIVE
@@ -38,10 +42,10 @@ def requirements(metric, family, security=None):
             if category == 'DEPOSITARY_OR_ADR_CONVERSION':
                 required, reason = False, 'Domestic KIS product/standard-code equality and KRW/KRW-per-share quotient; no cross-security conversion exists in this path.'
         else:
-            raise ValueError('unreviewed_metric_family')
+            raise ValueError('unsupported_metric_family')
         result.append(dict(category=category, metric=metric, required=required,
-            requirement_owner_contract=CONTRACT, requirement_proof_kind='PRODUCER_SEMANTICS',
-            requirement_reason=reason, producer_dataflow_proof_refs=[path],
+            requirement_owner_contract=CONTRACT, requirement_proof_kind='TYPED_METRIC_CONTRACT',
+            requirement_reason=reason, requirement_contract_refs=[path],
             necessity_derived_from_legacy=False))
     return result
 
@@ -59,23 +63,26 @@ def base_cell(req, ticker, ref, generation, security, owner):
         input_refs=[], input_sha256=digest(owner), missing_fields=[])
 
 
-def nonapplicable(cell):
-    if cell['required'] or not cell['producer_dataflow_proof_refs']:
+def nonapplicable(cell, *, branch, input_refs):
+    """Describe a checked input branch; never grant a current qualified state."""
+    if cell['required'] or not branch or not input_refs or not cell['owner_ref']:
         raise ValueError('required_or_unproved_domain_cannot_be_not_applicable')
+    # Preserve the consumer's non-authoritative semantic-proof class: it cannot
+    # become QUALIFIED/DENIED. Its basis is this typed branch, not reviewed files.
     cell.update(coverage_disposition='PROVEN_NOT_APPLICABLE', coverage_proof_kind='PRODUCER_SEMANTICS',
-        owner_state=None, owner_contract=CONTRACT, owner_ref='producer-dataflow:'+cell['metric'],
-        owner_decision_version='REV56B_AUDITED_DATAFLOW_NOT_CURRENT_STATE',
-        owner_field_eligibility={'semantic_domain_consumed': False},
-        owner_temporal_scope='STATIC_CODE_DATAFLOW: non-consumption is not a dated security or financial verdict',
+        owner_state=None, owner_decision_version='CURRENT_TYPED_METRIC_BRANCH_V1',
+        owner_field_eligibility={'semantic_domain_consumed': False, 'metric_branch': branch},
+        owner_temporal_scope='CURRENT_INPUT_BRANCH_ONLY: not a current security or financial verdict',
         not_applicable_to_metric_refs=[cell['metric_ref']],
-        not_applicable_reason_codes=['POSITIVE_PRODUCER_NONCONSUMPTION_PROOF'],
-        input_refs=cell['producer_dataflow_proof_refs'])
+        not_applicable_reason_codes=['VALIDATED_METRIC_BRANCH_DOES_NOT_USE_DOMAIN'],
+        input_refs=input_refs)
     return cell
 
 
 def finish(cell):
     if cell['coverage_disposition'] == 'PROVEN_NOT_APPLICABLE':
-        if cell['required'] or cell['coverage_proof_kind'] != 'PRODUCER_SEMANTICS' or not cell['input_refs']:
+        if (cell['required'] or cell['coverage_proof_kind'] != 'PRODUCER_SEMANTICS'
+                or cell['owner_state'] is not None or not cell['input_refs']):
             raise ValueError('invalid_not_applicable_proof')
         return cell
     if cell['coverage_proof_kind'] == 'PRODUCER_SEMANTICS':
@@ -90,11 +97,24 @@ def finish(cell):
     return cell
 
 
-def native_cell(req, ticker, ref, source, snapshot, security):
+def native_cell(req, ticker, ref, source, snapshot, security, *, validated_metric):
+    from app.services.unified_snapshot_contract import digest
     view = source['valuation_view']
+    # _source_context validates CurrentMultiple once, including atomic value
+    # equality, context-only price, no denominator and exact input references.
+    if (validated_metric.metric != req['metric'] or validated_metric.native_snapshot is None
+            or validated_metric.native_snapshot.model_dump(mode='json') != snapshot
+            or view['ticker'] != ticker or security.get('ticker') != ticker
+            or view['security_id'] != security.get('canonical_security_id')
+            or view['security_sha256'] != digest(security)
+            or view['run_id'] != source['fresh_run_id']
+            or req not in requirements(req['metric'], 'ATOMIC', security)):
+        raise ValueError('native_coverage_typed_metric_binding')
     cell = base_cell(req, ticker, ref, view['run_id'], view['security_id'], snapshot)
     if not req['required']:
-        return nonapplicable(cell)
+        return nonapplicable(cell, branch='ATOMIC_PROVIDER_SNAPSHOT_CONTEXT_ONLY',
+            input_refs=[snapshot['snapshot_sha256'], digest(validated_metric.model_dump(mode='json')),
+                snapshot['security_identity_receipt']['receipt_sha256'], view['security_sha256']])
     identity = snapshot['security_identity_receipt']
     exact = identity['status'] == 'QUALIFIED_EXACT_SECURITY'
     cell.update(owner_decision_version=snapshot['contract']+' + '+identity['contract'],
@@ -152,10 +172,18 @@ def native_cell(req, ticker, ref, source, snapshot, security):
 
 
 def kis_cell(req, ticker, ref, source, row, view_hash):
+    # KrForwardValuationView in _source_context has already replayed current_fper
+    # and checked EPS identity, units, dates and the price/security binding.
     view, fper = source['valuation_view'], row['current_fper']
+    if (view['ticker'] != ticker or row['security_code'] != ticker or view['currency'] != 'KRW'
+            or not ticker.isascii() or not ticker.isdigit() or len(ticker) != 6
+            or req not in requirements('CURRENT_FY1_FPER', 'DERIVED_KIS')
+            or row['price'] is not None and row['price']['canonical_security_id'] != view['security_id']):
+        raise ValueError('kis_coverage_typed_metric_binding')
     cell = base_cell(req, ticker, ref, view['run_id'], view['security_id'], fper)
     if not req['required']:
-        return nonapplicable(cell)
+        return nonapplicable(cell, branch='KIS_FY1_PRICE_EPS:'+fper['state'],
+            input_refs=[fper['receipt_sha256'], view_hash, view['security_sha256']])
     eps, price, action = row['eps'], row['price'], row['action']
     if fper['state'] != 'QUALIFIED':
         cell['missing_fields'] = ['field_specific_current_decision', 'decision_version',
@@ -183,9 +211,9 @@ def business_cell(ticker, source):
     view, quality = source['valuation_view'], source['quality_view']
     fact, receipt = quality['fact'], quality['receipt']
     req = dict(category='BUSINESS_SOURCE_QUALITY', metric='SELECTED_REPORTED_BUSINESS', required=True,
-        requirement_owner_contract=CONTRACT, requirement_proof_kind='PRODUCER_SEMANTICS',
+        requirement_owner_contract=CONTRACT, requirement_proof_kind='TYPED_METRIC_CONTRACT',
         requirement_reason='Independent selected reported-business gate; never a valuation metric denominator.',
-        producer_dataflow_proof_refs=[BUSINESS], necessity_derived_from_legacy=False)
+        requirement_contract_refs=[BUSINESS], necessity_derived_from_legacy=False)
     cell = base_cell(req, ticker, receipt['canonical_ref'], view['run_id'], view['security_id'], receipt)
     fields = [field for out in receipt['owner_outputs'] for field in out['quality']['fields'].values()]
     cell.update(scope_level='BUSINESS_GLOBAL', owner_state='DENIED' if any(r['state'] == 'denied' for r in fields) else 'QUALIFIED',
@@ -202,30 +230,35 @@ def business_cell(ticker, source):
     return finish(cell)
 
 
-def price_prerequisite_cell(req, ticker, ref, source, metric):
+def price_prerequisite_cell(req, ticker, ref, source, metric, *, validated_view):
     """The V2 early-return path consumes price state, not missing denominators.
 
-    Positive code non-consumption is bound by the reviewed dataflow manifest.
-    It does not grant any current security, currency, or denominator decision.
+    The typed price denial and exact metric branch establish applicability.
+    They do not grant any current security, currency, or denominator decision.
     """
     from app.services.completed_price_state import require_runtime
-    from app.services.unavailable_price_valuation import parse_view
-    view = parse_view(source['valuation_view'])
+    from app.services.unified_snapshot_contract import digest
+    view = validated_view
     state = require_runtime(view.price_state)
-    if (state.state == 'AVAILABLE' or metric['price_state_ref'] != state.receipt_sha256
+    if (view.ticker != ticker or req['category'] not in CATEGORIES or req['metric'] != metric['metric']
+            or metric not in [m.model_dump(mode='json') for m in view.metrics]
+            or state.state == 'AVAILABLE' or metric['price_state_ref'] != state.receipt_sha256
             or metric['native_snapshot'] is not None or metric['status'] != 'UNAVAILABLE'
-            or metric['source_method'] != 'price_prerequisite_short_circuit'):
+            or metric['source_method'] != 'price_prerequisite_short_circuit'
+            or metric['price_dependency'] != 'CURRENT_PRICE_ARITHMETIC_REQUIRED'
+            or metric['value'] is not None or metric['denominator'] is not None):
         raise ValueError('price_prerequisite_coverage_scope')
     required = req['category'] in {'PRICE_TO_SECURITY_BINDING', 'VALUATION_SOURCE_QUALITY'}
     req = dict(req, required=required, requirement_reason=(
         'Exact attempted completed-price owner denies the arithmetic prerequisite; no market-price absence inferred.'
         if required else 'The V2 unavailable-price return consumes no positive valuation/denominator domain.'),
-        producer_dataflow_proof_refs=['app/services/unavailable_price_valuation.py'],
+        requirement_contract_refs=['app/services/unavailable_price_valuation.py'],
         requirement_owner_contract='current-fresh-valuation-unavailable-price-v2')
     owner = state.model_dump(mode='json')
     cell = base_cell(req, ticker, ref, view.run_id, view.security_id, owner)
     if not required:
-        return nonapplicable(cell)
+        return nonapplicable(cell, branch='PRICE_PREREQUISITE_UNAVAILABLE',
+            input_refs=[state.receipt_sha256, digest(metric), view.security_sha256])
     cell.update(owner_state='DENIED', owner_decision_version=state.decision_version,
         owner_field_eligibility=state.field_eligibility,
         owner_as_of=state.observation_time.isoformat(), owner_temporal_scope=state.temporal_provenance,

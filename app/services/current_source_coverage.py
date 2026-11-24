@@ -7,7 +7,6 @@ from collections import Counter
 from dataclasses import dataclass
 from datetime import date
 from hashlib import sha256
-import json
 from pathlib import Path
 
 from app.services import canonical_business_quality_owner as business
@@ -24,8 +23,8 @@ from scripts.kis_eps_wire_calibration import digest, sealed, verified
 from app.services.new_buyer_input_owner import qualified_facts
 
 CONTRACT = 'REV56COfflineCoverageReproofV1'
-INPUT_CONTRACT = 'FreshSourceCoverageInputsV1'
-SEMANTICS = 'REV56B_CATEGORY_CELLS_PLUS_REV56C_NO_ESTIMATE_SCOPE'
+INPUT_CONTRACT = 'FreshSourceCoverageInputsV2'
+SEMANTICS = 'TYPED_METRIC_BRANCHES_V1_WITH_KIS_NO_ESTIMATE_SCOPE'
 MODEL_KEYS = {'core', 'cores', 'pass_a', 'pass_b', 'accepted', 'frozen_authority',
               'frozen_overall', 'frozen_holder', 'blind_labels', 'model_stances'}
 
@@ -73,23 +72,18 @@ def source_binding(value):
 
 
 def seal_inputs(owners, *, subjects, semantics_version):
-    require(semantics_version == SEMANTICS, 'unreviewed_dataflow_semantics')
-    dataflow = dataflow_proof()
+    """Bind current owner inputs, not a file-hash claim of reviewed semantics.
+
+    V1 seals are historical artifacts; compose does not migrate or accept them.
+    Category applicability is checked against the typed inputs during compose.
+    """
+    require(semantics_version == SEMANTICS, 'unsupported_coverage_semantics')
     require(subjects and len(set(subjects)) == len(subjects) and set(subjects) == set(owners),
             'cohort_binding')
     return sealed(dict(contract=INPUT_CONTRACT, subjects=sorted(subjects),
         semantics_version=semantics_version,
         rows={ticker: source_binding(owners[ticker]) for ticker in sorted(subjects)},
-        dataflow_sha256=digest(dataflow), model_inputs_used=False))
-
-
-def dataflow_proof():
-    """Positive non-consumption needs the exact reviewed producer code, not absence."""
-    root = Path(__file__).resolve().parents[2]
-    expected = json.loads((root / 'scripts/newbuyer_coverage_dataflow.json').read_bytes())
-    require(expected and all(sha256((root / path).read_bytes()).hexdigest() == value
-                             for path, value in expected.items()), 'producer_dataflow_changed')
-    return expected
+        model_inputs_used=False))
 
 
 def _source_context(ticker, owners):
@@ -159,10 +153,10 @@ def _source_context(ticker, owners):
             as_of=plan['as_of'], fresh_plan_sha256=plan['receipt_sha256'],
             source_corpus_sha256=owners.kis_corpus_sha256))
     facts = qualified_facts({'valuation_context': context}, ticker, owners.generation)
-    return context, facts
+    return context, facts, view
 
 
-def _row(ticker, owners, context, facts):
+def _row(ticker, owners, context, facts, typed_view):
     source, security = owners.stock, owners.security
     view, categories, relevant = source['valuation_view'], [], []
     for metric in context['metric_states']:
@@ -172,15 +166,22 @@ def _row(ticker, owners, context, facts):
         ref = metric['fact_ref'] or 'unavailable-slot:' + view['security_id'] + ':' + name
         relevant.append(ref)
         family = 'DERIVED_KIS' if name == 'CURRENT_FY1_FPER' else 'ATOMIC'
+        typed_metric = None
+        if family == 'ATOMIC':
+            matches = [m for m in typed_view.metrics if m.metric == name]
+            require(len(matches) == 1, 'native_metric_scope')
+            typed_metric = matches[0]
+            owned = typed_metric.model_dump(mode='json')
+            snapshot = owned['native_snapshot']
         for requirement in cells.requirements(name, family, security):
             if family == 'ATOMIC':
-                owned = next(m for m in view['metrics'] if m['metric'] == name)
-                snapshot = owned['native_snapshot']
                 if snapshot is None and owned.get('price_dependency') == 'CURRENT_PRICE_ARITHMETIC_REQUIRED':
-                    categories.append(cells.price_prerequisite_cell(requirement, ticker, ref, source, owned))
+                    categories.append(cells.price_prerequisite_cell(requirement, ticker, ref, source, owned,
+                        validated_view=typed_view))
                 else:
                     require(snapshot is not None, 'native_owner_missing')
-                    categories.append(cells.native_cell(requirement, ticker, ref, source, snapshot, security))
+                    categories.append(cells.native_cell(requirement, ticker, ref, source, snapshot, security,
+                        validated_metric=typed_metric))
             else:
                 categories.append(cells.kis_cell(requirement, ticker, ref, source, owners.kis_row, digest(context)))
     require(relevant, 'relevant_metric_universe_missing')
@@ -221,9 +222,9 @@ def compose(owners, *, subjects, generations, input_seal, input_seal_sha256, sem
             and all(generations[t] == owners[t].generation for t in subjects), 'requested_generation_binding')
     contexts, facts, rows = {}, {}, []
     for ticker in sorted(subjects):
-        context, selected = _source_context(ticker, owners[ticker])
+        context, selected, typed_view = _source_context(ticker, owners[ticker])
         contexts[ticker], facts[ticker] = context, selected
-        rows.append(_row(ticker, owners[ticker], context, selected))
+        rows.append(_row(ticker, owners[ticker], context, selected, typed_view))
     counts = Counter(c['coverage_disposition'] for r in rows for c in r['categories'])
     complete = all(r['coverage_complete'] for r in rows)
     coverage = sealed(dict(contract=CONTRACT, subjects=len(rows),

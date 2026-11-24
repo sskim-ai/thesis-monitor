@@ -230,6 +230,7 @@ def _record_local_failure(directory, exc, *, config, session, generation=None, b
             'selected_original_coverage_required_cells_incomplete', 'selected_forward_coverage_context_drift',
             'selected_original_issuer_projection_denied', 'scoped_research_registered_source_coverage',
             'scoped_research_inconsistent_stock_cutoffs',
+            'registered_runtime_code_changed',
         }
         error_code = exc.args[0] if len(exc.args) == 1 and type(exc.args[0]) is str else None
         stage = 'SOURCE_PREPARATION_OR_COLLECTION' if source_frame else 'LOCAL_REGISTERED_CYCLE'
@@ -272,6 +273,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     from app.services.codex_runtime_binding import binding_from_json, parent_environment, validate_binding
     from app.services.kiwoom_global_lane import configured_lane
     from app.services.production_source_configuration import ProductionSourceConfiguration
+    from app.services.production_source_backend import runtime_code_identity
     from app.services.production_source_context import POLICY, credential_binding, inspect_native
     from app.services.selected_run_lifecycle import SelectedRunLedger
     from app.services.selected_source_context import freeze_registered_child
@@ -281,6 +283,9 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     from app.services.unified_stock_acquisition import UNIVERSE
     from app.services.vnext_execution_profile import SOL_HIGH_V1
 
+    # Automatic content identity for this run, not a reviewed-code allowlist or
+    # a claim that the acquired data is current. The scheduler keeps its Git pin.
+    initial_code_identity = runtime_code_identity()
     market = config.market
     diagnostic = one_shot_scope(market,one_shot_tag,config=config)
     consumer_policy = SelectedConsumerPolicy(us_night=getattr(config, 'us_night_policy', 'ORIGINAL_CURRENT_PROBE_ONLY'))
@@ -313,6 +318,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     runtime = _local_model_runtime(execution)
     durable_json(directory/'model-runtime-preflight.json', dict(
         execution=execution, runtime_root=str(runtime), uid=runtime.stat().st_uid,
+        initial_code_identity=initial_code_identity,
         mode=stat.S_IMODE(runtime.stat().st_mode), git_markers=[],
         journal_path=str(runtime/'invocation-ledger'/execution/'events.jsonl'),
         artifact_roots={str(directory):'source', str(directory/'results'):'result', str(runtime):'scratch'},
@@ -444,6 +450,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
         with artifact_scope(artifacts):
             return await run_registered(settings, source=source, model=model, mode='LIVE_NO_SEND',
                 record_market_terminal=True,
+                initial_code_identity=initial_code_identity,
                 **(dict(routine_us_no_send_source_seconds=1800) if market == 'us' else {}))
     except BaseException as exc:
         _record_local_failure(directory, exc, config=config, session=session,
@@ -656,13 +663,13 @@ async def run_selected(market, engine, day):
 
 async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', clock=None,
                          manual_source_seconds=None, routine_us_no_send_source_seconds=None,
-                         record_market_terminal=False):
+                         record_market_terminal=False, initial_code_identity=None):
     """Explicit registered cycle for manual and future scheduler callers.
 
     Callers supply the original approval/Owner/ledger and already frozen plan;
     neither settings nor this entry issues permissions or installs a trigger.
     """
-    from app.services.production_source_backend import CanonicalProductionSourceBackend
+    from app.services.production_source_backend import CanonicalProductionSourceBackend, runtime_code_identity
     from app.services.unified_snapshot_contract import digest
 
     if mode not in {'SOURCE_ONLY', 'LIVE_NO_SEND'} or mode == 'SOURCE_ONLY' and model is not None:
@@ -681,8 +688,18 @@ async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', cl
         manual_no_send=True, manual_source_seconds=manual_source_seconds)
     if routine_us_no_send_source_seconds is not None:
         options['routine_us_no_send_source_seconds'] = routine_us_no_send_source_seconds
+    # Local scheduling freezes this before registration; other callers freeze
+    # here. Neither value reviews code nor establishes source freshness.
+    current_code_identity = runtime_code_identity()
+    if initial_code_identity is None:
+        initial_code_identity = current_code_identity
+    if current_code_identity != initial_code_identity:
+        raise ValueError('registered_runtime_code_changed')
     child, proof = await CanonicalProductionSourceBackend.prepare_registered(settings=settings, **source, **options)
+    failed = False
     try:
+        if runtime_code_identity() != initial_code_identity:
+            raise ValueError('registered_runtime_code_changed')
         child.verify()
         if mode == 'SOURCE_ONLY':
             return dict(status='SOURCE_ADMISSION_PASS', market=child.market,
@@ -695,6 +712,9 @@ async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', cl
         engine = build_engine(settings, adapter, repo_commit=source['frozen']['stock_plan']['implementation_sha'],
             adapter_fingerprint=digest(child.binding()), clock=clock)
         result = await engine.run(child.market, datetime.fromisoformat(child.plan.cohort.cutoff).astimezone(KST).date())
+        failed = result.get('status') == 'FAILED_NO_SEND'
+        if not failed and runtime_code_identity() != initial_code_identity:
+            raise ValueError('registered_runtime_code_changed')
         if record_market_terminal:
             if result.get('status') == 'FAILED_NO_SEND':
                 try:
@@ -704,8 +724,16 @@ async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', cl
                 return result
             source['run_ledger'].rendered_market(child, result)
         return result
+    except BaseException:
+        failed = True
+        raise
     finally:
-        child.owner.close()
+        try:
+            child.owner.close()
+        except BaseException:
+            if not failed:
+                raise
+            # Keep the original STOP when retiring a failed child also fails.
 
 
 async def main():
