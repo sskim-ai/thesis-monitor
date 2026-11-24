@@ -232,7 +232,9 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
 
     async def publication(name):
         capture = PublicationCapture(sealed, name, frozen['generation_id'], root/'publications'/name)
-        provider = PROVIDERS[name](transport=capture, clock=lambda: capture.received_at)
+        options = ({'daily_fx': frozen['candidate']['macro_queries']['ecos'].get('daily_fx', ())}
+                   if name == 'ecos' else {})
+        provider = PROVIDERS[name](transport=capture, clock=lambda: capture.received_at, **options)
         provider.settings = settings
         value = await provider.collect(datetime.fromisoformat(frozen['frozen_at']))
         return TypeAdapter(MacroProviderResult).dump_python(value, mode='json')

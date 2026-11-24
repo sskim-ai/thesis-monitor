@@ -44,6 +44,8 @@ _SERIES = {
     "BAMLH0A0HYM2": ("credit", "market_credit_spread", "미국 하이일드 신용스프레드"),
     "DTWEXBGS": ("liquidity", "market_dollar_index", "미 달러지수(광의)"),
     "USDKRW": ("fx", "market_fx", "원/달러 환율"),
+    "JPYKRW100_KR_CLOSE": ("fx", "market_fx", "원/100엔"),
+    "EURKRW_KR_CLOSE": ("fx", "market_fx", "원/유로"),
     "DCOILWTICO": ("commodities", "market_oil", "WTI 유가"),
     "VIXCLS": ("risk_signals", "market_volatility", "VIX"),
 }
@@ -265,6 +267,18 @@ def _observation_fact(
             fields["value"] = value
         if change_pct is not None:
             fields["change_pct"] = change_pct
+        raw = item.get('raw_payload') or {}
+        for name in ('fx_quote_unit', 'fx_series_basis'):
+            if name in raw:
+                fields[name] = raw[name]
+        if raw.get('fx_series_basis') == 'ECOS_OFFICIAL_DAILY':
+            if _number(item, 'previous_value') is not None:
+                fields['previous_value'] = item['previous_value']
+            if change_value is not None:
+                fields['change_value'] = change_value
+            for name in ('previous_observation_date', 'change_input_response_sha256'):
+                if name in raw:
+                    fields[name] = raw[name]
     elif fact_type == "market_oil":
         if value is not None:
             fields["price_usd_per_barrel"] = value

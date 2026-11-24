@@ -111,7 +111,7 @@ def test_actual_caller_ledger_model_and_intent_caps_preserve_kr():
         assert value(ledger, 'b2_retry_policy', market) == value(model, 'b2_retry_policy', market) == retry
         assert value(intent, 'b2_retry_policy', market) == retry
     assert ast.unparse(next(k.value for k in model.keywords if k.arg == 'approved_max_invocations')) == "ledger.identity['max_models']"
-    assert sum(job.LOCAL_CAPS['us'].values()) == 710 and sum(job.LOCAL_CAPS['kr'].values()) == 332
+    assert sum(job.LOCAL_CAPS['us'].values()) == 710 and sum(job.LOCAL_CAPS['kr'].values()) == 334
     assert value(ledger, 'wallclock_seconds_max', 'us') == 16200
 
 

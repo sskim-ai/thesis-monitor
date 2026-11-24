@@ -140,7 +140,7 @@ def acquisition_plan(stock_plan, identities, *, kr_max_pages, exact_financial_ow
     maxima = dict(stock_wire=sum(r.max_pages for r in stock.reads)+1,
         us_market_wire=len(MARKET_SYMBOLS)*2+4,
         kr_market_wire=sum(r.max_pages for r in kr)+1,
-        fred=len(FRED_SERIES), eia=len(EIA_SERIES), ecos=1, night_wire=len(days))
+        fred=len(FRED_SERIES), eia=len(EIA_SERIES), ecos=1 if us_only else 3, night_wire=len(days))
     if kr_only:
         for name in ('us_market_wire', 'fred', 'eia'):
             del maxima[name]
@@ -164,6 +164,9 @@ def acquisition_plan(stock_plan, identities, *, kr_max_pages, exact_financial_ow
             ('news_and_filing_events', 'earnings_calendar', 'us_exchange_breadth', 'forward_estimates')},
         budgets=budgets, prohibited={k: 0 for k in ('alpha_vantage', 'massive', 'mock', 'fallback',
             'telegram', 'production_db_write', 'scheduler', 'remote_push', 'deploy')})
+    if not us_only:
+        from app.macro.providers.ecos_daily_fx import DAILY_FX
+        result['macro_queries']['ecos']['daily_fx'] = list(DAILY_FX)
     if kr_only:
         result.update(scope='KR8_ONLY', us_market_symbols=[],
             macro_queries={'ecos': result['macro_queries']['ecos']})

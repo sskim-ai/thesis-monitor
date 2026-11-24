@@ -12,6 +12,8 @@ WORK_CAP = 2 * 1024**3
 FREE_GUARD = 12 * 1024**3
 CLI_WORK_ALLOWANCE = 48 * 1024**2
 MODEL_RESULT_ALLOWANCE = 2 * 128 * 1024 + 256 * 1024
+CLI_RESULT_FILENAMES = ('raw-output.json', 'raw-output.json.invocation', 'transport-receipt.json',
+    'production-authorization.json', 'parent-exit.json', 'runtime-cleanup.json')
 _active = ContextVar('research_artifact_budget', default=None)
 _role = ContextVar('research_artifact_role', default=None)
 _stage = ContextVar('research_artifact_stage', default='PREPARE')
@@ -98,8 +100,7 @@ class ResearchArtifactBudget:
 
         path = plain_path(path)
         home = path / 'runtime-state' / runtime_state_namespace_hash(path.name) / 'home'
-        for name in ('raw-output.json', 'raw-output.json.invocation', 'transport-receipt.json',
-                     'production-authorization.json', 'parent-exit.json'):
+        for name in CLI_RESULT_FILENAMES:
             self.declare(path / name, 'result')
         if auth_source is not None:
             # Account for the existing worker's exact auth reference without following it.

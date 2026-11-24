@@ -128,7 +128,7 @@ def test_c39_same_day_caller_new_output_and_no_replay(tmp_path, monkeypatch):
     directory = tmp_path/'runs/one-shot/2026-11-23'/tag
     assert calls == [(directory, '2026-11-23', tag)]
     intent = json.loads((directory/'intent.json').read_bytes())
-    assert intent['max_http'] == 332 and intent['max_models'] == 18 and intent['source_seconds'] == 600
+    assert intent['max_http'] == 334 and intent['max_models'] == 18 and intent['source_seconds'] == 600
     assert intent['b2_retry_policy'] is None and intent['normal_messages_sent'] is False
     assert asyncio.run(job.run_local_scheduled(path, 'kr', now=now, one_shot_tag=tag))['reason'] == 'SESSION_ALREADY_CONSUMED'
     assert len(calls) == 1 and (prior/'terminal.json').read_text() == 'OLD_FAILURE_KEEP'

@@ -2060,6 +2060,8 @@ _FIELD_RULES = (
         "bp",
     ),
     NumericFieldRule(("market_fx",), r"fields\.value", "fx_rate", "KRW"),
+    NumericFieldRule(("market_fx",), r"fields\.previous_value", "fx_rate", "KRW"),
+    NumericFieldRule(("market_fx",), r"fields\.change_value", "fx_point_change", "KRW"),
     NumericFieldRule(("market_fx",), r"fields\.change_pct", "fx_return_pct", "pct"),
     NumericFieldRule(
         ("market_oil",), r"fields\.price_usd_per_barrel", "oil_price", "USD_per_barrel"

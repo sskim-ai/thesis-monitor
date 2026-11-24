@@ -1192,14 +1192,47 @@ def calculate_invalidation(
         and daily_bars[-1].low < invalidation <= daily_bars[-1].close
         and (volume_ratio is None or volume_ratio < 1.2)
     )
-    status = (
-        "accelerated_invalid"
-        if accelerated
-        else "hard_invalid"
-        if hard_daily or hard_weekly
-        else "wick_only_review"
-        if wick_only
-        else "intact"
+    # A completed weekly bar may be labelled by either end or start of week.
+    # A later date within that same week therefore cannot establish recovery
+    # after it. Only a completed daily bar in a later week can do so.
+    evaluation_date = daily_bars[-1].date if daily_bars else None
+    weekly_bar_date = weekly_bars[-1].date if weekly_bars else None
+    later_daily_period = bool(
+        evaluation_date and weekly_bar_date
+        and date.fromisoformat(evaluation_date).isocalendar()[:2]
+        > date.fromisoformat(weekly_bar_date).isocalendar()[:2]
+    )
+    current_recovery = "not_reclaimed"
+    if hard_weekly and later_daily_period and daily_bars[-1].close >= invalidation:
+        current_recovery = (
+            "support_reclaimed" if daily_bars[-1].close >= float(support["zone_low"])
+            else "invalidation_reclaimed"
+        )
+
+    # Keep the existing prices and confirmation thresholds, but bind a hard
+    # invalidation to the selected support's own timeframe. Other-frame signals
+    # remain warnings; daily recovery is never a confirmed weekly repair.
+    if timeframe == "daily" and accelerated:
+        status = "accelerated_invalid"
+    elif timeframe == "daily" and hard_daily:
+        status = "hard_invalid"
+    elif timeframe == "daily" and hard_weekly:
+        status = "higher_timeframe_review"
+    elif timeframe == "weekly" and hard_weekly:
+        status = "recovered_review" if current_recovery != "not_reclaimed" else "hard_invalid"
+    elif timeframe == "weekly" and (hard_daily or accelerated):
+        status = "lower_timeframe_review"
+    else:
+        status = "wick_only_review" if wick_only else "intact"
+    trigger_timeframe = (
+        "weekly" if status in {"higher_timeframe_review", "recovered_review"}
+        or timeframe == "weekly" and hard_weekly
+        else "daily" if hard_daily or accelerated or wick_only else None
+    )
+    trigger_dates = (
+        [weekly_bar_date] if trigger_timeframe == "weekly"
+        else [bar.date for bar in daily_bars[-2:]] if hard_daily and not accelerated
+        else [evaluation_date] if trigger_timeframe == "daily" else []
     )
     return {
         "available": True,
@@ -1214,6 +1247,11 @@ def calculate_invalidation(
         "hard_weekly": hard_weekly,
         "accelerated": accelerated,
         "wick_only": wick_only,
+        "evaluation_date": evaluation_date,
+        "weekly_bar_date": weekly_bar_date,
+        "trigger_timeframe": trigger_timeframe,
+        "trigger_dates": trigger_dates,
+        "current_recovery": current_recovery,
         "chart_only": True,
     }
 
@@ -1332,6 +1370,14 @@ def determine_chart_state(
             "reasons": [invalid_status],
             "blocking_unknowns": blockers,
             "user_semantics": "price_scenario_reassessment",
+        }
+    if invalid_status in {"higher_timeframe_review", "lower_timeframe_review", "recovered_review"}:
+        return {
+            "state": "WAIT",
+            "confidence": "medium",
+            "reasons": [invalid_status],
+            "blocking_unknowns": blockers,
+            "user_semantics": "price_structure_wait_not_sell_command",
         }
     if risk_reward.get("reason") == "nearest_support_resistance_overlap":
         return {

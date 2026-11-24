@@ -209,11 +209,12 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
         fact = unique_series(series)
         fields = fact['fields'] if fact else {}
         publication = fields.get('publication_context') or {}
-        key, units, suffix = ('value', {'KRW'}, '원') if series == 'USDKRW' else (
+        is_fx = series == 'USDKRW' or series in FX_LABELS
+        key, units, suffix = ('value', {'KRW'}, '원') if is_fx else (
             ('price_usd_per_barrel', {'USD_per_barrel'}, 'USD/배럴') if series == 'DCOILWTICO' else
             ('level', {'index', 'points', 'point'}, '') if series in {'VIXCLS', 'DTWEXBGS'} else
             ('level_pct', {'pct', 'percent'}, '%'))
-        binding = bind(fact, key, units, observation=series=='USDKRW') if fact else None
+        binding = bind(fact, key, units, observation=is_fx) if fact else None
         valid = bool(fact and binding and publication.get('contract') == TIME_CONTRACT
             and publication.get('latest_available_at_query_time') is True
             and publication.get('display_eligible') is True
@@ -222,12 +223,16 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
             and publication.get('observation_date') == fact['as_of_date']
             and fact['as_of_date'] <= assessment_date
             and publication.get('response_sha256')
-            and (series != 'USDKRW' or publication.get('observation_precision') == 'daily'))
-        if valid and series == 'USDKRW':
+            and (not is_fx or publication.get('observation_precision') == 'daily'))
+        if valid and is_fx:
             from app.services.latest_published_fx import validate_context
             # A published FX observation need not share the equity close date.
             valid = fields.get('provider')=='ecos' and validate_context(publication, observation_date=fact['as_of_date'],
-                response_hashes={publication['response_sha256']}, query_as_of=publication['query_as_of'])
+                response_hashes={publication['response_sha256']}, query_as_of=publication['query_as_of'], series=series)
+            if series != 'USDKRW':
+                from app.macro.providers.ecos_daily_fx import DAILY_FX
+                valid = bool(valid and fields.get('fx_quote_unit') == DAILY_FX[series][2]
+                    and fields.get('fx_series_basis') == 'ECOS_OFFICIAL_DAILY')
         label = fields.get('label', series)
         text = f"{label}: {binding.value:,.2f}{suffix} ({fact['as_of_date']} 관측)" if valid else None
         bindings = [binding] if valid else []
@@ -244,9 +249,33 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
                 delta = f"{derived['change_pct']:+.2f}%" if derived['change_pct'] is not None else '변동률 자료 부족'
                 previous = derived['previous_observation_date'] or '자료 부족'
                 text += f' · {delta} (직전 {previous} 대비)'
-        if valid and series == 'USDKRW':
-            text = format_dated_fx(KrCloseFxItem('USDKRW','원/달러',binding.value,observation_date=fact['as_of_date']))
-        add('fx' if series == 'USDKRW' else 'macro', label, [fact] if valid else [], bindings, text=text,
+        if valid and is_fx:
+            if series == 'USDKRW':
+                text = format_dated_fx(KrCloseFxItem(series, '원/달러',
+                    binding.value, observation_date=fact['as_of_date']))
+            else:
+                previous = bind(fact, 'previous_value', {'KRW'}, observation=True)
+                delta = bind(fact, 'change_value', {'KRW'}, observation=True)
+                pct = bind(fact, 'change_pct', {'pct'}, observation=True)
+                prior_date = fields.get('previous_observation_date')
+                try:
+                    comparable = bool(previous and delta and pct and previous.value > 0
+                        and date.fromisoformat(prior_date) < date.fromisoformat(fact['as_of_date'])
+                        and fields.get('change_input_response_sha256') == publication['response_sha256']
+                        and isclose(binding.value-previous.value, delta.value, rel_tol=1e-12, abs_tol=1e-9)
+                        # The shared macro storage owner records four decimals.
+                        and isclose(round(delta.value/previous.value*100, 4), pct.value,
+                                    rel_tol=1e-12, abs_tol=1e-9))
+                except (TypeError, ValueError):
+                    comparable = False
+                if comparable:
+                    bindings.extend([previous, delta, pct])
+                text = format_dated_fx(KrCloseFxItem(series, FX_LABELS[series], binding.value,
+                    change_value=delta.value if comparable else None,
+                    change_pct=pct.value if comparable else None,
+                    observation_date=fact['as_of_date'], comparison_date=prior_date if comparable else None))
+                text += ' · ECOS 일별 환율'
+        add('fx' if is_fx else 'macro', label, [fact] if valid else [], bindings, text=text,
             proof={'publication_context_sha256': digest(publication), **({'display_only_derived_claim_id':derived['claim_id'],
                 'derived_registry_sha256':digest(derived['numeric_registry']), 'direction_eligible':False} if derived else {})} if valid else {})
 
@@ -297,7 +326,9 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
     if market == 'kr':
         add('fx_note','환율 관측',text='시장 해석은 당시 입력 기준이며, 환율은 별도 관측값입니다.',formatter='display-only-note')
         for series,label in FX_LABELS.items():
-            if series in retained_fx:
+            if series != 'USDKRW_KR_CLOSE' and unique_series(series) is not None:
+                macro(series)
+            elif series in retained_fx:
                 item,proof = retained_fx[series]
                 anchor = unique_series('USDKRW') if series=='USDKRW_KR_CLOSE' and 'raw_response_sha256' in proof else None
                 basis = ' · ECOS 매매기준율' if proof.get('series_basis')=='ECOS_REFERENCE_RATE' else ''

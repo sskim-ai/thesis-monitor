@@ -333,7 +333,27 @@ def _entry_quality(model_input, timing, context, market, session):
     if linked_invalidation:
         refs.add(inv_ref)
         if inv.get("status") in {"hard_invalid", "accelerated_invalid"}:
-            return "BLOCKED", "해당 지지의 차트 무효화 조건 충족", tuple(sorted(refs))
+            note = "해당 지지의 차트 무효화 조건 충족"
+            frame = {"daily": "일봉", "weekly": "주봉"}.get(inv.get("trigger_timeframe"))
+            dates = inv.get("trigger_dates")
+            if frame and isinstance(dates, list) and dates:
+                note += f" · 완료 {frame} 기준일 " + ", ".join(str(day) for day in dates)
+            return "BLOCKED", note, tuple(sorted(refs))
+        if inv.get("status") in {"higher_timeframe_review", "lower_timeframe_review", "recovered_review"}:
+            weekly = f"완료 주봉(기준일 {inv['weekly_bar_date']})" if inv.get("weekly_bar_date") else "완료 주봉"
+            recovery = {
+                "support_reclaimed": "이후 완료 일봉은 지지 구간 하단 회복",
+                "invalidation_reclaimed": "이후 완료 일봉은 무효화선 회복, 지지 구간 하단은 미회복",
+            }.get(inv.get("current_recovery"))
+            if inv["status"] == "higher_timeframe_review":
+                note = f"선택 지지는 일봉 기준 · {weekly} 이탈 신호는 별도 확인 필요"
+                if recovery:
+                    note += " · " + recovery
+            elif inv["status"] == "recovered_review":
+                note = f"{weekly} 이탈 후 {recovery or '일봉 회복 근거 확인 필요'} · 다음 완료 주봉 확인 대기"
+            else:
+                note = "완료 일봉 이탈 신호 · 주봉 무효화는 완료 주봉 확인 필요"
+            return "CAUTION", note, tuple(sorted(refs))
         if inv.get("status") == "wick_only_review":
             return "CAUTION", "무효화 가격 일시 이탈로 종가 재확인 필요", tuple(sorted(refs))
     for ref, row in evidence.items():
@@ -380,8 +400,7 @@ def _entry_quality(model_input, timing, context, market, session):
 def _buyer_action(stance, relation, quality, *, reason_class=None, confirmed_breakout=False):
     if stance == "AVOID":
         return "신규 매수 회피"
-    if relation == "BELOW" or quality == "BLOCKED":
-        return "지지 이탈 구조 재검토"
+    structural_review = relation == "BELOW" or quality == "BLOCKED"
     if stance == "WAIT":
         reasons = {
             "BUSINESS_MIXED": "사업 근거 혼재 해소 대기",
@@ -392,7 +411,10 @@ def _buyer_action(stance, relation, quality, *, reason_class=None, confirmed_bre
             "VALUATION_BURDENSOME": "가치평가 부담 완화 대기",
             "CONFIDENCE_UNCERTAINTY": "판단을 제한하는 근거 확인 대기",
         }
-        return reasons.get(reason_class, "신규매수 판단 근거 확인 대기")
+        action = reasons.get(reason_class, "신규매수 판단 근거 확인 대기")
+        return action + " · 지지 이탈 구조 재검토" if structural_review else action
+    if structural_review:
+        return "지지 이탈 구조 재검토"
     if relation == "ABOVE":
         if confirmed_breakout:
             return "돌파·거래량 확인 완료, 선택된 지지 구간 기준의 진입은 가격 조정 대기"

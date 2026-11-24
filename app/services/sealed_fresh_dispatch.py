@@ -40,7 +40,9 @@ def read_route(provider, method, path):
         'sec_edgar': r'/(?:submissions/CIK\d{10}\.json|api/xbrl/companyfacts/CIK\d{10}\.json|Archives/edgar/data/\d+/\d{18}/[A-Za-z0-9_.-]+)',
         'opendart': r'/api/(?:list|fnlttSinglAcntAll)\.json',
         'fred': r'/fred/series/observations', 'eia': r'/v2/seriesid/[A-Z0-9.]+',
-        'ecos': r'/api/KeyStatisticList/(?:\[REDACTED\]|%5BREDACTED%5D)/json/kr/1/100',
+        'ecos': (r'/api/(?:KeyStatisticList/(?:\[REDACTED\]|%5BREDACTED%5D)/json/kr/1/100|'
+                 r'StatisticSearch/(?:\[REDACTED\]|%5BREDACTED%5D)/json/kr/1/100/'
+                 r'731Y001/D/\d{8}/\d{8}/(?:0000002|0000003))'),
         'krx_night_futures': r'/svc/apis/drv/fut_bydd_trd',
         'finnhub': r'/api/v1/stock/(?:metric|profile2)', 'google_news_rss': r'/rss/search',
         'naver_news': r'/v1/search/news\.json',

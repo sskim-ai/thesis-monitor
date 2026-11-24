@@ -158,6 +158,9 @@ def acquisition_plan(stock,identities,*,kr_max_pages,exact_financial_owner=False
         days=([(day-timedelta(days=i)).isoformat() for i in range(7)]
               if stock.market=='us' and consumer_policy.us_night != US_NIGHT_EXCLUDED else [])
     macro={'ecos':{'route':'KeyStatisticList','start':1,'end':100,'period_field':'CYCLE'}}
+    if stock.market == 'kr':
+        from app.macro.providers.ecos_daily_fx import DAILY_FX
+        macro['ecos']['daily_fx'] = list(DAILY_FX)
     if stock.market=='us':
         macro.update(fred={'series':list(FRED_SERIES),'limit':5,'sort_order':'desc','observation_end':stock.frozen_at.date().isoformat()},
             eia={'series':list(EIA_SERIES),'length':1})

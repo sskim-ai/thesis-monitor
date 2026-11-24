@@ -5,13 +5,14 @@ from app.services.macro_source_time import CONTRACT, source_period
 from app.services.unified_snapshot_contract import digest
 
 
-def validate_context(context, *, observation_date, response_hashes, query_as_of):
+def validate_context(context, *, observation_date, response_hashes, query_as_of, series='USDKRW'):
     try:
         day, precision = source_period(context['observation_period'], daily_required=True)
         query = datetime.fromisoformat(query_as_of)
         retrieved = datetime.fromisoformat(context['retrieved_at'])
         return bool(context['contract'] == CONTRACT and context['provider'] == 'ecos'
-            and context['series_code'] == 'USDKRW'
+            and series in {'USDKRW', 'JPYKRW100_KR_CLOSE', 'EURKRW_KR_CLOSE'}
+            and context['series_code'] == series
             and context['observation_date'] == day.isoformat() == observation_date
             and context['observation_precision'] == precision == 'daily'
             and context['query_as_of'] == query_as_of and query.utcoffset() is not None

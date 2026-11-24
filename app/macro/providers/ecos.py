@@ -28,10 +28,11 @@ class EcosProvider:
     name = "ecos"
 
     def __init__(self, transport: httpx.AsyncBaseTransport | None = None, *,
-                 clock: Callable[[], datetime] | None = None) -> None:
+                 clock: Callable[[], datetime] | None = None, daily_fx=()) -> None:
         self.settings = get_settings()
         self.transport = transport
         self.clock = clock or (lambda: datetime.now(timezone.utc))
+        self.daily_fx = tuple(daily_fx)
 
     async def collect(self, as_of: datetime) -> MacroProviderResult:
         result = MacroProviderResult(provider=self.name)
@@ -82,4 +83,19 @@ class EcosProvider:
                 )
         except (httpx.HTTPError, KeyError, TypeError, ValueError) as exc:
             result.warnings.append(f"KeyStatisticList: {type(exc).__name__}")
+        if self.daily_fx:
+            from app.macro.providers.ecos_daily_fx import daily_fx_requests, parse_daily_fx
+            async with httpx.AsyncClient(timeout=self.settings.macro_provider_timeout_seconds,
+                                         transport=self.transport) as client:
+                for series, request in daily_fx_requests(as_of, self.settings.ecos_api_key, self.daily_fx):
+                    try:
+                        response = await client.send(request)
+                        response.raise_for_status()
+                        observations = parse_daily_fx(response, series=series, as_of=as_of,
+                                                      retrieved_at=self.clock())
+                        result.observations.extend(observations)
+                        if not observations:
+                            result.warnings.append(f'{series}: source_observation_unavailable')
+                    except (httpx.HTTPError, KeyError, TypeError, ValueError, OverflowError) as exc:
+                        result.warnings.append(f'{series}: {type(exc).__name__}')
         return result

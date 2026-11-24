@@ -243,6 +243,15 @@ def reserve_request(cap,request,*,provider,market,subject,phase,owner,optional_n
         raise ValueError('PHYSICAL_TLS_OR_PORT_OUTSIDE_CAMPAIGN')
     endpoint=max(rules,key=lambda r:len(r['prefix']))['endpoint'] if rules else 'UNAPPROVED'
     route=endpoint if any(r.get('path_contains_credentials') for r in rules) else endpoint+':'+request.url.path
+    if provider == 'ecos' and request.url.path.startswith('/api/StatisticSearch/'):
+        # The API key occupies exactly one path component. Keep only the public
+        # table/date/item identity so different currencies are separate attempts;
+        # a repeated request for the same currency still has the same identity.
+        public = re.fullmatch(r'/api/StatisticSearch/[^/]+/(json/kr/1/100/731Y001/D/'
+                              r'\d{8}/\d{8}/(?:0000002|0000003))', request.url.path)
+        if public is None:
+            raise ValueError('PHYSICAL_ECOS_PUBLIC_ROUTE_REQUIRED')
+        route = endpoint + ':/api/StatisticSearch/[REDACTED]/' + public[1]
     cursor=digest(request.headers.get('next-key',''))
     fingerprint=public_fingerprint(method=request.method,endpoint=route,query=request.url.params.multi_items(),
         body=body,api_id=[request.headers.get('api-id') or request.headers.get('tr_id'),cursor])

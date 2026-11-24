@@ -48,7 +48,7 @@ def test_previous_tags_and_routine_policy_are_unchanged():
     assert job.latest_one_shot_us_session(RealDateTime.fromisoformat('2026-11-21T06:10:00+09:00')) is None
     from app.services.unified_market_run import target_session
     assert str(target_session('us',RealDateTime.fromisoformat('2026-11-21T06:10:00+09:00')))=='2026-11-20'
-    assert sum(job.LOCAL_CAPS['us'].values())==710 and sum(job.LOCAL_CAPS['kr'].values())==332
+    assert sum(job.LOCAL_CAPS['us'].values())==710 and sum(job.LOCAL_CAPS['kr'].values())==334
 
 
 def test_early_late_wrong_year_and_wrong_slot_never_start(tmp_path,monkeypatch):

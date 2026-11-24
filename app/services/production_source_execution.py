@@ -30,7 +30,7 @@ ROUTES = {
     "opendart": frozenset({"list", "document", "financial"}),
     "fred": frozenset({"observations"}),
     "eia": frozenset({"seriesid"}),
-    "ecos": frozenset({"KeyStatisticList"}),
+    "ecos": frozenset({"KeyStatisticList", "StatisticSearch"}),
     "krx_night_futures": frozenset({"fut_bydd_trd"}),
     "google_news_rss": frozenset({"news"}),
     "naver_news": frozenset({"news"}),

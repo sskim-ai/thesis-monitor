@@ -132,6 +132,11 @@ def compile_slots(*, stock, identities, news_reads, config_identities,
             httpx.Request('GET', 'https://api.eia.gov/v2/seriesid/' + series, params={'api_key': 'PLAN_CREDENTIAL', 'length': 1}))
     add('ecos:USDKRW', 'ecos', 'ecos:USDKRW', 'kr', 'USDKRW', 'KeyStatisticList',
         httpx.Request('GET', 'https://ecos.bok.or.kr/api/KeyStatisticList/PLAN_CREDENTIAL/json/kr/1/100'))
+    from app.macro.providers.ecos_daily_fx import daily_fx_requests
+    for series, request in daily_fx_requests(stock.frozen_at, 'PLAN_CREDENTIAL',
+            candidate['macro_queries']['ecos'].get('daily_fx', ())):
+        add('ecos:' + series, 'ecos', 'ecos:' + series, 'kr', series, 'StatisticSearch', request,
+            mandatory=False, retries=0)
     for day in candidate['night_query_dates']:
         key = 'night:KOSPI200:' + day
         add(key, 'krx_night_futures', key, 'kr', 'KOSPI200', 'fut_bydd_trd',

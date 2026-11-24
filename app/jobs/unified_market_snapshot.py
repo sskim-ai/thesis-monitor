@@ -33,7 +33,7 @@ LOCAL_BASIS = 'LOCAL_OPERATOR_SCHEDULED_NO_SEND'
 LOCAL_CAPS = {
     'us': dict(kiwoom=552, sec_edgar=86, finnhub=28, google_news_rss=14,
         fred=13, krx_night_futures=7, opendart=6, eia=3, ecos=1),
-    'kr': dict(kiwoom=190, kis=85, opendart=48, naver_news=8, ecos=1),
+    'kr': dict(kiwoom=190, kis=85, opendart=48, naver_news=8, ecos=3),
 }
 ROOT = Path(__file__).resolve().parents[2]
 US2_SUBJECTS = ('GOOGL','MU')
@@ -318,6 +318,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     runtime = _local_model_runtime(execution)
     durable_json(directory/'model-runtime-preflight.json', dict(
         execution=execution, runtime_root=str(runtime), uid=runtime.stat().st_uid,
+        runtime_state_retention='REMOVE_AFTER_WORKER_GROUP_EXIT',
         initial_code_identity=initial_code_identity,
         mode=stat.S_IMODE(runtime.stat().st_mode), git_markers=[],
         journal_path=str(runtime/'invocation-ledger'/execution/'events.jsonl'),
@@ -468,7 +469,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
         try:
             runtime.rmdir()
         except OSError:
-            pass  # Keep nonempty current invocation evidence; retire only empty scratch.
+            pass  # Retain prompt/output/receipts; each finished worker retires its own CLI state.
 
 
 def latest_one_shot_us_session(now, *, one_shot_tag=None, config=None):

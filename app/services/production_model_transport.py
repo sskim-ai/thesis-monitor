@@ -328,83 +328,89 @@ class OfficialProductionModelTransport:
             cwd=ROOT, env=env, start_new_session=True, stdin=asyncio.subprocess.PIPE,
             stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
         try:
-            if artifacts is None:
-                await asyncio.wait_for(process.communicate(encoded(frame)), worker_timeout)
-            else:
-                async def communicate_and_measure():
-                    task = asyncio.create_task(process.communicate(encoded(frame)))
-                    try:
-                        while not (await asyncio.wait({task}, timeout=5))[0]:
-                            artifacts.check(path=path)
-                        return await task
-                    finally:
-                        if not task.done():
-                            task.cancel()
-                            await asyncio.gather(task, return_exceptions=True)
-
-                await asyncio.wait_for(communicate_and_measure(), worker_timeout)
-        except BaseException as exc:
-            if process.returncode is None:
-                os.killpg(process.pid, signal.SIGKILL)
-            await process.wait()
             try:
-                durable_json(path / "parent-exit.json", dict(status="INTERRUPTED", child_reaped=True), exclusive=True)
-            except ArtifactCapacityError:
-                if not isinstance(exc, ArtifactCapacityError):
-                    raise
-            raise
-        raw_path = path / "raw-output.json"
-        raw = raw_path.read_bytes() if raw_path.is_file() and not raw_path.is_symlink() else b""
-        durable_json(path / "parent-exit.json", dict(status="WORKER_EXITED", child_reaped=True,
-            returncode=process.returncode, raw_sha256=sha256_bytes(raw), raw_bytes=len(raw)), exclusive=True)
-        if timer is not None:
-            timer.switch('local')
-        if process.returncode == PREFLIGHT_REJECT_EXIT:
-            raise ValueError("production_official_transport_boundary_reject")
-        if process.returncode != 0:
-            raise ModelTransportError("WORKER_NONZERO")
-        receipt_path = path / "transport-receipt.json"
-        receipt = json.loads(receipt_path.read_bytes()) if receipt_path.exists() else {"error_code": "WORKER_FAILED"}
-        if receipt.get("status") != "PASS":
-            code = receipt.get("error_code")
-            if self.execution_profile and code in {'MODEL_ENTITLEMENT_OR_QUOTA_UNAVAILABLE',
-                    'MODEL_AUTHENTICATION_FAILED','MODEL_WORKSPACE_MISMATCH'}:
-                error=ModelTransportError(code)
-                error.diagnosis=receipt.get('diagnosis')
-                error.cli_returncode=receipt.get('cli_returncode')
-                error.worker_returncode=process.returncode
-                raise error
-            if code in {"TRANSPORT_TIMEOUT", "PROCESS_NONZERO", "PROCESS_START_FAILED", "WORKER_FAILED"}:
-                error=ModelTransportError(code)
-                error.diagnosis=receipt.get('diagnosis')
-                error.cli_returncode=receipt.get('cli_returncode')
-                error.worker_returncode=process.returncode
-                if retry_enabled and code == 'TRANSPORT_TIMEOUT':
-                    from app.services.model_timeout_retry import confirmed_timeout
+                if artifacts is None:
+                    await asyncio.wait_for(process.communicate(encoded(frame)), worker_timeout)
+                else:
+                    async def communicate_and_measure():
+                        task = asyncio.create_task(process.communicate(encoded(frame)))
+                        try:
+                            while not (await asyncio.wait({task}, timeout=5))[0]:
+                                artifacts.check(path=path)
+                            return await task
+                        finally:
+                            if not task.done():
+                                task.cancel()
+                                await asyncio.gather(task, return_exceptions=True)
 
-                    error.confirmed_timeout = confirmed_timeout(path, worker_pid=process.pid,
-                        worker_returncode=process.returncode, receipt=receipt,
-                        prompt_sha256=frame['prompt_sha256'], schema_sha256=frame['schema_sha256'])
-                    if error.confirmed_timeout is None:
-                        raise ModelTransportError('RECONCILIATION_REQUIRED') from error
-                    error.slot_id = slot_scope['slot_id']
-                raise error
-            if code not in {"FINAL_OUTPUT_EMPTY", "FINAL_OUTPUT_MALFORMED"}:
+                    await asyncio.wait_for(communicate_and_measure(), worker_timeout)
+            except BaseException as exc:
+                if process.returncode is None:
+                    os.killpg(process.pid, signal.SIGKILL)
+                await process.wait()
+                try:
+                    durable_json(path / "parent-exit.json", dict(status="INTERRUPTED", child_reaped=True), exclusive=True)
+                except ArtifactCapacityError:
+                    if not isinstance(exc, ArtifactCapacityError):
+                        raise
+                raise
+            raw_path = path / "raw-output.json"
+            raw = raw_path.read_bytes() if raw_path.is_file() and not raw_path.is_symlink() else b""
+            durable_json(path / "parent-exit.json", dict(status="WORKER_EXITED", child_reaped=True,
+                returncode=process.returncode, raw_sha256=sha256_bytes(raw), raw_bytes=len(raw)), exclusive=True)
+            if timer is not None:
+                timer.switch('local')
+            if process.returncode == PREFLIGHT_REJECT_EXIT:
                 raise ValueError("production_official_transport_boundary_reject")
-        if self.execution_profile:
-            from app.services.official_codex_shadow_transport_service import command_prefix
-            proof = receipt.get('transport', {})
-            expected_command = [str(self.binding.executable), *command_prefix(self.execution_profile),
-                '--output-schema', str(inputs / 'provider-wire-schema.json'), '-o', str(raw_path), '-']
-            if (len(raw) > 128 * 1024 or proof.get('execution_policy') != asdict(policy)
-                    or proof.get('command') != expected_command
-                    or proof.get('request_id') != frame['request_id']
-                    or proof.get('qualification_sha256') != self.binding.qualification_sha256
-                    or proof.get('prompt_sha256') != frame['prompt_sha256']
-                    or proof.get('schema_sha256') != frame['schema_sha256']):
-                raise ValueError('sol_high_worker_receipt_drift_or_output_limit')
-            if dynamic and proof.get('model_plan_scope') != slot_scope:
-                raise ValueError('sol_high_worker_slot_receipt_drift')
-        if artifacts is not None:
-            artifacts.check(path=path)
-        return raw
+            if process.returncode != 0:
+                raise ModelTransportError("WORKER_NONZERO")
+            receipt_path = path / "transport-receipt.json"
+            receipt = json.loads(receipt_path.read_bytes()) if receipt_path.exists() else {"error_code": "WORKER_FAILED"}
+            if receipt.get("status") != "PASS":
+                code = receipt.get("error_code")
+                if self.execution_profile and code in {'MODEL_ENTITLEMENT_OR_QUOTA_UNAVAILABLE',
+                        'MODEL_AUTHENTICATION_FAILED','MODEL_WORKSPACE_MISMATCH'}:
+                    error=ModelTransportError(code)
+                    error.diagnosis=receipt.get('diagnosis')
+                    error.cli_returncode=receipt.get('cli_returncode')
+                    error.worker_returncode=process.returncode
+                    raise error
+                if code in {"TRANSPORT_TIMEOUT", "PROCESS_NONZERO", "PROCESS_START_FAILED", "WORKER_FAILED"}:
+                    error=ModelTransportError(code)
+                    error.diagnosis=receipt.get('diagnosis')
+                    error.cli_returncode=receipt.get('cli_returncode')
+                    error.worker_returncode=process.returncode
+                    if retry_enabled and code == 'TRANSPORT_TIMEOUT':
+                        from app.services.model_timeout_retry import confirmed_timeout
+
+                        error.confirmed_timeout = confirmed_timeout(path, worker_pid=process.pid,
+                            worker_returncode=process.returncode, receipt=receipt,
+                            prompt_sha256=frame['prompt_sha256'], schema_sha256=frame['schema_sha256'])
+                        if error.confirmed_timeout is None:
+                            raise ModelTransportError('RECONCILIATION_REQUIRED') from error
+                        error.slot_id = slot_scope['slot_id']
+                    raise error
+                if code not in {"FINAL_OUTPUT_EMPTY", "FINAL_OUTPUT_MALFORMED"}:
+                    raise ValueError("production_official_transport_boundary_reject")
+            if self.execution_profile:
+                from app.services.official_codex_shadow_transport_service import command_prefix
+                proof = receipt.get('transport', {})
+                expected_command = [str(self.binding.executable), *command_prefix(self.execution_profile),
+                    '--output-schema', str(inputs / 'provider-wire-schema.json'), '-o', str(raw_path), '-']
+                if (len(raw) > 128 * 1024 or proof.get('execution_policy') != asdict(policy)
+                        or proof.get('command') != expected_command
+                        or proof.get('request_id') != frame['request_id']
+                        or proof.get('qualification_sha256') != self.binding.qualification_sha256
+                        or proof.get('prompt_sha256') != frame['prompt_sha256']
+                        or proof.get('schema_sha256') != frame['schema_sha256']):
+                    raise ValueError('sol_high_worker_receipt_drift_or_output_limit')
+                if dynamic and proof.get('model_plan_scope') != slot_scope:
+                    raise ValueError('sol_high_worker_slot_receipt_drift')
+            if artifacts is not None:
+                artifacts.check(path=path)
+            return raw
+        finally:
+            from app.services.model_runtime_retention import record_invocation_cleanup
+
+            record_invocation_cleanup(path, worker_pid=process.pid,
+                worker_reaped=process.returncode is not None)

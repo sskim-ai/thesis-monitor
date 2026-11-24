@@ -51,7 +51,7 @@ def test_c42_intent27_same_policy_and_consumed_once(tmp_path,monkeypatch):
     value=asyncio.run(job.run_local_scheduled(path,'kr',now=now,one_shot_tag=tag))
     assert value['normal_messages_sent'] is False and len(calls)==1
     intent=json.loads((calls[0]/'intent.json').read_bytes())
-    assert intent['max_models']==27 and intent['max_http']==332 and intent['market_timeout_retry_cap']==1
+    assert intent['max_models']==27 and intent['max_http']==334 and intent['market_timeout_retry_cap']==1
     assert intent['b2_retry_policy']==B2_PER_TICKER_ONE_RETRY_V1
     assert (calls[0].parent/(tag+'.intent.json')).is_file()
     assert asyncio.run(job.run_local_scheduled(path,'kr',now=now,one_shot_tag=tag))['reason']=='SESSION_ALREADY_CONSUMED'

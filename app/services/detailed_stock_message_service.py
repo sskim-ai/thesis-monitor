@@ -348,16 +348,36 @@ def _localized_earnings_line(text, *, packet, source, refs):
     fields = fact['fields']
     if (fact['fact_type'] != 'earnings_comparison' or ev.source_time.subject_ticker != packet.ticker
             or ev.source_time.canonical_fact_sha256 != digest(fact) or node.get('fact_sha256') != digest(fact)
-            or (fields.get('metric'), fields.get('direction'), fields.get('period_end'), fields.get('source_ticker'))
-            != (metric, direction, period, packet.ticker) or not fields.get('statement_basis')):
+            or (fields.get('metric'), fields.get('direction'), fields.get('period_end'))
+            != (metric, direction, period) or not fields.get('statement_basis')):
         return text
+    prefix = ''
+    source_ticker = fields.get('source_ticker')
+    if source_ticker != packet.ticker:
+        # The accepted source already owns this relationship. Formatting may
+        # name its issuer comparison; it must not turn it into security EPS/PE.
+        bridge = source.get('issuer_business_bridge') or {}
+        binding = fact.get('issuer_business_bridge') or {}
+        if (bridge.get('status') != 'PASS' or not source_ticker
+                or bridge.get('security_ticker') != packet.ticker
+                or bridge.get('underlying_ticker') != source_ticker
+                or bridge.get('ISSUER_BUSINESS_EVIDENCE_ELIGIBLE') is not True
+                or bridge.get('scope') != 'issuer_business_only'
+                or bridge.get('security_valuation_transfer') is not False
+                or not bridge.get('receipt_sha256')
+                or binding.get('bridge_receipt_sha256') != bridge['receipt_sha256']
+                or binding.get('scope') != 'issuer_business_only'
+                or binding.get('security_valuation_transfer') is not False
+                or fields.get('issuer_id') != bridge.get('issuer_id')):
+            return text
+        prefix = f'동일 발행사 본주({source_ticker})의 회사 재무 기준으로, '
     try:
         prior = date.fromisoformat(fields['prior_period_end']).isoformat()
     except (KeyError, TypeError, ValueError):
         return text
     name = {'revenue': '매출액', 'operating_income': '영업이익'}[metric]
     verb = {'higher': '증가', 'lower': '감소'}[direction]
-    return (f'{period} 종료 기간의 {name}은 원본 비교기간({prior} 종료)보다 '
+    return (f'{prefix}{period} 종료 기간의 {name}은 원본 비교기간({prior} 종료)보다 '
             f'{verb}했습니다. 이 관측만으로 같은 흐름이 이어질지는 확인할 수 없습니다.')
 
 

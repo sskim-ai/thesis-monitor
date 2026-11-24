@@ -92,7 +92,7 @@ def cycle_probe(folder, market, monkeypatch, *, mismatch=False):
     monkeypatch.setattr(context,'inspect_native',inspect)
     _,args,_=compile_market(market,UNIVERSE[market][0])
     credentials={p:['SYNTHETIC_NOT_A_KEY:'+p] for p in args['config_identities']}
-    monkeypatch.setattr(context,'credential_binding',lambda *a:credentials)
+    monkeypatch.setattr(context,'credential_binding',lambda *a,**kw:credentials)
     def boundary(*a,**kw):
         seen['boundary']=True
         raise BoundaryReached('BEFORE_ANY_PHYSICAL_HTTP')
@@ -130,13 +130,19 @@ def test_us_scheduled_caller_freeze_to_original_acquisition_gate(tmp_path,monkey
 
 
 def test_kr_scheduled_caller_kis_flows_chart_and_original_600_budget(tmp_path,monkeypatch,offline_only):
+    # This test exercises the registered plan, not the host's free disk space.
+    runtime = tmp_path/'private-model-runtime'
+    runtime.mkdir(mode=0o700)
+    monkeypatch.setattr(job, '_local_model_runtime', lambda execution: runtime)
+    monkeypatch.setattr(os, 'statvfs', lambda path: SimpleNamespace(f_bavail=8*1024**2, f_frsize=4096))
     value=cycle_probe(tmp_path/'kr','kr',monkeypatch)
     assert value['boundary'] and value['budget'] is not None
     assert 'optional_news_429' not in value['frozen']
     assert value['frozen']['kr_stock_chart_v3'] is True
     assert len(value['frozen']['kr_stock_flow_reads'])==8 and value['kis'] is not None
     assert len(value['frozen']['plan']['subjects'])==8
-    assert value['identity']['max_models']==18 and value['identity']['max_http']==332
+    assert len([row for row in value['frozen']['plan']['descriptors'] if row['provider']=='ecos'])==3
+    assert value['identity']['max_models']==18 and value['identity']['max_http']==334
     assert value['identity'].get('timeout_retry_cap',0)==0 and value['source_budget']['ceiling_seconds']==600
 
 

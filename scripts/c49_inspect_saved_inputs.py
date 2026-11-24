@@ -67,6 +67,8 @@ def entry_inputs(context):
     if isinstance(price, dict) and price.get('ref_id'):
         refs.add(price['ref_id'])
     refs.update('canonical:chart:' + frame for frame in ('daily', 'weekly', 'monthly'))
+    refs.update('canonical:chart:structure:' + key for key in
+                ('invalidation', 'risk_reward:current_price', 'state'))
     return dict(current_price=price, tactical_candidates=candidates,
         source_evidence_binding=context.get('source_evidence_binding'),
         decision_evidence=[row for row in context['decision_evidence'] if row['ref_id'] in refs],
@@ -111,6 +113,11 @@ def inspect(cycle):
         path = cycle / 'b2' / ticker / 'request.json'
         row = dict(original_mode=prepared['mode'], original_request_path=str(path),
             original_accepted_file_present=(cycle / 'b2' / ticker / 'accepted.json').is_file())
+        packet_stock = next((item for item in stock['packet']['stocks']
+                             if item['ticker'] == ticker), {})
+        structure = packet_stock.get('chart_context', {}).get('structure') or {}
+        row['original_chart_structure'] = {
+            key: structure.get(key) for key in ('invalidation', 'risk_reward', 'state')}
         result['entries'][ticker] = row
         if not path.is_file():
             row['diagnostic_status'] = 'NO_SAVED_B2_REQUEST'

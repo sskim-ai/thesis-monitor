@@ -62,7 +62,7 @@ def public_request(request):
     route = str(request.url.copy_with(query=None))
     if request.url.host == 'ecos.bok.or.kr':
         parts = route.split('/')
-        if len(parts) > 5 and parts[4] == 'KeyStatisticList':
+        if len(parts) > 5 and parts[4] in {'KeyStatisticList', 'StatisticSearch'}:
             parts[5] = '[REDACTED]'
         route = '/'.join(parts)
     params = {k: '[REDACTED]' if k == 'api_key' else v for k, v in request.url.params.items()}
@@ -130,6 +130,14 @@ def replay_fresh_publications(*, run_id, run_started_at, acquisition_cutoff, as_
 
         transport = ReplayTransport()
         options = {'series':SELECTED_FRED} if _selected_market_fields and name == 'fred' else {}
+        if name == 'ecos':
+            from app.macro.providers.ecos_daily_fx import DAILY_FX
+            # A transport failure has no HTTP body to replay. Its optional slot
+            # remains in the original dispatch ledger, with no fabricated quote.
+            routes = {r['request']['route'] for r in receipts
+                      if '/StatisticSearch/' in r['request']['route']}
+            options['daily_fx'] = tuple(series for series, (code, _, _) in DAILY_FX.items()
+                if any(route.endswith('/' + code) for route in routes))
         provider = PROVIDERS[name](transport=transport, clock=lambda: transport.received_at, **options)
         provider.settings = provider.settings.model_copy(update={name + '_api_key': 'offline-no-credential'})
         result = await provider.collect(as_of)
