@@ -5,6 +5,7 @@ code without importing a second app package. It never creates a journal, grants
 Source rights or replaces the account Lane. The approved backend creates it.
 """
 from copy import deepcopy
+import asyncio
 from datetime import datetime, timedelta, timezone
 import fcntl
 import hashlib
@@ -27,6 +28,43 @@ def runtime_state():
 
 
 OPTIONAL_NEWS_429 = 'SELECTED_US_OPTIONAL_NEWS_429_V1'
+OPTIONAL_NIGHT = 'SELECTED_US_OPTIONAL_NIGHT_V1'
+
+
+class OptionalNightCollectionError(Exception):
+    """An already recorded optional night request failed; stop this probe only."""
+    def __init__(self, logical_request_id, physical_attempt_id):
+        super().__init__('optional_night_collection_failed')
+        self.logical_request_id = logical_request_id
+        self.physical_attempt_id = physical_attempt_id
+
+
+def optional_night_attempt(attempt, identity):
+    scope = attempt.get('optional_night', {})
+    child = identity.get('children', {}).get('us', {})
+    return (identity.get('runtime_cap', {}).get('optional_night') == OPTIONAL_NIGHT
+        and attempt.get('provider') == 'krx_night_futures' and attempt.get('market') == 'us'
+        and attempt.get('subject') == '*' and attempt.get('phase') == 'SOURCE'
+        and attempt.get('method') == 'GET' and attempt.get('owner') == 'SelectedSourceDispatcher'
+        and attempt.get('generation') == child.get('generation')
+        and re.fullmatch(r'night:KOSPI200:\d{4}-\d{2}-\d{2}', scope.get('logical_id', '')) is not None
+        and scope.get('mandatory') is False and scope.get('operation') == 'fut_bydd_trd'
+        and all(re.fullmatch('[a-f0-9]{64}', scope.get(k, ''))
+                for k in ('plan_sha256', 'descriptor_sha256')))
+
+
+def optional_night_result(attempt, identity):
+    if not optional_night_attempt(attempt, identity):
+        return False
+    # Auth, cancellation, storage, budget and implementation errors retain the
+    # normal whole-campaign stop. Only original HTTP/transport failures qualify.
+    if attempt.get('outcome') == 'HTTP_RESPONSE':
+        status = attempt.get('status')
+        return type(status) is int and 400 <= status <= 599 and status not in (401, 403)
+    return (attempt.get('outcome') == 'TRANSPORT_UNKNOWN'
+        and attempt.get('error_type') in {'TransportError', 'TimeoutException', 'ConnectTimeout',
+            'ReadTimeout', 'WriteTimeout', 'PoolTimeout', 'NetworkError', 'ConnectError',
+            'ReadError', 'WriteError', 'CloseError', 'RemoteProtocolError', 'ProxyError', 'TimeoutError'})
 
 
 def optional_news_attempt(attempt, identity):
@@ -82,11 +120,12 @@ def apply_runtime_event(state,event,value,identity):
             raise ValueError('PHYSICAL_RESULT_WITHOUT_PENDING_INTENT')
         provider=state['pending'].pop(key)['provider']
         state['attempts'][key]={**state['attempts'][key],**value}
-        if (not optional_news_result(state['attempts'][key], identity)
+        night_unavailable = optional_night_result(state['attempts'][key], identity)
+        if (not optional_news_result(state['attempts'][key], identity) and not night_unavailable
                 and identity['runtime_cap'].get('stop_on_first_external_failure') and
                 (value['outcome']=='TRANSPORT_UNKNOWN' or (value.get('status') or 0)>=400)):
             state['first_external_failure']=key
-        if value.get('status') in (401,403,429) or value['outcome']=='TRANSPORT_UNKNOWN':
+        if night_unavailable or value.get('status') in (401,403,429) or value['outcome']=='TRANSPORT_UNKNOWN':
             if provider not in state['stopped_providers']:
                 state['stopped_providers'].append(provider)
     else:
@@ -151,6 +190,9 @@ class RuntimeCap:
                 if value.get('optional_news') and (not optional_news_attempt(value, identity)
                         or value['optional_news']['plan_sha256'] != frozen_plans.get(value['market'])):
                     raise ValueError('PHYSICAL_OPTIONAL_NEWS_FROZEN_PLAN_MISMATCH')
+                if value.get('optional_night') and (not optional_night_attempt(value, identity)
+                        or value['optional_night']['plan_sha256'] != frozen_plans.get(value['market'])):
+                    raise ValueError('PHYSICAL_OPTIONAL_NIGHT_FROZEN_PLAN_MISMATCH')
                 now=datetime.now(timezone.utc)
                 if (terminal or not datetime.fromisoformat(identity['authorized_at'])<=now<
                         datetime.fromisoformat(identity['expires_at'])):
@@ -187,7 +229,7 @@ class RuntimeCap:
         return identity
 
     def reserve(self,*,provider,method,host,path,market,subject,phase,owner,
-                request_sha256,attempt_id=None,optional_news=None):
+                request_sha256,attempt_id=None,optional_news=None,optional_night=None):
         identity,_=self._locked()
         child=identity['children'].get(market,{})
         market_subjects = identity['runtime_cap'].get('market_subjects',{}).get(market,()) if phase=='SOURCE' else ()
@@ -207,6 +249,8 @@ class RuntimeCap:
             request_sha256=request_sha256)
         if optional_news is not None:
             value['optional_news'] = deepcopy(optional_news)
+        if optional_night is not None:
+            value['optional_night'] = deepcopy(optional_night)
         self._locked('PHYSICAL_INTENT',value)
         return key
 
@@ -232,7 +276,7 @@ def public_fingerprint(*,method,endpoint,query=(),body=None,api_id=None):
         query=sorted((k,v) for k,v in query if not _SECRET.search(k)),body=clean(body),api_id=api_id))
 
 
-def reserve_request(cap,request,*,provider,market,subject,phase,owner,optional_news=None):
+def reserve_request(cap,request,*,provider,market,subject,phase,owner,optional_news=None,optional_night=None):
     try:body=json.loads(request.content) if request.content else None
     except (ValueError,RuntimeError):body=None
     # ECOS credentials can be in the path; record only the approved endpoint label.
@@ -241,6 +285,13 @@ def reserve_request(cap,request,*,provider,market,subject,phase,owner,optional_n
         if request.url.host==r['host'] and request.url.path.startswith(r['prefix'])]
     if (request.url.scheme!='https' or not any((request.url.port or 443) in r.get('ports',[443]) for r in rules)):
         raise ValueError('PHYSICAL_TLS_OR_PORT_OUTSIDE_CAMPAIGN')
+    if optional_night is not None:
+        day = optional_night.get('logical_id', '').removeprefix('night:KOSPI200:').replace('-', '')
+        if (provider != 'krx_night_futures' or request.method != 'GET'
+                or request.url.host != 'data-dbg.krx.co.kr'
+                or request.url.path != '/svc/apis/drv/fut_bydd_trd'
+                or request.url.params.multi_items() != [('basDd', day)]):
+            raise ValueError('PHYSICAL_OPTIONAL_NIGHT_ROUTE_MISMATCH')
     endpoint=max(rules,key=lambda r:len(r['prefix']))['endpoint'] if rules else 'UNAPPROVED'
     route=endpoint if any(r.get('path_contains_credentials') for r in rules) else endpoint+':'+request.url.path
     if provider == 'ecos' and request.url.path.startswith('/api/StatisticSearch/'):
@@ -257,7 +308,7 @@ def reserve_request(cap,request,*,provider,market,subject,phase,owner,optional_n
         body=body,api_id=[request.headers.get('api-id') or request.headers.get('tr_id'),cursor])
     return cap.reserve(provider=provider,method=request.method,host=request.url.host,path=request.url.path,
         market=market,subject=subject,phase=phase,owner=owner,request_sha256=fingerprint,
-        optional_news=optional_news)
+        optional_news=optional_news,optional_night=optional_night)
 
 
 def provider_for_request(cap,request):
@@ -284,11 +335,13 @@ import httpx
 
 class MeteredAsyncTransport(_TransportMixin,httpx.AsyncBaseTransport):
     def __init__(self,*,binding,market,subject='*',phase='ONBOARDING',owner='OriginalProvider',inner=None,
-                 optional_news=None):
+                 optional_news=None,optional_night=None):
         self._setup(binding=binding,market=market,subject=subject,phase=phase,owner=owner,
             inner=inner if inner is not None else httpx.AsyncHTTPTransport(retries=0))
         if optional_news is not None:
             self.context['optional_news'] = optional_news
+        if optional_night is not None:
+            self.context['optional_night'] = optional_night
 
     async def handle_async_request(self,request):
         provider=provider_for_request(self.cap,request)
@@ -298,7 +351,11 @@ class MeteredAsyncTransport(_TransportMixin,httpx.AsyncBaseTransport):
             response=await self.inner.handle_async_request(request)
             await response.aread()
         except BaseException as exc:
-            self.cap.finish(key,error=exc)
+            deadline = request.extensions.get('_thesis_optional_night_timeout')
+            timed_out = (self.context.get('optional_night') is not None
+                and isinstance(exc, asyncio.CancelledError)
+                and isinstance(deadline, asyncio.Timeout) and deadline.expired())
+            self.cap.finish(key,error=TimeoutError() if timed_out else exc)
             raise
         self.cap.finish(key,status=response.status_code)
         return response

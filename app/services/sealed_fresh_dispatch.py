@@ -422,7 +422,20 @@ The live source controller has no route here until the *whole* plan is admitted.
                         await result.aclose()
                     return result
                 try:
-                    response = await asyncio.wait_for(receive(), timeout=d.timeout_seconds)
+                    if (d.provider == 'krx_night_futures' and not d.mandatory
+                            and getattr(transport, 'optional_night_timeout', False)):
+                        # Share this exact request deadline with its metered
+                        # transport. Only its own expired timer is a timeout;
+                        # cancellation by the campaign/operator remains fatal.
+                        deadline = asyncio.timeout(d.timeout_seconds)
+                        request.extensions['_thesis_optional_night_timeout'] = deadline
+                        try:
+                            async with deadline:
+                                response = await receive()
+                        finally:
+                            request.extensions.pop('_thesis_optional_night_timeout', None)
+                    else:
+                        response = await asyncio.wait_for(receive(), timeout=d.timeout_seconds)
                     raw = response.content
                     row['status'] = response.status_code
                     row['response_headers'] = {k: v for k, v in response.headers.items() if k in {'cont-yn', 'next-key'}}

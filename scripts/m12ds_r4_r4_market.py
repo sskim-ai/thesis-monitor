@@ -7,12 +7,13 @@ from copy import deepcopy
 import re
 
 NIGHT_EXCLUSION_NOTICE = '한국 야간선물은 이번 미국 점검의 입력에서 제외했습니다.'
-PROMPT = previous.PROMPT + "\n" + NUMERIC_FREE_RULE + "\nDated aggregate flow references are context only, not directional citation refs or stock attribution. Do not infer BUY/SELL or market expectations from these amounts alone." + "\nWhen korean_night_futures.state is EXCLUDED_BEFORE_COLLECTION, omit Korean night futures from all narrative fields. No price, change, direction or market inference may be based on them. The backend adds the exclusion notice. Other eligible market facts remain usable."
+PROMPT = previous.PROMPT + "\n" + NUMERIC_FREE_RULE + "\nDated aggregate flow references are context only, not directional citation refs or stock attribution. Do not infer BUY/SELL or market expectations from these amounts alone." + "\nWhen korean_night_futures.economic_use is false, omit Korean night futures from all narrative fields. No price, change, direction or market inference may be based on them. The backend adds the unavailable/exclusion notice. Other eligible market facts remain usable."
 
 
 def excluded_night_narrative_errors(row, context, *, fields=PROSE_FIELDS):
     """The exclusion notice belongs to the backend, never to model inference."""
-    if context.get('korean_night_futures', {}).get('state') != 'EXCLUDED_BEFORE_COLLECTION':
+    night = context.get('korean_night_futures', {})
+    if night.get('state') != 'EXCLUDED_BEFORE_COLLECTION' and night.get('economic_use') is not False:
         return []
     errors = []
     for key in fields:
@@ -35,8 +36,9 @@ def market_context(packet):
         context['dated_aggregate_flow_references']=dict(value=deepcopy(reference['value']),
             economic_use=False,directional_citation_eligible=False,stock_attribution=False)
     night = packet['market_context'].get('night_futures_ownership') or {}
-    if night.get('state') == 'EXCLUDED_BEFORE_COLLECTION':
-        context['korean_night_futures'] = dict(state=night['state'], collected=False,
+    if night.get('state') == 'EXCLUDED_BEFORE_COLLECTION' or str(night.get('state', '')).startswith('UNAVAILABLE_'):
+        context['korean_night_futures'] = dict(state=night['state'],
+            collected=night.get('collected', night['state'] != 'EXCLUDED_BEFORE_COLLECTION'),
             economic_use=False, directional_citation_eligible=False)
     return context
 

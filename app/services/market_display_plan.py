@@ -341,6 +341,7 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
         catalog = numeric_catalog(source, market=market, assessment_date=assessment_date, eligible_refs=eligible_refs)
         night = [c for c in catalog['claims'] if c['claim_type'] == 'OFFICIAL_NIGHT']
         night_ownership = source.get('night_futures_ownership') or {}
+        from app.services.optional_night_source import FAILURE_NOTICES
         if night_ownership.get('state') == 'EXCLUDED_BEFORE_COLLECTION':
             from scripts.m12ds_r4_r4_market import NIGHT_EXCLUSION_NOTICE
             if (night or source.get('night_futures')
@@ -348,6 +349,12 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
                 raise ValueError('excluded_night_display_has_observations')
             add('night', '한국 야간선물', unavailable_text=NIGHT_EXCLUSION_NOTICE,
                 proof={'night_ownership': night_ownership}, formatter='excluded-before-collection-note')
+        elif night_ownership.get('state') in FAILURE_NOTICES:
+            if (night or source.get('night_futures')
+                    or any(f['fact_type'].startswith('night_futures') for f in facts)):
+                raise ValueError('unavailable_night_display_has_observations')
+            add('night', '한국 야간선물', unavailable_text=FAILURE_NOTICES[night_ownership['state']],
+                proof={'night_ownership': night_ownership}, formatter='optional-night-unavailable-note')
         else:
             if len(night) > 1:
                 raise ValueError('configured_night_display_ambiguous')

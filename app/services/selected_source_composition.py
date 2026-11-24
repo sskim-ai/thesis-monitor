@@ -13,7 +13,7 @@ from app.services.canonical_source_composition import SourceRunBinding
 from app.services.market_session import korea_market_session, us_market_session
 from app.services.unified_run_artifacts import sha256_bytes
 from app.services.unified_snapshot_contract import digest,encoded
-from app.services.selected_source_plan import UsNightPolicy, US_NIGHT_EXCLUDED, excluded_night_receipt, us_night_excluded
+from app.services.selected_source_plan import UsNightPolicy, US_NIGHT_EXCLUDED, US_NIGHT_OPTIONAL, excluded_night_receipt, us_night_excluded, us_night_optional
 
 CONTRACT='selected-original-source-run-binding-v1'
 GRAPH='selected-original-source-authority-graph-v1'
@@ -70,6 +70,8 @@ class SelectedSourceRunBinding(SourceRunBinding):
 
     @model_validator(mode='after')
     def selected_binding(self):
+        if self.us_night_policy == US_NIGHT_OPTIONAL and self.market != 'us':
+            raise ValueError('selected_us_optional_night_binding_mismatch')
         if self.us_night_policy == US_NIGHT_EXCLUDED and (
                 self.market != 'us' or self.run_acquisitions.get('night') != digest(None)
                 or self.night_publication_receipt_sha256 != digest(None)):
@@ -186,6 +188,7 @@ def build_inputs(root,frozen,outcome,policy,*,prospective_owners,master_id):
     markets=market_inputs(root,frozen,outcome,policy)
     context=publication_inputs(root,frozen,outcome,policy)
     excluded=us_night_excluded(frozen)
+    optional=us_night_optional(frozen)
     pub=replay_fresh_publications(**context['publications'])
     night=None if context['night'] is None else replay_night(**context['night'])
     rows={t:assemble_fresh_stock(**i) for t,i in inputs.items()}
@@ -206,7 +209,7 @@ def build_inputs(root,frozen,outcome,policy,*,prospective_owners,master_id):
             concentration='UNAVAILABLE',stock_contribution='UNAVAILABLE')
     seed=SelectedSourceRunBinding(parent_run_id=plan.run_id,child_id=plan.run_id,master_id=master_id,
         execution_purpose=frozen.get('execution_purpose','MANUAL_SHADOW_UNSENT'),
-        us_night_policy=US_NIGHT_EXCLUDED if excluded else 'ORIGINAL_CURRENT_PROBE_ONLY',
+        us_night_policy=US_NIGHT_EXCLUDED if excluded else US_NIGHT_OPTIONAL if optional else 'ORIGINAL_CURRENT_PROBE_ONLY',
         market=plan.market,subjects=plan.subjects,target_session=frozen['sessions'][plan.market],started_at=plan.frozen_at,
         source_policy_sha256=digest(sorted(policy.allowed_providers)),inventory_sha256=digest(inventory),
         **registry.seed_bindings,universe_sha256=digest(plan.universe),

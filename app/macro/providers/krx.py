@@ -11,6 +11,7 @@ from app.macro.providers.base import (
     MacroProviderResult,
 )
 from app.services.krx_night_history_service import (
+    KRX_NIGHT_CLOSE_PAIR_ONLY,
     build_same_contract_timeframes,
     default_krx_night_history_directory,
     persist_live_probe_history,
@@ -119,6 +120,8 @@ def materialize_night_probe(probe: KrxNightFuturesProbeResult, *, history_direct
             daily_baseline_close=item.reference_price,
             night_end_dates=night_end_dates,
         )
+        if timeframes is not None:
+            history_warnings.extend(timeframes.unavailable_timeframes.values())
         observations.append(
             CollectedObservation(
                 series_code=SERIES_CODES[item.product],
@@ -134,6 +137,7 @@ def materialize_night_probe(probe: KrxNightFuturesProbeResult, *, history_direct
                 source_url=probe.source_url,
                 quality_status=probe.session_freshness,
                 raw_payload={
+                    **({"night_price_basis": KRX_NIGHT_CLOSE_PAIR_ONLY} if timeframes is None else {}),
                     "product": item.product,
                     "instrument": item.product,
                     "contract_code": item.contract_code,

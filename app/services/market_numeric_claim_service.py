@@ -184,7 +184,9 @@ def numeric_catalog(source, *, market, assessment_date, eligible_refs):
             ("value","LEVEL","point"),("reference_price","LEVEL","point"),
             ("change_value","DELTA","point"),("change_pct","RETURN","pct"))]
         for name in ("daily","weekly","monthly"):
-            frame = row["night_timeframes"][name]
+            frame = (row.get("night_timeframes") or {}).get(name)
+            if frame is None:
+                continue
             for key,role,unit in (("open","LEVEL","point"),("close","LEVEL","point"),("gap_pct","RETURN","pct"),("return_pct","RETURN","pct")):
                 if frame.get(key) is not None:
                     parts.append(component(frame["fact_id"],key,frame[key],role,unit,frame["reference_date"],scope="NIGHT_FUTURES_MODULE"))
@@ -193,8 +195,10 @@ def numeric_catalog(source, *, market, assessment_date, eligible_refs):
                     if not number(frame.get(numerator)) or not number(frame.get(baseline)) or frame[baseline]<=0 or not isclose((frame[numerator]/frame[baseline]-1)*100,frame[key],abs_tol=1e-6):
                         raise ValueError("night_timeframe_derived_arithmetic_invalid")
                     parts.append(component(frame['fact_id'],baseline,frame[baseline],"DERIVATION_BASELINE","point",frame['reference_date'],scope="NIGHT_FUTURES_MODULE"))
-        exact = (f"한국 야간선물 · 기준 {day}\n"+block[0]+f"\n  종가 {row['value']:,.2f} · 직전 정규장({row['reference_date']}) {row['reference_price']:,.2f}"
-                 +f" · 차이 {row['change_value']:+.2f}pt / {row['change_pct']:+.2f}%")
+        exact = f"한국 야간선물 · 기준 {day}\n"+block[0]
+        if row.get("night_timeframes") is not None:
+            exact += (f"\n  종가 {row['value']:,.2f} · 직전 정규장({row['reference_date']}) {row['reference_price']:,.2f}"
+                      +f" · 차이 {row['change_value']:+.2f}pt / {row['change_pct']:+.2f}%")
         claims.append(claim("OFFICIAL_NIGHT",parts,exact,
             parents=[row["night_source_record_id"],row["reference_source_record_id"],*block[1]],
             formula="night_close - same_contract_regular_close; change / regular_close * 100",

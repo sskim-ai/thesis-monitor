@@ -218,6 +218,7 @@ def market_observation_to_dict(
             "reference_date_match",
             "finality_valid",
             "night_timeframes",
+            "night_price_basis",
         ):
             if raw.get(key) is not None:
                 value[key] = raw[key]

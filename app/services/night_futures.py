@@ -7,6 +7,7 @@ from datetime import date, datetime
 from typing import Mapping
 
 from app.services.krx_night_history_service import (
+    KRX_NIGHT_CLOSE_PAIR_ONLY,
     KRX_NIGHT_DWM_CONTRACT,
     KrxNightAggregateBar,
     KrxNightTimeframes,
@@ -56,6 +57,7 @@ class NightFuturesItem:
     observation_time_kst: str | None = None
     contract_maturity: str | None = None
     timeframes: KrxNightTimeframes | None = None
+    night_price_basis: str | None = None
 
 
 @dataclass(frozen=True)
@@ -247,6 +249,7 @@ def _validated_timeframes(
             or frame.contract_code != contract_code
             or frame.reference_date != session_date
             for frame in (frames.daily, frames.weekly, frames.monthly)
+            if frame is not None
         )
     ):
         return None
@@ -366,6 +369,12 @@ def summarize_night_futures(
                     else None
                 ),
                 timeframes=timeframes,
+                night_price_basis=(
+                    KRX_NIGHT_CLOSE_PAIR_ONLY
+                    if row.get("night_timeframes") is None
+                    and row.get("night_price_basis") == KRX_NIGHT_CLOSE_PAIR_ONLY
+                    else None
+                ),
             )
         )
 
@@ -385,7 +394,7 @@ def summarize_night_futures(
 def night_futures_context_row(item: NightFuturesItem) -> dict[str, object]:
     return {
         **{key: value for key, value in item.__dict__.items() if key != "timeframes"
-           and not (key in {'night_trade_date','regular_reference_date','observation_time_kst'} and value is None)},
+           and not (key in {'night_trade_date','regular_reference_date','observation_time_kst','night_price_basis'} and value is None)},
         "night_timeframes": (
             item.timeframes.model_dump(mode="json") if item.timeframes is not None else None
         ),
@@ -406,6 +415,8 @@ def night_futures_timeframe_facts(
         item.timeframes.weekly,
         item.timeframes.monthly,
     ):
+        if frame is None:
+            continue
         fields = frame.model_dump(mode="json")
         fields.update(
             {
@@ -495,6 +506,9 @@ def render_night_futures(summary: NightFuturesSummary) -> str:
                 (item.timeframes.weekly, "주봉"),
                 (item.timeframes.monthly, "월봉"),
             ):
+                if frame is None:
+                    lines.append(f"  - {label}: 자료 부족 (동일 만기 이력 미확보)")
+                    continue
                 status = {
                     "IN_PROGRESS": "진행중",
                     "SAME_CONTRACT_PARTIAL_PERIOD": "동일만기 일부",

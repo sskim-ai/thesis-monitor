@@ -13,6 +13,7 @@ from app.services.night_futures_session_mapping_service import (
     resolve_us_morning_night_reference_date,
 )
 from app.services.night_futures_product_scope import SERIES
+from app.services.krx_night_history_service import KRX_NIGHT_CLOSE_PAIR_ONLY
 
 
 CONTRACT = "official-krx-night-market-consumption-v2-end-date"
@@ -72,18 +73,25 @@ def night_market_eligibility(row, *, market, assessment_date, completed_session_
             errors.append("night_raw_identity_unverified")
         price, baseline, delta, pct = [row[k] for k in ("value", "reference_price", "change_value", "change_pct")]
         if (any(isinstance(v, bool) or not isinstance(v, (int, float)) or not isfinite(v)
-                for v in (price, baseline, delta, pct)) or baseline <= 0
+                for v in (price, baseline, delta, pct)) or price <= 0 or baseline <= 0
                 or not isclose(price - baseline, delta, abs_tol=1e-8)
                 or not isclose(delta / baseline * 100, pct, abs_tol=1e-6)):
             errors.append("night_reference_arithmetic_invalid")
         frames = _validated_timeframes(row.get("night_timeframes"), series_code=row["series_code"],
                                        contract_code=code, session_date=session, close=price)
         if frames is None:
-            errors.append("night_typed_timeframes_missing_or_invalid")
+            # A producer-validated DAY/NIGHT close pair does not require OHLC
+            # history. A malformed supplied frame is never silently downgraded.
+            close_only = (row.get("night_timeframes") is None
+                and row.get("night_price_basis") == KRX_NIGHT_CLOSE_PAIR_ONLY)
+            maturity = re.fullmatch(r"(20[0-9]{2})-(0[1-9]|1[0-2])", str(row.get("contract_maturity", "")))
+            if not close_only or maturity is None or tuple(map(int, maturity.groups())) < (session.year, session.month):
+                errors.append("night_typed_timeframes_missing_or_invalid")
         else:
             daily = frames.daily
             if (frames.contract_maturity != row.get("contract_maturity")
-                    or any(f.contract_maturity != frames.contract_maturity for f in (daily, frames.weekly, frames.monthly))
+                    or any(f.contract_maturity != frames.contract_maturity for f in (daily, frames.weekly, frames.monthly)
+                           if f is not None)
                     or daily.status != "FINAL" or daily.quality != "VALID"
                     or daily.return_baseline_date != reference or daily.return_baseline_close != baseline
                     or daily.return_baseline_semantic != NIGHT_COMPARISON_SEMANTIC

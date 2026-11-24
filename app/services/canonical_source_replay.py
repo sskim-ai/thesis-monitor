@@ -688,13 +688,21 @@ def publication_inputs(root, frozen, outcome, policy):
         publications['market_scope']='SELECTED_'+frozen['selected_market'].upper()
     if night_value is None:
         return dict(publications=publications,night=None)
+    if night_value.get('optional_night_failure'):
+        from app.services.optional_night_source import failure_inputs
+        return dict(publications=publications,
+            night=failure_inputs(root, frozen, outcome, policy, night_value))
     night_id = frozen['generation_id']+':night'
     probe = captured(root/'night/probe', 'krx_night_futures', night_id)
     history = captured(root/'night/history', 'krx_night_futures', night_id)
     probe['bodies'].update(history['bodies'])
     probe['body_hashes'].update(history['body_hashes'])
     from app.macro.providers.krx import sealed_night_end_date_history
+    from app.services.selected_source_plan import us_night_optional
     night = dict(**probe, history_receipts=history['receipts'], observed_at=start, run_id=frozen['generation_id'],
         acquisition_id=night_id, expected_value_sha256=digest(night_value), policy=policy,
-        run_started_at=start, acquisition_cutoff=cutoff, night_end_dates=sealed_night_end_date_history(night_value))
+        run_started_at=start, acquisition_cutoff=cutoff,
+        # A close-only result has no frame to carry the calendar marker. The
+        # explicit C52 policy still uses the producer's night-end-date calendar.
+        night_end_dates=sealed_night_end_date_history(night_value) or us_night_optional(frozen))
     return dict(publications=publications, night=night)

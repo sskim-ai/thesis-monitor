@@ -4,6 +4,7 @@ This does not install/qualify a host, create user consent, or confer financial
 use. Original Worker, account STOP/Lane, parsers and economic owners still apply.
 """
 from pathlib import Path
+import re
 
 from app.services.sealed_fresh_dispatch import SealedDispatcher
 from app.services.sealed_response_binding import binding_owner_hash
@@ -11,6 +12,28 @@ from app.services.selected_source_plan import SelectedRequestPlan, compile_selec
 from app.services.selected_source_registration import local_seed
 from app.services.unified_run_artifacts import sha256_bytes
 from app.services.unified_live_source_transport import SourceSafetyStop
+
+
+def optional_night_scope(plan, descriptor):
+    if (plan.contract != 'selected-original-source-request-plan-v1' or plan.market != 'us'
+            or descriptor.provider != 'krx_night_futures' or descriptor.market != 'kr'
+            or descriptor.subject != 'KOSPI200' or descriptor.mandatory
+            or descriptor.endpoint_operation != 'fut_bydd_trd' or descriptor.response_binding
+            or descriptor.transient_retry_max != 0 or descriptor.timeout_seconds > 20
+            or descriptor.consumer_role != descriptor.logical_request_id
+            or re.fullmatch(r'night:KOSPI200:\d{4}-\d{2}-\d{2}', descriptor.logical_request_id) is None):
+        return None
+    return dict(logical_id=descriptor.logical_request_id, mandatory=False, operation='fut_bydd_trd',
+        plan_sha256=plan.plan_sha256, descriptor_sha256=descriptor.descriptor_sha256)
+
+
+def _night_attempt(cap, scope, identity):
+    from app.services.campaign_runtime_cap import optional_night_result
+    matches = [key for key, attempt in cap.state()['attempts'].items()
+        if attempt.get('optional_night') == scope and optional_night_result(attempt, identity)]
+    if len(matches) > 1:
+        raise SourceSafetyStop('selected_optional_night_physical_result_ambiguous')
+    return matches[0] if matches else None
 
 
 class SelectedSourceDispatcher(SealedDispatcher):
@@ -80,15 +103,20 @@ class SelectedSourceDispatcher(SealedDispatcher):
             parent, wire = self, kwargs['transport']
             logical = args[0] if args else kwargs['logical_id']
             descriptor = next(d for d in self.plan.descriptors if d.logical_request_id == logical)
-            from app.services.campaign_runtime_cap import OPTIONAL_NEWS_429
+            from app.services.campaign_runtime_cap import OPTIONAL_NEWS_429, OPTIONAL_NIGHT
             from app.services.selected_news_rate_limit import optional_scope
             optional = (optional_scope(self.plan, descriptor) if
                 ledger.identity.get('runtime_cap', {}).get('optional_news_429') == OPTIONAL_NEWS_429 else None)
+            optional_night = (optional_night_scope(self.plan, descriptor) if
+                ledger.identity.get('runtime_cap', {}).get('optional_night') == OPTIONAL_NIGHT else None)
             class CountedTransport:
+                optional_night_timeout = optional_night is not None
+
                 async def handle_async_request(self, request):
                     parent._require_current()
                     key = parent.run_ledger.before_http(market=parent.plan.market, provider=descriptor.provider,
                         logical_id=logical, plan_sha256=parent.plan.plan_sha256)
+                    metered = None
                     try:
                         if parent.run_ledger.identity.get('runtime_cap'):
                             from app.services.campaign_runtime_cap import MeteredAsyncTransport, CampaignOhlcvTransport
@@ -101,6 +129,7 @@ class SelectedSourceDispatcher(SealedDispatcher):
                                 metered=MeteredAsyncTransport(binding=parent.run_ledger.worker_binding(),
                                     market=parent.plan.market,phase='SOURCE',owner='SelectedSourceDispatcher',inner=wire,
                                     **({'subject':descriptor.subject, 'optional_news':optional} if optional else
+                                       {'optional_night':optional_night} if optional_night else
                                        {'subject':'000660'} if issuer_only else {}))
                             if descriptor.endpoint_operation=='usa20590':
                                 response=await _completed_close_on_lane(metered,request)
@@ -109,7 +138,10 @@ class SelectedSourceDispatcher(SealedDispatcher):
                         else:
                             response = await wire.handle_async_request(request)
                     except BaseException:
-                        parent.run_ledger.result(key, ok=False)
+                        night_attempt = (_night_attempt(metered.cap, optional_night, ledger.identity)
+                            if optional_night and metered is not None else None)
+                        parent.run_ledger.result(key, ok=False,
+                            **({'optional_unavailable':night_attempt} if night_attempt else {}))
                         raise
                     optional_attempt = None
                     if optional and response.status_code == 429:
@@ -119,7 +151,9 @@ class SelectedSourceDispatcher(SealedDispatcher):
                         if len(matches) != 1:
                             raise SourceSafetyStop('selected_optional_news_physical_result_missing')
                         optional_attempt = matches[0]
-                    parent.run_ledger.result(key, ok=response.status_code not in (401,403,429),
+                    if optional_night:
+                        optional_attempt = _night_attempt(metered.cap, optional_night, ledger.identity)
+                    parent.run_ledger.result(key, ok=False if optional_attempt else response.status_code not in (401,403,429),
                         **({'optional_unavailable':optional_attempt} if optional_attempt else {}))
                     return response
             kwargs['transport'] = CountedTransport()
@@ -132,6 +166,14 @@ class SelectedSourceDispatcher(SealedDispatcher):
         optional_429 = (ledger is not None and optional and final['status'] == 'FAILED'
             and len(final['attempts']) == 1 and final['attempts'][0]['status'] == 429
             and final['attempts'][0].get('error') is None)
+        if ledger is not None and optional_night and final['status'] == 'FAILED':
+            from app.services.campaign_runtime_cap import RuntimeCap, OptionalNightCollectionError
+            attempt = _night_attempt(RuntimeCap(ledger.worker_binding()), optional_night, ledger.identity)
+            if attempt is not None:
+                # The original final and physical/logical failure receipts exist.
+                # End the native lookback immediately so it cannot refetch this
+                # provider or turn its stopped-provider latch into a global stop.
+                raise OptionalNightCollectionError(logical, attempt)
         if not optional_429 and any(a['status']==429 or a.get('error') for a in final['attempts']):
             self.halted=True
             if ledger is not None:

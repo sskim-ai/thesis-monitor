@@ -8,7 +8,7 @@ from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from typing import Literal, Mapping
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from app.config import get_settings
 from app.jobs.probe_krx_night_futures import (
@@ -30,6 +30,7 @@ KRX_NIGHT_DAILY_OHLC_CONTRACT = "krx-night-daily-ohlc-v1"
 KRX_NIGHT_HISTORY_CONTRACT = "krx-night-history-store-v1"
 KRX_NIGHT_DWM_CONTRACT = "krx-night-same-contract-dwm-v1"
 KRX_NIGHT_RAW_RECEIPT_CONTRACT = "krx-night-raw-response-receipt-v1"
+KRX_NIGHT_CLOSE_PAIR_ONLY = "FINAL_NIGHT_DAY_CLOSE_PAIR_V1"
 
 KRX_NIGHT_OHLC_FIELD_MAPPING = {
     "date": "BAS_DD",
@@ -47,6 +48,10 @@ KRX_NIGHT_OHLC_FIELD_MAPPING = {
 
 class KrxNightHistoryConflictError(ValueError):
     pass
+
+
+class KrxNightTimeframeUnavailableError(ValueError):
+    """An empty period has no OHLC bar; the validated daily pair is independent."""
 
 
 class KrxNightRawResponseReceipt(BaseModel):
@@ -154,8 +159,20 @@ class KrxNightTimeframes(BaseModel):
     contract_maturity: str
     reference_date: date
     daily: KrxNightAggregateBar
-    weekly: KrxNightAggregateBar
-    monthly: KrxNightAggregateBar
+    weekly: KrxNightAggregateBar | None
+    monthly: KrxNightAggregateBar | None
+    unavailable_timeframes: dict[str, str] = Field(default_factory=dict, exclude_if=lambda v: not v)
+
+    @model_validator(mode="after")
+    def period_absence_is_explicit(self):
+        expected = {
+            name: f"same_contract_{name}_constituents_unavailable"
+            for name in ("weekly", "monthly")
+            if getattr(self, name) is None
+        }
+        if self.unavailable_timeframes != expected:
+            raise ValueError("night_timeframe_absence_reason_mismatch")
+        return self
 
 
 class KrxNightHistoryUpdate(BaseModel):
@@ -562,7 +579,7 @@ def _aggregate(
     future = tuple(value for value in expected if value > selected.reference_date)
     included = [same_contract[value] for value in elapsed if value in same_contract]
     if not included:
-        raise ValueError(f"same_contract_{timeframe.lower()}_constituents_unavailable")
+        raise KrxNightTimeframeUnavailableError(f"same_contract_{timeframe.lower()}_constituents_unavailable")
     missing = tuple(value for value in elapsed if value not in same_contract)
     alternate_contract_before_start = any(
         value < included[0].reference_date and all_product.get(value) for value in missing
@@ -746,6 +763,21 @@ def build_same_contract_timeframes(
         source_raw_sha256=(selected.source_raw_sha256,),
         source_fingerprints=(selected.normalized_fingerprint,),
     )
+    periods = {}
+    unavailable = {}
+    for name in ("weekly", "monthly"):
+        try:
+            periods[name] = _aggregate(
+                instrument_root=instrument_root,
+                selected=selected,
+                timeframe=name.upper(),
+                night_end_dates=night_end_dates,
+                same_contract=same_contract,
+                all_product=by_date,
+            )
+        except KrxNightTimeframeUnavailableError:
+            periods[name] = None
+            unavailable[name] = f"same_contract_{name}_constituents_unavailable"
     return KrxNightTimeframes(
         calendar_contract='KRX_NIGHT_END_DATE_V1' if night_end_dates else None,
         instrument_root=instrument_root,
@@ -754,22 +786,9 @@ def build_same_contract_timeframes(
         contract_maturity=selected.contract_maturity,
         reference_date=reference_date,
         daily=daily,
-        weekly=_aggregate(
-            instrument_root=instrument_root,
-            selected=selected,
-            timeframe="WEEKLY",
-            night_end_dates=night_end_dates,
-            same_contract=same_contract,
-            all_product=by_date,
-        ),
-        monthly=_aggregate(
-            instrument_root=instrument_root,
-            selected=selected,
-            timeframe="MONTHLY",
-            night_end_dates=night_end_dates,
-            same_contract=same_contract,
-            all_product=by_date,
-        ),
+        weekly=periods["weekly"],
+        monthly=periods["monthly"],
+        unavailable_timeframes=unavailable,
     )
 
 

@@ -26,7 +26,7 @@ from app.services.unified_run_artifacts import SECRET_KEY
 from app.services.unified_snapshot_contract import ContractModel, digest
 from app.services.production_source_configuration import ProtocolFile
 from app.services.model_timeout_retry import B2_PER_TICKER_ONE_RETRY_V1, B2_US2_DIAGNOSTIC_V1, B2_SR5_DIAGNOSTIC_V1
-from app.services.selected_source_plan import UsNightPolicy, US_NIGHT_EXCLUDED
+from app.services.selected_source_plan import UsNightPolicy, US_NIGHT_EXCLUDED, US_NIGHT_OPTIONAL
 
 
 LOCAL_BASIS = 'LOCAL_OPERATOR_SCHEDULED_NO_SEND'
@@ -132,7 +132,7 @@ class LocalScheduleConfiguration(ContractModel):
 
     @model_validator(mode='after')
     def us_optional_settings(self):
-        if self.market != 'us' and (self.us_night_policy == US_NIGHT_EXCLUDED or self.one_shot is not None):
+        if self.market != 'us' and (self.us_night_policy != 'ORIGINAL_CURRENT_PROBE_ONLY' or self.one_shot is not None):
             raise ValueError('local_schedule_us_optional_settings_scope')
         return self
 
@@ -383,6 +383,8 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
             capture_max_private_export_bytes=64*1024**2,
             runtime_cap=dict(endpoints=endpoints, market_subjects={'us':[*MARKET_SYMBOLS,*(('000660',) if not diagnostic or 'SKHY' in subjects else ())], 'kr':[]},
                 stop_on_first_external_failure=True,
+                **(dict(optional_night='SELECTED_US_OPTIONAL_NIGHT_V1')
+                   if market == 'us' and consumer_policy.us_night == US_NIGHT_OPTIONAL else {}),
                 **(dict(optional_news_429='SELECTED_US_OPTIONAL_NEWS_429_V1') if market == 'us' else {})))
         _, owners, _ = capture_approved_markets(settings=settings, runtime_directory=runtime_db_root,
             approval=approval, generations={market:generation}, policy=POLICY, ledger=ledger,
@@ -594,7 +596,8 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
             market_timeout_retry_cap=int(config.market_b2_timeout_retry or market=='kr' and config.kr_market_timeout_retry),
             b2_retry_policy=B2_SR5_DIAGNOSTIC_V1 if sr5 else B2_US2_DIAGNOSTIC_V1 if diagnostic else B2_PER_TICKER_ONE_RETRY_V1 if market == 'us' or config.market_b2_timeout_retry else None,
             normal_messages_sent=False,
-            **(dict(us_night_policy=US_NIGHT_EXCLUDED) if getattr(config, 'us_night_policy', None)==US_NIGHT_EXCLUDED else {}),
+            **(dict(us_night_policy=config.us_night_policy)
+               if config.us_night_policy != 'ORIGINAL_CURRENT_PROBE_ONLY' else {}),
             **(dict(one_shot_tag=one_shot_tag,one_shot_date=local_date) if one_shot_tag else {})), exclusive=True)
         try:
             remaining=(_one_shot_deadline(one_shot_tag, config)-datetime.now(KST)).total_seconds() if one_shot_tag else 16200

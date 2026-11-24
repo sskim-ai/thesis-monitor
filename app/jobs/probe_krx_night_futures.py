@@ -683,6 +683,8 @@ async def fetch_live_probe(
     hard_stop_on_error: bool = False,
 ) -> KrxNightFuturesProbeResult:
     from app.services.unified_live_source_transport import is_native_live_transport
+    from app.services.bounded_financial_acquisition import SystemicStop
+    from app.services.research_artifact_budget import ArtifactCapacityError
 
     run_date = run_date or date.today()
     api_key = api_key if api_key is not None else get_settings().krx_open_api_key
@@ -728,7 +730,14 @@ async def fetch_live_probe(
                         client, KRX_FUTURES_DAILY_URL, params=params))
                 response.raise_for_status()
                 payload = response.json()
+            except (SystemicStop, ArtifactCapacityError):
+                raise
             except (httpx.HTTPError, ValueError, TypeError) as exc:
+                if hard_stop_on_error:
+                    # The optional production caller records this attempt and
+                    # continues the US campaign. Do not hide malformed 200 JSON
+                    # in a nominally successful, unreplayable probe result.
+                    raise ValueError('night_probe_response_unusable') from exc
                 last_fetch_error = f"krx_fetch_failed:{type(exc).__name__}"
                 response = getattr(exc, "response", None)
                 date_statuses.append(

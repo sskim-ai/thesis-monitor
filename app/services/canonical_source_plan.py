@@ -50,7 +50,7 @@ def compile_slots(*, stock, identities, news_reads, config_identities,
         **({'consumer_policy':selected_consumer_policy} if selected_consumer_policy is not None else {}))
     descriptors, owners, roles, page_proof = [], {}, {}, []
     def add(key, provider, role, market, subject, operation, request, *, mandatory=True,
-            binding=None, pages=1, retries=2):
+            binding=None, pages=1, retries=2, timeout=600):
         owner = 'app/services/sealed_source_transport.py'
         owner_hash = sha256_bytes((ROOT / owner).read_bytes())
         d = FreshRequestDescriptor(generation_id=stock.run_id, logical_request_id=key,
@@ -58,7 +58,7 @@ def compile_slots(*, stock, identities, news_reads, config_identities,
             endpoint_operation=operation, request_json=wire_identity(request, ('PLAN_CREDENTIAL',)),
             target_period=next((r.latest_completed_session for r in stock.reads if r.market == market), stock.frozen_at.date().isoformat()),
             mandatory=mandatory, group_id=key, page_ordinal=1, max_pages=pages, document_ordinal=1, max_documents=1,
-            timeout_seconds=600, transient_retry_max=retries if transient_retry_max is None else min(retries,transient_retry_max), raw_path=f'raw/{key}/source.body', normalizer=owner,
+            timeout_seconds=timeout, transient_retry_max=retries if transient_retry_max is None else min(retries,transient_retry_max), raw_path=f'raw/{key}/source.body', normalizer=owner,
             consumer_role=role, owner_sha256=owner_hash, config_identity_sha256=config_identities[provider], response_binding=binding)
         slots = chart_slots(d, maximum_pages=pages) if pages > 1 else (d,)
         descriptors.extend(slots)
@@ -141,7 +141,9 @@ def compile_slots(*, stock, identities, news_reads, config_identities,
         key = 'night:KOSPI200:' + day
         add(key, 'krx_night_futures', key, 'kr', 'KOSPI200', 'fut_bydd_trd',
             httpx.Request('GET', 'https://data-dbg.krx.co.kr/svc/apis/drv/fut_bydd_trd',
-                params={'basDd': day.replace('-', '')}, headers={'AUTH_KEY': 'PLAN_CREDENTIAL', 'User-Agent': NIGHT_USER_AGENT}))
+                params={'basDd': day.replace('-', '')}, headers={'AUTH_KEY': 'PLAN_CREDENTIAL', 'User-Agent': NIGHT_USER_AGENT}),
+            mandatory=candidate.get('consumer_policy', {}).get('us_night') != 'OPTIONAL_CURRENT_PROBE',
+            timeout=20 if candidate.get('consumer_policy', {}).get('us_night') == 'OPTIONAL_CURRENT_PROBE' else 600)
     if {r.subject for r in news_reads} != set(identities):
         raise ValueError('event_classification_exact_all22_required')
     for r in news_reads:

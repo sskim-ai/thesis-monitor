@@ -66,6 +66,22 @@ def slot_dispositions(root, frozen, outcome):
     if set(finals) - set(descriptors):
         raise ValueError("production_undeclared_source_receipt")
     night_tail = _verified_night_probe_tail(root, frozen, outcome, plan, finals)
+    from app.services.selected_source_plan import us_night_optional
+    if us_night_optional(frozen):
+        # Optional means a bounded, recorded outcome, not permission to omit the
+        # entire probe. Successful values replay below; failures retain receipts.
+        phase = outcome.get('phases', {}).get('night', {})
+        if phase.get('status') != 'CAPTURED_NOT_QUALIFIED' or read(root/'phase-night.json') != phase:
+            raise ValueError('optional_night_terminal_required')
+        value = phase['value']
+        if value.get('optional_night_failure'):
+            from app.services.optional_night_source import failure_inputs
+            from app.services.production_source_context import POLICY
+            from app.services.unified_sealed_context import replay_night
+            replay_night(**failure_inputs(root, frozen, outcome, POLICY, value))
+        elif not any(d.provider == 'krx_night_futures' and d.logical_request_id in finals
+                for d in plan.descriptors):
+            raise ValueError('optional_night_original_attempt_required')
     from app.services.selected_news_rate_limit import current_rows, replay_current
     limited = current_rows(root, frozen, plan, outcome['logical_results'])
     for ticker, row in limited.items():

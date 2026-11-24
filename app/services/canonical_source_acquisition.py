@@ -23,6 +23,7 @@ from app.services.sealed_source_transport import SealedSourceTransport
 from app.services.unified_event_acquisition import EventAcquisition
 from app.services.unified_kiwoom_observer import KiwoomRead, KiwoomReceiptObserver
 from app.services.unified_live_source_transport import SourceSafetyStop
+from app.services.research_artifact_budget import ArtifactCapacityError
 from app.services.unified_run_artifacts import durable_json, sha256_bytes
 from app.services.unified_source_observer import OhlcvRead, OhlcvReceiptObserver
 from app.services.unified_stock_event_input import NewsRead, PlannedNewsTransport, PROVIDERS as NEWS_PROVIDERS
@@ -101,6 +102,11 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
         skipped_news = skipped_slots(frozen, dispatcher.plan)
         if frozen.get('optional_news_429') != dispatcher.run_ledger.identity.get('runtime_cap', {}).get('optional_news_429'):
             raise SourceSafetyStop('optional_news_frozen_campaign_policy_mismatch')
+        from app.services.selected_source_plan import us_night_optional
+        optional_night = us_night_optional(frozen)
+        if optional_night != (dispatcher.run_ledger.identity.get('runtime_cap', {}).get('optional_night')
+                == 'SELECTED_US_OPTIONAL_NIGHT_V1'):
+            raise SourceSafetyStop('optional_night_frozen_campaign_policy_mismatch')
     if kr_only and not selected:
         from scripts.kr8_source_scope import require_kr8_plan
         require_kr8_plan(frozen)
@@ -149,12 +155,14 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
             result[name] = {'status': 'CAPTURED_NOT_QUALIFIED', 'value': value}
         except (SourceSafetyStop, SystemicStop):
             raise
-        except OSError:
+        except (OSError, ArtifactCapacityError):
             # Local storage failures are not captured provider unavailability.
             raise
         except Exception as exc:
             # Never archive exception strings that may contain request credentials.
             result[name] = {'status': 'FAILED', 'error_class': type(exc).__name__}
+            from app.services.optional_night_source import error_location
+            result[name]['error_location'] = error_location(exc)
             result[name]['failure_provenance'] = dict(
                 phase=name, generation_id=frozen['generation_id'], plan_sha256=dispatcher.plan.plan_sha256,
                 failed_receipts={key: dispatcher.results[key]['receipt_sha256']
@@ -239,7 +247,7 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
         value = await provider.collect(datetime.fromisoformat(frozen['frozen_at']))
         return TypeAdapter(MacroProviderResult).dump_python(value, mode='json')
 
-    async def night():
+    async def night_value():
         from app.jobs.probe_krx_night_futures import fetch_live_probe, KRX_FUTURES_DAILY_URL, USER_AGENT
         from app.macro.providers.krx import materialize_night_probe
         from app.services.krx_night_history_service import persist_krx_response
@@ -248,7 +256,8 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
         if now().astimezone(ZoneInfo('Asia/Seoul')).date().isoformat() != frozen['query_kst_date']:
             raise SourceSafetyStop('night_query_day_drift_requires_new_generation')
         probe = await fetch_live_probe(run_date=at.astimezone(ZoneInfo('Asia/Seoul')).date(), observation_time=at,
-            api_key=settings.krx_open_api_key, transport=capture, max_lookback_days=7)
+            api_key=settings.krx_open_api_key, transport=capture, max_lookback_days=7,
+            hard_stop_on_error=us_only and selected and optional_night)
         probe.live_source = True
         days = {r['request']['params']['basDd'] for r in capture.receipts}
         earliest = min(days)
@@ -268,6 +277,14 @@ async def _acquire_all(*, root, frozen, settings, dispatcher, inner, policy, gua
             probe, history_directory=root/'night/native-history', night_end_dates=True), mode='json')
         durable_json(root/'night/query.json', {'observed_at': at.isoformat()}, exclusive=True)
         return value
+
+    async def night():
+        from app.services.selected_source_plan import us_night_optional
+        from app.services.optional_night_source import collect_optional
+        if not us_night_optional(frozen):
+            return await night_value()
+        return await collect_optional(night_value, frozen=frozen, results=dispatcher.results,
+            run_ledger=dispatcher.run_ledger)
 
     async def news(read):
         read = NewsRead.model_validate(read)

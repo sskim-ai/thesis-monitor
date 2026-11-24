@@ -62,8 +62,16 @@ def replay_publications(*, documents, hashes, cutoff, policy):
 
 def replay_night(*, receipts, bodies, body_hashes, observed_at, run_id, acquisition_id,
                  expected_value_sha256, policy, run_started_at, acquisition_cutoff,
-                 history_receipts=None, night_end_dates=False):
+                 history_receipts=None, night_end_dates=False, optional_failure=None):
     policy.require("krx_night_futures")
+    if optional_failure is not None:
+        from app.services.optional_night_source import replay_failure
+        if history_receipts:
+            raise ValueError('optional_night_unavailable_history_not_consumed')
+        return replay_failure(value=optional_failure, receipts=receipts, bodies=bodies,
+            body_hashes=body_hashes, observed_at=observed_at, run_id=run_id,
+            acquisition_id=acquisition_id, expected_value_sha256=expected_value_sha256,
+            run_started_at=run_started_at, acquisition_cutoff=acquisition_cutoff)
     if not receipts or set(bodies) != set(body_hashes):
         raise ValueError("night_exact_source_set_required")
     if any(sha256_bytes(b) != body_hashes[n] for n, b in bodies.items()):

@@ -5,6 +5,7 @@ import math
 from typing import Iterable, Mapping
 
 from app.services.krx_night_history_service import (
+    KRX_NIGHT_CLOSE_PAIR_ONLY,
     KRX_NIGHT_DWM_CONTRACT,
     KrxNightAggregateBar,
     KrxNightTimeframes,
@@ -106,7 +107,9 @@ def _format_pct(value: float) -> str:
     return f"{value:+.2f}%"
 
 
-def _night_timeframe_line(frame: KrxNightAggregateBar, label: str) -> str:
+def _night_timeframe_line(frame: KrxNightAggregateBar | None, label: str) -> str:
+    if frame is None:
+        return f"  - {label}: 자료 부족 (동일 만기 이력 미확보)"
     status = (
         "진행중"
         if frame.status in {"IN_PROGRESS", "SAME_CONTRACT_PARTIAL_PERIOD"}
@@ -140,6 +143,21 @@ def _night_timeframe_block(
     if series not in DWM_LABELS:
         return None
     raw = row.get("night_timeframes")
+    if raw is None and row.get("night_price_basis") == KRX_NIGHT_CLOSE_PAIR_ONLY:
+        values = [row.get(key) for key in ("value", "reference_price", "change_value", "change_pct")]
+        if any(isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value)
+               for value in values):
+            return None
+        price, baseline, delta, pct = values
+        maturity = str(row.get("contract_maturity") or "").replace("-", "")
+        return (
+            f"• {DWM_LABELS[series]} ({maturity})\n"
+            f"  - 일별 종가: {price:,.2f} · {delta:+.2f}pt ({pct:+.2f}%)\n"
+            f"    직전 정규장({row['reference_date']}) 종가 {baseline:,.2f} 대비\n"
+            "  - 주봉: 자료 부족 (동일 만기 이력 미확보)\n"
+            "  - 월봉: 자료 부족 (동일 만기 이력 미확보)",
+            (),
+        )
     if not isinstance(raw, Mapping):
         return None
     try:
@@ -156,6 +174,7 @@ def _night_timeframe_block(
             or frame.contract_code != frames.contract_code
             or frame.reference_date != frames.reference_date
             for frame in (frames.daily, frames.weekly, frames.monthly)
+            if frame is not None
         )
     ):
         return None
@@ -168,10 +187,8 @@ def _night_timeframe_block(
             _night_timeframe_line(frames.monthly, "월봉"),
         )
     )
-    return "\n".join(lines), (
-        frames.daily.fact_id,
-        frames.weekly.fact_id,
-        frames.monthly.fact_id,
+    return "\n".join(lines), tuple(
+        frame.fact_id for frame in (frames.daily, frames.weekly, frames.monthly) if frame is not None
     )
 
 

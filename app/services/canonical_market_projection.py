@@ -40,6 +40,17 @@ def project_optional_night(night, *, seed, cutoff):
     value = night['value']
     require(digest(value) == night['value_sha256'] == seed['run_acquisitions']['night'],
         'night_authority_mismatch')
+    if value.get('optional_night_failure'):
+        from app.services.optional_night_source import validate_failure
+        from app.services.selected_source_plan import US_NIGHT_OPTIONAL
+        require(seed.get('us_night_policy') == US_NIGHT_OPTIONAL
+            and seed.get('contract') == 'selected-original-source-run-binding-v1'
+            and seed.get('market') == 'us', 'optional_night_explicit_policy_required')
+        receipt = validate_failure(value, night['original_receipts'], night['source_hashes'],
+            run_id=seed['parent_run_id'], acquisition_id=night['original_acquisition_id'],
+            observed_at=datetime.fromisoformat(night['observed_at']),
+            start=datetime.fromisoformat(seed['started_at']), cutoff=cutoff)
+        return [], receipt
     require(night.get('observed_at') and night.get('original_receipts'), 'PLAN_GAP:night_request_provenance')
     observed = datetime.fromisoformat(night['observed_at'])
     start = datetime.fromisoformat(seed['started_at'])
@@ -443,8 +454,10 @@ def _project_market_context(packet, seed, graph, *, expected_authority_sha256, e
             for ref in [row['fact_id'], *[f['fact_id'] for f in night_futures_timeframe_facts(item)]]:
                 refs[ref] = ['night_and_publication_context/value/observations/' + str(producer_index)]
         if not eligible:
+            from app.services.optional_night_source import FAILURE_NOTICES
             night_cautions = [consumer.NIGHT_EXCLUSION_NOTICE if night_ownership['state'] == US_NIGHT_EXCLUDED
-                else '한국 야간선물은 현재 최종 행을 확인하지 못해 수치와 방향 신호에서 제외했습니다.']
+                else FAILURE_NOTICES.get(night_ownership['state'],
+                    '한국 야간선물은 현재 최종 행을 확인하지 못해 수치와 방향 신호에서 제외했습니다.')]
     facts = [with_fact_consumer_scopes(f, NIGHT_FUTURES_CONSUMER_SCOPES
         if f['fact_type'].startswith('night_futures') else MARKET_CONTEXT_CONSUMER_SCOPES) for f in facts]
     facts, numeric_denials = registered_projection(facts)

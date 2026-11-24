@@ -218,6 +218,12 @@ class SelectedRunLedger:
                         or pending.get('key') != 'HTTP:us:' + v['optional_news']['logical_id']
                         or pending.get('provider') != v['provider']):
                     raise ValueError('selected_optional_news_pending_plan_mismatch')
+            if event == 'PHYSICAL_INTENT' and v.get('optional_night'):
+                pending = s['used'].get(s['pending'], {})
+                if (v['optional_night']['plan_sha256'] != s['plans'].get(v['market'])
+                        or pending.get('key') != 'HTTP:us:' + v['optional_night']['logical_id']
+                        or pending.get('provider') != v['provider']):
+                    raise ValueError('selected_optional_night_pending_plan_mismatch')
             apply_runtime_event(s['runtime'],event,v,self.identity)
             s['http_total']=s['runtime']['total']
             s['http']=dict(s['runtime']['providers'])
@@ -481,11 +487,15 @@ class SelectedRunLedger:
             if s['pending'] != v['key']: raise ValueError('selected_result_without_intent')
             optional = v.get('optional_unavailable')
             if optional is not None:
-                from app.services.campaign_runtime_cap import optional_news_result
+                from app.services.campaign_runtime_cap import optional_news_result, optional_night_result
                 attempt = (s.get('runtime') or {}).get('attempts', {}).get(optional, {})
-                if (v['ok'] is not False or not optional_news_result(attempt, self.identity)
-                        or v['key'] != 'HTTP:us:' + attempt['optional_news']['logical_id']):
-                    raise ValueError('selected_optional_news_result_not_original_429')
+                news = optional_news_result(attempt, self.identity)
+                night = optional_night_result(attempt, self.identity)
+                scope = attempt.get('optional_news' if news else 'optional_night', {})
+                if (v['ok'] is not False or not (news or night)
+                        or v['key'] != 'HTTP:us:' + scope.get('logical_id', '')):
+                    raise ValueError('selected_optional_night_result_not_original_failure'
+                        if attempt.get('optional_night') else 'selected_optional_news_result_not_original_429')
             s['pending'] = None
             s['completed'].append(v['key'])
             if not v['ok'] and optional is None:

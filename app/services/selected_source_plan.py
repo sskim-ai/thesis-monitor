@@ -25,7 +25,8 @@ STOCK_CONTRACT = 'selected-original-stock-plan-v1'
 WIRE_CONTRACT = 'selected-original-source-request-plan-v1'
 COUNTS = dict(adjusted_daily=1000,adjusted_weekly=700,adjusted_monthly=300,unadjusted_weekly_valuation=700)
 US_NIGHT_EXCLUDED = 'EXCLUDED_BEFORE_COLLECTION'
-UsNightPolicy = Literal['ORIGINAL_CURRENT_PROBE_ONLY', 'EXCLUDED_BEFORE_COLLECTION']
+US_NIGHT_OPTIONAL = 'OPTIONAL_CURRENT_PROBE'
+UsNightPolicy = Literal['ORIGINAL_CURRENT_PROBE_ONLY', 'EXCLUDED_BEFORE_COLLECTION', 'OPTIONAL_CURRENT_PROBE']
 
 
 class SelectedConsumerPolicy(ContractModel):
@@ -55,6 +56,28 @@ def us_night_excluded(frozen):
             or any(d['provider'] == 'krx_night_futures' or d['consumer_role'].startswith('night:')
                    for d in plan['descriptors'])):
         raise ValueError('selected_us_night_exclusion_plan_mismatch')
+    return True
+
+
+def us_night_optional(frozen):
+    """Only the frozen US plan can make the bounded night probe optional."""
+    candidate = frozen.get('candidate', {})
+    if candidate.get('consumer_policy', {}).get('us_night') != US_NIGHT_OPTIONAL:
+        return False
+    SelectedConsumerPolicy.model_validate(candidate['consumer_policy'])
+    at = datetime.fromisoformat(frozen['frozen_at']).astimezone(ZoneInfo('Asia/Seoul'))
+    days = [(at.date()-timedelta(days=i)).isoformat() for i in range(7)]
+    rows = [d for d in frozen['plan']['descriptors']
+        if d['provider'] == 'krx_night_futures' or d['consumer_role'].startswith('night:')]
+    if (frozen.get('scope') != SCOPE or frozen.get('selected_market') != 'us'
+            or candidate.get('selected_market') != 'us' or frozen['plan'].get('market') != 'us'
+            or candidate.get('night_query_dates') != days or len(rows) != len(days)
+            or {d['logical_request_id'] for d in rows} != {'night:KOSPI200:'+d for d in days}
+            or any(d['provider'] != 'krx_night_futures' or d['subject'] != 'KOSPI200'
+                   or d['consumer_role'] != d['logical_request_id'] or d['market'] != 'kr'
+                   or d['endpoint_operation'] != 'fut_bydd_trd' or d['mandatory'] is not False
+                   or d['timeout_seconds'] != 20 or d['transient_retry_max'] != 0 for d in rows)):
+        raise ValueError('selected_us_optional_night_plan_mismatch')
     return True
 
 
@@ -152,7 +175,7 @@ def acquisition_plan(stock,identities,*,kr_max_pages,exact_financial_owner=False
     days=[(begin+timedelta(days=i)).isoformat() for i in range((day-begin).days+1)]
     if consumer_policy is not None:
         consumer_policy=SelectedConsumerPolicy.model_validate(consumer_policy)
-        if stock.market != 'us' and consumer_policy.us_night == US_NIGHT_EXCLUDED:
+        if stock.market != 'us' and consumer_policy.us_night != 'ORIGINAL_CURRENT_PROBE_ONLY':
             raise ValueError('selected_us_night_exclusion_us_only')
         kr=tuple(r for r in kr if r.api_id!='ka10066')
         days=([(day-timedelta(days=i)).isoformat() for i in range(7)]
