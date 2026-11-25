@@ -27,6 +27,18 @@ class ArtifactCapacityError(ValueError):
             projected_bytes=projected, cap_bytes=cap)
 
 
+class ArtifactScanError(OSError):
+    """A failed observation, with bounded metadata and no absolute paths or payloads."""
+
+    def __init__(self, *, operation, path_category, relative_path, error):
+        code = 'RESEARCH_ARTIFACT_SCAN_FAILED'
+        super().__init__(error.errno, code)
+        # Even astral Unicode escapes must fit the 4096-byte first-failure receipt.
+        self.receipt = dict(code=code, stage=_stage.get(), operation=operation,
+            path_category=path_category, relative_path=relative_path[:256],
+            error_type=type(error).__name__, errno=error.errno)
+
+
 def active_budget():
     return _active.get()
 
@@ -77,6 +89,7 @@ class ResearchArtifactBudget:
         self.declared = {}
         self.auth_refs = {}
         self.cli_arg0_roots = {}
+        self.cli_state_roots = set()
         self.peak_work = 0
         self.peak_result = 0
 
@@ -112,21 +125,52 @@ class ResearchArtifactBudget:
                     or not os.access(target,os.X_OK) or self.category(root)!='scratch'
                     or self.cli_arg0_roots.setdefault(root,str(target))!=str(target)):
                 raise ValueError('research_artifact_cli_scratch_binding_invalid')
+        self.cli_state_roots.add(home.parent)
 
     def measure(self):
         seen_dirs, inodes, arg0_dirs = set(), {}, {}
         rank = {'scratch': 0, 'source': 1, 'result': 2}
+
+        def scan_error(path, operation, error):
+            root = max((p for p in self.roots if path == p or path.is_relative_to(p)),
+                key=lambda p: len(p.parts))
+            return ArtifactScanError(operation=operation, path_category=self.category(path),
+                relative_path=path.relative_to(root).as_posix(), error=error)
+
+        def read_metadata(path, operation, read):
+            try:
+                return read()
+            except OSError as exc:
+                # Only this invocation's disposable CLI state may vanish during a scan.
+                # Never hide a failure on a retained artifact or an observed declared root.
+                if (isinstance(exc, FileNotFoundError) and path not in self.roots
+                        and self.category(path) == 'scratch'
+                        and any(path.is_relative_to(root) for root in self.cli_state_roots)
+                        and not any(role != 'scratch' and (item == path or item.is_relative_to(path))
+                            for item, role in (*self.roots.items(), *self.declared.items()))):
+                    try:
+                        path.lstat()
+                    except FileNotFoundError:
+                        return None
+                    except OSError as probe_error:
+                        exc, operation = probe_error, 'lstat'
+                raise scan_error(path, operation, exc) from exc
 
         def visit(path):
             try:
                 info = path.lstat()
             except FileNotFoundError:
                 return
+            except OSError as exc:
+                raise scan_error(path, 'lstat', exc) from exc
             key = (info.st_dev, info.st_ino)
             if stat.S_ISDIR(info.st_mode):
                 if key not in seen_dirs:
+                    entries = read_metadata(path, 'iterdir', lambda: tuple(path.iterdir()))
+                    if entries is None:
+                        return
                     seen_dirs.add(key)
-                    for entry in path.iterdir():
+                    for entry in entries:
                         visit(entry)
                 return
             role = self.category(path)
@@ -137,12 +181,19 @@ class ResearchArtifactBudget:
                     # The qualified macOS CLI creates one private random arg0
                     # directory per invocation. Never traverse a link target.
                     if (role=='scratch' and path.name in {'applypatch','apply_patch'}
-                            and re.fullmatch(r'codex-arg0[A-Za-z0-9]{6}',path.parent.name)
-                            and all(stat.S_ISDIR(d.st_mode) and d.st_uid==os.geteuid() and not d.st_mode&0o077
-                                for d in (root.lstat(),path.parent.lstat()))
-                            and arg0_dirs.setdefault(root,path.parent)==path.parent):
-                        expected = self.cli_arg0_roots[root]
-                if expected is None or os.readlink(path)!=expected:
+                            and re.fullmatch(r'codex-arg0[A-Za-z0-9]{6}',path.parent.name)):
+                        directories = [read_metadata(p, 'lstat', p.lstat) for p in (root, path.parent)]
+                        if any(info is None for info in directories):
+                            return
+                        if (all(stat.S_ISDIR(d.st_mode) and d.st_uid==os.geteuid() and not d.st_mode&0o077
+                                for d in directories) and arg0_dirs.setdefault(root,path.parent)==path.parent):
+                            expected = self.cli_arg0_roots[root]
+                if expected is None:
+                    raise ValueError('research_artifact_unexpected_symlink')
+                target = read_metadata(path, 'readlink', lambda: os.readlink(path))
+                if target is None:
+                    return
+                if target != expected:
                     raise ValueError('research_artifact_unexpected_symlink')
             elif not stat.S_ISREG(info.st_mode):
                 raise ValueError('research_artifact_unexpected_file_type')

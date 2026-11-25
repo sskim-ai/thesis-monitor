@@ -17,7 +17,7 @@ from app.services.model_execution_plan import ModelExecutionPlan
 from app.services.production_model_profile import SolHighCallBudget
 from app.services.production_model_transport import OfficialProductionModelTransport
 from app.services.production_runtime_bridge import ProductionRuntimeBridgeV1
-from app.services.research_artifact_budget import ArtifactCapacityError, ResearchArtifactBudget, artifact_scope, artifact_stage
+from app.services.research_artifact_budget import ArtifactCapacityError, ArtifactScanError, ResearchArtifactBudget, artifact_scope, artifact_stage
 from app.services.research_request_storage import save_stage_request
 from app.services.unified_run_artifacts import SECRET_KEY, durable_json, load_json
 from app.services.unified_runtime_v2 import CONTRACT, STAGES, validate_stage_v2
@@ -183,6 +183,8 @@ def _first_failure(exc, stage):
             failure['code'] = code
         failure['storage'] = {k: receipt[k] for k in ('current_bytes', 'projected_bytes', 'cap_bytes')
             if type(receipt.get(k)) is int}
+    if type(exc) is ArtifactScanError:
+        failure.update(code=exc.receipt['code'], artifact_scan=dict(exc.receipt))
     return failure
 
 

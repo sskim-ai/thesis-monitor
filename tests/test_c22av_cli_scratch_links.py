@@ -15,6 +15,12 @@ from app.services.research_artifact_budget import (
 from app.services.unified_run_artifacts import durable_json
 
 
+@pytest.fixture(autouse=True)
+def synthetic_free_space(monkeypatch):
+    # Boundary tests must not depend on the test host having 12 GiB available.
+    monkeypatch.setattr(os, 'statvfs', lambda path: SimpleNamespace(f_bavail=8 * 1024**2, f_frsize=4096))
+
+
 def scratch_home(attempt):
     return attempt/'runtime-state'/runtime_state_namespace_hash(attempt.name)/'home'
 

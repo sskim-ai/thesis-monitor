@@ -70,7 +70,8 @@ def test_all_stage_storage_reference_and_capacity(tmp_path):
         load_stage_request(path)
 
 
-def test_capacity_prewrite_peak_and_unknown_symlink(tmp_path):
+def test_capacity_prewrite_peak_and_unknown_symlink(tmp_path, monkeypatch):
+    monkeypatch.setattr(os, 'statvfs', lambda path: SimpleNamespace(f_bavail=8 * 1024**2, f_frsize=4096))
     root = tmp_path/'run'
     root.mkdir()
     cache = root/'cache'
