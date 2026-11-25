@@ -31,14 +31,16 @@ def invalidation(timeframe="daily", *, current=10, previous=10,
 
 
 @pytest.mark.parametrize("weekly_date", ["2026-11-16", "2026-11-20"])
-def test_prior_weekly_break_does_not_hard_invalidate_selected_daily_support(weekly_date):
+def test_prior_weekly_comparison_does_not_veto_selected_daily_support(weekly_date):
     result = invalidation(weekly_date=weekly_date)
     assert result["price"] == 8
-    assert result["status"] == "higher_timeframe_review"
+    assert result["status"] == "intact"
     assert result["hard_weekly"] is True and result["hard_daily"] is False
     assert result["current_recovery"] == "support_reclaimed"
-    assert result["trigger_timeframe"] == "weekly"
-    assert result["trigger_dates"] == [weekly_date]
+    assert result["trigger_timeframe"] is None
+    assert result["trigger_dates"] == []
+    assert result["weekly_bar_date"] == weekly_date
+    assert result["historical_break_evidence"] == "NOT_ESTABLISHED"
     assert result["evaluation_date"] == "2026-11-23"
 
 
@@ -121,10 +123,9 @@ def test_real_fact_statement_b2_and_renderer_keep_warning_without_false_current_
     row = next(row for row in context["decision_evidence"] if row["ref_id"] == ref)
     fact = next(row for row in stock["fact_catalog"] if row["fact_id"] == "chart:structure:invalidation")
     assert json.loads(row["statement"]) == fact["fields"]
-    assert len(row["statement"]) < 900
     assert fact["fields"]["hard_weekly"] is True
     assert fact["fields"]["evaluation_date"] == "2026-11-23"
-    assert fact["fields"]["trigger_dates"] == ["2026-11-20"]
+    assert fact["fields"]["trigger_dates"] == ([] if timeframe == "daily" else ["2026-11-20"])
     accepted, b2_row, request = complete_fixture.renderer_case(case, context, entries["tactical_candidates"][0])
     before = deepcopy((source, context, b2_row, request))
     monkeypatch.setattr(renderer, "stock_plan", lambda *args: accepted)
@@ -132,8 +133,13 @@ def test_real_fact_statement_b2_and_renderer_keep_warning_without_false_current_
     text = message["text"]
     assert "지지 구간 안" in text
     assert "완료 주봉(기준일 2026-11-20)" in text
-    assert "일봉은 지지 구간 하단 회복" in text
-    assert "최종 신규매수 행동: 추가 가격 확인 대기" in text
-    assert "차트 무효화 조건 충족" not in text and "신규 매수 검토 가능" not in text
+    assert "하단 회복" not in text and "이탈 후" not in text
+    if timeframe == "daily":
+        assert "최종 신규매수 행동: 신규 매수 검토 가능" in text
+        assert "과거 지지 이탈 여부 미확인" in text
+    else:
+        assert "최종 신규매수 행동: 다음 완료 주봉 종가가 선택 지지 무효화선 이상인지 확인 대기" in text
+        assert "신규 매수 검토 가능" not in text
+    assert "차트 무효화 조건 충족" not in text
     assert message["NO_SEND"] is True
     assert (source, context, b2_row, request) == before

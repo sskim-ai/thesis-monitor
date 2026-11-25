@@ -130,9 +130,11 @@ def test_renderer_independent_reference_date_and_source_bindings(data):
             accepted_calibration=SimpleNamespace(entries={}))
         return _us_sr_rows(packet, base, axes, 'security-one')
     rows = render(source)
-    assert len(rows) == 1 and args['cutoff'] in rows[0].text
-    assert '조정봉' in rows[0].text and '현재가·평가배수·B2 진입 권한 아님' in rows[0].text
-    assert '123' not in rows[0].text and digest(source) == before
+    text = '\n'.join(row.text for row in rows)
+    assert len(rows) == 2 and text.count(args['cutoff']) == 1
+    assert '조정봉' in rows[0].text and '진입 관찰 지지 구간과 구분' in rows[0].text
+    assert '참고 가까운 지지: $90.00–$95.00' in rows[1].text
+    assert 'B2' not in text and '123' not in text and digest(source) == before
     for mutation in ('ref_date', 'target_date', 'receipt', 'source_missing', 'raw_basis', 'promoted', 'period_end', 'fake_zone'):
         changed = deepcopy(source)
         item = changed['packet']['stocks'][0]['chart_context']['structure']['price_structure_v3']

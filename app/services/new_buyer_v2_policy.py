@@ -89,16 +89,8 @@ def metric_resolution(subject, row, census):
             metric=cells[0]['metric'], state=state, category_cells_sha256=digest(cells),
             coverage_row_sha256=row['receipt_sha256'], qualified_fact_sha256=digest(facts[ref]) if ref in facts else None,
             exact_blocker_refs=sorted(set(denials)), relevant=True, supersession_contract=None)))
-    for ref, fact in subject['facts'].items():
-        if ref in facts:
-            continue
-        if fact['metric'] != 'PBR' or fact['asset_relevance_proven'] is not False:
-            raise ValueError('v2_unknown_irrelevant_metric')
-        results.append(sealed(dict(contract=METRIC, ticker=subject['ticker'], metric_ref=ref,
-            metric='PBR', state='NOT_RELEVANT', category_cells_sha256=None,
-            coverage_row_sha256=row['receipt_sha256'], qualified_fact_sha256=digest(fact),
-            exact_blocker_refs=[], relevant=False, supersession_contract=None,
-            reason='FROZEN_V1_PBR_REQUIRES_OWNED_ASSET_RELEVANCE')))
+    if set(subject['facts']) != set(facts):
+        raise ValueError('v2_unknown_irrelevant_metric')
     return results
 
 

@@ -160,7 +160,7 @@ def _row(ticker, owners, context, facts, typed_view):
     source, security = owners.stock, owners.security
     view, categories, relevant = source['valuation_view'], [], []
     for metric in context['metric_states']:
-        if metric['metric'] not in {'PER', 'FORWARD_PE', 'CURRENT_FY1_FPER'}:
+        if metric['metric'] not in {'PER', 'PBR', 'FORWARD_PE', 'CURRENT_FY1_FPER'}:
             continue
         name = metric['metric']
         ref = metric['fact_ref'] or 'unavailable-slot:' + view['security_id'] + ':' + name

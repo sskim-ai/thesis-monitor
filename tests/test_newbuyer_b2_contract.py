@@ -171,9 +171,12 @@ def test_owned_absolute_discount_is_separate_and_risk_precedes_both_paths(risk):
         assert rows[0]['valuation_context']['authority'] == 'SOURCE_DETERMINISTIC'
 
 
-def test_pbr_only_without_relevance_and_empty_valuation_never_support():
+def test_pbr_is_usable_without_extra_relevance_permission_and_empty_valuation_waits():
     sub = subject()
     sub['facts']['valuation:per']['metric'] = 'PBR'
-    assert {r['valuation_context']['state'] for r in probes(sub)} == {'UNRESOLVED'}
+    assert b.usable_facts(sub) == sub['facts']
+    assert {'SUPPORTIVE', 'NEUTRAL', 'BURDENSOME'} <= {
+        r['valuation_context']['state'] for r in probes(sub)}
     sub['facts'] = {}
+    assert {r['valuation_context']['state'] for r in probes(sub)} == {'UNRESOLVED'}
     assert {r['new_buyer'] for r in probes(sub)} == {'WAIT'}

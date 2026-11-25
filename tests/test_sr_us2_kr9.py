@@ -62,7 +62,7 @@ def test_retained_googl_normal_reference_unchanged(monkeypatch):
     old_ref=original['attach']({},**args)['price_structure_v3']
     current=sr.attach({},**args)['price_structure_v3']
     assert current==old_ref and current['as_of']=='2026-11-19' and len(current['zones'])==3
-    assert all('2026-11-19' in r.text for r in rendered(current,args))
+    assert '\n'.join(r.text for r in rendered(current,args)).count('2026-11-19') == 1
     assert digest(args)==before
 
 
@@ -73,7 +73,8 @@ def test_retained_mu_excludes_one_bad_day_and_renders_previous_official_day():
     assert sr.valid_reference_lineage(ref) and not ref['eligible_for_b2_timing'] and not ref['eligible_for_current_price']
     assert ref['latest_daily_exclusion']['excluded_row']['low']>ref['latest_daily_exclusion']['excluded_row']['close']
     rows=rendered(ref,args)
-    assert rows and all('2026-11-18' in r.text and '2026-11-19 해당 일봉 불일치 제외' in r.text for r in rows)
+    text='\n'.join(r.text for r in rows)
+    assert rows and '2026-11-18' in text and '2026-11-19 해당 일봉 불일치 제외' in text
     assert digest(args)==before
 
 

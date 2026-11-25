@@ -17,8 +17,14 @@ SUPPORTIVE/NEUTRAL/BURDENSOME are economic MODEL_JUDGED interpretations, not fac
 Select exact qualified valuation and current business refs. Metric availability
 does not establish attractiveness. No universal multiple thresholds, new numbers,
 free rationale, target/fair-value inference, implied EPS or cross-security facts.
-PBR without owned asset relevance is context-only. Forward/trailing coexistence
-does not prove cheapness or earnings growth; no such relation is supplied here.
+Qualified PER, PBR and forward PE are usable valuation inputs. A low PBR alone
+does not prove cheapness or attractiveness. A supportive PBR judgment needs
+provided business, asset quality, profitability/ROE or financial context that
+makes book value economically meaningful; do not invent missing context.
+Limited economic inference is not a missing metric: use NEUTRAL when the
+available multiple gives no support or burden in the supplied context.
+Forward/trailing coexistence does not prove cheapness or earnings growth;
+no such relation is supplied here.
 Active business risk requires AVOID and cannot be offset by valuation or timing.
 UNRESOLVED means judgment unresolved even when qualified facts are available.
 Use a WAIT reason only when its typed predicate is true. Timing is backend-owned:
@@ -86,8 +92,10 @@ def timing(subject):
 
 
 def usable_facts(subject):
+    # Source eligibility is already checked by qualified_facts. Economic
+    # relevance is a judgment over those facts, not a second PBR admission gate.
     return {ref: row for ref, row in subject['facts'].items()
-            if row['metric'] != 'PBR' or row['asset_relevance_proven'] is True}
+            if row['metric'] in {'PER', 'PBR', 'FORWARD_PE', 'CURRENT_FY1_FPER'}}
 
 
 def wait_reasons(subject, state):

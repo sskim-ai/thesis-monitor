@@ -1179,7 +1179,12 @@ def calculate_invalidation(
     invalidation = float(support["zone_low"]) - buffer
     daily_closes = [bar.close for bar in daily_bars[-2:]]
     hard_daily = len(daily_closes) == 2 and all(close < invalidation for close in daily_closes)
-    hard_weekly = bool(weekly_bars and weekly_bars[-1].close < invalidation)
+    weekly_close = weekly_bars[-1].close if weekly_bars else None
+    # These are comparisons to the *currently selected* support threshold.
+    # They do not establish that this support existed at an earlier bar or
+    # that a historical above-to-below crossing occurred. Keep the existing
+    # hard_* keys for consumers of saved facts, with explicit semantics below.
+    hard_weekly = weekly_close is not None and weekly_close < invalidation
     accelerated = bool(
         daily_bars
         and daily_bars[-1].close < invalidation
@@ -1209,15 +1214,15 @@ def calculate_invalidation(
             else "invalidation_reclaimed"
         )
 
-    # Keep the existing prices and confirmation thresholds, but bind a hard
-    # invalidation to the selected support's own timeframe. Other-frame signals
-    # remain warnings; daily recovery is never a confirmed weekly repair.
+    # Keep the existing prices and confirmation thresholds, but bind the
+    # operational invalidation to the selected support's own timeframe. A
+    # prior weekly close below today's daily-support threshold is context, not
+    # an automatic veto of a current daily setup. The weekly-selected scenario
+    # still requires its own completed weekly confirmation.
     if timeframe == "daily" and accelerated:
         status = "accelerated_invalid"
     elif timeframe == "daily" and hard_daily:
         status = "hard_invalid"
-    elif timeframe == "daily" and hard_weekly:
-        status = "higher_timeframe_review"
     elif timeframe == "weekly" and hard_weekly:
         status = "recovered_review" if current_recovery != "not_reclaimed" else "hard_invalid"
     elif timeframe == "weekly" and (hard_daily or accelerated):
@@ -1247,6 +1252,10 @@ def calculate_invalidation(
         "hard_weekly": hard_weekly,
         "accelerated": accelerated,
         "wick_only": wick_only,
+        "comparison_basis": "CURRENT_SELECTED_SUPPORT",
+        "historical_break_evidence": "NOT_ESTABLISHED",
+        "latest_daily_close": daily_bars[-1].close if daily_bars else None,
+        "weekly_close": weekly_close,
         "evaluation_date": evaluation_date,
         "weekly_bar_date": weekly_bar_date,
         "trigger_timeframe": trigger_timeframe,

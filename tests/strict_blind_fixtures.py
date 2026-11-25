@@ -16,6 +16,8 @@ def source_inputs(tmp_path, *, risk=False, denied=(), technical=True, timing="WA
     value, unavailable = build_valuation(tmp_path, forward_value=None if "FORWARD_PE" in denied else 7)
     if "PER" in denied:
         value["metrics"][0] = deepcopy(unavailable["metrics"][0])
+    if "PBR" in denied:
+        value["metrics"][1] = deepcopy(unavailable["metrics"][1])
     return from_context(calibration_context(value), risk=risk, technical=technical, timing=timing)
 
 
@@ -47,7 +49,7 @@ def from_context(vc, *, risk=False, technical=True, timing="WAIT_FOR_ZONE"):
     facts = qualified_facts({"valuation_context": vc}, ticker, vc["run_id"])
     relevant, qualified, cells = [], [], []
     for r in vc["metric_states"]:
-        if r["metric"] not in ("PER", "FORWARD_PE", "fPER", "CURRENT_FY1_FPER"):
+        if r["metric"] not in ("PER", "PBR", "FORWARD_PE", "fPER", "CURRENT_FY1_FPER"):
             continue
         ref = r["fact_ref"] or "unavailable:" + r["metric"]
         relevant.append(ref)

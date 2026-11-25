@@ -16,13 +16,17 @@ from tests.test_kis_no_estimate_owner import inputs as empty_inputs, payload
 from tests.test_unified_stock_acquisition import plan as plan_fixture
 
 
-def source(tmp_path, ticker='IBM', generation='fictional-generation-one', *, negative=False, empty=False):
+def source(tmp_path, ticker='IBM', generation='fictional-generation-one', *, negative=False, empty=False,
+           mutate_native=None):
     plan = plan_fixture.__wrapped__().model_copy(update={'run_id': generation})
     policy = UnifiedSourcePolicy(POLICY.allowed_providers | frozenset({'finnhub', 'kiwoom_rest'}))
     inputs = fresh_inputs(tmp_path, ticker, verified_identity=True, policy=policy, plan=plan)
     security = inputs['financial_inputs']['plan']['security']
     inputs['valuation_inputs'] = native_input(security, start=plan.frozen_at, run=generation,
         policy=policy, negative=negative)
+    if mutate_native is not None:
+        from tests.test_r9_rev28_native_snapshot import alter
+        alter(inputs['valuation_inputs'], mutate_native)
     stock = assemble_fresh_stock(**inputs)
     assert stock['status'] == 'PASS'
     extra = {}
@@ -62,14 +66,14 @@ def test_parameterized_new_generation_same_semantics(tmp_path):
                 for r in result['coverage']['rows'][0]['categories']]
     assert semantics(first) == semantics(second)
     assert first['coverage']['receipt_sha256'] != second['coverage']['receipt_sha256']
-    assert len(first['coverage']['rows'][0]['categories']) == 23
+    assert len(first['coverage']['rows'][0]['categories']) == 34
     assert first['producer']['model_authority_inputs'] == 0
 
 
 def test_metric_denial_does_not_block_alternate_owner(tmp_path):
     result = compose(source(tmp_path, negative=True))
     metrics = {r['metric']: r['state'] for r in result['resolutions']['IBM']['metrics']}
-    assert metrics == {'PER': 'UNUSABLE_TYPED_DENIAL', 'FORWARD_PE': 'USABLE', 'PBR': 'NOT_RELEVANT'}
+    assert metrics == {'PER': 'UNUSABLE_TYPED_DENIAL', 'FORWARD_PE': 'USABLE', 'PBR': 'USABLE'}
     assert result['resolutions']['IBM']['evaluability']['evaluability_state'] == 'EVALUABLE'
     assert all(b['scope_level'] == 'METRIC_SCOPED' for b in result['census']['rows'])
 

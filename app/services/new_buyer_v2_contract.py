@@ -6,7 +6,7 @@ from app.services import new_buyer_v2_policy as policy
 from scripts.kis_eps_wire_calibration import digest
 
 CONTRACT = 'newbuyer-qualified-valuation-context-v2'
-PROMPT_VERSION = 'newbuyer-b2-v2-owned-evaluability-timing-independent-v1'
+PROMPT_VERSION = 'newbuyer-b2-v2-qualified-multiple-context-v2'
 SCHEMA_VERSION = 'newbuyer-b2-v2-closed-output-v1'
 PROMPT = '''Judge only the NewBuyer fundamental/valuation attractiveness in this frozen shadow request.
 Use only the provided qualified usable valuation facts. SUPPORTIVE, NEUTRAL and
@@ -15,6 +15,13 @@ EVALUABLE requires exactly one of those states: UNRESOLVED is not permitted.
 No universal fair-value threshold or target price is required for contextual
 judgment; do not invent thresholds, target prices, fair-value ranges or numbers.
 Only the backend ALL_RELEVANT_METRICS_UNUSABLE composite proof permits UNRESOLVED.
+Qualified PER, PBR and forward PE are actual valuation inputs; none requires a
+separate asset-relevance authorization. A low PBR alone does not establish
+cheapness or attractiveness. Support from PBR needs supplied business, asset
+quality, profitability/ROE or financial context that makes book value meaningful.
+Do not invent those observations. A usable multiple with limited economic
+inference remains usable: choose NEUTRAL when the supplied context supports
+neither a favorable nor an unfavorable valuation judgment, not UNRESOLVED.
 Unavailable/blocked metrics must not be reconstructed, even if another metric
 is usable. No implied-EPS reverse calculation, ADR/home-security transfer,
 invented currency/share conversion or multiple-to-earnings-growth inference.

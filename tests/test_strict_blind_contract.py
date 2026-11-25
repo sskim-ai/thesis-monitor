@@ -13,7 +13,7 @@ from tests.strict_blind_fixtures import source_inputs, response, from_context
     (False, "FAVORABLE_NOW", (), True),
     (False, "WAIT_FOR_ZONE", (), True),
     (False, "UNRESOLVED", (), False),
-    (False, "UNRESOLVED", ("PER", "FORWARD_PE"), False),
+    (False, "UNRESOLVED", ("PER", "PBR", "FORWARD_PE"), False),
     (False, "WAIT_FOR_ZONE", ("FORWARD_PE",), True),
     (True, "WAIT_FOR_ZONE", (), True),
 ])

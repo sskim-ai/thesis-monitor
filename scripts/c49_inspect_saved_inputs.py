@@ -70,10 +70,27 @@ def entry_inputs(context):
     refs.update('canonical:chart:structure:' + key for key in
                 ('invalidation', 'risk_reward:current_price', 'state'))
     return dict(current_price=price, tactical_candidates=candidates,
+        original_candidate_diagnostics=context.get('entry_candidate_diagnostics', []),
+        original_unresolved_reason=context.get('tactical_unresolved_reason'),
         source_evidence_binding=context.get('source_evidence_binding'),
         decision_evidence=[row for row in context['decision_evidence'] if row['ref_id'] in refs],
         source_permissions=[row for row in context['source_use_projection']['source_permissions']
                             if row['ref_id'] in refs])
+
+
+def valuation_inputs(context):
+    """Expose already saved metric dates, without recomputing or readmitting values."""
+    value = context.get('valuation_context') or {}
+    snapshots = {}
+    fields = ('metric', 'provider', 'value', 'state', 'metric_semantic', 'metric_asof',
+              'retrieval_timestamp', 'provider_horizon', 'horizon_authority',
+              'same_session_recomputation')
+    for ref, row in value.get('facts', {}).items():
+        native = row.get('fact', {}).get('provider_snapshot')
+        if native:
+            snapshots[ref] = {key: native.get(key) for key in fields if key in native}
+    return dict(original_metric_states=value.get('metric_states', []),
+                original_native_snapshots=snapshots)
 
 
 def issuer_inputs(source, ticker):
@@ -126,6 +143,10 @@ def inspect(cycle):
         if (request['ticker'] != ticker or request['source_generation'] != binding['source_generation']):
             raise ValueError('saved_b2_subject_generation_mismatch')
         row['original_timing_context'] = request['timing_context']
+        row['original_valuation_evaluability'] = request.get('valuation_evaluability')
+        row['original_usable_metric_refs'] = {
+            ref: fact.get('metric') for ref, fact in
+            request.get('qualified_usable_valuation_facts', {}).items()}
         if ticker not in saved:
             row['diagnostic_status'] = 'NO_SAVED_B_CONTEXT'
             continue
@@ -133,6 +154,7 @@ def inspect(cycle):
         row['context_path'] = origins[ticker]
         row['original_context_matches_b2'] = digest(context) == request['authority_digests']['context']
         row['original_entry_inputs'] = entry_inputs(context)
+        row['original_valuation_inputs'] = valuation_inputs(context)
         if not row['original_context_matches_b2']:
             row['diagnostic_status'] = 'SAVED_CONTEXT_DIFFERS_FROM_B2_INPUT'
             continue

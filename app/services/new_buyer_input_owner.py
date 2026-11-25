@@ -60,13 +60,13 @@ def qualified_facts(context, ticker, generation):
               or fact['input_receipt_sha256'] != row['input_receipt_sha256']):
             raise ValueError('shadow_kr_fper_owner_binding')
         facts[ref] = dict(metric=row['metric'], ticker=ticker, security_id=vc['security_id'],
-                          asset_relevance_proven=False, metadata=deepcopy(row),
+                          metadata=deepcopy(row),
                           source_fact=deepcopy(fact), registry=deepcopy(registry),
                           current_scope='FROZEN_INPUT_ONLY',
                           source_kind='ATOMIC_PROVIDER_SNAPSHOT' if native
                           else 'KIS_HOUSE_RESEARCH_NOT_CONSENSUS')
-    # No asset-relevance owner is supplied by the current production adapter.
-    # PBR remains visible as context, never an independent economic-state anchor.
+    # All qualified multiples reach the economic assessment. Their availability
+    # proves the input, not cheapness; the model judges their business relevance.
     return facts
 
 

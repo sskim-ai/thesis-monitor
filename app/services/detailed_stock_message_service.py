@@ -140,6 +140,8 @@ def section_coverage(rows):
 
 
 def _valuation_rows(valuation):
+    from zoneinfo import ZoneInfo
+
     _require({m.metric for m in valuation.metrics} in ({'PER', 'PBR', 'fPER'}, {'PER', 'PBR', 'FORWARD_PE'})
              and len(valuation.metrics) == 3, 'detailed_valuation_section_incomplete')
     rows = []
@@ -166,6 +168,11 @@ def _valuation_rows(valuation):
                 label = ('Kiwoom' if snapshot.provider == 'kiwoom' else
                          'Finnhub TTM' if snapshot.metric == 'PER' else 'Finnhub quarterly')
                 text += f' · {label} snapshot'
+            if snapshot.metric_asof is not None:
+                text += ' · 지표 기준일 ' + snapshot.metric_asof.isoformat()
+            else:
+                retrieved = snapshot.retrieval_timestamp.astimezone(ZoneInfo('Asia/Seoul'))
+                text += ' · 지표 기준일 미제공 · 조회 ' + retrieved.strftime('%Y-%m-%d %H:%M KST')
         bound = bindings.get(metric.metric)
         rows.append(_row('valuation', metric.metric, display_name + ': ' + text,
             facts=(bound['fact']['fact_id'],) if bound else (),
