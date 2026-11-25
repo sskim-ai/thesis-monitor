@@ -1586,7 +1586,14 @@ def analyze_chart_structure(
         timeframe: build_price_zones(
             local_pivots[timeframe],  # type: ignore[index]
             timeframe,  # type: ignore[arg-type]
-            bar_count=len(bars_by_timeframe[timeframe]),
+            # Pivot indexes and recency must share the normalized local window,
+            # which can differ from the major-swing window (weekly: 120 vs 156).
+            bar_count=len(
+                normalize_structure_bars(
+                    raw_by_timeframe.get(timeframe, []),
+                    lookback=LOCAL_PIVOT_LOOKBACKS[timeframe],  # type: ignore[index]
+                )
+            ),
         )
         for timeframe in ("daily", "weekly", "monthly")
     }

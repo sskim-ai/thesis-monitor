@@ -133,8 +133,10 @@ def inspect(cycle):
         packet_stock = next((item for item in stock['packet']['stocks']
                              if item['ticker'] == ticker), {})
         structure = packet_stock.get('chart_context', {}).get('structure') or {}
-        row['original_chart_structure'] = {
-            key: structure.get(key) for key in ('invalidation', 'risk_reward', 'state')}
+        row['original_chart_structure'] = dict(
+            invalidation=structure.get('invalidation'),
+            risk_reward=structure.get('risk_reward'),
+            state=structure.get('chart_state', structure.get('state')))
         result['entries'][ticker] = row
         if not path.is_file():
             row['diagnostic_status'] = 'NO_SAVED_B2_REQUEST'
@@ -162,7 +164,7 @@ def inspect(cycle):
             security_id=request['security_id'], source_generation_id=binding['source_generation'])
         row['candidate_assessment_under_current_code'] = candidates
         selected = request['timing_context']['selected']
-        row['original_selected_candidate_assessment'] = next(
+        row['current_assessment_for_original_selected_candidate'] = next(
             (candidate for candidate in candidates if candidate['candidate_id'] == selected), None)
         row['eligible_candidate_ids_under_current_code'] = [
             candidate['candidate_id'] for candidate in candidates if candidate['eligible']]
