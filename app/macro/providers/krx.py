@@ -187,6 +187,10 @@ def materialize_night_probe(probe: KrxNightFuturesProbeResult, *, history_direct
                     "change_pct": item.change_pct,
                     "provider_change_point": item.provider_change_point,
                     "provider_change_match": item.provider_change_match,
+                    **({
+                        "provider_change_basis": item.provider_change_basis,
+                        "reference_settlement_price": item.reference_settlement_price,
+                    } if item.provider_change_basis is not None else {}),
                     "night_source_record_id": item.night_source_record_id,
                     "reference_source_record_id": item.reference_source_record_id,
                     "night_source_payload_sha256": (item.night_source_payload_sha256),

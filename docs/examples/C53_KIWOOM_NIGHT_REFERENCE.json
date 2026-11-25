@@ -1,0 +1,22 @@
+{
+  "source_kind": "USER_BROKER_SCREENSHOT",
+  "broker": "KIWOOM",
+  "product": "KOSPI200",
+  "maturity": "2026-12",
+  "chart_date": "2026-11-24",
+  "open": 769.9,
+  "high": 769.95,
+  "low": 731.35,
+  "close": 742.6,
+  "volume": 44229,
+  "previous_night_close": 777.95,
+  "header_change_point": -35.5,
+  "header_change_pct": -4.56,
+  "notes": [
+    "Manually transcribed from the user's Kiwoom KOSPI200 202612 night chart, received 2026-11-25.",
+    "The screen clock is 09:58; this is not proof that the KRX API returned the row at 08:10.",
+    "chart_date is the broker's original label, not an asserted KRX BAS_DD or exchange business date.",
+    "Header reference 778.10 is implied arithmetically; its close/settlement meaning must be read from the actual provider row.",
+    "Comparison input only. Never inject these values into a captured response, Source admission, or a production message."
+  ]
+}

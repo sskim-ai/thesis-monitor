@@ -48,6 +48,7 @@ class KrxFuturesRow(BaseModel):
     contract_name: str
     maturity: str | None = None
     close: float
+    settlement_price: float | None = None
     provider_change_point: float | None = None
     volume: int | None = None
     open_interest: int | None = None
@@ -72,6 +73,8 @@ class KrxNightFutureObservation(BaseModel):
     change_pct: float
     provider_change_point: float | None = None
     provider_change_match: bool | None = None
+    provider_change_basis: str | None = Field(default=None, exclude_if=lambda v: v is None)
+    reference_settlement_price: float | None = Field(default=None, exclude_if=lambda v: v is None)
     comparison_semantic: str = NIGHT_COMPARISON_SEMANTIC
     night_source_record_id: str
     reference_source_record_id: str
@@ -267,10 +270,32 @@ def _parse_row(item: dict[str, object]) -> KrxFuturesRow | None:
         contract_name=contract_name,
         maturity=_maturity(contract_name),
         close=close,
+        settlement_price=_number(item.get("SETL_PRC")),
         provider_change_point=_number(item.get("CMPPREVDD_PRC")),
         volume=_integer(item.get("ACC_TRDVOL")),
         open_interest=_integer(item.get("ACC_OPNINT_QTY")),
     )
+
+
+def _provider_change_basis(night: KrxFuturesRow, regular: KrxFuturesRow) -> str:
+    """Identify the provider's comparison without changing the DAY-close return.
+
+    The caller has already matched the exact preceding DAY contract. A provider
+    delta may use that row's settlement instead of its close. This explicit
+    distinction fixes a possible rejection cause; it does not diagnose C52's
+    saved response, which must still be inspected independently.
+    """
+    if night.provider_change_point is None:
+        return "NOT_PROVIDED"
+    if math.isclose(night.provider_change_point, night.close - regular.close,
+                    rel_tol=0, abs_tol=1e-8):
+        return "PRECEDING_DAY_CLOSE"
+    settlement = regular.settlement_price
+    if (settlement is not None and math.isfinite(settlement) and settlement > 0
+            and math.isclose(night.provider_change_point, night.close - settlement,
+                             rel_tol=0, abs_tol=1e-8)):
+        return "PRECEDING_DAY_SETTLEMENT"
+    return "CONFLICT"
 
 
 def _maturity_key(value: str) -> tuple[int, int]:
@@ -377,13 +402,7 @@ def parse_krx_futures_payloads(
                     reference_date.month,
                 ):
                     continue
-                derived_change = night.close - regular[0].close
-                if night.provider_change_point is not None and not math.isclose(
-                    night.provider_change_point,
-                    derived_change,
-                    rel_tol=0,
-                    abs_tol=1e-8,
-                ):
+                if _provider_change_basis(night, regular[0]) == "CONFLICT":
                     result.warnings.append(
                         f"{product}:{session_date}:provider change conflicts with "
                         "verified NIGHT/preceding-DAY prices"
@@ -399,6 +418,7 @@ def parse_krx_futures_payloads(
             _, regular, night = min(candidates, key=lambda item: item[0])
             point_change = night.close - regular.close
             provider_change_match = None if night.provider_change_point is None else True
+            settlement_basis = _provider_change_basis(night, regular) == "PRECEDING_DAY_SETTLEMENT"
             observations.append(
                 KrxNightFutureObservation(
                     product=product,
@@ -416,6 +436,8 @@ def parse_krx_futures_payloads(
                     change_pct=round(point_change / regular.close * 100, 8),
                     provider_change_point=night.provider_change_point,
                     provider_change_match=provider_change_match,
+                    provider_change_basis="PRECEDING_DAY_SETTLEMENT" if settlement_basis else None,
+                    reference_settlement_price=regular.settlement_price if settlement_basis else None,
                     night_source_record_id=_source_record_id(night),
                     reference_source_record_id=_source_record_id(regular),
                     night_source_payload_sha256=payload_sha256_by_date.get(session_date),
@@ -464,9 +486,13 @@ def _product_statuses(
         expected_rows = [row for row in nights if row.business_date == expected_session]
         latest = max(nights, key=lambda item: item.business_date, default=None)
         observation = ready.get(product)
+        # A rejected current row can coexist with an accepted older pair. Keep
+        # the raw row's date in its rejection receipt, not the fallback's date.
         returned_date = (
             observation.session_date
-            if observation is not None
+            if observation is not None and observation.session_date == expected_session
+            else expected_rows[0].business_date
+            if expected_rows
             else latest.business_date
             if latest is not None
             else None
@@ -571,13 +597,7 @@ def _product_statuses(
         ]
         conflict = bool(
             matching_day
-            and selected.provider_change_point is not None
-            and not math.isclose(
-                selected.provider_change_point,
-                selected.close - matching_day[0].close,
-                rel_tol=0,
-                abs_tol=1e-8,
-            )
+            and _provider_change_basis(selected, matching_day[0]) == "CONFLICT"
         )
         statuses.append(
             KrxProbeProductStatus(

@@ -13,7 +13,7 @@ Visible night-session change is:
 
 ```text
 completed NIGHT-session price
-- immediately preceding eligible DAY-session close/settlement
+- immediately preceding eligible DAY-session close
 ```
 
 The backend performs the deterministic point and percentage calculations. AI and renderers do not
@@ -49,9 +49,17 @@ overnight trading-date semantics, including weekends, holidays and contract roll
 Provider change fields, same-date DAY/NIGHT pairs, user-observed values, AI corrections and renderer
 calculations are not accepted as repairs when the comparison basis cannot be proved.
 
-When `CMPPREVDD_PRC` is present, it is audit evidence only. The backend still derives the change
-from the two verified prices, then requires the provider field to agree. A conflict suppresses the
-pair. The daily endpoint has no row-level timestamp, so none is invented; ordering comes from the
+When `CMPPREVDD_PRC` is present, it is audit evidence only. The backend still derives the visible
+change from the NIGHT close and preceding DAY close. The provider field must agree either with
+that difference or with NIGHT close minus a positive, finite `SETL_PRC` on the exact same preceding
+DAY row. In the second case, `provider_change_basis=PRECEDING_DAY_SETTLEMENT` and
+`reference_settlement_price` retain the explanation, and the consumer recomputes the provider
+comparison. Settlement is not substituted for the displayed DAY close. A field matching neither
+verified basis still suppresses the pair. Existing DAY-close matches keep their original output shape.
+
+This C53 change fixes a possible comparison rejection; it does not establish why C52 did not
+return a current accepted NIGHT row. That diagnosis uses the original captured responses. The
+daily endpoint has no row-level timestamp, so none is invented; ordering comes from the
 exchange-session/date contract and distinct source row identities.
 
 ## Safety Constraint

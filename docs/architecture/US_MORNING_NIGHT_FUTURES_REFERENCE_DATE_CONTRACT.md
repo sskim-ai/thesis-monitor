@@ -1,5 +1,18 @@
 # US Morning Night Futures Reference Date Contract
 
+## Historical v3 contract — superseded
+
+The text below records the old Run-51 contract. It is not the current runtime
+mapping and must not be used to change C52/C53 dates back to the previous
+business day. The runtime uses `us-morning-night-reference-date-v4-end-date`
+in `app/services/night_futures_session_mapping_service.py`.
+
+C53 preserves that runtime mapping. It reports the required and returned KRX
+reference dates separately. A broker chart's displayed date, a physical session
+end date, and an API `BAS_DD` are not interchangeable labels; changing their
+mapping requires the corresponding original rows, including weekend/holiday
+cases. A screenshot alone does not establish the API's date convention.
+
 Contract: `us-morning-night-reference-date-v3`
 
 For the US morning digest on KST date `D`, the expected KRX night-futures

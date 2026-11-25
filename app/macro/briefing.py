@@ -207,6 +207,8 @@ def market_observation_to_dict(
             "session_freshness",
             "provider_change_point",
             "provider_change_match",
+            "provider_change_basis",
+            "reference_settlement_price",
             "night_source_record_id",
             "reference_source_record_id",
             "night_source_payload_sha256",

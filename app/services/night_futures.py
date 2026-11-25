@@ -176,6 +176,19 @@ def _verified_session_basis(
             abs_tol=1e-8,
         )
     )
+    if "provider_change_basis" in item or "reference_settlement_price" in item:
+        # The displayed return remains NIGHT minus preceding DAY close. Only
+        # the provider's audit delta can use the same DAY row's settlement.
+        settlement = _number(item.get("reference_settlement_price"))
+        provider_cross_check_valid = bool(
+            item.get("provider_change_basis") == "PRECEDING_DAY_SETTLEMENT"
+            and provider_change_match is True
+            and provider_change is not None
+            and current_price is not None
+            and settlement is not None and math.isfinite(settlement) and settlement > 0
+            and math.isclose(provider_change, current_price - settlement,
+                             rel_tol=0, abs_tol=1e-8)
+        )
     valid = bool(
         item.get("session_basis_contract") == NIGHT_FUTURES_SESSION_BASIS_CONTRACT
         and str(item.get("exchange") or "") == "XKRX"

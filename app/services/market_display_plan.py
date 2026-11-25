@@ -22,6 +22,27 @@ US_SECTORS = tuple(k for k, v in MARKET_SYMBOLS.items() if v == 'sector')
 US_MACRO = ('DGS3', 'DGS5', 'DGS10', 'DGS30', 'DFII10', 'T10YIE', 'DCOILWTICO', 'VIXCLS', 'DTWEXBGS')
 
 
+def _night_unavailable_dates_text(ownership):
+    detail = ownership.get('date_only_detail') or {}
+    if detail.get('date_basis') != 'KRX_API_REFERENCE_DATE':
+        return None
+    expected = detail.get('required_krx_reference_date')
+    returned = detail.get('latest_returned_krx_reference_date')
+    try:
+        valid = (isinstance(expected, str) and date.fromisoformat(expected).isoformat() == expected
+            and (returned is None or isinstance(returned, str)
+                and date.fromisoformat(returned).isoformat() == returned and returned <= expected))
+    except ValueError:
+        valid = False
+    if not valid or expected != (ownership.get('observation_clock') or {}).get('expected_reference_date'):
+        return None
+    status = '기준일에 맞는 확정 수치 미확보' if returned == expected else '최신 세션 미확보'
+    return ('한국 야간선물 · KOSPI200\n' + status
+        + '\n필요 KRX 기준일: ' + expected
+        + '\n이번 수집에서 확인한 야간 기준일: ' + (returned or '미확보')
+        + '\n이번 야간 방향 판단에서 제외')
+
+
 class DisplayBinding(BaseModel):
     model_config = ConfigDict(extra='forbid', frozen=True)
     fact_id: str
@@ -355,6 +376,13 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
                 raise ValueError('unavailable_night_display_has_observations')
             add('night', '한국 야간선물', unavailable_text=FAILURE_NOTICES[night_ownership['state']],
                 proof={'night_ownership': night_ownership}, formatter='optional-night-unavailable-note')
+        elif (night_ownership.get('state') == 'UNAVAILABLE_NO_CURRENT_FINAL_ROW'
+                and (date_notice := _night_unavailable_dates_text(night_ownership))):
+            if (night or source.get('night_futures')
+                    or any(f['fact_type'].startswith('night_futures') for f in facts)):
+                raise ValueError('unavailable_night_display_has_observations')
+            add('night', '한국 야간선물', unavailable_text=date_notice,
+                proof={'night_ownership': night_ownership}, formatter='optional-night-date-availability-note')
         else:
             if len(night) > 1:
                 raise ValueError('configured_night_display_ambiguous')

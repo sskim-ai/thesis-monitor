@@ -35,6 +35,37 @@ def require(ok, reason):
         raise ValueError(reason)
 
 
+def _night_availability_dates(telemetry, observations, *, expected, queried_dates):
+    """Describe returned dates without admitting their prices or assuming UI dates."""
+    def known_dates(values):
+        result = []
+        for value in values:
+            if not isinstance(value, str):
+                continue
+            try:
+                parsed = date.fromisoformat(value)
+            except ValueError:
+                continue
+            if parsed.isoformat() == value and value in queried_dates and value <= expected:
+                result.append(value)
+        return result
+
+    # This list includes parsed NIGHT rows even when no same-contract DAY pair
+    # could be selected. Older receipts may only retain paired observations.
+    returned = known_dates(telemetry.get('returned_night_session_dates') or [])
+    source = 'parsed_night_rows'
+    if not returned:
+        returned = known_dates([
+            (row.get('raw_payload') or {}).get('session_date', row.get('session_date'))
+            for row in observations
+        ])
+        source = 'paired_night_observations'
+    return dict(required_krx_reference_date=expected,
+        latest_returned_krx_reference_date=max(returned, default=None),
+        latest_date_source=source if returned else None,
+        date_basis='KRX_API_REFERENCE_DATE')
+
+
 def project_optional_night(night, *, seed, cutoff):
     """Bind optional availability to sealed provenance and native eligibility."""
     value = night['value']
@@ -108,6 +139,9 @@ def project_optional_night(night, *, seed, cutoff):
         source_value_sha256=digest(value), request_provenance_sha256=digest(receipts),
         producer_rows=row_audit, value=None if not eligible else 'NATIVE_CONSUMER_OWNED',
         stale_promoted=False, provider_outage_inferred=False)
+    if state == 'UNAVAILABLE_NO_CURRENT_FINAL_ROW':
+        receipt['date_only_detail'] = _night_availability_dates(
+            telemetry, observations, expected=expected, queried_dates=dates)
     return eligible, receipt
 
 
