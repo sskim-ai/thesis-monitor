@@ -213,6 +213,9 @@ def _record_local_failure(directory, exc, *, config, session, generation=None, b
     from app.services.unified_run_artifacts import durable_json, sha256_bytes
 
     try:
+        from app.services.fresh_financial_stock_owner import BusinessMandatorySourceIncomplete
+
+        source_failure = type(exc) is BusinessMandatorySourceIncomplete
         frames = []
         source_frame = False
         trace = exc.__traceback__
@@ -243,10 +246,12 @@ def _record_local_failure(directory, exc, *, config, session, generation=None, b
         path = directory/'failure-diagnostic.json'
         durable_json(path, dict(exception_class=type(exc).__name__,
             last_application_frame=frames[-1] if frames else None, application_frames=frames[-8:],
-            stable_error_code=error_code if error_code in allowed_codes else None, stage=stage, NO_SEND=True,
+            stable_error_code=(BusinessMandatorySourceIncomplete.code if source_failure
+                else error_code if error_code in allowed_codes else None), stage=stage, NO_SEND=True,
             market=config.market, target_session=session, source_generation=generation,
             code_commit=config.code_commit, runtime_module_sha256=sha256_bytes(Path(__file__).read_bytes()),
-            source_seal_file_sha256=seal_sha, recorded_before_owner_cleanup=before_owner_cleanup), exclusive=True)
+            source_seal_file_sha256=seal_sha, recorded_before_owner_cleanup=before_owner_cleanup,
+            **(dict(source_context=exc.source_context) if source_failure else {})), exclusive=True)
         body = path.read_bytes()
         durable_json(directory/'failure-diagnostic-sha256.json', dict(
             file=path.name, bytes=len(body), sha256=sha256_bytes(body)), exclusive=True)

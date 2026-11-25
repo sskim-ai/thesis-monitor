@@ -15,6 +15,20 @@ from app.services.unified_snapshot_contract import digest, encoded
 from app.services.unified_stock_owner import assemble_stock
 
 
+class BusinessMandatorySourceIncomplete(ValueError):
+    """Carry source identifiers without exposing numeric values or raw payloads."""
+
+    code = 'business_mandatory_source_incomplete'
+
+    def __init__(self, *, market, ticker, mandatory_missing, unregistered_fields):
+        missing = sorted(set(mandatory_missing))
+        self.source_context = dict(market=market, ticker=ticker, mandatory_missing=missing,
+            unregistered_fields=[dict(fact_id=fact_id, field_path=field_path)
+                for fact_id, field_path in sorted({(row['fact_id'], row['field_path'])
+                    for row in unregistered_fields})])
+        super().__init__(self.code + ':' + ','.join(missing))
+
+
 def assemble_onboarding_financial_stock(*, financial_inputs, stock_metadata, generated_at,
                                        technical_context=None):
     """Original raw financial owners for onboarding, without an operating Source.
@@ -291,7 +305,9 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
             _permit=_BUILDER_PERMIT)
     if reported_comparison_business:
         if missing:
-            raise ValueError('business_mandatory_source_incomplete:' + ','.join(sorted(set(missing))))
+            raise BusinessMandatorySourceIncomplete(market=fp['market'], ticker=fp['ticker'],
+                mandatory_missing=missing,
+                unregistered_fields=result['numeric_registry_unregistered'])
         from app.services.reported_business_projection import _BUILDER_PERMIT, issue
         stock['reported_business_projection'] = issue(stock=stock, packet=packet, facts=facts,
             plan=fp, acquisition=fin['acquisition'], projection=projection, selected_owner=selected_owner,

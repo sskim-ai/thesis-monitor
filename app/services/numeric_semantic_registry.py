@@ -1731,6 +1731,12 @@ _FIELD_RULES = (
         "support_zone_price",
         "currency",
     ),
+    NumericFieldRule(
+        ("chart_invalidation",),
+        r"fields\.(?:latest_daily_close|weekly_close)",
+        "chart_close_price",
+        "currency",
+    ),
     NumericFieldRule(("chart_invalidation",), r"fields\.entry", "scenario_entry_price", "currency"),
     NumericFieldRule(("chart_invalidation",), r"fields\.buffer", "chart_price_risk", "currency"),
     NumericFieldRule(
