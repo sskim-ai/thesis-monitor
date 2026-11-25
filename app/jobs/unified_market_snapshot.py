@@ -60,7 +60,7 @@ KR_C42_20261123_TAG = 'kr-20261123-c42b84e7a'
 def _us_full_one_shot_window(tag, config=None):
     configured = getattr(config, 'one_shot', None)
     if configured is not None:
-        if tag != configured.tag or config.market != 'us':
+        if tag != configured.tag or config.market not in ('us', 'kr'):
             raise ValueError('local_one_shot_configuration_tag_mismatch')
         start = configured.scheduled_at.astimezone(KST)
         return start, start + timedelta(minutes=10)
@@ -81,7 +81,7 @@ def _one_shot_deadline(tag, config=None):
 
 def one_shot_scope(market, tag, *, config=None):
     if getattr(config, 'one_shot', None) is not None:
-        if market != 'us' or tag != config.one_shot.tag:
+        if market != config.market or tag != config.one_shot.tag:
             raise ValueError('local_one_shot_configuration_tag_mismatch')
         return False
     if tag is None:
@@ -97,16 +97,17 @@ def one_shot_scope(market, tag, *, config=None):
 
 
 class LocalUsOneShot(ContractModel):
-    """A single prospective US slot in the existing operator configuration."""
-    tag: str = Field(pattern=r'^us-[0-9]{8}-[a-z0-9]{8}$')
+    """A single prospective full-market slot; legacy class name retained."""
+    tag: str = Field(pattern=r'^(?:us|kr)-[0-9]{8}-[a-z0-9]{8}$')
     scheduled_at: datetime
     target_session: date
 
     @model_validator(mode='after')
     def dated_tag(self):
         if (self.scheduled_at.utcoffset() is None
-                or not self.tag.startswith('us-' + self.scheduled_at.astimezone(KST).strftime('%Y%m%d') + '-')
-                or self.tag in US_FULL_20261121_SLOTS):
+                or self.tag.split('-')[1] != self.scheduled_at.astimezone(KST).strftime('%Y%m%d')
+                or self.tag in US_FULL_20261121_SLOTS
+                or self.tag in (KR_RECOVERY_20261123_TAG, KR_C42_20261123_TAG)):
             raise ValueError('local_one_shot_new_dated_slot_required')
         return self
 
@@ -132,8 +133,10 @@ class LocalScheduleConfiguration(ContractModel):
 
     @model_validator(mode='after')
     def us_optional_settings(self):
-        if self.market != 'us' and (self.us_night_policy != 'ORIGINAL_CURRENT_PROBE_ONLY' or self.one_shot is not None):
+        if self.market != 'us' and self.us_night_policy != 'ORIGINAL_CURRENT_PROBE_ONLY':
             raise ValueError('local_schedule_us_optional_settings_scope')
+        if self.one_shot is not None and not self.one_shot.tag.startswith(self.market + '-'):
+            raise ValueError('local_one_shot_configuration_tag_mismatch')
         return self
 
     @model_serializer(mode='wrap')
@@ -483,6 +486,8 @@ def latest_one_shot_us_session(now, *, one_shot_tag=None, config=None):
     from app.services.market_session import us_market_session, _exchange_session_close, NEW_YORK, is_exchange_session_date
     from app.services.unified_market_run import target_session
 
+    if getattr(config, 'one_shot', None) is not None:
+        one_shot_scope('us', one_shot_tag, config=config)
     window = _us_full_one_shot_window(one_shot_tag, config)
     if window:
         local_date = window[0].astimezone(KST).date().isoformat()
@@ -513,6 +518,14 @@ def latest_one_shot_us_session(now, *, one_shot_tag=None, config=None):
 def latest_one_shot_session(market,now, *, one_shot_tag=None, config=None):
     if market=='us':
         return latest_one_shot_us_session(now, one_shot_tag=one_shot_tag, config=config)
+    if market == 'kr' and getattr(config, 'one_shot', None) is not None:
+        from app.services.unified_market_run import target_session
+        one_shot_scope(market, one_shot_tag, config=config)
+        start, _ = _us_full_one_shot_window(one_shot_tag, config)
+        if now.utcoffset() is None or now.astimezone(KST).date() != start.date():
+            return None
+        target = config.one_shot.target_session
+        return target if target_session('kr', start) == target_session('kr', now) == target else None
     if market=='kr' and one_shot_tag in (KR_RECOVERY_20261123_TAG, KR_C42_20261123_TAG):
         from app.services.unified_market_run import target_session
         if now.utcoffset() is None or now.astimezone(KST).date().isoformat()!='2026-11-23':
