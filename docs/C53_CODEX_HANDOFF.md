@@ -6,7 +6,7 @@
 
 - 저장소: `sskim-ai/thesis-monitor`
 - 브랜치: `codex/c53-night-basis-diagnosis-20261125`
-- 부모: C52 `97aff9d75f924e74a6f8c909b183532e5df30715`
+- 기준: C52 `97aff9d75f924e74a6f8c909b183532e5df30715`
 - 검증 커밋: 채팅으로 전달된 **C53 전체 40자 SHA**. 이 문서에 자기 자신의 SHA를 하드코딩하지 않는다.
 - 한국 16:00 C51, 미국 정기 OFF, 종료된 미국 C52와 그 사후 확인의 현재 상태를 이어받는다. 이번 검증을 위해 운영 핀·예약·원래 terminal을 바꾸지 않는다.
 
@@ -27,11 +27,11 @@
 
 ```bash
 git -C "$C53_REPO" fetch origin codex/c53-night-basis-diagnosis-20261125
-git -C "$C53_REPO" merge-base --is-ancestor "$C53_COMMIT" origin/codex/c53-night-basis-diagnosis-20261125
+git -C "$C53_REPO" merge-base --is-ancestor "$C53_COMMIT" FETCH_HEAD
 git -C "$C53_REPO" worktree add --detach "$C53_WORKTREE" "$C53_COMMIT"
 git -C "$C53_WORKTREE" rev-parse HEAD
 git -C "$C53_WORKTREE" status --short
-git -C "$C53_WORKTREE" diff --check "$C53_COMMIT^" "$C53_COMMIT"
+git -C "$C53_WORKTREE" diff --check 97aff9d75f924e74a6f8c909b183532e5df30715 "$C53_COMMIT"
 ```
 
 C53 작업트리에서 아래 변경 경계만 한 번 확인한다.
