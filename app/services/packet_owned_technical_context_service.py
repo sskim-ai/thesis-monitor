@@ -134,25 +134,53 @@ def build_native_packet_context(*, view, session, as_of, acquisition=None):
         raise ValueError('typed_provider_native_view_required')
     view.verify()
     quality={}
+    monitoring = view.allowed_use == 'MONITORING_TECHNICAL'
     for tf,p in view.periods.items():
         available=p.status=='AVAILABLE'
+        current = monitoring and available and (tf != 'daily' or p.completed_as_of == view.cutoff)
+        stale = monitoring and available and tf == 'daily' and not current
+        reasons = (*p.reasons, *(() if monitoring else ('DATED_TECHNICAL_ONLY_NO_CURRENT_PRICE',)),
+            *(('daily_last_completed_session_mismatch',) if stale else ()))
         quality[TIMEFRAME_KEYS[tf]]=TimeframeTechnicalQuality(timeframe=tf,
             status=TechnicalContextStatus.PARTIAL_SAFE if available else TechnicalContextStatus.INVALID if p.status=='INVALID' else TechnicalContextStatus.UNAVAILABLE,
-            freshness_state=TechnicalFreshnessState.TIMEFRAME_CURRENT if available else TechnicalFreshnessState.UNAVAILABLE,
+            freshness_state=(TechnicalFreshnessState.STALE if stale else TechnicalFreshnessState.CURRENT
+                if current and tf == 'daily' else TechnicalFreshnessState.TIMEFRAME_CURRENT
+                if available else TechnicalFreshnessState.UNAVAILABLE),
             last_completed_bar=p.completed_as_of,bar_count=p.completed_count,final_bar_count=p.completed_count,
+            expected_completed_bar=view.cutoff if monitoring and tf == 'daily' else None,
             feature_count=sum(q=='PROVIDER_NATIVE' for q in p.indicator_quality.values()),
-            usable_for_current_reasoning=False,reasons=(*p.reasons,'DATED_TECHNICAL_ONLY_NO_CURRENT_PRICE'))
+            safe_feature_count=sum(q=='PROVIDER_NATIVE' for q in p.indicator_quality.values()) if monitoring else 0,
+            usable_for_current_reasoning=current,reasons=reasons)
     available=any(p.status=='AVAILABLE' for p in view.periods.values())
     return PacketOwnedTechnicalContext(contract='packet-owned-native-technical-context-v2',
         technical_context_id='native-technical:'+view.view_sha256[:24],ticker=view.provider_code,market=view.market,
         session=session,as_of=as_of,source_version=view.contract,currency='KRW' if view.market=='kr' else 'USD',
         security_identity=view.provider_code,status=TechnicalContextStatus.PARTIAL_SAFE if available else TechnicalContextStatus.UNAVAILABLE,
-        freshness_state=TechnicalFreshnessState.TIMEFRAME_CURRENT if available else TechnicalFreshnessState.UNAVAILABLE,
+        freshness_state=(TechnicalFreshnessState.CURRENT if monitoring and quality.get('D')
+            and quality['D'].usable_for_current_reasoning else TechnicalFreshnessState.TIMEFRAME_CURRENT
+            if available else TechnicalFreshnessState.UNAVAILABLE),
         last_completed_bar={TIMEFRAME_KEYS[tf]:p.completed_as_of for tf,p in view.periods.items()},
         bar_counts={TIMEFRAME_KEYS[tf]:p.completed_count for tf,p in view.periods.items()},quality=quality,
         raw_bar_fingerprint=view.source_hash,feature_fingerprint=view.view_sha256,
         acquisition=OhlcvAcquisitionTelemetry.model_validate(acquisition or {}),native_view=view,
-        cautions=('PROVIDER_NATIVE_FORMULAS_NOT_LEGACY_WILDER','DATED_TECHNICAL_ONLY_NO_CURRENT_PRICE'))
+        cautions=('PROVIDER_NATIVE_FORMULAS_NOT_LEGACY_WILDER',
+            *(() if monitoring else ('DATED_TECHNICAL_ONLY_NO_CURRENT_PRICE',))))
+
+
+def unavailable_native_context(context, *, reason):
+    """Keep the owned source for audit while applying an existing chart denial."""
+    if context.native_view is None or context.features is not None:
+        raise ValueError('native_context_required')
+    quality = {key: value.model_copy(update=dict(
+        status=TechnicalContextStatus.UNAVAILABLE,
+        freshness_state=TechnicalFreshnessState.UNAVAILABLE,
+        usable_for_current_reasoning=False, reasons=(*value.reasons, reason)))
+        for key, value in context.quality.items()}
+    identity = _canonical_sha(dict(native=context.native_view.view_sha256, reason=reason))
+    return context.model_copy(update=dict(technical_context_id='native-technical:unavailable:' + identity[:24],
+        quality=quality, status=TechnicalContextStatus.UNAVAILABLE,
+        freshness_state=TechnicalFreshnessState.UNAVAILABLE,
+        failure_reason=reason, cautions=(*context.cautions, reason)))
 
 
 def _canonical_sha(value: object) -> str:

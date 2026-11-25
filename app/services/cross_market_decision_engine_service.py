@@ -775,8 +775,9 @@ def build_decision_evidence_packet(
             raise ValueError('native_evidence_identity_or_date_mismatch')
     dated_available = sorted(tf for tf,p in dated_native.periods.items()
         if p.status == 'AVAILABLE') if dated_native is not None else []
+    monitoring_native = dated_native is not None and dated_native.allowed_use == 'MONITORING_TECHNICAL'
     dated_scope_only = bool(dated_available and technical_context.status == 'PARTIAL_SAFE'
-        and not technical_context.failure_reason)
+        and not technical_context.failure_reason and not monitoring_native)
     usable_timeframes = {"daily", "weekly", "monthly"}
     if technical_context is not None:
         usable_timeframes = {
@@ -832,6 +833,8 @@ def build_decision_evidence_packet(
         for timeframe, period in native.periods.items():
             if period.status != 'AVAILABLE':
                 continue
+            if monitoring_native and timeframe not in usable_timeframes:
+                continue
             for field, value in period.indicators.items():
                 if period.indicator_quality[field] != 'PROVIDER_NATIVE':
                     continue
@@ -839,7 +842,10 @@ def build_decision_evidence_packet(
                     ref_id='native:'+_canonical_sha([period.source_hash,timeframe,field]),
                     category=EvidenceCategory.TECHNICAL_FEATURE,
                     label=f'{timeframe}:provider-native:{field}',
-                    statement=f'Provider native {field}; {native.indicator_schema}; dated technical only, not a legacy formula alias.',
+                    statement=(f'Provider native {field}; {native.indicator_schema}; '
+                        'completed-bar technical context for entry assessment; '
+                        'provider formula and value preserved.' if monitoring_native else
+                        f'Provider native {field}; {native.indicator_schema}; dated technical only, not a legacy formula alias.'),
                     as_of=period.completed_as_of,value=str(value),
                     source_ref=f'technical_context.{technical_context.technical_context_id}.native.{timeframe}.{field}',
                     numeric_prose_eligible=(native.provider == 'ohlcv_analyst'

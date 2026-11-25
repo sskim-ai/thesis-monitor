@@ -141,41 +141,52 @@ def historical_only_roles(roles, *, cutoff):
     return result
 
 
-def materialize(*, projection, roles, ticker, market, cutoff, observed_at):
+def materialize(*, projection, roles, ticker, market, cutoff, observed_at, native_indicators=None):
     if projection.ticker != ticker or market != "us" or projection.target_session != str(cutoff):
         raise ValueError("completed_close_component_identity_mismatch")
     return materialize_price_context(current_price=projection.current_price,
         projection_ref=projection.projection_sha256, compatibility=projection.technical_compatibility,
-        roles=roles, ticker=ticker, market=market, cutoff=cutoff, observed_at=observed_at)
+        roles=roles, ticker=ticker, market=market, cutoff=cutoff, observed_at=observed_at,
+        native_indicators=native_indicators)
 
 
 def materialize_price_context(*, current_price, projection_ref, compatibility,
-                              roles, ticker, market, cutoff, observed_at):
+                              roles, ticker, market, cutoff, observed_at, native_indicators=None):
     """Shared chart isolation; None is a typed caller's unavailable price only."""
     from app.services.unified_stock_anomaly_scope import materialize_source_components
     from app.services.current_effective_technical import project as effective
-    from app.services.packet_owned_technical_context_service import build_packet_owned_technical_context
+    from app.services.packet_owned_technical_context_service import (
+        PacketOwnedTechnicalContext, build_packet_owned_technical_context, unavailable_native_context,
+    )
     view = historical_only_roles(roles, cutoff=cutoff)
     components = materialize_source_components(ticker=ticker, market=market, cutoff=cutoff,
-        observed_at=observed_at, roles=view)
+        observed_at=observed_at, roles=view, native_indicators=native_indicators)
     for consumers in components["role_consumer_matrix"].values():
         for consumer in consumers:
             consumer.update(eligible=False, latest_row_valid=False, reason=TECHNICAL_DENIAL)
-    periods = {}
-    for tf in ("daily", "weekly", "monthly"):
-        states = {r["date"]: r["bar_state"] for r in components["analysis_view_finality"][tf]["rows"]}
-        periods[tf] = [{**r, "bar_state": states[str(r["date"])[:10]]} if str(r["date"])[:10] in states else r
-            for r in view["adjusted_" + tf]]
-        components["features"][tf].update(facts=[], current_role_gate=False, suppression_reason=TECHNICAL_DENIAL)
-    context = build_packet_owned_technical_context(ticker=ticker, market=market, session="closed",
-        as_of=observed_at, periods=periods, cutoff=cutoff, expected_daily_completed=str(cutoff),
-        source="sealed_r2b0_kiwoom", source_version="one-shot-stock-source-acquisition-v1")
+    if native_indicators is not None:
+        context = unavailable_native_context(
+            PacketOwnedTechnicalContext.model_validate(components["native_technical_context"]),
+            reason=TECHNICAL_DENIAL)
+        components.update(native_technical_context=context.model_dump(mode="json"),
+            native_technical_denial=TECHNICAL_DENIAL, technical_status=context.status.value)
+    else:
+        periods = {}
+        for tf in ("daily", "weekly", "monthly"):
+            states = {r["date"]: r["bar_state"] for r in components["analysis_view_finality"][tf]["rows"]}
+            periods[tf] = [{**r, "bar_state": states[str(r["date"])[:10]]} if str(r["date"])[:10] in states else r
+                for r in view["adjusted_" + tf]]
+            components["features"][tf].update(facts=[], current_role_gate=False, suppression_reason=TECHNICAL_DENIAL)
+        context = build_packet_owned_technical_context(ticker=ticker, market=market, session="closed",
+            as_of=observed_at, periods=periods, cutoff=cutoff, expected_daily_completed=str(cutoff),
+            source="sealed_r2b0_kiwoom", source_version="one-shot-stock-source-acquisition-v1")
+        context = effective(context, components["features"])
     components.update(source_rows_sha256=digest(roles), current_price=current_price,
         current_price_eligible=current_price is not None, mandatory_current_price_failure=False,
         completed_close_projection_sha256=projection_ref,
         latest_chart_close_disqualification=CHART_DENIAL,
         technical_compatibility=compatibility,
-        technical_context_id=effective(context, components["features"]).technical_context_id)
+        technical_context_id=context.technical_context_id)
     components["component_projection_sha256"] = None
     components["component_projection_sha256"] = digest(components)
     return components
@@ -183,7 +194,7 @@ def materialize_price_context(*, current_price, projection_ref, compatibility,
 
 def bind_technical_input(technical, *, source, artifacts, security):
     """Attach declared supplement bytes without changing any inherited receipt."""
-    from app.services.unified_stock_acquisition import decode_owned_role
+    from app.services.unified_stock_acquisition import decode_owned_role, decode_native_indicators
     tech = dict(technical)
     overlap = set(artifacts) & set(tech["artifacts"])
     if overlap:
@@ -199,8 +210,12 @@ def bind_technical_input(technical, *, source, artifacts, security):
     daily = next(r for r in reads if r.role == "adjusted_daily")
     projection = project(source=source, plan=plan, read=daily, security=security, artifact_reader=read_artifact)
     roles = {r.role: decode_owned_role(plan, r, tech["receipts"][r.role], read_artifact) for r in reads}
+    native = {r.timeframe: value for r in reads if r.role.startswith('adjusted_')
+        if (value := decode_native_indicators(r, tech['receipts'][r.role], read_artifact,
+            required='native_technical_context' in tech['components'])) is not None}
     tech["components"] = materialize(projection=projection, roles=roles, ticker=daily.subject,
-        market=daily.market, cutoff=date.fromisoformat(daily.latest_completed_session), observed_at=plan.frozen_at.isoformat())
+        market=daily.market, cutoff=date.fromisoformat(daily.latest_completed_session), observed_at=plan.frozen_at.isoformat(),
+        native_indicators=native or None)
     tech["completed_close_source"] = deepcopy(source)
     tech["expected_hashes"] = dict(tech["expected_hashes"], components=digest(tech["components"]),
         completed_close_source=digest(source))

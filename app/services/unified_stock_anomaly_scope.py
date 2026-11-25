@@ -181,7 +181,8 @@ def role_consumers(rows: list[dict], *, role: str, timeframe: str, cutoff: date,
 
 def materialize_source_components(*, ticker: str, market: str, cutoff: date,
                                  observed_at: str, roles: dict[str, list[dict]],
-                                 completed_session: bool = False) -> dict:
+                                 completed_session: bool = False,
+                                 native_indicators: dict | None = None) -> dict:
     """Actual typed feature projection, without inventing a financial/Core owner.
 
     The complete stock adapter has not been implemented by R2A-R5/R2B0. This
@@ -223,6 +224,46 @@ def materialize_source_components(*, ticker: str, market: str, cutoff: date,
             "rows": [{"date": b.date, "bar_state": b.bar_state,
                 "period_start": b.period_start, "period_end": b.period_end,
                 "calendar": b.market_calendar} for b in native]}
+    if native_indicators is not None:
+        from app.services.provider_native_technical import build_owned_provider_native_view
+        from app.services.packet_owned_technical_context_service import build_native_packet_context
+        native = build_owned_provider_native_view(ticker=ticker, market=market, periods=periods,
+            native_indicators=native_indicators, cutoff=cutoff)
+        context = build_native_packet_context(view=native, session="closed", as_of=observed_at)
+        for tf, period in native.periods.items():
+            usable = context.quality[{"daily": "D", "weekly": "W", "monthly": "M"}[tf]].usable_for_current_reasoning
+            matrix["adjusted_" + tf].append(dict(consumer="provider_native_indicators",
+                owner="ohlcv_analyst", selection="original indicators on the selected completed provider row",
+                required_fields=["date", "indicators"], requirement="OPTIONAL_COMPONENT",
+                selected_dates=(period.completed_as_of,) if period.completed_as_of else (),
+                dependency_span=None, existing_row_integrity_prerequisite=True,
+                source_integrity=period.status, source_fingerprint=period.source_hash,
+                row_count=period.returned_count, latest_date=period.completed_as_of,
+                latest_row_valid=usable, anomalies=[], eligible=usable, native_indicators=True,
+                reason="VALID" if usable else ";".join(period.reasons) or "NATIVE_INDICATORS_UNAVAILABLE"))
+        if digest(raw_roles) != before:
+            raise ValueError("source_rows_mutated")
+        components = {"contract": CONTRACT, "ticker": ticker, "market": market,
+            "cutoff": cutoff.isoformat(), "source_rows_sha256": before,
+            "current_price": roles["adjusted_daily"][-1]["close"] if current["eligible"] else None,
+            "current_price_eligible": current["eligible"], "role_consumer_matrix": matrix,
+            "technical_context_id": context.technical_context_id,
+            "native_technical_context": context.model_dump(mode="json"),
+            "native_indicator_artifacts_sha256": digest(native_indicators),
+            "technical_status": context.status.value, "features": None,
+            "analysis_view_finality": finality,
+            "complete_stock_packet": False, "stock_packet_sha256": None,
+            "materializer_status": "BLOCKED_COMPLETE_STOCK_OWNER_NOT_IMPLEMENTED",
+            "observed_business_union_status": "NOT_REACHED_NO_BOUND_CLASS_C_INPUT",
+            "mandatory_current_price_failure": not current["eligible"],
+            "component_projection_sha256": None}
+        if eligible_receipt is not None:
+            components["completed_session_bar_set"] = eligible_receipt
+            components["technical_input_sha256"] = digest(periods)
+            components["technical_fact_set_sha256"] = digest(
+                {tf: period.indicators for tf, period in native.periods.items()})
+        components["component_projection_sha256"] = digest(components)
+        return components
     context = build_packet_owned_technical_context(ticker=ticker, market=market, session="closed",
         as_of=observed_at, periods=periods, cutoff=cutoff, expected_daily_completed=cutoff.isoformat(),
         source="sealed_r2b0_kiwoom", source_version="one-shot-stock-source-acquisition-v1")

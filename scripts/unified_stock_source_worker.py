@@ -8,8 +8,11 @@ It captures original response bytes before the owner parses them.
 from __future__ import annotations
 
 import argparse
+from copy import deepcopy
 from datetime import datetime, timezone
 import hashlib
+import importlib
+import inspect
 import json
 import os
 from pathlib import Path
@@ -54,6 +57,71 @@ def now():
 
 
 SECRET = re.compile(r"token|password|secret|credential|api.?key|authorization|chat.?id", re.I)
+NATIVE_INDICATOR_CONTRACT = "provider-native-stock-indicators-v1"
+NATIVE_INDICATOR_SCHEMA = "ohlcv-analyst-native-38-v1"
+NATIVE_INDICATOR_LIMIT = 30
+
+
+def _indicator_function_identity(function):
+    """Identify the function actually imported, including a shared Screener engine."""
+    source = inspect.getsourcefile(function)
+    return {"module": function.__module__,
+            "source_sha256": sha(Path(source).read_bytes()) if source else None}
+
+
+def native_indicator_projection(bars, entry, normalized_sha256, *, engine=None):
+    """Use the original owner's functions once, on the full captured history.
+
+    This runs inside the existing isolated OHLCV owner. Raw provider artifacts
+    remain unchanged. The last 30 indicator rows match the service's bounded
+    output convention; calculation history is never trimmed or segmented.
+    Missing/calculation-failed technical data never invokes TM indicator math.
+    """
+    result = dict(contract=NATIVE_INDICATOR_CONTRACT, entry_id=entry["entry_id"],
+        source_normalized_sha256=normalized_sha256, provider="ohlcv_analyst",
+        indicator_schema=NATIVE_INDICATOR_SCHEMA, engine={},
+        calculation_row_count=len(bars), status="UNAVAILABLE", reason=None, rows=[])
+    try:
+        ordered = sorted(bars, key=lambda row: str(row["date"]))
+        if not ordered:
+            result["reason"] = "SOURCE_ROWS_UNAVAILABLE"
+            return result
+        if any("indicators" in row for row in ordered):
+            # A completed provider response already owns these values. Even an
+            # explicit null stays missing instead of triggering a recalculation.
+            result["engine"] = {"mode": "PROVIDER_SUPPLIED"}
+            rows = [{"date": str(row["date"]), "indicators": deepcopy(row["indicators"])}
+                    for row in ordered[-NATIVE_INDICATOR_LIMIT:]
+                    if isinstance(row.get("indicators"), dict)]
+            encoded(rows)
+            result.update(rows=rows, status="AVAILABLE" if rows else "UNAVAILABLE",
+                          reason=None if rows else "PROVIDER_INDICATORS_UNAVAILABLE")
+            return result
+        if engine is None:
+            engine = importlib.import_module("app.indicators.technical")
+        result["engine"] = dict(calculator=_indicator_function_identity(engine.add_indicators),
+                                serializer=_indicator_function_identity(engine.indicator_dict))
+        for name in ("INDICATOR_SCHEMA", "INDICATOR_SCHEMA_VERSION", "INDICATOR_VERSION"):
+            version = getattr(engine, name, None)
+            if isinstance(version, str) and version:
+                result["indicator_schema"] = version
+                break
+        import pandas as pd
+
+        frame = engine.add_indicators(pd.DataFrame(ordered).reset_index(drop=True))
+        if (len(frame) != len(ordered)
+                or list(frame["date"].astype(str)) != [str(row["date"]) for row in ordered]):
+            raise ValueError("native_indicator_row_identity_changed")
+        rows = [{"date": str(row["date"]), "indicators": engine.indicator_dict(row)}
+                for _, row in frame.tail(NATIVE_INDICATOR_LIMIT).iterrows()]
+        # Original serializers clean nonfinite numbers to null. Do not repair or
+        # round their values; a broken serializer becomes explicit unavailability.
+        encoded(rows)
+        result.update(status="AVAILABLE", rows=rows)
+    except Exception as exc:
+        result.update(status="UNAVAILABLE", rows=[],
+                      reason="ORIGINAL_INDICATOR_ENGINE_ERROR_" + type(exc).__name__)
+    return result
 
 
 def contains_secret_field(value):
@@ -256,6 +324,12 @@ def acquire(plan, root, owner, settings, *, flow_reads=()):
                 path = f"role-{ordinal:03d}.normalized.json"
                 save(root / path, data)
                 receipt.update(status="CAPTURED", normalized_artifact=path, normalized_sha256=sha(data))
+                if entry["adjusted"]:
+                    projection = native_indicator_projection(bars, entry, receipt["normalized_sha256"])
+                    indicator_path = f"role-{ordinal:03d}.native-indicators.json"
+                    indicator_data = encoded(projection)
+                    save(root / indicator_path, indicator_data)
+                    receipt["native_indicators"] = dict(artifact=indicator_path, sha256=sha(indicator_data))
             except Exception as exc:
                 # Exact error identity and original data error bodies are retained;
                 # arbitrary exception messages can contain auth values or URLs.

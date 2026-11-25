@@ -1,5 +1,6 @@
 """Closed B2 v2 valuation judgments and independent backend timing, offline only."""
 from copy import deepcopy
+import re
 
 from app.services import new_buyer_base_contract as v1
 from app.services import new_buyer_v2_policy as policy
@@ -42,6 +43,64 @@ KIS FY1 is dated house research, not consensus or NTM. Preserve source caveats.
 Return only the closed schema. No free prose or newly calculated source facts.
 This request is default-OFF shadow with no persistence or delivery authority.'''
 
+NATIVE_TECHNICAL_PROMPT = '''Also provide technical_assessment from native_technical_context as an independent
+entry-context interpretation. SUPPORTIVE, MIXED, ADVERSE and INSUFFICIENT are model
+interpretations, not source facts or changes to fundamental attractiveness.
+Use the supplied provider fields, formula semantics, timeframes and bar dates.
+Do not recalculate indicators, replace their formulas, invent universal thresholds
+or treat unavailable values as zero. Short history alone does not invalidate the
+other supplied values. Cite the exact supplied native evidence_refs you actually
+used; explain agreement, conflict or limitations in a short Korean qualitative
+reason. INSUFFICIENT must describe a material interpretive gap, not boilerplate
+scarcity merely because a long-window field is missing. Do not repeat numeric
+values or create new numeric facts in the reason; exact indicator names such as
+RSI14 and MA144 are permitted. No tools or additional source requests.
+Keep timing_context's selected zone, price relation and evidence unchanged.
+Technical weakness may require entry confirmation, but cannot overturn fundamental
+ATTRACTIVE, business direction, Holder or the valuation judgment. This assessment
+is neither fair value nor a standalone buy instruction. Its short reason is the
+only additional prose field; return the closed schema.'''
+
+
+def prompt_for(model_input):
+    if 'native_technical_context' not in model_input:
+        return PROMPT
+    return ('Judge NewBuyer fundamental/valuation attractiveness and, separately, the supplied native technical evidence.'
+            + PROMPT[PROMPT.index('\n'):] + '\n' + NATIVE_TECHNICAL_PROMPT)
+
+
+def technical_refs(model_input):
+    native = model_input.get('native_technical_context', {})
+    return sorted({ref for period in native.get('periods', {}).values()
+                   for field, ref in period.get('evidence_refs', {}).items()
+                   if period.get('indicators', {}).get(field) is not None
+                   and period.get('indicator_quality', {}).get(field) == 'PROVIDER_NATIVE'})
+
+
+def technical_assessment_schema(model_input):
+    available = technical_refs(model_input)
+    return v1.obj(dict(
+        state=dict(type='string', enum=['SUPPORTIVE', 'MIXED', 'ADVERSE', 'INSUFFICIENT'])
+              if available else dict(const='INSUFFICIENT'),
+        evidence_refs=v1.refs(available, 1) if available else
+                      dict(const=[], items=dict(type='string')),
+        reason=dict(type='string', minLength=1, maxLength=240) if available else
+               dict(const='활용 가능한 원본 지표가 없어 기술 해석을 보류합니다.')))
+
+
+def technical_reason(text, refs):
+    """Use the existing prose boundary, allowing digits only in provider names."""
+    from app.services.detailed_stock_message_service import _safe_prose
+    from app.services.provider_native_technical import INDICATORS
+
+    names = '|'.join(re.escape(name) for name in sorted(INDICATORS, key=len, reverse=True))
+    prose = re.sub(r'(?<![A-Za-z0-9_])(?:' + names + r')(?![A-Za-z0-9_])', '', text,
+                   flags=re.IGNORECASE)
+    _safe_prose(prose, refs)
+    if re.search(r'\d|[\r\n]', prose):
+        raise ValueError('native_technical_unbound_number_or_multiline_reason')
+    return text
+
 
 def states(model_input):
     state = model_input['valuation_evaluability']['evaluability_state']
@@ -78,11 +137,14 @@ def output_schema(model_input):
             business_evidence_refs=dict(const=[]) if unresolved else v1.refs(business),
             all_metrics_unusable_proof_ref=dict(const=model_input['all_metrics_unusable_proof_ref']),
         ))
-        branches.append(v1.obj(dict(contract=dict(const=CONTRACT),input_sha256=dict(const=digest(model_input)),
+        fields = dict(contract=dict(const=CONTRACT),input_sha256=dict(const=digest(model_input)),
             valuation_context=valuation, timing_context=dict(const=model_input['timing_context']),
             new_buyer=dict(const=row['stance']),reason_class=dict(const=row['reason']),
             reason_evidence_refs=v1.refs(facts,1) if evidence is None else dict(const=evidence),
-            active_risk_refs=dict(const=model_input['active_risk_refs']))))
+            active_risk_refs=dict(const=model_input['active_risk_refs']))
+        if 'native_technical_context' in model_input:
+            fields['technical_assessment'] = technical_assessment_schema(model_input)
+        branches.append(v1.obj(fields))
     return dict(anyOf=branches)
 
 
@@ -98,6 +160,15 @@ def validate_output(output, model_input):
     if output['reason_class'] in ('VALUATION_NEUTRAL','VALUATION_BURDENSOME'):
         if set(output['reason_evidence_refs']) != set(val['valuation_evidence_refs']):
             errors.append('V2_REASON_VALUATION_REF_MISMATCH')
+    if 'native_technical_context' in model_input:
+        technical = output['technical_assessment']
+        refs = technical['evidence_refs']
+        if len(refs) != len(set(refs)):
+            errors.append('DUPLICATE_EXACT_TECHNICAL_REF')
+        try:
+            technical_reason(technical['reason'], refs)
+        except ValueError:
+            errors.append('NATIVE_TECHNICAL_REASON_UNBOUND')
     return dict(status='FAIL' if errors else 'PASS',errors=errors,
         model_judgment_observed=False,economic_correctness_proven=False,
         new_source_facts=False,scope='NEWBUYER_V2_OFFLINE_SHADOW_ONLY')
@@ -106,8 +177,11 @@ def validate_output(output, model_input):
 def presentation_plan(output, model_input):
     if validate_output(output,model_input)['status'] != 'PASS':
         raise ValueError('v2_invalid_presentation_input')
-    return dict(contract=CONTRACT,fundamental_attractiveness=output['new_buyer'],
+    plan = dict(contract=CONTRACT,fundamental_attractiveness=output['new_buyer'],
         entry_timing=deepcopy(output['timing_context']),
         valuation_judgment=output['valuation_context']['state'],
         independent_axes=True,bare_buy_label_allowed=False,production_delivery_allowed=False,
         numeric_owner='EXISTING_BACKEND_VALUATION_RENDERER')
+    if 'technical_assessment' in output:
+        plan['technical_assessment'] = deepcopy(output['technical_assessment'])
+    return plan

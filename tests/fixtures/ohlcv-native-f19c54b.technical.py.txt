@@ -1,0 +1,134 @@
+from __future__ import annotations
+
+import math
+from typing import Any
+
+import pandas as pd
+
+INDICATOR_COLUMNS = [
+    "MA33",
+    "MA111",
+    "MA144",
+    "MA222",
+    "MA288",
+    "BB_36_1.541_MID",
+    "BB_36_1.541_UPPER",
+    "BB_36_1.541_LOWER",
+    "BB_50_2.25_MID",
+    "BB_50_2.25_UPPER",
+    "BB_50_2.25_LOWER",
+    "BB_60_1.541_MID",
+    "BB_60_1.541_UPPER",
+    "BB_60_1.541_LOWER",
+    "BB_144_1.541_MID",
+    "BB_144_1.541_UPPER",
+    "BB_144_1.541_LOWER",
+    "BB_288_1.541_MID",
+    "BB_288_1.541_UPPER",
+    "BB_288_1.541_LOWER",
+    "BB_300_3.33_MID",
+    "BB_300_3.33_UPPER",
+    "BB_300_3.33_LOWER",
+    "ENV_200_20_LOWER",
+    "ENV_200_20_UPPER",
+    "RSI14",
+    "MACD",
+    "MACD_SIGNAL",
+    "MACD_HIST",
+    "MACD_OSC_20_40_9",
+    "MACD_OSC_40_80_9",
+    "MACD_OSC_80_160_9",
+    "MACD_OSC_320_640_9",
+    "VOLUME_MA20",
+    "VOLUME_RATIO_20",
+    "RETURN_20D",
+    "RETURN_60D",
+    "DRAWDOWN_52W",
+]
+
+
+def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
+    result = df.copy()
+    if result.empty:
+        return result
+
+    close = pd.to_numeric(result["close"], errors="coerce")
+    volume = pd.to_numeric(result["volume"], errors="coerce")
+
+    for window in [33, 111, 144, 222, 288]:
+        result[f"MA{window}"] = close.rolling(window=window, min_periods=window).mean()
+
+    for window, mult in [
+        (36, 1.541),
+        (50, 2.25),
+        (60, 1.541),
+        (144, 1.541),
+        (288, 1.541),
+        (300, 3.33),
+    ]:
+        mean = close.rolling(window=window, min_periods=window).mean()
+        std = close.rolling(window=window, min_periods=window).std()
+        prefix = f"BB_{window}_{_fmt(mult)}"
+        result[f"{prefix}_MID"] = mean
+        result[f"{prefix}_UPPER"] = mean + std * mult
+        result[f"{prefix}_LOWER"] = mean - std * mult
+
+    env_base = close.rolling(window=200, min_periods=200).mean()
+    result["ENV_200_20_LOWER"] = env_base * 0.8
+    result["ENV_200_20_UPPER"] = env_base * 1.2
+    result["RSI14"] = rsi(close, 14)
+    macd_line, signal, hist = macd(close)
+    result["MACD"] = macd_line
+    result["MACD_SIGNAL"] = signal
+    result["MACD_HIST"] = hist
+    for fast, slow, signal_window in [(20, 40, 9), (40, 80, 9), (80, 160, 9), (320, 640, 9)]:
+        _, _, oscillator = macd(close, fast=fast, slow=slow, signal=signal_window)
+        result[f"MACD_OSC_{fast}_{slow}_{signal_window}"] = oscillator
+    result["VOLUME_MA20"] = volume.rolling(window=20, min_periods=1).mean()
+    result["VOLUME_RATIO_20"] = volume / result["VOLUME_MA20"].replace(0, pd.NA)
+    result["RETURN_20D"] = close.pct_change(20) * 100
+    result["RETURN_60D"] = close.pct_change(60) * 100
+    rolling_high = close.rolling(window=252, min_periods=1).max()
+    result["DRAWDOWN_52W"] = (close / rolling_high - 1) * 100
+    return result
+
+
+def rsi(close: pd.Series, window: int = 14) -> pd.Series:
+    delta = close.diff()
+    gain = delta.clip(lower=0).rolling(window=window, min_periods=window).mean()
+    loss = (-delta.clip(upper=0)).rolling(window=window, min_periods=window).mean()
+    rs = gain / loss.replace(0, pd.NA)
+    return 100 - (100 / (1 + rs))
+
+
+def macd(
+    close: pd.Series,
+    fast: int = 12,
+    slow: int = 26,
+    signal: int = 9,
+) -> tuple[pd.Series, pd.Series, pd.Series]:
+    ema_fast = close.ewm(span=fast, adjust=False).mean()
+    ema_slow = close.ewm(span=slow, adjust=False).mean()
+    macd_line = ema_fast - ema_slow
+    signal_line = macd_line.ewm(span=signal, adjust=False).mean()
+    return macd_line, signal_line, macd_line - signal_line
+
+
+def indicator_dict(row: pd.Series) -> dict[str, float | None]:
+    return {column: clean_number(row.get(column)) for column in INDICATOR_COLUMNS}
+
+
+def clean_number(value: Any) -> float | None:
+    if value is None:
+        return None
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError):
+        return None
+    if math.isnan(numeric) or math.isinf(numeric):
+        return None
+    return numeric
+
+
+def _fmt(value: float) -> str:
+    return str(value).rstrip("0").rstrip(".")

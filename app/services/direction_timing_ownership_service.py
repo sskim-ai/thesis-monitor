@@ -419,6 +419,10 @@ def _fact_family_by_id(stock: Mapping[str, object]) -> dict[str, str]:
 def _feature_name(ref: DecisionEvidenceRef) -> str:
     if ref.ref_id.startswith("technical-feature:"):
         return ref.source_ref.rsplit(".", 1)[-1].lower()
+    if (ref.ref_id.startswith("native:")
+            and ref.category == EvidenceCategory.TECHNICAL_FEATURE
+            and ":provider-native:" in ref.label):
+        return ref.label.rsplit(":provider-native:", 1)[-1].lower()
     return ""
 
 
@@ -1162,8 +1166,9 @@ def technical_feature_inventory(owned: OwnedEvidencePacket) -> dict[str, object]
         "volume": available("volume", "obv", "cmf", "mfi"),
         "rsi": available("rsi"),
         "macd": available("macd"),
-        "bollinger": available("bollinger"),
-        "moving_average": available("sma", "ema"),
+        "bollinger": available("bollinger") or any(name.startswith("bb_") for name in names),
+        "moving_average": available("sma", "ema") or any(
+            name.startswith("ma") and name[2:].isdigit() for name in names),
         "risk_reward": any(row.domain == EvidenceDomain.RISK_REWARD_PRICE for row in rows),
         "supply_positioning": any(
             row.domain == EvidenceDomain.SUPPLY_POSITIONING for row in rows

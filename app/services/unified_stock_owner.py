@@ -169,7 +169,7 @@ def _financial(document, *, ticker, market, cutoff, policy):
         "selected_metrics": sorted(bindings), "denials": original["denials"]}
 
 
-def _technical(components, roles, *, ticker, market, cutoff, observed_at):
+def _technical(components, roles, *, ticker, market, cutoff, observed_at, native_indicators=None):
     if "completed_close_projection_sha256" in components:
         from app.services.kiwoom_completed_close_owner import historical_only_roles
         roles = historical_only_roles(roles, cutoff=cutoff)
@@ -184,6 +184,27 @@ def _technical(components, roles, *, ticker, market, cutoff, observed_at):
         states = {r["date"]: r["bar_state"] for r in components["analysis_view_finality"][tf]["rows"]}
         periods[tf] = [{**r, "bar_state": states[str(r["date"])[:10]]}
             if str(r["date"])[:10] in states else dict(r) for r in roles["adjusted_" + tf]]
+    if "native_technical_context" in components:
+        from app.services.packet_owned_technical_context_service import (
+            build_native_packet_context, unavailable_native_context,
+        )
+        from app.services.provider_native_technical import build_owned_provider_native_view
+        if (native_indicators is None
+                or digest(native_indicators) != components["native_indicator_artifacts_sha256"]):
+            raise ValueError("native_indicator_component_binding_mismatch")
+        view = build_owned_provider_native_view(ticker=ticker, market=market, periods=periods,
+            native_indicators=native_indicators, cutoff=cutoff)
+        context = build_native_packet_context(view=view, session="closed", as_of=observed_at)
+        if "native_technical_denial" in components:
+            context = unavailable_native_context(context, reason=components["native_technical_denial"])
+        if (context.model_dump(mode="json") != components["native_technical_context"]
+                or context.technical_context_id != components["technical_context_id"]):
+            raise ValueError("native_technical_component_projection_mismatch")
+        if "completed_session_bar_set" in components and digest(periods) != components["technical_input_sha256"]:
+            raise ValueError("completed_technical_input_mismatch")
+        return context, periods
+    if native_indicators is not None:
+        raise ValueError("native_indicators_require_native_components")
     context = build_packet_owned_technical_context(ticker=ticker, market=market, session="closed",
         as_of=observed_at, periods=periods, cutoff=cutoff, expected_daily_completed=str(cutoff),
         source="sealed_r2b0_kiwoom", source_version="one-shot-stock-source-acquisition-v1")
@@ -219,7 +240,9 @@ def component_binding(components, price_projection=None):
                     owner=price_projection.contract, projection_sha256=price_projection.projection_sha256,
                     dependency_span=[price_projection.target_session], anomalies=price_projection.target_integrity["issues"]))
                 continue
-            path = ("technical_context.features." + role.removeprefix("adjusted_") + ".facts:" + c["consumer"]
+            path = ("technical_context.native_view.periods." + role.removeprefix("adjusted_") + ".indicators"
+                if c.get("native_indicators") else
+                "technical_context.features." + role.removeprefix("adjusted_") + ".facts:" + c["consumer"]
                 if feature else "price_and_positioning.price.current_price" if requirement == "MANDATORY"
                 else "chart_context:" + role + ":" + c["consumer"])
             source_only = c["consumer"] in {"v3_long_cycle", "valuation_weekly_close_history"}
@@ -279,8 +302,18 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
         return raw
 
     roles = {r.role: decode_owned_role(plan, r, receipts[r.role], artifact) for r in reads}
+    from app.services.unified_stock_acquisition import decode_native_indicators
+    native_indicators = {}
+    for read in reads:
+        if read.role.startswith("adjusted_"):
+            native = decode_native_indicators(read, receipts[read.role], artifact)
+            if native is not None:
+                native_indicators[read.timeframe] = native
+    if not native_indicators and "native_technical_context" not in components:
+        native_indicators = None
     cutoff = date.fromisoformat(session_key)
-    params = dict(ticker=ticker, market=market, cutoff=cutoff, observed_at=plan.frozen_at.isoformat(), roles=roles)
+    params = dict(ticker=ticker, market=market, cutoff=cutoff, observed_at=plan.frozen_at.isoformat(),
+        roles=roles, native_indicators=native_indicators)
     if cycle_owner is not None:
         from app.services.unified_cycle_owner import require_generation
         require_generation(cycle_owner, plan.run_id)
@@ -361,7 +394,8 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
         valuation, financial_refs = {}, {}
         financial_state = {"status": "DENIED", "denials": [str(exc)],
             "owner": "project_reported_financial", "version": financial["projection"]["version"]}
-    technical, periods = _technical(components, roles, **{k: params[k] for k in ("ticker", "market", "cutoff", "observed_at")})
+    technical, periods = _technical(components, roles, **{k: params[k]
+        for k in ("ticker", "market", "cutoff", "observed_at", "native_indicators")})
     currency = technical.currency
     decision = {"current_price": components["current_price"], "currency": currency,
         "price_as_of": session_key, "price_basis": "adjusted_close"}
@@ -397,9 +431,17 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     timeframes = {}
     for tf in structure_periods:
         consumers = {c["consumer"]: c for c in components["role_consumer_matrix"]["adjusted_" + tf]}
-        # Native embedded indicators are not canonical dependency-owned features.
+        # The original bar artifact remains unchanged. Only separately owned,
+        # eligible native values populate this temporary chart projection.
         rows = [{k: r[k] for k in ("date", "open", "high", "low", "close", "volume", "value") if k in r}
                 for r in structure_periods[tf]]
+        if technical.native_view is not None and rows:
+            native_period = technical.native_view.periods[tf]
+            native_quality = technical.quality[{"daily": "D", "weekly": "W", "monthly": "M"}[tf]]
+            if (native_period.status == "AVAILABLE" and native_quality.usable_for_current_reasoning
+                    and str(rows[-1]["date"])[:10] == native_period.completed_as_of):
+                rows[-1].update({key: value for key, value in native_period.indicators.items()
+                    if native_period.indicator_quality[key] == "PROVIDER_NATIVE"})
         if (not rows or not consumers["latest_candle_volume_value"]["eligible"]
                 or not structure_consumers[tf]["latest_candle_volume_value"]["eligible"]):
             timeframes[tf] = {"quality": "unavailable"}
@@ -414,7 +456,8 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
             value["period_return_pct"] = None
         timeframes[tf] = value
     daily = timeframes.get("daily", {})
-    if daily.get("quality") == "available" and daily.get("as_of_date") == session_key:
+    if (technical.native_view is None and daily.get("quality") == "available"
+            and daily.get("as_of_date") == session_key):
         volume_ratio = next((fact for fact in technical.features.daily.facts
             if fact.semantic == "volume_ratio_20" and fact.ticker == ticker
             and fact.timeframe == "daily" and fact.as_of == session_key
@@ -431,7 +474,8 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     structure_ready = structure_ready and all(c["eligible"]
         for consumers in structure_consumers.values() for c in consumers.values()
         if c["consumer"] in {"legacy_local_pivots", "legacy_major_swings_atr", "legacy_boxes"})
-    structure = analyze_chart_structure(structure_periods, timeframe_contexts=timeframes) if structure_ready else {}
+    structure = analyze_chart_structure(structure_periods, timeframe_contexts=timeframes,
+        provider_native=technical.native_view is not None) if structure_ready else {}
     if kr_stock_chart_v3 is not False:
         _exact(kr_stock_chart_v3, expected_hashes["kr_stock_chart_v3"])
         if kr_stock_chart_v3 is not True or market != "kr":

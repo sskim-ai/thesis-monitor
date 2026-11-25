@@ -64,6 +64,10 @@ def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
         legacy_context_backend_audit_sha256=legacy['receipt_sha256'],
         prompt_version=contract.PROMPT_VERSION,schema_version=contract.SCHEMA_VERSION,
         policy_sha256=roles['receipt_sha256'])
+    if 'native_technical_context' in subject:
+        model_input['native_technical_context'] = deepcopy(subject['native_technical_context'])
+        model_input['prompt_version'] += '-native-technical'
+        model_input['schema_version'] += '-native-technical'
     branches = contract.capabilities(model_input)
     model_input.update(allowed_stances=sorted({r['stance'] for r in branches}),
         allowed_wait_reasons=sorted({r['reason'] for r in branches if r['stance']=='WAIT'}),
@@ -73,7 +77,7 @@ def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
     scan = scan_provider_structured_output_schema(wire)
     if scan['status'] != 'PASS':
         raise ValueError('v2_provider_wire_gap')
-    provider = dict(prompt=contract.PROMPT,input=model_input,response_schema=wire)
+    provider = dict(prompt=contract.prompt_for(model_input),input=model_input,response_schema=wire)
     visible_strings = list(_strings(provider))
     legacy_refs = {r['claim_ref'] for r in legacy['rows']}
     for ref in legacy_refs:
@@ -122,7 +126,8 @@ def provider_payload(request, *, expected_request_sha256):
     verified(request,contract.CONTRACT)
     provider = request['provider_request']
     if (request['request_sha256'] != expected_request_sha256 or digest(provider) != expected_request_sha256
-            or set(provider) != {'prompt','input','response_schema'} or provider['prompt'] != contract.PROMPT
+            or set(provider) != {'prompt','input','response_schema'}
+            or provider['prompt'] != contract.prompt_for(provider['input'])
             or request['output_schema'] != contract.output_schema(provider['input'])):
         raise ValueError('v2_request_freeze_drift')
     wire, _ = project_provider_wire_schema(v1.obj(dict(new_buyer_shadow=request['output_schema'])))

@@ -1,0 +1,8 @@
+{
+  "purpose": "Immutable original indicator engine used only by offline tests; production imports the configured OHLCV owner",
+  "repository": "sskim-ai/ohlcv-analyst",
+  "commit": "f19c54b8299031caf473737e044f0a2b77db5671",
+  "path": "app/indicators/technical.py",
+  "git_blob": "7054107179b78a49165fc019eb14019808ce27c3",
+  "sha256": "ed793cdeb4b89d6787f95e5ee2ba191ec0f7ffd0d1c680b90451dc10aa838835"
+}

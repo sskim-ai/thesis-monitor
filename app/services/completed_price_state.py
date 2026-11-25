@@ -227,7 +227,8 @@ def require_runtime(state):
     return state
 
 
-def materialize_state(*, state, roles, ticker, market, cutoff, observed_at, completed_bar_reference=None):
+def materialize_state(*, state, roles, ticker, market, cutoff, observed_at,
+                      completed_bar_reference=None, native_indicators=None):
     state = require_runtime(state)
     if (state.ticker != ticker or market != 'us' or state.target_session != cutoff):
         raise ValueError('price_state_component_identity')
@@ -246,7 +247,8 @@ def materialize_state(*, state, roles, ticker, market, cutoff, observed_at, comp
             raise ValueError('completed_bar_reference_source_row_mismatch')
         try:
             result = materialize_source_components(roles=roles, ticker=ticker, market=market,
-                cutoff=cutoff, observed_at=observed_at, completed_session=True)
+                cutoff=cutoff, observed_at=observed_at, completed_session=True,
+                native_indicators=native_indicators)
         except ValueError as exc:
             if str(exc) not in {'completed_bar_partial_period_daily_coverage_missing',
                                 'completed_bar_partial_period_daily_integrity'}:
@@ -257,7 +259,8 @@ def materialize_state(*, state, roles, ticker, market, cutoff, observed_at, comp
                     reason=str(exc), canonical_security_id=state.security_id,
                     target_session=str(cutoff), raw_price_display_allowed=True,
                     owner='COMPLETED_BAR_PRICE_WITH_INCOMPLETE_PERIOD_CONTEXT'),
-                roles=roles, ticker=ticker, market=market, cutoff=cutoff, observed_at=observed_at)
+                roles=roles, ticker=ticker, market=market, cutoff=cutoff, observed_at=observed_at,
+                native_indicators=native_indicators)
             result['completed_bar_reference_chart_qualified'] = False
             result['completed_bar_reference_chart_denial'] = str(exc)
         else:
@@ -266,14 +269,16 @@ def materialize_state(*, state, roles, ticker, market, cutoff, observed_at, comp
             result['completed_bar_reference_chart_qualified'] = True
     elif state.numeric_owner is not None:
         result = close.materialize(projection=state.numeric_owner, roles=roles, ticker=ticker,
-                                   market=market, cutoff=cutoff, observed_at=observed_at)
+                                   market=market, cutoff=cutoff, observed_at=observed_at,
+                                   native_indicators=native_indicators)
     else:
         result = close.materialize_price_context(current_price=None, projection_ref=state.receipt_sha256,
             compatibility=dict(status='UNPROVEN', technical_target_injection_allowed=False,
                 reason=close.TECHNICAL_DENIAL, canonical_security_id=state.security_id,
                 target_session=str(cutoff), raw_price_display_allowed=False,
                 owner='NO_QUALIFIED_US_ACTION_GUARD_IN_DECLARED_CORPUS'),
-            roles=roles, ticker=ticker, market=market, cutoff=cutoff, observed_at=observed_at)
+            roles=roles, ticker=ticker, market=market, cutoff=cutoff, observed_at=observed_at,
+            native_indicators=native_indicators)
     result['completed_price_state_sha256'] = state.receipt_sha256
     if reference is not None:
         result['completed_bar_reference_price_sha256'] = reference.projection_sha256
@@ -299,7 +304,7 @@ def technical_state(roles, *, target_session, completed_bar_reference=None):
 
 
 def bind_source(technical, *, source, artifacts, security):
-    from app.services.unified_stock_acquisition import decode_owned_role
+    from app.services.unified_stock_acquisition import decode_native_indicators, decode_owned_role
     tech = dict(technical)
     if set(artifacts) & set(tech['artifacts']):
         raise ValueError('price_source_namespace_collision')
@@ -314,12 +319,18 @@ def bind_source(technical, *, source, artifacts, security):
     state = require_runtime(project_state(source=source, plan=tech['plan'], read=daily,
                                          security=security, artifact_reader=reader))
     roles = {r.role: decode_owned_role(tech['plan'], r, tech['receipts'][r.role], reader) for r in reads}
+    native_indicators = {
+        r.timeframe: value for r in reads if r.adjusted
+        if (value := decode_native_indicators(r, tech['receipts'][r.role], reader,
+            required='native_technical_context' in tech['components'])) is not None
+    }
     from app.services.completed_session_current_price import project_completed_price
     reference = project_completed_price(plan=tech['plan'], read=daily, receipt=tech['receipts'][daily.role],
         artifact_reader=reader, security=security, currency='USD')
     tech['components'] = materialize_state(state=state, roles=roles, ticker=daily.subject,
         market=daily.market, cutoff=date.fromisoformat(daily.latest_completed_session),
-        observed_at=tech['plan'].frozen_at.isoformat(), completed_bar_reference=reference)
+        observed_at=tech['plan'].frozen_at.isoformat(), completed_bar_reference=reference,
+        native_indicators=native_indicators or None)
     tech['completed_price_source'] = source
     tech['expected_hashes'] = dict(tech['expected_hashes'], components=digest(tech['components']),
                                    completed_price_source=digest(source))

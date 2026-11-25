@@ -566,9 +566,20 @@ def _entry_lines(output, model_input, entry_context, market, session, *, assessm
         detail += '\n가격 확인 조건: 추가 확인 조건 미정'
     if result.failure_condition:
         detail += '\n구조 재검토 조건: ' + result.failure_condition
-    return (f"신규매수 근거: {reason}",
-            detail,
-            f"최종 신규매수 행동: {action}"), result.evidence_refs
+    lines = [f"신규매수 근거: {reason}", detail]
+    refs = set(result.evidence_refs)
+    technical = output.get('technical_assessment')
+    if technical is not None:
+        explanation = b2.technical_reason(technical['reason'], technical['evidence_refs'])
+        label = {'SUPPORTIVE': '지지', 'MIXED': '혼재', 'ADVERSE': '약화',
+                 'INSUFFICIENT': '자료 부족'}[technical['state']]
+        lines.append(f'기술지표 판단: {label} — {explanation}')
+        refs.update(technical['evidence_refs'])
+        if technical['state'] == 'ADVERSE':
+            action = ('기술지표 개선 또는 확인 신호 대기' if action == '신규 매수 검토 가능'
+                      else action + ' · 기술지표 약화 추가 확인')
+    lines.append(f'최종 신규매수 행동: {action}')
+    return tuple(lines), tuple(sorted(refs))
 
 
 def _entry_invalidation_row(packet, base, assessment, session):

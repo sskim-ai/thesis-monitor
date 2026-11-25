@@ -67,7 +67,7 @@ class ProviderNativeTechnicalView(BaseModel):
     view_sha256: str
     current_price_qualified: Literal[False] = False
     strict_ready: Literal[False] = False
-    allowed_use: Literal['DATED_TECHNICAL_ANALYSIS'] = 'DATED_TECHNICAL_ANALYSIS'
+    allowed_use: Literal['DATED_TECHNICAL_ANALYSIS', 'MONITORING_TECHNICAL'] = 'DATED_TECHNICAL_ANALYSIS'
 
     def verify(self):
         if digest(self.model_dump(mode='json', exclude={'view_sha256'})) != self.view_sha256:
@@ -224,3 +224,88 @@ def build_provider_native_view(*, ticker, market, periods, cutoff,
               source_hash=digest({tf:p.source_hash for tf,p in output.items()}))
     provisional=ProviderNativeTechnicalView(**data,view_sha256='')
     return provisional.model_copy(update={'view_sha256':digest(provisional.model_dump(mode='json',exclude={'view_sha256'}))})
+
+
+def build_owned_provider_native_view(*, ticker, market, periods, native_indicators, cutoff):
+    """Project already-owned indicator artifacts onto the existing completed view.
+
+    The stock acquisition owner validates each separate artifact against its
+    original bar receipt. This projection selects values; it never calculates
+    indicators or fabricates an HTTP capture. Derived partial W/M bars cannot
+    borrow indicators from a provider's different period row.
+    """
+    from app.services.ohlcv_provider_integrity_service import inspect_normalized_ohlcv_rows
+
+    if not isinstance(native_indicators, Mapping) or set(native_indicators) - set(MAX_COUNTS):
+        raise ValueError('native_indicator_timeframe_mapping_invalid')
+    output = {}
+    schemas = set()
+    for timeframe, maximum in MAX_COUNTS.items():
+        rows = deepcopy(list(periods.get(timeframe, ())))
+        artifact = native_indicators.get(timeframe)
+        # Inspect before finality filtering: an invalid historical row may have
+        # influenced the provider's EMA even when finality excludes that row.
+        # Date cutoff is handled by selection below, so a normal later/partial
+        # row alone does not invalidate the earlier provider calculation.
+        inspection = inspect_normalized_ohlcv_rows(rows, timeframe=timeframe)
+        completed = [row for row in rows
+            if assess_completed_bar_finality(row, cutoff=cutoff).state == 'FINAL']
+        selected = completed[-maximum:]
+        last_date = str(selected[-1]['date'])[:10] if selected else None
+        reasons = []
+        structural = {'INVALID_BAR_DATE', 'DUPLICATE_TIMESTAMP', 'DUPLICATE_CONFLICT', 'BAR_TIMESTAMP_ORDERING'}
+        valid_source = not any(issue.bar_date is None or issue.violation.value in structural
+            or last_date is None or issue.bar_date <= last_date for issue in inspection.issues)
+        if not valid_source:
+            reasons.append('NATIVE_INDICATOR_SOURCE_ROWS_INVALID')
+        if artifact is not None:
+            if (not isinstance(artifact, Mapping)
+                    or artifact.get('contract') != 'provider-native-stock-indicators-v1'
+                    or artifact.get('provider') != 'ohlcv_analyst'
+                    or not isinstance(artifact.get('indicator_schema'), str)
+                    or not artifact['indicator_schema']
+                    or artifact.get('status') not in {'AVAILABLE', 'UNAVAILABLE'}):
+                raise ValueError('native_indicator_artifact_contract_invalid')
+            if artifact['status'] == 'AVAILABLE':
+                schemas.add(artifact['indicator_schema'])
+            projected_rows = artifact.get('rows') or []
+            by_date = {row['date']: row['indicators'] for row in projected_rows}
+            if len(by_date) != len(projected_rows):
+                raise ValueError('native_indicator_duplicate_date')
+        else:
+            by_date = {}
+            reasons.append('NATIVE_INDICATOR_ARTIFACT_UNAVAILABLE')
+        supplied = by_date.get(last_date)
+        available = bool(valid_source and selected and artifact
+            and artifact['status'] == 'AVAILABLE' and isinstance(supplied, Mapping))
+        if artifact and artifact['status'] == 'UNAVAILABLE':
+            reasons.append(str(artifact.get('reason') or 'NATIVE_INDICATORS_UNAVAILABLE'))
+        elif selected and supplied is None:
+            reasons.append('NATIVE_COMPLETED_ROW_INDICATORS_UNAVAILABLE')
+        if not selected:
+            reasons.append('COMPLETED_NATIVE_ROWS_UNAVAILABLE')
+        values = {field: deepcopy(supplied.get(field)) if available else None for field in INDICATORS}
+        quality = {field: ('PROVIDER_NATIVE' if _valid_number(value)
+            else 'UNAVAILABLE_PROVIDER_NULL_OR_MISSING' if value is None else 'INVALID_PROVIDER_VALUE')
+            for field, value in values.items()}
+        # Original finite values remain usable on short history. The producer's
+        # row count is descriptive, never a second minimum-history admission.
+        enriched = tuple({**row, 'indicators': deepcopy(by_date.get(str(row['date'])[:10], {}))}
+            for row in selected)
+        source_hash = digest(dict(artifact=artifact, completed_analysis_rows=selected))
+        output[timeframe] = NativePeriod(timeframe=timeframe,
+            status='INVALID' if not valid_source else 'AVAILABLE' if available else 'UNAVAILABLE',
+            returned_count=int(artifact.get('calculation_row_count', 0)) if artifact else 0,
+            max_count=maximum, completed_count=len(selected), source_hash=source_hash,
+            provider='ohlcv_analyst', completed_as_of=last_date,
+            raw_bar_date=str(rows[-1]['date'])[:10] if rows else None,
+            rows=enriched, indicators=values, indicator_quality=quality,
+            quarantined_count=len(rows) - len(completed), reasons=tuple(dict.fromkeys(reasons)))
+    if len(schemas) > 1:
+        raise ValueError('native_indicator_mixed_schema')
+    value = ProviderNativeTechnicalView(provider_code=ticker, market=market,
+        cutoff=cutoff.isoformat(), periods=output,
+        indicator_schema=next(iter(schemas), FORMULA_VERSION),
+        source_hash=digest({tf: period.source_hash for tf, period in output.items()}),
+        view_sha256='', allowed_use='MONITORING_TECHNICAL')
+    return value.model_copy(update={'view_sha256': digest(value.model_dump(mode='json', exclude={'view_sha256'}))})

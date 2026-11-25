@@ -10,7 +10,9 @@ from app.services.unified_aggregate_receipt import AggregateReceipt
 from app.services.unified_run_artifacts import durable_json, sha256_bytes
 from app.services.unified_snapshot_contract import digest, encoded
 from app.services.unified_source_composition import A, SourceInput, SourceRole
-from app.services.unified_stock_acquisition import decode_owned_role, require_native_replay_timing
+from app.services.unified_stock_acquisition import (
+    decode_native_indicators, decode_owned_role, require_native_replay_timing,
+)
 from app.services.unified_stock_anomaly_scope import materialize_source_components
 import json
 
@@ -282,7 +284,7 @@ def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=N
                     cycle_owner=(cycle_owners or {}).get(market),
                     prospective_owner=None if class_c_bridge is not None else (prospective_owners or {}).get(market),
                     class_c_bridge=class_c_bridge)
-                receipts, artifacts, roles = {}, {}, {}
+                receipts, artifacts, roles, native_indicators = {}, {}, {}, {}
                 for ordinal, entry in enumerate(plan.reads, 1):
                     if entry.subject != ticker:
                         continue
@@ -295,6 +297,9 @@ def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=N
                         artifacts[name] = raw
                         return raw
                     rows = decode_owned_role(plan, entry, r, source)
+                    if entry.adjusted:
+                        native_indicators[entry.timeframe] = decode_native_indicators(
+                            entry, r, source, required=True)
                     require_complete_stock_window(entry, r, rows)
                     for i, page in enumerate(r['pages'], 1):
                         key = entry.entry_id + ':page1' + (':continuation:' + str(i) if i > 1 else '')
@@ -305,7 +310,8 @@ def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=N
                     receipts[entry.role], roles[entry.role] = r, rows
                 session = next(r.latest_completed_session for r in plan.reads if r.subject == ticker)
                 components = materialize_source_components(ticker=ticker, market=market, cutoff=date.fromisoformat(session),
-                    observed_at=plan.frozen_at.isoformat(), roles=roles, completed_session=market == "kr")
+                    observed_at=plan.frozen_at.isoformat(), roles=roles, completed_session=market == "kr",
+                    native_indicators=native_indicators)
                 technical = dict(plan=plan, ticker=ticker, local_seed=local, financial=None,
                     receipts=receipts, artifacts=artifacts, components=components, policy=policy,
                     expected_hashes=dict(plan=digest(plan.model_dump(mode='json')), local=digest(local),

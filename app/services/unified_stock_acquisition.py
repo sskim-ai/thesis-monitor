@@ -243,6 +243,67 @@ def decode_owned_role(plan: StockPlan, read: StockRead, receipt: dict, artifact_
     return bars
 
 
+def decode_native_indicators(read, receipt: dict, artifact_reader, *, required=False) -> dict | None:
+    """Read the original-owner indicator projection without modifying raw bars.
+
+    Missing metadata is supported only for archived pre-native captures. A new
+    acquisition can explicitly require it. Null indicators and engine failure
+    are technical unavailability, never permission to run a different calculator.
+    """
+    import json
+    import math
+
+    descriptor = receipt.get("native_indicators")
+    if descriptor is None:
+        if required:
+            raise ValueError("native_indicator_artifact_required")
+        return None
+    if not isinstance(descriptor, dict) or set(descriptor) != {"artifact", "sha256"}:
+        raise ValueError("native_indicator_artifact_binding_invalid")
+    entry_id = read["entry_id"] if isinstance(read, dict) else read.entry_id
+    adjusted = read["adjusted"] if isinstance(read, dict) else read.adjusted
+    if not adjusted:
+        raise ValueError("native_indicator_adjusted_role_required")
+    raw = artifact_reader(descriptor["artifact"], descriptor["sha256"])
+    if sha256_bytes(raw) != descriptor["sha256"]:
+        raise ValueError("native_indicator_artifact_hash_mismatch")
+    payload = json.loads(raw)
+    if (not isinstance(payload, dict)
+            or payload.get("contract") != "provider-native-stock-indicators-v1"
+            or payload.get("provider") != "ohlcv_analyst"
+            or payload.get("entry_id") != entry_id
+            or receipt.get("entry", {}).get("entry_id") != entry_id
+            or payload.get("source_normalized_sha256") != receipt.get("normalized_sha256")
+            or not isinstance(payload.get("indicator_schema"), str)
+            or not isinstance(payload.get("engine"), dict)
+            or type(payload.get("calculation_row_count")) is not int
+            or payload["calculation_row_count"] < 0
+            or payload.get("status") not in {"AVAILABLE", "UNAVAILABLE"}
+            or not isinstance(payload.get("rows"), list)):
+        raise ValueError("native_indicator_source_binding_mismatch")
+    rows = payload["rows"]
+    if (len(rows) > min(30, payload["calculation_row_count"])
+            or (payload["status"] == "UNAVAILABLE" and rows)
+            or (payload["status"] == "AVAILABLE" and not rows)):
+        raise ValueError("native_indicator_row_scope_invalid")
+    dates = []
+    for row in rows:
+        if (not isinstance(row, dict) or set(row) != {"date", "indicators"}
+                or not isinstance(row["date"], str) or not isinstance(row["indicators"], dict)):
+            raise ValueError("native_indicator_row_shape_invalid")
+        try:
+            datetime.fromisoformat(row["date"])
+        except ValueError as exc:
+            raise ValueError("native_indicator_date_invalid") from exc
+        dates.append(row["date"])
+        if any(value is not None and (type(value) not in (int, float) or not math.isfinite(value))
+               for value in row["indicators"].values()):
+            raise ValueError("native_indicator_value_invalid")
+    if dates != sorted(set(dates)):
+        raise ValueError("native_indicator_date_order_invalid")
+    return payload
+
+
 def validate_role(plan: StockPlan, read: StockRead, receipt: dict, root: Path) -> dict:
     """Historical whole-payload gate, retained for exact R2B0 reproducibility."""
     bars = load_owned_role(plan, read, receipt, root)
