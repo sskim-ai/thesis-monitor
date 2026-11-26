@@ -146,7 +146,7 @@ def a_input(view, cat, sub, chain, authority):
         authority=chain["authority"], projection=chain["projection"], binding=chain["binding"], expectation=chain["expectation"],
         prohibited_pass_a_source_refs=authority["pass_a_visibility_exclusions"])
 
-def economic_context(view, context, classification):
+def economic_context(view, context, classification, *, original_rows=None):
     """Compact existing, eligible business observations, not additional votes.
 
     The frozen Source and existing source-use projection own the values. Do
@@ -163,6 +163,7 @@ def economic_context(view, context, classification):
     permissions = {r['ref_id']: set(r.get('allowed_uses', ())) - set(r.get('prohibited_uses', ()))
                    for r in context['source_use_projection']['source_permissions']}
     observed = []
+    originals = None if original_rows is None else {r['ref_id']: r for r in original_rows}
     comparison_keys = ('metric','current_value','prior_comparable_value','growth_pct',
         'period_start','period_end','prior_period_start','prior_period_end','period_type',
         'currency','statement_basis','issuer_id','source_ticker','source_receipt',
@@ -172,13 +173,21 @@ def economic_context(view, context, classification):
         uses = permissions.get(ref, set())
         if not uses & {'CONTEXT','OVERALL_DIRECTION'}:
             continue
+        source_time = row.get('source_time') or {}
+        if originals is not None:
+            # Pass B strips source_time from its compact rows; recover only the
+            # proof for an unchanged, visible row, not other source-only fields.
+            parent = originals.get(ref)
+            if parent is None or any(row.get(k) != parent.get(k) for k in ('statement', 'as_of')):
+                continue
+            source_time = parent.get('source_time') or {}
         fact = facts.get(ref.removeprefix('canonical:')) if ref.startswith('canonical:') else None
         fields = (fact or {}).get('fields', {})
         item = dict(ref_id=ref, as_of=row.get('as_of'))
         if (fact and fact.get('fact_type') == 'earnings_comparison'
                 and fact.get('interpretation_eligible') is True
                 and row.get('statement') == canonical_fact_statement(fact)
-                and (row.get('source_time') or {}).get('canonical_fact_sha256') == digest(fact)
+                and source_time.get('canonical_fact_sha256') == digest(fact)
                 and number(fields.get('current_value')) is not None
                 and number(fields.get('prior_comparable_value')) is not None):
             values = {k: deepcopy(fields[k]) for k in comparison_keys if k in fields}
@@ -191,7 +200,7 @@ def economic_context(view, context, classification):
             item.update(kind='REPORTED_FINANCIAL_CONTEXT_ONLY',
                         observation=dict(value=row['financial_value'], context=deepcopy(row['financial_context'])))
         elif fact and fact.get('fact_type') == 'earnings' and fact.get('prose_eligible') is True:
-            if (row.get('source_time') or {}).get('canonical_fact_sha256') != digest(fact):
+            if source_time.get('canonical_fact_sha256') != digest(fact):
                 continue
             item.update(kind='REPORTED_ABSOLUTE_CONTEXT_ONLY', observation=deepcopy(fields))
         elif ref.startswith('canonical:event:') and 'CONTEXT' in uses:
@@ -219,7 +228,7 @@ def economic_context(view, context, classification):
             'debt_including_current','interest_bearing_debt_total','inventory',
             'ppe_capex_cash_outflow','ocf_less_ppe_capex','diluted_eps','diluted_shares',
             'weighted_average_diluted_shares','dividends','share_repurchases','roe','roic'}
-        fields = [row for row in projection.get('fields', ())
+        fields = [row for row in (*projection.get('fields', ()), *rows[0].get('reported_absolute_context_fields', ()))
                   if row.get('ticker') == view['ticker']
                   and row.get('canonical_security_id') == (view.get('valuation_view') or {}).get('security_id')
                   and row.get('context_eligible') is True and not row.get('quality_errors')
@@ -314,5 +323,5 @@ def b_input(view, cat, sub, chain, classification, capability):
             for row in rows:
                 row.pop('basis_proofs', None)
     if view.get('contract') == 'fresh-financial-stock-owner-v1':
-        ctx['economic_context'] = economic_context(view, ctx, classification)
+        ctx['economic_context'] = economic_context(view, ctx, classification, original_rows=sub['decision_evidence'])
     return ctx, entries, valuation

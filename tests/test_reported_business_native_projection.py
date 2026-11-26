@@ -281,3 +281,14 @@ def test_c61_reported_amounts_use_exact_existing_selected_registry(source):
                if r['fact_id']==fact['fact_id'] and r['field_path']=='fields.current_value')
     row['prose_allowed'] = False
     assert _reported_amount_detail(packet,bad,[ref]) is None
+
+
+def test_c61_core_reads_only_model_projected_permissions(source):
+    prepared = prepare_fresh_subject(source, execution_generation_id='c61-permission-fixture')['prepared']
+    model = prepared['core_input']
+    live_refs = {o['source_ref'] for o in model['observed_propositions'].values()}
+    compared = {r['ref_id'] for r in model['economic_context']['observations']
+                if r['kind'] == 'REPORTED_COMPARISON'}
+    assert compared and compared <= live_refs
+    assert all(not r['persistence_verified'] and not r['impairment_realized']
+               for r in model['observed_propositions'].values())
