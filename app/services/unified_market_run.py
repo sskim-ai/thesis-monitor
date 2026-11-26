@@ -45,6 +45,18 @@ def target_session(market: str, scheduled: datetime) -> date | None:
     return day if close <= scheduled else None
 
 
+def prepared_session_for_day(market, day, *, cutoff, configured_us_session=None):
+    if cutoff.utcoffset() is None or cutoff.astimezone(KST).date() != day:
+        raise ValueError('prepared_cycle_market_day_or_completed_session_mismatch')
+    if configured_us_session is None:
+        return target_session(market, v2.scheduled_slots(market, day)[0])
+    from app.services.prospective_class_c_owner import completed_clock
+    if (market != 'us' or type(configured_us_session) is not date
+            or completed_clock('us', cutoff)['target'] != configured_us_session.isoformat()):
+        raise ValueError('configured_us_one_shot_completed_session_mismatch')
+    return configured_us_session
+
+
 class Clock:
     def now(self) -> datetime:
         return datetime.now(KST)
@@ -100,23 +112,31 @@ class UnifiedMarketRun:
                config.notification_timeout_seconds) <= 0:
             raise ValueError("positive_timeout_required")
 
-    async def run(self, market: str, day: date) -> dict:
+    async def run(self, market: str, day: date, *, configured_us_one_shot=None) -> dict:
         from app.services.research_no_send_run import PreparedResearchBridge, run_prepared_research
 
         if type(self.ports) is PreparedResearchBridge:
             child = self.ports.child
             child.verify()
             cohort = child.plan.cohort
-            slots = v2.scheduled_slots(market, day)
-            session = target_session(market, slots[0])
-            if (not self.v2 or market != child.market or session is None
-                    or datetime.fromisoformat(cohort.cutoff).astimezone(KST).date() != day):
+            ledger = getattr(getattr(self.ports.model, 'call_budget', None), 'run_ledger', None)
+            target = None
+            if configured_us_one_shot is not None:
+                target = configured_us_one_shot.target_session
+                master = f'local-us-{target}-once-{configured_us_one_shot.tag}'
+                if (not ledger or ledger.identity['master_id'] != master
+                        or cohort.source_generation != master+'-source' or cohort.run_id != master+'-consumer'):
+                    raise ValueError('configured_us_one_shot_generation_mismatch')
+            session = prepared_session_for_day(market, day, cutoff=datetime.fromisoformat(cohort.cutoff),
+                                               configured_us_session=target)
+            if not self.v2 or market != child.market or session is None:
                 raise ValueError('prepared_cycle_market_day_or_completed_session_mismatch')
             # Both manual and canonical prepared entries share the same durable
             # cycle lock, stage loop, invocation journal and RENDER-only terminal.
-            ledger = getattr(getattr(self.ports.model, 'call_budget', None), 'run_ledger', None)
             return await run_prepared_research(self.ports, root=self.config.root, enabled=True,
                 split_model_timing=bool(ledger and ledger.identity.get('wallclock_seconds_max')))
+        if configured_us_one_shot is not None:
+            raise ValueError('configured_us_one_shot_requires_prepared_no_send')
         slots = (v2.scheduled_slots if self.v2 else scheduled_slots)(market, day)
         # Durable cycle identity prevents retries, process restarts and duplicate schedulers
         # from generating a second normal delivery for the same market/date.

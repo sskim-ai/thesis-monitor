@@ -496,6 +496,8 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
             return await run_registered(settings, source=source, model=model, mode='LIVE_NO_SEND',
                 record_market_terminal=True,
                 initial_code_identity=initial_code_identity,
+                **(dict(configured_us_one_shot=config.one_shot)
+                   if market == 'us' and getattr(config, 'one_shot', None) and one_shot_tag == config.one_shot.tag else {}),
                 **(dict(routine_us_no_send_source_seconds=1800) if market == 'us' else {}))
     except BaseException as exc:
         _record_local_failure(directory, exc, config=config, session=session,
@@ -730,7 +732,7 @@ async def run_selected(market, engine, day):
 
 async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', clock=None,
                          manual_source_seconds=None, routine_us_no_send_source_seconds=None,
-                         record_market_terminal=False, initial_code_identity=None):
+                         record_market_terminal=False, initial_code_identity=None, configured_us_one_shot=None):
     """Explicit registered cycle for manual and future scheduler callers.
 
     Callers supply the original approval/Owner/ledger and already frozen plan;
@@ -762,6 +764,22 @@ async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', cl
         initial_code_identity = current_code_identity
     if current_code_identity != initial_code_identity:
         raise ValueError('registered_runtime_code_changed')
+    if configured_us_one_shot is not None:
+        from app.services.unified_market_run import prepared_session_for_day
+        slot = configured_us_one_shot
+        if type(slot) is not LocalUsOneShot or not slot.tag.startswith('us-') or mode != 'LIVE_NO_SEND':
+            raise ValueError('configured_us_one_shot_requires_prepared_no_send')
+        frozen = source['frozen']
+        target = slot.target_session
+        cutoff = datetime.fromisoformat(frozen['frozen_at'])
+        master = f'local-us-{target}-once-{slot.tag}'
+        if (frozen['selected_market'] != 'us' or frozen['master_id'] != master
+                or source['run_ledger'].identity['master_id'] != master
+                or frozen['generation_id'] != master+'-source' or source['execution_generation'] != master+'-consumer'
+                or frozen['sessions'] != {'us':target.isoformat()} or cutoff < slot.scheduled_at):
+            raise ValueError('configured_us_one_shot_frozen_source_mismatch')
+        # Reject a closed-date disagreement before the first physical request.
+        prepared_session_for_day('us', cutoff.astimezone(KST).date(), cutoff=cutoff, configured_us_session=target)
     child, proof = await CanonicalProductionSourceBackend.prepare_registered(settings=settings, **source, **options)
     failed = False
     try:
@@ -781,7 +799,8 @@ async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', cl
         source['run_ledger'].bind_model_plan(child)
         engine = build_engine(settings, adapter, repo_commit=source['frozen']['stock_plan']['implementation_sha'],
             adapter_fingerprint=digest(child.binding()), clock=clock)
-        result = await engine.run(child.market, datetime.fromisoformat(child.plan.cohort.cutoff).astimezone(KST).date())
+        result = await engine.run(child.market, datetime.fromisoformat(child.plan.cohort.cutoff).astimezone(KST).date(),
+            **(dict(configured_us_one_shot=configured_us_one_shot) if configured_us_one_shot is not None else {}))
         failed = result.get('status') == 'FAILED_NO_SEND'
         if not failed and runtime_code_identity() != initial_code_identity:
             raise ValueError('registered_runtime_code_changed')
