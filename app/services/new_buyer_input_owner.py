@@ -138,7 +138,11 @@ def historical_price_context(context):
                 or gate.get('output_status') != 'RESOLVED' or gate.get('ticker') != context['ticker']
                 or catalog.get(candidate['candidate_id']) != candidate
                 or candidate.get('ticker') != context['ticker']
+                or candidate.get('currency') not in ('USD','KRW')
                 or candidate.get('currency') != price.get('currency')
+                or candidate.get('contract') != 'm12co-fundamental-entry-candidate-builder-v1'
+                or candidate.get('method_version') != 'v1'
+                or candidate.get('quantile_band') not in ('P25_P50','P50_P75','P75_P90')
                 or candidate.get('method_family') not in ('HISTORICAL_TRAILING_PE_QUANTILE',
                                                           'HISTORICAL_PB_QUANTILE')
                 or candidate.get('entry_candidate_not_price_target') is not True
