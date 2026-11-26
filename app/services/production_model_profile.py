@@ -9,8 +9,8 @@ DEFAULT_SOL_INPUT_BYTES = 384 * 1024
 
 
 def sol_prompt_limit_bytes(frozen_market):
-    """Plan-bound US and KR share 512 KiB; other Sol paths retain 384 KiB."""
-    return 512 * 1024 if frozen_market in ('kr', 'us') else DEFAULT_SOL_INPUT_BYTES
+    """Only plan-bound US and KR prompts have the larger wire allowance."""
+    return 640 * 1024 if frozen_market in ('kr', 'us') else DEFAULT_SOL_INPUT_BYTES
 
 
 def sol_high(profile):

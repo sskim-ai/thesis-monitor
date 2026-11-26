@@ -68,6 +68,20 @@ def test_b_discount_is_descriptive_and_conflict_preserves_methods():
     assert historical_price_context(bad) is None
 
 
+def test_historical_fundamental_valid_does_not_offset_active_risk_in_b_validator():
+    from scripts.m12ds_r3_policy import validate_decision
+    from tests.test_m12ds_r2_judgment_policy import decision
+    ranges = context(dict(value=100, currency='USD', as_of='2026-10-01', basis='regular_close'),
+                     both=False)['r2_valuation']
+    cap,*_ = capability(-2,risk=True)
+    cap.update(sell_eligible=[],current_stress=[])
+    assert ranges['fundamental_valid'] and cap['holder_risk'] and not ranges['compensating_discount']
+    row = decision(cap, holder='REVIEW', buyer='ATTRACTIVE')
+    result = validate_decision(dict(row,new_buyer_reason_class='VALID_FUNDAMENTAL_DISCOUNT'),cap,ranges)
+    assert result['status']=='FAIL'
+    assert {'attractive_without_fundamental_discount','active_adverse_without_compensation_precedes_wait'} <= set(result['errors'])
+
+
 def request(**kwargs):
     args = inputs(**kwargs)
     first = args['v1_request']

@@ -16,7 +16,7 @@ from app.services.fixture_context_authority import reject_test_only_production
 from app.services.unified_run_artifacts import durable_bytes, durable_json, sha256_bytes
 from app.services.unified_snapshot_contract import digest, encoded
 from app.services.production_model_profile import (
-    CONTRACT_V2, SolHighWirePolicy, SolHighCallBudget, sol_high, sol_prompt_limit_bytes,
+    CONTRACT_V2, DEFAULT_SOL_INPUT_BYTES, SolHighWirePolicy, SolHighCallBudget, sol_high, sol_prompt_limit_bytes,
 )
 from app.services.vnext_execution_profile import SOL_HIGH_V1
 
@@ -268,6 +268,8 @@ class OfficialProductionModelTransport:
             if len(prompt) > prompt_limit:
                 raise ModelPromptSizeExceeded(prompt=prompt, schema=schema, limit=prompt_limit,
                     market=self.cycle[0], stage=stage, slot_scope=slot_scope)
+            if len(schema) > DEFAULT_SOL_INPUT_BYTES:
+                raise ValueError('sol_high_schema_exceeds_384KiB')
         policy = SolHighWirePolicy() if self.execution_profile else ProductionWirePolicy()
         contract = CONTRACT_V2 if self.execution_profile else CONTRACT
         path = self.runtime_root / (self.cycle[1] + "-" + uuid.uuid4().hex)

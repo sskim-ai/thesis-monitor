@@ -175,12 +175,13 @@ def request_at_size(stage,length):
 
 
 @pytest.mark.parametrize('stage',STAGES)
-def test_kr_frozen_512_boundary_before_consumption(tmp_path,monkeypatch,stage):
+def test_kr_frozen_640_boundary_before_consumption(tmp_path,monkeypatch,stage):
     transport=wire.OfficialProductionModelTransport.__new__(wire.OfficialProductionModelTransport)
     monkeypatch.setattr(wire,'validate_binding',lambda *a,**k:None)
     scope={'slot_id':'scope','stage':stage,'market':'kr','subjects':['005930']}
     budget=Mock()
-    budget.retry_enabled=False
+    budget.retry_enabled=True
+    monkeypatch.setattr(research,'current_stage_timer',Mock())
     budget.timeout_retry_cap=0
     budget.maximum=36
     budget.resolve_scope.return_value=scope
@@ -190,27 +191,46 @@ def test_kr_frozen_512_boundary_before_consumption(tmp_path,monkeypatch,stage):
     transport.runtime_root,transport.secrets,transport.cohort_source_owner=tmp_path,(),object()
     transport.binding=SimpleNamespace(executable=tmp_path/'never-started')
     def submit(n):
-        return asyncio.run(transport._request_once(request_at_size(stage,n),model=SOL_HIGH_V1.model,
+        return asyncio.run(transport.request(request_at_size(stage,n),model=SOL_HIGH_V1.model,
             effort='high',timeout=600,stage=stage,panel='panel',slot_scope=scope))
-    with pytest.raises(wire.ModelPromptSizeExceeded,match='sol_high_input_exceeds_512KiB') as caught:
-        submit(512*1024+1)
+    with pytest.raises(wire.ModelPromptSizeExceeded,match='sol_high_input_exceeds_640KiB') as caught:
+        submit(640*1024+1)
     from app.services.research_no_send_run import _first_failure
     failure = _first_failure(caught.value, stage)
+    folder=tmp_path/'result'
+    folder.mkdir()
+    accepted=folder/'prior-accepted.json'
+    accepted.write_bytes(b'{"accepted":true}')
+    state={'first_failure':failure}
+    research._persist_first_failure(folder,state)
+    assert state['first_failure_receipt']['status']=='PERSISTED'
+    assert json.loads((folder/'first-failure.json').read_bytes())==failure
+    assert accepted.read_bytes()==b'{"accepted":true}'
+    budget.confirmed_timeout.assert_not_called()
     assert failure['code'] == 'RESEARCH_MODEL_PROMPT_LIMIT_EXCEEDED'
     detail = failure['model_input']
-    assert detail['prompt_bytes'] == 512*1024+1 and detail['limit_bytes'] == 512*1024
+    assert detail['prompt_bytes'] == 640*1024+1 and detail['limit_bytes'] == 640*1024
+    assert detail['instructions_bytes']+len(b'\nFROZEN_CONTEXT:\n')+detail['context_bytes']==detail['prompt_bytes']
     assert detail['subjects'] == ['005930'] and detail['stage'] == stage
     assert detail['schema_bytes'] > 0 and detail['context_bytes'] > 0
     assert detail['model_transmitted'] is False and detail['physical_call_consumed'] is False
     assert transport.total == 0 and transport.counts == {}
     budget.consume.assert_not_called()
+    if stage=='MARKET':
+        oversized=request_at_size(stage,128)
+        oversized['response_schema']={'description':'s'*(384*1024)}
+        with pytest.raises(ValueError,match='sol_high_schema_exceeds_384KiB'):
+            asyncio.run(transport.request(oversized,model=SOL_HIGH_V1.model,
+                effort='high',timeout=600,stage=stage,panel='panel',slot_scope=scope))
+        budget.consume.assert_not_called()
+        budget.confirmed_timeout.assert_not_called()
     with pytest.raises(AtConsumption):
-        submit(512*1024)
+        submit(640*1024)
     assert budget.consume.call_count==1
-    assert not list(tmp_path.iterdir())
+    assert list(tmp_path.iterdir())==[folder]
 
 
-def test_confirmed_timeout_accepts_both_512_and_keeps_schema_384(tmp_path,monkeypatch):
+def test_confirmed_timeout_accepts_both_640_and_keeps_schema_384(tmp_path,monkeypatch):
     folder=tmp_path/('run-'+'a'*32)
     inputs=folder/'approved-input'
     inputs.mkdir(parents=True)
@@ -229,7 +249,25 @@ def test_confirmed_timeout_accepts_both_512_and_keeps_schema_384(tmp_path,monkey
         return retry.confirmed_timeout(folder,worker_pid=1234,worker_returncode=0,receipt=receipt,
             prompt_sha256=sha256(prompt).hexdigest(),schema_sha256=sha256(schema).hexdigest(),frozen_market=market)
     for market in ('us','kr'):
-        assert proof(market,512*1024)
-        assert proof(market,512*1024+1) is None
-        assert proof(market,512*1024,384*1024+1) is None
+        assert proof(market,640*1024)
+        assert proof(market,640*1024+1) is None
+        assert proof(market,640*1024,384*1024+1) is None
     assert proof(None,384*1024+1) is None
+
+
+@pytest.mark.parametrize('market,cap', [('us',640),('kr',640),(None,384)])
+def test_official_worker_reads_plan_bound_prompt_and_separate_schema(tmp_path,market,cap):
+    from app.services.official_transport_input_preflight import preflight_official_input
+    from app.services.official_codex_shadow_transport_service import OfficialShadowError
+    prompt,schema=tmp_path/'prompt.txt',tmp_path/'provider-wire-schema.json'
+    def check(n,s):
+        pb=b'p'*n; sb=b'{}'+b' '*(s-2)
+        prompt.write_bytes(pb);schema.write_bytes(sb)
+        request=wire.ProductionWireRequest(None,'offline',sha256(pb).hexdigest(),sha256(sb).hexdigest(),
+            wire.SolHighWirePolicy(),{'market':market} if market else None)
+        preflight_official_input(prompt=prompt,schema=schema,cwd=tmp_path,request=request)
+    check(cap*1024,384*1024)
+    with pytest.raises(OfficialShadowError,match='SOL_PROMPT_TOO_LARGE'):
+        check(cap*1024+1,2)
+    with pytest.raises(OfficialShadowError,match='SOL_SCHEMA_TOO_LARGE'):
+        check(1,384*1024+1)

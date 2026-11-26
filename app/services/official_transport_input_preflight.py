@@ -7,6 +7,7 @@ import hashlib
 import json
 
 from app.services.fixture_context_authority import reject_test_only_production
+from app.services.production_model_profile import DEFAULT_SOL_INPUT_BYTES, SolHighWirePolicy, sol_prompt_limit_bytes
 from app.services.official_codex_shadow_transport_service import OfficialShadowError, _require
 
 
@@ -42,6 +43,11 @@ def preflight_official_input(*, prompt, schema, cwd, request):
     prompt_bytes, schema_bytes = prompt.read_bytes(), schema.read_bytes()
     _require(hashlib.sha256(prompt_bytes).hexdigest() == request.prompt_sha256, "PROMPT_DRIFT")
     _require(hashlib.sha256(schema_bytes).hexdigest() == request.schema_sha256, "SCHEMA_DRIFT")
+    if type(request.execution_policy) is SolHighWirePolicy:
+        # request_from_frame already validated this slot against the frozen plan.
+        market = (request.model_plan_scope or {}).get('market')
+        _require(len(prompt_bytes) <= sol_prompt_limit_bytes(market), "SOL_PROMPT_TOO_LARGE")
+        _require(len(schema_bytes) <= DEFAULT_SOL_INPUT_BYTES, "SOL_SCHEMA_TOO_LARGE")
     try:
         prompt_text = prompt_bytes.decode("utf-8", errors="strict")
         schema_value = json.loads(schema_bytes, object_pairs_hook=_unique_schema_object)
