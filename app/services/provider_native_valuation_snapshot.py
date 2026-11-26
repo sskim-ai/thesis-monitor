@@ -594,6 +594,8 @@ def _quarterly_reference_summary(rows, *, as_of, current):
     for row in rows:
         try:
             period = date.fromisoformat(row['period'])
+            if period.isoformat()!=row['period']:
+                raise ValueError('noncanonical provider period')
         except (KeyError, TypeError, ValueError):
             invalid_dates += 1
             continue

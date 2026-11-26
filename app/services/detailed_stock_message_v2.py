@@ -812,7 +812,12 @@ def _provider_reference_row(context):
         amount = _price_display(item['value'],currency)
         if item['zero_is_provider_observation_not_proven_zero_earnings']:
             amount += ' (공급자 0 관측, 실적 0 확정 아님)'
-        lines.append(f'{provider} 직접 {label}: {amount}')
+        note = ''
+        if 'reference_quote_quotient' in item:
+            note = (f" · 기준가 단순 몫 {item['reference_quote_quotient']:.2f}배"
+                    " (공급자 현재 배수 재계산 아님)")
+            refs.add(item['comparison_metric_ref'])
+        lines.append(f'{provider} 직접 {label}: {amount}'+note)
         refs.add(item['ref_id'])
     for item in reference['history']:
         whole = item['all']
@@ -839,7 +844,10 @@ def _provider_reference_row(context):
             refs.add(item['current_metric_ref'])
     if not lines:
         return None
-    lines.append('공급자 원래 필드 기준 · 자체 산출 주간 배수와 별개 · 정확한 산식/주식 기준·재무일 미확정')
+    retrieved = reference['retrieval_timestamp'][:10]
+    metric_day = reference.get('metric_asof')
+    lines.append(f'공급자 조회 {retrieved} · 지표일 {metric_day or "미명시"}'
+                 ' · 자체 산출 주간 배수와 별개 · 정확한 산식/주식 기준·재무일 미확정')
     return _row('valuation','provider-native-reference','\n'.join(lines),
         facts=tuple(sorted(refs)),hashes=(reference['raw_sha256'],reference['source_receipt_sha256']),
         formatting='provider-native-quarterly-reference-v1')

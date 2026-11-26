@@ -112,6 +112,10 @@ def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
             for key in ('direct','history'):
                 reference[key] = [r for r in reference[key] if r['ref_id'] not in blocked
                     and not any(token in value for value in _strings(r) for token in legacy_tokens)]
+            for row in reference['direct']:
+                if row.get('comparison_metric_ref') not in facts:
+                    row.pop('reference_quote_quotient',None)
+                    row.pop('comparison_metric_ref',None)
             for row in reference['history']:
                 metric_ref = row.get('current_metric_ref')
                 if metric_ref is not None and metric_ref not in facts:
@@ -137,6 +141,17 @@ def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
                 and (row.get('origin')!='PROVIDER_QUARTERLY_REFERENCE'
                      or set(row['evidence_refs'])<=reference_refs)
                 and not any(token in value for value in _strings(row) for token in legacy_tokens)]
+            if 'provider_method_conflict' in historical:
+                # The surviving provider references, not a removed method,
+                # own any displayed conflict after existing source denials.
+                rows = [r for r in historical['candidates']
+                    if r.get('origin')=='PROVIDER_QUARTERLY_REFERENCE']
+                comparable = [r for r in rows if r['a_selected_tier']] or [
+                    r for r in rows if r['quantile_band']=='P50_P75']
+                historical['provider_method_conflict'] = (len(comparable)>1 and (
+                    max(v1.number(r['low']) for r in comparable)>min(v1.number(r['high']) for r in comparable)
+                    or len({r['relation_to_price'] for r in comparable
+                            if r['relation_to_price']!='UNRESOLVED'})>1))
             if historical['candidates']:
                 model_input['historical_price_context'] = historical
                 model_input['prompt_version'] += '-historical-price-context'

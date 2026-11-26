@@ -166,14 +166,14 @@ def with_axis_refs(schema, context):
 
 def require_direction_isolation(value):
     if isinstance(value, dict):
-        if "valuation_context" in value:
+        if "valuation_context" in value or "provider_reference_context" in value:
             raise ValueError("valuation_directional_input_leak")
         for child in value.values():
             require_direction_isolation(child)
     elif isinstance(value, (list, tuple)):
         for child in value:
             require_direction_isolation(child)
-    elif isinstance(value, str) and any(prefix in value for prefix in ("current-valuation:", "kr-forward-valuation:")):
+    elif isinstance(value, str) and any(prefix in value for prefix in ("current-valuation:", "kr-forward-valuation:", "native-reference:")):
         raise ValueError("valuation_directional_ref_leak")
 
 

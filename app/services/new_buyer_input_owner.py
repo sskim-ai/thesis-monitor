@@ -209,12 +209,16 @@ def native_reference_for_b2(context, valuation_view, forward_view=None):
         ref['reference_quote'] = dict(value=float(price),currency=view.currency,
             as_of=view.price_session.isoformat(),basis=view.price_basis,
             scope='DIAGNOSTIC_NOT_PROVIDER_SAME_SESSION_RECOMPUTATION')
+        current_metrics = {m.metric: m for m in view.metrics if m.status=='QUALIFIED'}
         for row in ref['direct']:
             value = contract.number(row['value'])
-            if value is not None and value>0:
+            # Compare two independently available observations. Never
+            # reconstruct a missing/denied atomic multiple as a diagnostic.
+            if value is not None and value>0 and row['metric'] in current_metrics:
                 quotient = float(price/value)
                 if quotient != float('inf'):
                     row['reference_quote_quotient'] = round(quotient,4)
+                    row['comparison_metric_ref'] = 'current-valuation:'+view.security_id+':'+row['metric']
     return ref
 
 
