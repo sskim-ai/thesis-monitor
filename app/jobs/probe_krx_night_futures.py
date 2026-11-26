@@ -32,12 +32,14 @@ _MATURITY_YYYYMM_RE = re.compile(r"(?<!\d)(20\d{2})[./\- ]?(0[1-9]|1[0-2])(?!\d)
 _MATURITY_YYMM_RE = re.compile(r"(?<!\d)(\d{2})[./\- ]?(0[1-9]|1[0-2])(?!\d)")
 
 
-def expected_latest_completed_krx_session(run_date: date) -> date | None:
-    """Return the US morning digest's previous valid XKRX reference date."""
-    mapping = resolve_us_morning_night_reference_date(
-        datetime.combine(run_date, time(8, 0), tzinfo=KST)
-    )
+def _expected_reference_at(observed: datetime) -> date | None:
+    mapping = resolve_us_morning_night_reference_date(observed)
     return mapping.expected_reference_date if mapping is not None else None
+
+
+def expected_latest_completed_krx_session(run_date: date) -> date | None:
+    """Date-only planning convention for the 08:00 digest, not a probe clock."""
+    return _expected_reference_at(datetime.combine(run_date, time(8, 0), tzinfo=KST))
 
 
 class KrxFuturesRow(BaseModel):
@@ -706,16 +708,17 @@ async def fetch_live_probe(
     from app.services.bounded_financial_acquisition import SystemicStop
     from app.services.research_artifact_budget import ArtifactCapacityError
 
-    run_date = run_date or date.today()
     api_key = api_key if api_key is not None else get_settings().krx_open_api_key
     observed = observation_time or datetime.now(timezone.utc)
     if observed.tzinfo is None:
         observed = observed.replace(tzinfo=KST)
+    run_date = run_date or observed.astimezone(KST).date()
     fetched_at = observed.astimezone(timezone.utc)
     if exact_dates is not None:
         return await _fetch_exact_probe(dates=exact_dates, cutoff=observed,
             api_key=api_key, transport=transport, observer=source_observer,
             hard_stop_on_error=hard_stop_on_error)
+    calendar_expected_date = _expected_reference_at(observed)
     if not api_key:
         return _attach_fetch_telemetry(
             KrxNightFuturesProbeResult(
@@ -724,14 +727,13 @@ async def fetch_live_probe(
                 reason="KRX_OPEN_API_KEY is not configured",
             ),
             payloads={},
-            expected_session=expected_latest_completed_krx_session(run_date),
+            expected_session=calendar_expected_date,
         )
     queried_dates: list[date] = []
     skipped_warnings: list[str] = []
     last_fetch_error: str | None = None
     successful_response_count = 0
     date_statuses: list[KrxProbeDateStatus] = []
-    calendar_expected_date = expected_latest_completed_krx_session(run_date)
     payloads: dict[date, object] = {}
     payload_shas: dict[date, str] = {}
     response_bodies: dict[date, bytes] = {}
@@ -956,7 +958,7 @@ async def _fetch_exact_probe(*, dates, cutoff, api_key, transport, observer, har
     result = parse_krx_futures_payloads(payloads,fetched_at=received,queried_dates=queried,payload_sha256_by_date=hashes)
     result.assessment_cutoff, result.capture_started_at = cutoff, started
     result.date_statuses = statuses
-    expected = expected_latest_completed_krx_session(received.astimezone(KST).date())
+    expected = _expected_reference_at(received)
     result = _attach_fetch_telemetry(result,payloads=payloads,expected_session=expected,observation_time=received)
     result.session_freshness = ('fresh' if result.night_session_usable and result.source_date == expected
         and result.finality_valid else 'unverified')
