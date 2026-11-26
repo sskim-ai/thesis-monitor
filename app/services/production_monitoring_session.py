@@ -22,10 +22,9 @@ STAGE_NAMES = {"MARKET": "market", "CORE": "core", "A": "pass-a", "B": "pass-b"}
 
 
 def frozen_context_prompt(stage_name, prompt, context):
-    compact = stage_name == "pass-b" and any(
-        row.get("native_technical_context", {}).get("comparison_version") == 1
-        for row in context.values())
-    encoded = json.dumps(context, ensure_ascii=False, sort_keys=True, separators=(",", ":") if compact else None)
+    # Wire whitespace is not analytical evidence. All production stages use
+    # the same compact JSON representation without changing the context.
+    encoded = json.dumps(context, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return prompt + "\nFROZEN_CONTEXT:\n" + encoded + "\n"
 
 

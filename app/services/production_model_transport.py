@@ -161,7 +161,22 @@ def render_prompt(payload, stage):
         return payload["prompt"].encode()
     if stage != "B2":
         raise ValueError("production_model_stage_not_authorized")
-    return (payload["prompt"] + "\nFROZEN_CONTEXT:\n" + json.dumps(payload["input"], ensure_ascii=False, sort_keys=True) + "\n").encode()
+    return (payload["prompt"] + "\nFROZEN_CONTEXT:\n" + json.dumps(
+        payload["input"], ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n").encode()
+
+
+class ModelPromptSizeExceeded(ValueError):
+    """Payload-free diagnostic for a local rejection, before call accounting."""
+
+    def __init__(self, *, prompt, schema, limit, market, stage, slot_scope):
+        prefix, context = prompt.rsplit(b"\nFROZEN_CONTEXT:\n", 1)
+        self.receipt = dict(
+            market=market, stage=stage, subjects=list((slot_scope or {}).get("subjects", ())),
+            prompt_bytes=len(prompt), limit_bytes=limit, schema_bytes=len(schema),
+            instructions_bytes=len(prefix), context_bytes=len(context),
+            model_transmitted=False, physical_call_consumed=False,
+        )
+        super().__init__(f"sol_high_input_exceeds_{limit // 1024}KiB")
 
 
 class OfficialProductionModelTransport:
@@ -248,6 +263,11 @@ class OfficialProductionModelTransport:
         prompt, schema = render_prompt(payload, stage), encoded(payload["response_schema"])
         if any(secret in prompt or secret in schema for secret in self.secrets):
             raise ValueError("production_model_input_secret_detected")
+        if self.execution_profile:
+            prompt_limit = sol_prompt_limit_bytes(frozen_market)
+            if len(prompt) > prompt_limit:
+                raise ModelPromptSizeExceeded(prompt=prompt, schema=schema, limit=prompt_limit,
+                    market=self.cycle[0], stage=stage, slot_scope=slot_scope)
         policy = SolHighWirePolicy() if self.execution_profile else ProductionWirePolicy()
         contract = CONTRACT_V2 if self.execution_profile else CONTRACT
         path = self.runtime_root / (self.cycle[1] + "-" + uuid.uuid4().hex)
@@ -262,9 +282,6 @@ class OfficialProductionModelTransport:
             artifacts.check(path=path, added_work=len(prompt)+len(schema)+CLI_WORK_ALLOWANCE+MODEL_RESULT_ALLOWANCE,
                 added_result=MODEL_RESULT_ALLOWANCE, role='scratch')
         if self.execution_profile:
-            prompt_limit = sol_prompt_limit_bytes(frozen_market)
-            if len(prompt) > prompt_limit:
-                raise ValueError(f'sol_high_input_exceeds_{prompt_limit // 1024}KiB')
             if dynamic:
                 self.call_budget.plan.cohort.verify_source_owner(self.cohort_source_owner)
                 if not isinstance(slot_scope, dict) or slot_scope.get('market') != self.cycle[0]:

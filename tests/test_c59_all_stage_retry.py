@@ -178,7 +178,7 @@ def request_at_size(stage,length):
 def test_kr_frozen_512_boundary_before_consumption(tmp_path,monkeypatch,stage):
     transport=wire.OfficialProductionModelTransport.__new__(wire.OfficialProductionModelTransport)
     monkeypatch.setattr(wire,'validate_binding',lambda *a,**k:None)
-    scope={'slot_id':'scope','stage':stage,'market':'kr'}
+    scope={'slot_id':'scope','stage':stage,'market':'kr','subjects':['005930']}
     budget=Mock()
     budget.retry_enabled=False
     budget.timeout_retry_cap=0
@@ -192,8 +192,17 @@ def test_kr_frozen_512_boundary_before_consumption(tmp_path,monkeypatch,stage):
     def submit(n):
         return asyncio.run(transport._request_once(request_at_size(stage,n),model=SOL_HIGH_V1.model,
             effort='high',timeout=600,stage=stage,panel='panel',slot_scope=scope))
-    with pytest.raises(ValueError,match='sol_high_input_exceeds_512KiB'):
+    with pytest.raises(wire.ModelPromptSizeExceeded,match='sol_high_input_exceeds_512KiB') as caught:
         submit(512*1024+1)
+    from app.services.research_no_send_run import _first_failure
+    failure = _first_failure(caught.value, stage)
+    assert failure['code'] == 'RESEARCH_MODEL_PROMPT_LIMIT_EXCEEDED'
+    detail = failure['model_input']
+    assert detail['prompt_bytes'] == 512*1024+1 and detail['limit_bytes'] == 512*1024
+    assert detail['subjects'] == ['005930'] and detail['stage'] == stage
+    assert detail['schema_bytes'] > 0 and detail['context_bytes'] > 0
+    assert detail['model_transmitted'] is False and detail['physical_call_consumed'] is False
+    assert transport.total == 0 and transport.counts == {}
     budget.consume.assert_not_called()
     with pytest.raises(AtConsumption):
         submit(512*1024)

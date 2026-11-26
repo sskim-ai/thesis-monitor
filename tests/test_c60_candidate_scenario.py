@@ -120,11 +120,18 @@ def test_price_fact_has_inward_numbers_not_exactness_claims(low, kind):
 
 
 def test_b_wire_is_lossless_and_old_prompt_unchanged():
-    ctx = {"XYZ": {"native_technical_context": {"comparison_version": 1}, "evidence": ["one", "two"]}}
-    text = frozen_context_prompt("pass-b", "prefix", ctx)
+    # Preserve the full analytical JSON and instruction text, not redundant spaces.
+    ctx = {"XYZ": {"native_technical_context": {"comparison_version": 1},
+                   "evidence": ["한글", "quoted \"text\"", "two"]}}
     legacy = "prefix\nFROZEN_CONTEXT:\n" + json.dumps(ctx, ensure_ascii=False, sort_keys=True) + "\n"
-    assert len(text) < len(legacy) and frozen_context_prompt("pass-a", "prefix", ctx) == legacy
-    assert render_prompt(dict(prompt=text, input=ctx, response_schema={}), "B") == text.encode()
+    for stage_name, stage in (("market", "MARKET"), ("core", "CORE"),
+                              ("pass-a", "A"), ("pass-b", "B")):
+        text = frozen_context_prompt(stage_name, "prefix", ctx)
+        assert len(text.encode()) < len(legacy.encode())
+        assert json.loads(text.split("\nFROZEN_CONTEXT:\n", 1)[1]) == ctx
+        assert render_prompt(dict(prompt=text, input=ctx, response_schema={}), stage) == text.encode()
+    text = render_prompt(dict(prompt="prefix", input=ctx, response_schema={}), "B2")
+    assert text == frozen_context_prompt("pass-b", "prefix", ctx).encode()
 
 
 @pytest.mark.parametrize("market", ["us", "kr"])

@@ -15,7 +15,7 @@ import re
 
 from app.services.model_execution_plan import ModelExecutionPlan
 from app.services.production_model_profile import SolHighCallBudget
-from app.services.production_model_transport import OfficialProductionModelTransport
+from app.services.production_model_transport import OfficialProductionModelTransport, ModelPromptSizeExceeded
 from app.services.production_runtime_bridge import ProductionRuntimeBridgeV1
 from app.services.research_artifact_budget import ArtifactCapacityError, ArtifactScanError, ResearchArtifactBudget, artifact_scope, artifact_stage
 from app.services.research_request_storage import save_stage_request
@@ -185,6 +185,8 @@ def _first_failure(exc, stage):
             if type(receipt.get(k)) is int}
     if type(exc) is ArtifactScanError:
         failure.update(code=exc.receipt['code'], artifact_scan=dict(exc.receipt))
+    if type(exc) is ModelPromptSizeExceeded:
+        failure.update(code='RESEARCH_MODEL_PROMPT_LIMIT_EXCEEDED', model_input=dict(exc.receipt))
     return failure
 
 
