@@ -1155,6 +1155,13 @@ NUMERIC_SEMANTICS = {
         (r"차트.*(?:하방\s*위험|상승\s*여지)", r"chart.*(?:upside|downside)"),
         "currency",
     ),
+    "chart_upside_downside_pct": _spec(
+        "chart_upside_downside_pct",
+        ("pct",),
+        ("저항까지 상승 여력", "무효화선까지 하락 위험폭"),
+        (r"(?:저항|무효화선).*(?:상승\s*여력|하락\s*위험폭)",),
+        "percentage",
+    ),
     "risk_reward_ratio": _spec(
         "risk_reward_ratio",
         ("x",),
@@ -1695,13 +1702,20 @@ _FIELD_RULES = (
         ("chart_support_zone",), r"fields\.entry_scenario\.invalidation", "chart_invalidation_price", "currency",
     ),
     NumericFieldRule(
-        ("chart_support_zone",), r"fields\.entry_scenario\.(?:current_target|band_target)", "resistance_zone_price", "currency",
+        ("chart_support_zone",), r"fields\.entry_scenario\.(?:current_target|band_target|possible_current_barrier)", "resistance_zone_price", "currency",
     ),
     NumericFieldRule(
-        ("chart_support_zone",), r"fields\.entry_scenario\.(?:rr2_ceiling_inward|rr2_low|rr2_high)", "chart_rr2_watch_price", "currency",
+        ("chart_support_zone",), r"fields\.entry_scenario\.(?:rr2_ceiling_inward|rr2_low|rr2_high|current_rr2_ceiling_inward)", "chart_rr2_watch_price", "currency",
     ),
     NumericFieldRule(
         ("chart_support_zone",), r"fields\.entry_scenario\.current_rr", "current_price_risk_reward_ratio", "x",
+    ),
+    NumericFieldRule(
+        ("chart_support_zone",), r"fields\.entry_scenario\.band_rr", "support_entry_risk_reward_ratio", "x",
+    ),
+    NumericFieldRule(
+        ("chart_support_zone",), r"fields\.entry_scenario\.(?:current_upside_pct|current_downside_pct)",
+        "chart_upside_downside_pct", "pct",
     ),
     NumericFieldRule(
         ("chart_resistance_zone",),

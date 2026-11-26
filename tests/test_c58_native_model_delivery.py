@@ -82,7 +82,8 @@ def native_case(market, *, blocked=()):
     return session, ticker, source, stock, packet, owned
 
 
-def b2_with_native(context, *, security_id=None, frozen_authority=None, selected_candidate=None):
+def b2_with_native(context, *, security_id=None, frozen_authority=None, selected_candidate=None,
+                   include_structure=False):
     """Use real B2 request/schema builders with explicit synthetic economics."""
     data = b2_inputs(legacy=False)
     subject = data['v1_request']['subject']
@@ -96,6 +97,14 @@ def b2_with_native(context, *, security_id=None, frozen_authority=None, selected
         native_technical_context=deepcopy(context['native_technical_context']),
         current_price=deepcopy(context['current_price']), tactical_catalog=tactical,
         selected_tactical_candidate=selected_candidate)
+    if include_structure:
+        from app.services.new_buyer_input_owner import technical_structure_context
+        from app.services.entry_candidate_basis import selected_entry_scenario
+        selected = next((c for c in tactical if c['candidate_id'] == selected_candidate), None)
+        scenario = selected_entry_scenario(context, selected)
+        if scenario is not None:
+            subject['selected_entry_scenario'] = scenario
+        subject['technical_structure_context'] = technical_structure_context(context, selected, scenario)
     if frozen_authority is not None:
         subject['frozen_authority'] = deepcopy(frozen_authority)
     else:

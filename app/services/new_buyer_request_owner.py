@@ -77,6 +77,10 @@ def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
                 or scenario['evidence_ref'] not in model_input['timing_refs']):
             raise ValueError('v2_selected_entry_scenario_mismatch')
         model_input['selected_entry_scenario'] = deepcopy(scenario)
+    if 'technical_structure_context' in subject:
+        model_input['technical_structure_context'] = deepcopy(subject['technical_structure_context'])
+        model_input['prompt_version'] += '-entry-structure'
+        model_input['schema_version'] += '-entry-structure-refs'
     branches = contract.capabilities(model_input)
     model_input.update(allowed_stances=sorted({r['stance'] for r in branches}),
         allowed_wait_reasons=sorted({r['reason'] for r in branches if r['stance']=='WAIT'}),

@@ -1665,8 +1665,8 @@ def _compact_chart_structure(structure: dict[str, object]) -> dict[str, object]:
         "price_basis": structure.get("price_basis"),
         "availability": _dict(structure.get("availability")),
         "atr": _dict(structure.get("atr")),
-        "nearest_supports": meaningful_supports[:2],
-        "nearest_resistance": meaningful_resistances[:1],
+        "nearest_supports": structure.get("entry_supports", meaningful_supports[:2]),
+        "nearest_resistance": structure.get("entry_resistances", meaningful_resistances[:1]),
         "active_zones": _list(zones.get("active"))[:2],
         "boxes": {
             timeframe: _list(boxes.get(timeframe))[:1]
@@ -1870,6 +1870,12 @@ def _chart_facts(chart: dict[str, object], currency: str) -> list[dict[str, obje
                     if item.get(key) is not None
                 }
                 fields["currency"] = currency
+                # Carry the original V3/legacy anchor provenance without copying
+                # full maps or claiming another producer generated these bounds.
+                for key in ("zone_id", "source_refs", "price_anchor_refs", "related_zone_ids",
+                            "anchor_roles", "v3_role", "confirmation_bar", "entry_role", "entry_role_basis"):
+                    if item.get(key):
+                        fields[key] = item[key]
                 if fact_type == "chart_support_zone" and item.get("entry_scenario"):
                     from app.services.entry_price_basis import scenario_for_fact
                     scenario = scenario_for_fact(item, currency)
@@ -1880,7 +1886,7 @@ def _chart_facts(chart: dict[str, object], currency: str) -> list[dict[str, obje
                         "fact_id": f"chart:structure:{category}:{index}",
                         "fact_type": fact_type,
                         "as_of_date": str(structure.get("as_of_date") or ""),
-                        "source": "deterministic_ohlcv_structure",
+                        "source": item.get("source", "deterministic_ohlcv_structure"),
                         "fields": fields,
                     }
                 )
@@ -1978,6 +1984,9 @@ def _chart_facts(chart: dict[str, object], currency: str) -> list[dict[str, obje
                             "trigger_timeframe",
                             "trigger_dates",
                             "current_recovery",
+                            "recovery_basis",
+                            "observed_support_reclaim",
+                            "current_position",
                             "chart_only",
                             "currency",
                         )

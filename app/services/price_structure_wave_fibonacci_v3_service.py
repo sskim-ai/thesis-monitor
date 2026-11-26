@@ -1949,6 +1949,54 @@ def _sr_quality_eligible(zone: TechnicalZone) -> bool:
     return _zone_width_pct(zone) <= Decimal("20")
 
 
+def entry_zone_proposals(result: PriceStructureWaveFibV3Result) -> list[dict[str, object]]:
+    """Project confirmed price-anchored V3 zones before user-display selection.
+
+    These are proposals, not price/ENTRY authority. The scheduled Source owner
+    still binds the exact security, completed quote and frames. Keep original
+    zone bounds and anchors; never use a rendered label or a projected Fib
+    alone to assert a support/resistance role.
+    """
+    pivots = {p.pivot_id: p for rows in result.pivots.values() for p in rows}
+    proposals = {}
+    # The existing maps already have the engine's own structural ranking and
+    # bounds. Include raw pivot maps as well as consensus-safe combined maps.
+    for maps in (result.sr_maps, result.deterministic_sr_maps, result.timeframe_zone_maps):
+        for timeframe, zones in maps.items():
+            for zone in zones:
+                if zone.zone_id in proposals or not _sr_quality_eligible(zone):
+                    continue
+                anchors = [pivots[s.source_id] for s in zone.sources
+                           if s.evidence_type == "PIVOT" and s.status == "CONFIRMED"
+                           and s.source_id in pivots]
+                if not anchors or any(p.status != "CONFIRMED" or p.timeframe != timeframe
+                                      or not p.confirmation_date for p in anchors):
+                    continue
+                if any(s.status != "CONFIRMED" for s in zone.sources
+                       if s.evidence_type != "FIBONACCI"):
+                    continue
+                # Do not make an unresolved wave hypothesis a price anchor.
+                if any(s.evidence_type == "FIBONACCI" and s.family_stability is None
+                       for s in zone.sources):
+                    continue
+                roles = sorted({"support" if p.kind == "LOW" else "resistance" for p in anchors})
+                proposals[zone.zone_id] = dict(
+                    zone_id=zone.zone_id, zone_low=float(zone.low), zone_high=float(zone.high),
+                    timeframe=timeframe, source="price_structure_wave_fibonacci_v3",
+                    anchor_roles=roles, source_refs=sorted({s.source_id for s in zone.sources}),
+                    price_anchor_refs=sorted({p.pivot_id for p in anchors}),
+                    pivot_dates=[p.bar_date for p in anchors],
+                    pivot_prices=[float(p.price) for p in anchors],
+                    anchor_keys=sorted({f"{p.timeframe}:{p.bar_date}:{p.kind.lower()}" for p in anchors}),
+                    confirmation_bar=max(p.confirmation_date for p in anchors),
+                    structural_importance=zone.structural_importance,
+                    confirmation_quality=float(zone.confirmation_quality),
+                    # Original map observation, not proof of a historical crossing.
+                    v3_role=zone.current_role,
+                )
+    return list(proposals.values())
+
+
 def _adaptive_near_limit(
     timeframe: Timeframe,
     zones: Sequence[TechnicalZone],

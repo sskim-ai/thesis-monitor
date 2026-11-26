@@ -123,6 +123,13 @@ def scenario_for_fact(zone, currency):
     if not scenario or currency not in ('KRW', 'USD') or scenario.get('chart_only') is not True:
         return None
     result = dict(scenario)
+    # Current-target arithmetic is not the hypothetical support-entry band.
+    scale = 10 ** (0 if currency == 'KRW' else 2)
+    current = result.get('reference_price')
+    current_bounds = fixed_rr2_bounds(support_low=current, support_high=current,
+        invalidation=result.get('invalidation'), target=result.get('current_target'))
+    if current_bounds is not None and result.get('current_rr') is not None:
+        result['current_rr2_ceiling_inward'] = floor(current_bounds['maximum'] * scale) / scale
     bounds = fixed_rr2_bounds(support_low=zone['zone_low'], support_high=zone['zone_high'],
                               invalidation=result.get('invalidation'), target=result.get('band_target'))
     if bounds is None:

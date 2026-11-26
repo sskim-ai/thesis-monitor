@@ -205,7 +205,12 @@ def _selected_support_row(packet, base, timing, security_id, *, new_buyer=None, 
     session = price_session
     price = dict(value=quote.get("current_price"), currency=quote.get("currency"),
                  basis=basis, as_of=quote.get("as_of_date"))
-    if (fact["fact_type"] != "chart_support_zone" or fact.get("source") != "deterministic_ohlcv_structure"
+    from app.services.new_buyer_base_contract import number
+    if (fact["fact_type"] != "chart_support_zone"
+            or fact.get("source") not in {"deterministic_ohlcv_structure", "price_structure_wave_fibonacci_v3"}
+            or (fact.get("source") == "price_structure_wave_fibonacci_v3"
+                and (not fact["fields"].get("price_anchor_refs") or not fact["fields"].get("confirmation_bar")
+                     or fact["fields"].get("entry_role") != "support"))
             or node.get("ticker") != packet.ticker or not evidence.source_time
             or evidence.source_time.subject_ticker != packet.ticker
             or evidence.source_time.canonical_fact_sha256 != digest(fact)
@@ -219,7 +224,8 @@ def _selected_support_row(packet, base, timing, security_id, *, new_buyer=None, 
                 ("adjusted_close", "adjusted"), ("unadjusted_close", "unadjusted"), ("regular_close", "unadjusted")}
             or any(value != currency for value in (fact["fields"].get("currency"), quote.get("currency"),
                 entries.get("tactical_currency"), low_reg["unit"], high_reg["unit"]))
-            or low != entries.get("tactical_watch_low") or high != entries.get("tactical_watch_high")
+            or number(low) != number(entries.get("tactical_watch_low"))
+            or number(high) != number(entries.get("tactical_watch_high"))
             or not 0 < low <= high):
         return None
     from app.services.price_structure_v3_renderer_service import _price_display
@@ -407,8 +413,8 @@ def _entry_assessment(model_input, timing, context, market, session):
         frame = scenario['timeframe']
         if stop is not None and frame in ('daily', 'weekly') and 0 < stop < low:
             invalidation_ref, invalidation_price, invalidation_timeframe = proof, stop, frame
-            failure = ('완료 주봉의 선택 지지 무효화 조건 재확인' if frame == 'weekly'
-                       else '완료 일봉 종가·거래량·수급으로 선택 지지 무효화 조건 재확인')
+            failure = ('완료 주봉 종가가 선택 무효화선 아래면 구조 재검토' if frame == 'weekly'
+                       else '선택 무효화선 아래 완료 일봉 종가 2회 연속, 또는 해당 선 아래 종가와 거래량비율 1.2배 이상·분산 매도 동반 시 구조 재검토')
         else:
             stop = None
         status = scenario.get('status')
@@ -418,21 +424,31 @@ def _entry_assessment(model_input, timing, context, market, session):
         if status in ('recovered_review', 'lower_timeframe_review', 'higher_timeframe_review'):
             return assessed('CAUTION', 'SELECTED_WEEKLY_CONFIRMATION', '선택 주봉 구조 확인 필요', refs,
                             '다음 완료 주봉과 선택 기준선의 관계 확인')
-        if scenario.get('band_overlap') or scenario.get('active_obstacle'):
-            return assessed('CAUTION', 'SUPPORT_RESISTANCE_OVERLAP', '선택 구간 또는 현재가의 구조 중첩', refs,
-                            '겹치는 구조의 해소 확인')
+        if scenario.get('active_obstacle') or scenario.get('current_overlap'):
+            return assessed('CAUTION', 'SUPPORT_RESISTANCE_OVERLAP', '현재가 기준 적격 저항 중첩', refs,
+                            '현재 저항 중첩의 해소 확인')
+        if scenario.get('band_overlap'):
+            warnings.append('가정 지지 접근 구간의 저항 중첩')
+        if scenario.get('band_reason') == 'INTERMEDIATE_ROLE_UNCONFIRMED':
+            warnings.append('하단 가정 진입 시 중간 구조의 역할 미확정')
+        if scenario.get('possible_current_barrier') is not None:
+            warnings.append('현재 목표보다 가까운 역할 미확정 구간도 관찰 필요')
         state_ref = 'canonical:chart:structure:state'
         state = _statement(evidence.get(state_ref, {}))
         reasons = set(state.get('reasons', ()))
-        if (state.get('state') == 'WAIT' and
-                reasons & {'strong_or_medium_resistance_within_2pct', 'distribution'}):
-            note = ' · '.join(v for k,v in (('distribution','분산 매도 수급'),
-                ('strong_or_medium_resistance_within_2pct','근접 저항')) if k in reasons)
-            return assessed('CAUTION', 'COMMON_CHART_RISK', note, refs | {state_ref}, note + ' 해소 확인')
-        if state.get('state') == 'CONFIRM_ENTRY' and state.get('user_semantics') == 'confirmed_breakout_not_buy_command':
-            refs.add(state_ref)
+        if 'distribution' in reasons:
+            return assessed('CAUTION', 'COMMON_CHART_RISK', '분산 매도 수급', refs | {state_ref}, '실제 매도 압력 해소 확인')
+        # Near resistance is a price observation, not another independent
+        # veto on an already calculated favorable risk/reward.
+        upside = number(scenario.get('current_upside_pct'))
+        if upside is not None and upside <= 2:
+            warnings.append('근접 저항: 상승 여력과 무효화 위험폭 함께 검토')
         if status == 'wick_only_review':
             warnings.append('저가는 기준선 아래였지만 완료 종가는 기준선 이상')
+        if scenario.get('observed_support_reclaim'):
+            warnings.append('지지 확인 이후 현재 고정 구간 하단 기준 종가 이탈·재회복 관측')
+        # A global breakout may belong to a different candidate. Do not use
+        # it as the selected scenario's own confirmation.
         target, ratio = number(scenario.get('current_target')), number(scenario.get('current_rr'))
         rating = scenario.get('classification')
         if (stop is None or target is None or not stop < price < target or ratio is None or ratio <= 0
@@ -574,20 +590,21 @@ def _buyer_action(stance, relation, quality, *, reason_class=None, confirmed_bre
         return review
     if technical is not None and quality == 'SUPPORTED' and relation in {'INSIDE', 'ABOVE'}:
         state, change = technical.get('state'), technical.get('change')
-        if state == 'ADVERSE' or change == 'DETERIORATING':
+        if state == 'ADVERSE':
             return '기술지표 개선 또는 확인 신호 대기'
+        # State is the current entry-relevant judgment. Change is explanatory,
+        # not a second veto. MIXED expresses meaningful conflict, not failure
+        # to satisfy an independent approval flag.
+        if state == 'MIXED':
+            return '조건부 신규 매수 검토 가능'
+        if state == 'SUPPORTIVE' and (relation == 'ABOVE' or change == 'DETERIORATING'
+                                      or (assessment and getattr(assessment, 'warnings', ()))):
+            return '조건부 신규 매수 검토 가능'
         if assessment and assessment.scenario and assessment.scenario.get('status') == 'wick_only_review':
-            if state == 'SUPPORTIVE' or (state == 'MIXED' and change == 'IMPROVING') or confirmed_breakout:
+            if state == 'SUPPORTIVE' or confirmed_breakout:
                 return '조건부 신규 매수 검토 가능'
             return '완료 종가 회복 유지와 기술지표 개선 확인 대기'
-        if relation == 'INSIDE' and state == 'MIXED' and change == 'IMPROVING':
-            return '조건부 신규 매수 검토 가능'
-        # ABOVE is a price relation, not automatically a chase. An independently
-        # supportive technical assessment or an observed constructive change /
-        # existing confirmed breakout can justify conditional consideration.
-        if (relation == 'ABOVE' and change != 'DETERIORATING'
-                and (state == 'SUPPORTIVE' or (state == 'MIXED' and change == 'IMPROVING')
-                     or confirmed_breakout)):
+        if relation == 'ABOVE' and confirmed_breakout:
             return '조건부 신규 매수 검토 가능'
     if relation == "ABOVE":
         if confirmed_breakout:
@@ -705,7 +722,7 @@ def _entry_scenario_row(packet, base, assessment, session):
     fact_id = ref.removeprefix('canonical:')
     hashes, paths, lines = set(), [], []
     unit = {'us':'USD', 'kr':'KRW'}[packet.market]
-    def display(key, *, ratio=False):
+    def display(key, *, ratio=False, pct=False):
         path = 'fields.entry_scenario.' + key
         if key not in sc:
             return None
@@ -716,21 +733,52 @@ def _entry_scenario_row(packet, base, assessment, session):
         if (f['fact_type'] != 'chart_support_zone' or f['as_of_date'] != session
                 or n.get('ticker') != packet.ticker or f['fields'].get('currency') != unit
                 or f['fields']['entry_scenario'].get('chart_only') is not True
-                or r['unit'] != ('x' if ratio else unit) or number(value) != number(sc[key])):
+                or r['unit'] != ('x' if ratio else 'pct' if pct else unit) or number(value) != number(sc[key])):
             return None
         hashes.update((digest(f), digest(n), digest(r)))
         paths.append(fact_id + ':' + path)
-        return f'{value:g}배' if ratio else _price_display(value, unit)
+        return f'{value:g}배' if ratio else f'{value:.2f}%' if pct else _price_display(value, unit)
     target, rr = display('current_target'), display('current_rr', ratio=True)
+    if rr and sc.get('classification') in ('conditional', 'poor_chase') and number(rr.removesuffix('배')) >= 2:
+        rr = '2배 미만(반올림 경계)'
+    reason_labels = {'ACTIVE_RESISTANCE_OVERLAP': '현재가 저항 중첩',
+        'SUPPORT_RESISTANCE_OVERLAP': '지지·저항 중첩',
+        'INTERMEDIATE_ROLE_UNCONFIRMED': '중간 구조 역할 미확정',
+        'RESISTANCE_UNAVAILABLE': '가까운 적격 저항 미확보',
+        'INVALIDATION_UNAVAILABLE': '무효화선 미확보',
+        'PRICE_AT_OR_BELOW_INVALIDATION': '현재가가 무효화선 이하',
+        'invalidation_unavailable': '무효화선 미확보',
+        'non_positive_upside_or_downside': '유효 상승·하락폭 없음'}
     if target:
         lines.append('현재가 기준 가까운 저항 하단 ' + target + (' · 손익비 ' + rr if rr else ' · 손익비 미산출'))
+    elif sc.get('current_rr_reason'):
+        lines.append('현재 손익비 미산출: ' + reason_labels.get(sc['current_rr_reason'], '가격 구조 재확인 필요'))
+    if target and not rr and sc.get('current_rr_reason'):
+        lines.append('미산출 사유: ' + reason_labels.get(sc['current_rr_reason'], '가격 구조 재확인 필요'))
+    up, down = display('current_upside_pct', pct=True), display('current_downside_pct', pct=True)
+    if up and down:
+        lines.append(f'저항까지 상승 여력 {up} · 무효화선까지 하락 위험폭 {down}')
+    barrier = display('possible_current_barrier')
+    if barrier:
+        lines.append('가까운 역할 미확정 구간 하단 ' + barrier + ' (저항 확정 아님)')
+    current_ceiling = display('current_rr2_ceiling_inward')
+    if current_ceiling:
+        lines.append('현재 목표 고정 RR 2배 수학적 상한 ' + current_ceiling + ' (관찰 지지 아님)')
     band, ceiling = display('band_target'), display('rr2_ceiling_inward')
     if band and ceiling:
         overlap = sc.get('rr2_intersection')
         a, b = display('rr2_low'), display('rr2_high')
         note = (a + '–' + b if a and b else '표시 정밀도보다 좁음' if overlap == 'BELOW_DISPLAY_PRECISION'
                 else '교집합 없음' if overlap == 'EMPTY' else '미확인')
-        lines.append(f'지지 접근 가정: 가까운 저항 {band} · 손익비 2배 상한(내향 표시) {ceiling} · 지지 교집합 {note}')
+        midpoint_rr = display('band_rr', ratio=True)
+        assumed = ' (기존 저항 재접근 가정)' if sc.get('band_target_assumption') else ''
+        label = '기존 구조 참고' if assessment.quality == 'BLOCKED' else '지지 접근 가정'
+        lines.append(f'{label}: 가까운 저항 {band}{assumed}' +
+                     (f' · 중간값 RR {midpoint_rr}' if midpoint_rr else '') +
+                     f' · 손익비 2배 상한(내향 표시) {ceiling} · 지지 교집합 {note}')
+    elif sc.get('band_reason') or sc.get('invalidation_reason'):
+        lines.append('가정 진입 가격대 미산출: ' +
+                     reason_labels.get(sc.get('band_reason'), '유효한 무효화·저항 조건 미확정'))
     if not lines:
         return None
     return _row('price', 'selected-support-rr', '\n'.join(lines), facts=(ref,),

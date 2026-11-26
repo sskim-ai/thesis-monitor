@@ -50,9 +50,17 @@ def test_real_b_b2_wire_accepts_change_absent_unclear_and_adverse_improving(mark
         for key in ('previous','lag5','close_relations'):
             assert len(comp[key]) == len(native['comparison_fields'])
             assert {f for f,v in zip(native['comparison_fields'],comp[key]) if v is not None} <= set(period['evidence_refs'])
-    request = b2_with_native(context)
+    request = b2_with_native(context, include_structure=True)
     payload = owner.provider_payload(request, expected_request_sha256=request['request_sha256'])
     assert payload['input']['native_technical_context'] == native
+    assert payload['input']['technical_structure_context']
+    structure_ref = payload['input']['technical_structure_context'][0]['ref_id']
+    assert structure_ref in contract.technical_refs(payload['input'])
+    structure_output = outputs(request)[0]
+    structure_output['technical_assessment'].update(
+        state='MIXED', evidence_refs=[structure_ref], reason='완료봉 가격 구조와 추세를 함께 검토합니다.')
+    assert owner.validate_result(dict(new_buyer_shadow=structure_output), request,
+        expected_request_sha256=request['request_sha256'])['status'] == 'PASS'
     output = outputs(request)[0]
     baseline = deepcopy(output['technical_assessment'])
     for state,change in [('MIXED',None),('MIXED','UNCLEAR'),('ADVERSE','IMPROVING'),
@@ -78,8 +86,10 @@ def test_no_history_leaks_from_denied_native_period():
     ('ATTRACTIVE','ABOVE','SUPPORTED','MIXED','IMPROVING',False,'조건부 신규 매수 검토 가능'),
     ('ATTRACTIVE','ABOVE','SUPPORTED','MIXED',None,True,'조건부 신규 매수 검토 가능'),
     ('ATTRACTIVE','INSIDE','SUPPORTED','MIXED','IMPROVING',False,'조건부 신규 매수 검토 가능'),
-    ('ATTRACTIVE','INSIDE','SUPPORTED','MIXED',None,False,'신규 매수 검토 가능'),
-    ('ATTRACTIVE','ABOVE','SUPPORTED','MIXED','DETERIORATING',False,'기술지표 개선 또는 확인 신호 대기'),
+    ('ATTRACTIVE','INSIDE','SUPPORTED','MIXED',None,False,'조건부 신규 매수 검토 가능'),
+    ('ATTRACTIVE','ABOVE','SUPPORTED','MIXED',None,False,'조건부 신규 매수 검토 가능'),
+    ('ATTRACTIVE','ABOVE','SUPPORTED','MIXED','DETERIORATING',False,'조건부 신규 매수 검토 가능'),
+    ('ATTRACTIVE','INSIDE','SUPPORTED','SUPPORTIVE','DETERIORATING',False,'조건부 신규 매수 검토 가능'),
     ('ATTRACTIVE','ABOVE','SUPPORTED','ADVERSE','IMPROVING',True,'기술지표 개선 또는 확인 신호 대기'),
     ('ATTRACTIVE','ABOVE','CAUTION','SUPPORTIVE','IMPROVING',False,'가격 조정 또는 신규 확인 신호 대기'),
     ('ATTRACTIVE','INSIDE','BLOCKED','MIXED','IMPROVING',False,'지지 이탈 구조 재검토'),
@@ -107,3 +117,19 @@ def test_fixed_rr2_exact_intersection_and_inward_display():
     assert narrow['interval'] is not None and rr2_display_interval(narrow,decimals=2) is None
     assert fixed_rr2_bounds(support_low=90,support_high=95,invalidation=88,target=94) is None
     assert fixed_rr2_bounds(support_low=90,support_high=95,invalidation=None,target=110) is None
+
+def test_technical_structure_refs_are_actual_observations_not_entry_grants():
+    from app.services.new_buyer_input_owner import technical_structure_context
+    ctx, _, _ = bound_b_input(native_case('us'))
+    selected = ctx['r2_eligible_range_catalog']['tactical_candidates'][0]
+    rows = technical_structure_context(ctx, selected, None)
+    assert rows and all(row['observation'] for row in rows)
+    allowed = {r['ref_id'] for r in ctx['source_use_projection']['source_permissions']
+               if 'ENTRY' in r['allowed_uses']}
+    assert {row['ref_id'] for row in rows} <= allowed
+    # No native observations is not the same as no technical evidence.
+    model_input = dict(native_technical_context={"comparison_version":1,"periods":{}},
+                       technical_structure_context=rows)
+    assert contract.technical_refs(model_input) == sorted({row['ref_id'] for row in rows})
+    schema = contract.technical_assessment_schema(model_input)
+    assert 'MIXED' in schema['anyOf'][0]['properties']['state']['enum']

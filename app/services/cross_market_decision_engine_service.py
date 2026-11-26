@@ -480,8 +480,10 @@ def canonical_fact_statement(fact: Mapping[str, object]) -> str:
     display excerpt's boundary. All other fact and prose compacting is unchanged.
     """
     fields = fact.get("fields") or {}
-    if (fact.get("fact_type") == "chart_support_zone" and fact.get("source") == "deterministic_ohlcv_structure"
-            and isinstance(fields, dict) and "entry_scenario" in fields):
+    if (fact.get("fact_type") in {"chart_support_zone", "chart_resistance_zone"}
+            and fact.get("source") in {"deterministic_ohlcv_structure", "price_structure_wave_fibonacci_v3"}
+            and isinstance(fields, dict) and ("entry_scenario" in fields
+                                               or fact.get("source") == "price_structure_wave_fibonacci_v3")):
         return json.dumps(fields, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
     if fact.get("fact_type") == "chart_timeframe" and fact.get("fact_id") in {
         "chart:daily", "chart:weekly", "chart:monthly",

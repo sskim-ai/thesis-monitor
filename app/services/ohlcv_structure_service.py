@@ -1226,7 +1226,7 @@ def calculate_invalidation(
         > date.fromisoformat(weekly_bar_date).isocalendar()[:2]
     )
     current_recovery = "not_reclaimed"
-    if hard_weekly and later_daily_period and daily_bars[-1].close >= invalidation:
+    if timeframe == "weekly" and hard_weekly and later_daily_period and daily_bars[-1].close >= invalidation:
         current_recovery = (
             "support_reclaimed" if daily_bars[-1].close >= float(support["zone_low"])
             else "invalidation_reclaimed"
@@ -1247,6 +1247,24 @@ def calculate_invalidation(
         status = "lower_timeframe_review"
     else:
         status = "wick_only_review" if wick_only else "intact"
+    # An observed crossing of the current fixed band after confirmation is
+    # not proof of historical invalidation at a past dynamically computed line.
+    observed_reclaim = None
+    seen_support = False
+    break_date = None
+    if confirmation:
+        for bar in (daily_bars if timeframe == "daily" else weekly_bars):
+            if not after_confirmation(bar, timeframe):
+                continue
+            if bar.close >= float(support["zone_low"]):
+                if break_date:
+                    observed_reclaim = {"break_date": break_date, "reclaim_date": bar.date,
+                                        "basis": "POST_CONFIRMATION_CURRENT_FIXED_BAND"}
+                    break_date = None
+                seen_support = True
+            elif seen_support:
+                break_date = break_date or bar.date
+                observed_reclaim = None
     trigger_timeframe = (
         "weekly" if status in {"higher_timeframe_review", "recovered_review"}
         or timeframe == "weekly" and hard_weekly
@@ -1279,6 +1297,11 @@ def calculate_invalidation(
         "trigger_timeframe": trigger_timeframe,
         "trigger_dates": trigger_dates,
         "current_recovery": current_recovery,
+        "recovery_basis": "CURRENT_LINE_COMPARISON_NOT_HISTORICAL_BREAK",
+        "observed_support_reclaim": observed_reclaim,
+        "current_position": ("ABOVE_SUPPORT" if current_price > float(support["zone_high"]) else
+                             "INSIDE_SUPPORT" if current_price >= float(support["zone_low"]) else
+                             "ABOVE_INVALIDATION" if current_price > invalidation else "AT_OR_BELOW_INVALIDATION"),
         "chart_only": True,
     }
 
@@ -1369,31 +1392,245 @@ def select_nearest_meaningful_zones(
     )
 
 
+def _anchor_keys(zone):
+    if zone.get("anchor_keys"):
+        return tuple(sorted(set(zone["anchor_keys"])))
+    kind = zone.get("pivot_type")
+    if kind not in ("low", "high"):
+        return ()
+    return tuple(sorted({f'{zone["timeframe"]}:{day}:{kind}' for day in zone.get("pivot_dates", ())}))
+
+
+def _entry_role(zone, bars, price):
+    """Original confirmed role, or a reversal observed after its confirmation.
+
+    Position alone does not prove that a former support became resistance.
+    An unresolved transition remains context, never a firm RR target.
+    """
+    original = set(zone.get("anchor_roles") or (
+        ["support"] if zone.get("pivot_type") == "low" else
+        ["resistance"] if zone.get("pivot_type") == "high" else []))
+    lo, hi = float(zone["zone_low"]), float(zone["zone_high"])
+    if original == {"support"} and price >= lo:
+        return "support", "ORIGINAL_SUPPORT"
+    if original == {"resistance"} and price <= hi:
+        return "resistance", "ORIGINAL_RESISTANCE"
+    confirmed = zone.get("confirmation_bar")
+    if not confirmed:
+        return "unresolved", "ROLE_TRANSITION_UNCONFIRMED"
+    # Use only observed completed bars of the source frame. A close on the
+    # other side plus a later test from that side is a real role observation,
+    # not a claim about a prior dynamically calculated invalidation.
+    above = below = False
+    support_test = resistance_test = None
+    for bar in bars:
+        if bar.date <= confirmed:
+            continue
+        if above and bar.low <= hi and bar.close > hi:
+            support_test = bar.date
+        if below and bar.high >= lo and bar.close < lo:
+            resistance_test = bar.date
+        if bar.close > hi:
+            above = True
+            below = False
+            resistance_test = None
+        elif bar.close < lo:
+            below = True
+            above = False
+            support_test = None
+    if price >= lo and support_test:
+        return "support", "OBSERVED_RETEST:" + support_test
+    if price <= hi and resistance_test:
+        return "resistance", "OBSERVED_RETEST:" + resistance_test
+    return "unresolved", "ROLE_TRANSITION_UNCONFIRMED"
+
+
 def _candidate_scenario(zone, all_zones, price, resistance, invalid, current_rr):
-    """Bind the current target and the fixed-band target separately, on this zone only."""
+    """Current and hypothetical support-entry scenarios have separate targets."""
     lo, hi = zone["zone_low"], zone["zone_high"]
     def identity(z):
-        return (z["timeframe"], z.get("pivot_type"), z["zone_low"], z["zone_high"],
-                tuple(z.get("pivot_dates", ())), tuple(z.get("pivot_prices", ())))
-    others = [z for z in all_zones if z.get("strength") in ("Strong", "Medium")
+        keys = _anchor_keys(z)
+        return (z["timeframe"], keys or (z.get("pivot_type"), z["zone_low"], z["zone_high"]))
+    def role(z):
+        return z.get("entry_role") or _entry_role(z, (), price)[0]
+    others = [z for z in all_zones if (z.get("strength") in ("Strong", "Medium")
+              or z.get("source") == "price_structure_wave_fibonacci_v3")
               and identity(z) != identity(zone)]
-    overlap = any(z["zone_low"] <= hi and z["zone_high"] >= lo for z in others)
-    active_obstacle = any(z["zone_low"] <= price <= z["zone_high"] for z in others)
-    # Within a non-overlapping band the nearest resistance is constant. A
-    # resistance below the current quote can still be the nearer band target.
-    above_band = min((z["zone_low"] for z in others if z["zone_low"] > hi), default=None)
-    rr = current_rr.get("current_price") or {}
+    actual_resistance = [z for z in others if role(z) == "resistance"]
+    target = min((z for z in actual_resistance if z["zone_low"] > price),
+                 key=lambda z: z["zone_low"], default=None)
+    # Compatibility for callers supplying a resistance outside all_zones.
+    if resistance is not None and role(resistance) == "resistance" and resistance["zone_low"] > price:
+        if target is None or resistance["zone_low"] < target["zone_low"]:
+            target = resistance
+    active = any(z["zone_low"] <= price <= z["zone_high"] for z in actual_resistance)
+    overlap = any(z["zone_low"] <= hi and z["zone_high"] >= lo for z in actual_resistance)
+    # A prior confirmed resistance below the current quote is a legitimate
+    # *hypothetical* re-approach barrier. A different support below the quote
+    # is not automatically resistance when a future lower entry is imagined.
+    band_pool = [z for z in others if z["zone_low"] > hi and
+                 (role(z) == "resistance" or z.get("anchor_roles") == ["resistance"]
+                  or z.get("pivot_type") == "high")]
+    if target is not None and target["zone_low"] > hi:
+        band_pool.append(target)
+    band = min(band_pool, key=lambda z: z["zone_low"], default=None)
+    possible = [z for z in others if role(z) != "resistance" and z["zone_low"] > hi
+                and (z["zone_low"] <= price or role(z) == "unresolved")]
+    # Unresolved intervening role affects only the hypothetical band. Do not
+    # skip it to manufacture a distant fixed target.
+    unresolved_band = any(z["zone_low"] < (band["zone_low"] if band else math.inf)
+                          and z not in band_pool for z in possible)
+    band_reason = ("SUPPORT_RESISTANCE_OVERLAP" if overlap else
+                   "INTERMEDIATE_ROLE_UNCONFIRMED" if unresolved_band else
+                   "RESISTANCE_UNAVAILABLE" if band is None else None)
+    if band_reason:
+        band = None
+    stop = _number(invalid.get("price"))
+    current = (calculate_risk_reward(current_price=price, resistance=target,
+                invalidation=invalid, support=None)
+               if target is not None and not active and stop is not None and 0 < stop < price else {})
+    rr = current.get("current_price") or {}
+    # The existing RR calculator's availability flag remains authoritative.
+    band_rr = {}
+    if band is not None and stop is not None and 0 < stop < lo:
+        band_rr = (calculate_risk_reward(current_price=(lo + hi) / 2,
+                   resistance=band, invalidation=invalid, support=None).get("current_price") or {})
+    unknown_above = min((z["zone_low"] for z in others if role(z) == "unresolved"
+                         and z["zone_high"] >= price and
+                         (target is None or z["zone_low"] < target["zone_low"])), default=None)
+    def target_meta(z):
+        if z is None:
+            return None
+        return dict(source=z.get("source", "deterministic_ohlcv_structure"),
+                    zone_id=z.get("zone_id"), timeframe=z["timeframe"],
+                    role_basis=z.get("entry_role_basis", role(z)),
+                    anchor_refs=list(z.get("price_anchor_refs") or _anchor_keys(z)))
     return {k: v for k, v in {
-        "reference_price": price, "invalidation": invalid.get("price"),
+        "reference_price": price, "invalidation": stop,
         "invalidation_reason": invalid.get("reason"), "status": invalid.get("status"),
         "current_recovery": invalid.get("current_recovery"),
+        "recovery_basis": invalid.get("recovery_basis"),
+        "observed_support_reclaim": invalid.get("observed_support_reclaim"),
+        "current_position": invalid.get("current_position"),
         "confirmation_bar": zone.get("confirmation_bar"), "weekly_bar_date": invalid.get("weekly_bar_date"),
-        "current_target": resistance["zone_low"] if resistance else None,
-        "current_rr": rr.get("ratio") if not active_obstacle else None,
-        "classification": rr.get("classification") if not active_obstacle else None,
-        "band_target": None if overlap else above_band, "band_overlap": overlap,
-        "active_obstacle": active_obstacle, "chart_only": True,
+        "current_target": target["zone_low"] if target else None,
+        "current_target_basis": target_meta(target),
+        "current_rr": rr.get("ratio"), "classification": rr.get("classification"),
+        "current_rr_reason": ("ACTIVE_RESISTANCE_OVERLAP" if active else
+                              "RESISTANCE_UNAVAILABLE" if not target else
+                              "INVALIDATION_UNAVAILABLE" if stop is None or stop <= 0 else
+                              "PRICE_AT_OR_BELOW_INVALIDATION" if price <= stop else
+                              current.get("reason") if not rr else None),
+        "current_upside_pct": _round((target["zone_low"] - price) / price * 100) if rr else None,
+        "current_downside_pct": _round((price - stop) / price * 100) if rr else None,
+        "possible_current_barrier": unknown_above,
+        "band_target": band["zone_low"] if band else None,
+        "band_target_basis": ("SAME_AS_CURRENT" if band is not None and band is target
+                              else target_meta(band)),
+        "band_target_assumption": "HYPOTHETICAL_REAPPROACH" if band and role(band) != "resistance" else None,
+        "band_rr": band_rr.get("ratio"), "band_reason": band_reason,
+        "band_overlap": overlap, "active_obstacle": active, "current_overlap": active,
+        "chart_only": True,
     }.items() if v is not None}
+
+
+def project_entry_scenarios(structure, *, periods, timeframes, quote, session, v3_proposals=()):
+    """Use the existing scheduled Source, original zones and I/RR functions.
+
+    This changes only the tactical candidate projection, not the original
+    structural score or global chart state. Current-price ownership is never
+    obtained from V3. Distinct price anchors retain their own price bands.
+    """
+    from app.services.entry_price_basis import frame_matches_price
+    from app.services.new_buyer_base_contract import number
+    price = number(quote.get("value"))
+    if price is None or price <= 0 or not frame_matches_price(
+            dict(timeframes.get("daily", {}), currency=quote.get("currency")),
+            timeframe="daily", frame_as_of=timeframes.get("daily", {}).get("as_of_date"),
+            price=quote, session=session):
+        return structure
+    price = float(price)
+    frames = {tf for tf, frame in timeframes.items() if frame_matches_price(
+        dict(frame, currency=quote.get("currency")), timeframe=tf,
+        frame_as_of=frame.get("as_of_date"), price=quote, session=session)}
+    bars = {tf: normalize_structure_bars(periods.get(tf, [])) for tf in frames}
+    original = [dict(z) for z in structure.get("all_zones", ())
+                if z.get("strength") in ("Strong", "Medium") and z.get("timeframe") in frames]
+    pool = []
+    by_anchors = {}
+    for zone in (*original, *v3_proposals):
+        if zone.get("timeframe") not in frames:
+            continue
+        z = dict(zone)
+        if not 0 < z["zone_low"] <= z["zone_high"]:
+            continue
+        keys = _anchor_keys(z)
+        z["entry_role"], z["entry_role_basis"] = _entry_role(z, bars[z["timeframe"]], price)
+        key = keys
+        if keys and key in by_anchors:
+            existing = by_anchors[key]
+            # Keep one original band for the same anchors/role. For resistance,
+            # prefer the actual nearer lower edge; never enlarge the target.
+            if ((existing["entry_role"] == "unresolved" and z["entry_role"] != "unresolved")
+                    or (z["entry_role"] == existing["entry_role"] == "resistance"
+                        and z["zone_low"] < existing["zone_low"])):
+                pool[pool.index(existing)] = z
+                by_anchors[key] = z
+                existing, z = z, existing
+            related = set(existing.get("related_zone_ids", ())) | set(z.get("related_zone_ids", ()))
+            if z.get("zone_id"):
+                related.add(z["zone_id"])
+            if related:
+                existing["related_zone_ids"] = sorted(related)
+            anchors = sorted(set(existing.get("price_anchor_refs", ())) | set(z.get("price_anchor_refs", ())))
+            if anchors:
+                existing["price_anchor_refs"] = anchors
+            # Alternative bounds do not transfer their Fib/other contributors
+            # to the retained band's exact provenance.
+            if (existing["zone_low"], existing["zone_high"]) == (z["zone_low"], z["zone_high"]):
+                refs = sorted(set(existing.get("source_refs", ())) | set(z.get("source_refs", ())))
+                if refs:
+                    existing["source_refs"] = refs
+            continue
+        pool.append(z)
+        if keys:
+            by_anchors[key] = z
+    supports = [z for z in pool if z["entry_role"] == "support"]
+    resistances = sorted((z for z in pool if z["entry_role"] == "resistance"
+                          and z["zone_low"] > price), key=lambda z: z["zone_low"])
+    target = resistances[0] if resistances else None
+    def distance(z):
+        return max(price - z["zone_high"], 0)
+    # Preserve the existing two legacy candidates and add the original
+    # per-frame nearest/major V3 choices, not the user's display top four.
+    legacy = sorted((z for z in supports if z.get("source") != "price_structure_wave_fibonacci_v3"),
+                    key=distance)[:2]
+    choices = list(legacy)
+    for tf in ("daily", "weekly", "monthly"):
+        local = [z for z in supports if z.get("source") == "price_structure_wave_fibonacci_v3"
+                 and z["timeframe"] == tf]
+        if local:
+            for z in (min(local, key=distance),
+                      max(local, key=lambda x: (x.get("structural_importance", 0),
+                          x.get("confirmation_quality", 0), -distance(x)))):
+                if z not in choices:
+                    choices.append(z)
+    atr = structure.get("atr", {})
+    daily = bars.get("daily", [])
+    weekly = bars.get("weekly", [])
+    ratio = _number(timeframes.get("daily", {}).get("volume_ratio_20"))
+    supply = structure.get("supply_classification", {}).get("classification", "unavailable")
+    for zone in choices:
+        inv = calculate_invalidation(zone, current_price=price,
+            daily_atr=_number(atr.get("daily", {}).get("value")),
+            weekly_atr=_number(atr.get("weekly", {}).get("value")),
+            daily_bars=daily, weekly_bars=weekly, volume_ratio=ratio,
+            supply_classification=supply)
+        zone["entry_scenario"] = _candidate_scenario(zone, pool, price, target, inv, {})
+    result = dict(structure, entry_supports=choices, entry_resistances=resistances[:1])
+    result.setdefault("as_of_date", session)
+    result.setdefault("price_basis", quote["basis"])
+    return result
 
 
 def determine_chart_state(
@@ -1594,6 +1831,7 @@ def analyze_chart_structure(
     investor_supply: InvestorSupplyContext | Mapping[str, object] | None = None,
     price_basis: str = "adjusted_close",
     provider_native: bool = False,
+    defer_entry_scenarios: bool = False,
 ) -> dict[str, object]:
     timeframe_contexts = timeframe_contexts or {}
     series_by_timeframe = {
@@ -1738,7 +1976,7 @@ def analyze_chart_structure(
         if current_price is not None
         else {"available": False, "reason": "current_price_unavailable"}
     )
-    choices = [z for z in (*classified["active"], *classified["support"])
+    choices = [] if defer_entry_scenarios else [z for z in (*classified["active"], *classified["support"])
                if z["strength"] in {"Strong", "Medium"}][:2]
     for zone in choices:
         inv, rr = invalidation, risk_reward

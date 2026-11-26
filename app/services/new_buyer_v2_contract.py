@@ -85,15 +85,35 @@ def prompt_for(model_input):
     if c60_technical_input(model_input):
         from app.services.canonical_monitoring_input import C60_NATIVE_GUIDANCE
         prompt += '\n' + C60_NATIVE_GUIDANCE + '\n' + C60_TECHNICAL_PROMPT
+    if 'technical_structure_context' in model_input:
+        prompt += '''\nAlso interpret the existing technical_structure_context observations and
+selected_entry_scenario, if provided. Their supplied ref_id/evidence_ref values are valid
+technical citations. Use actual support/resistance roles, confirmation dates, ATR, Fibonacci
+anchors, and observed price/volume as relevant; do not duplicate the native facts or transfer
+risk from another candidate. General chart state is context, not the selected scenario.
+Current and hypothetical target/RR are different; a role-unconfirmed barrier is uncertainty,
+not a confirmed target. Use state to express the material *current* entry risk: ADVERSE for
+decisive adverse evidence, MIXED for genuinely competing evidence without a decisive veto.
+SUPPORTIVE can be deteriorating, and MIXED need not be fully recovered. Change is descriptive,
+never another approval requirement. Missing native fields alone are not adverse. RR is not
+expected return or probability. Consider actual upside and downside, including a near target.
+Use qualitative prose; numeric values are rendered separately by the backend.'''
     return prompt
 
 
 def technical_refs(model_input):
     native = model_input.get('native_technical_context', {})
-    return sorted({ref for period in native.get('periods', {}).values()
-                   for field, ref in period.get('evidence_refs', {}).items()
-                   if period.get('indicators', {}).get(field) is not None
-                   and period.get('indicator_quality', {}).get(field) == 'PROVIDER_NATIVE'})
+    refs = {ref for period in native.get('periods', {}).values()
+            for field, ref in period.get('evidence_refs', {}).items()
+            if period.get('indicators', {}).get(field) is not None
+            and period.get('indicator_quality', {}).get(field) == 'PROVIDER_NATIVE'}
+    if 'technical_structure_context' in model_input:
+        refs.update(row['ref_id'] for row in model_input['technical_structure_context']
+                    if row.get('observation'))
+        scenario = model_input.get('selected_entry_scenario') or {}
+        if scenario.get('evidence_ref') in model_input.get('timing_refs', ()):
+            refs.add(scenario['evidence_ref'])
+    return sorted(refs)
 
 
 def technical_assessment_schema(model_input):

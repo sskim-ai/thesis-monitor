@@ -172,4 +172,12 @@ def b_input(view, cat, sub, chain, classification, capability):
     native = native_technical_context(view, ctx)
     if native is not None:
         ctx['native_technical_context'] = native
+        # The complete basis checks were already executed. The model does not
+        # need duplicate audit digests for each candidate in three lists.
+        # B2 recomputes the same basis from the unchanged source evidence.
+        for rows in (entries['tactical_candidates'], ctx['tactical_candidates'],
+                     ctx['r2_eligible_range_catalog']['tactical_candidates'],
+                     ctx['entry_candidate_diagnostics']):
+            for row in rows:
+                row.pop('basis_proofs', None)
     return ctx, entries, valuation

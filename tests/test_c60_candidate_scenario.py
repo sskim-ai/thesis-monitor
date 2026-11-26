@@ -10,7 +10,9 @@ from app.services import new_buyer_base_contract as base
 from app.services import production_message_renderer as renderer
 from app.services.entry_candidate_basis import selected_entry_scenario
 from app.services.entry_price_basis import scenario_for_fact
-from app.services.ohlcv_structure_service import _candidate_scenario, calculate_invalidation
+from app.services.ohlcv_structure_service import (
+    _candidate_scenario, _entry_role, calculate_invalidation, project_entry_scenarios,
+)
 from app.services.production_monitoring_session import frozen_context_prompt
 from app.services.production_model_transport import render_prompt
 from app.services.unified_snapshot_contract import digest
@@ -24,15 +26,79 @@ def zone(low, high, frame="daily", pivot="2026-10-01"):
 
 
 def test_nearer_band_obstacle_and_same_low_identity():
-    z, middle, far = zone(93, 99), zone(105, 107), zone(130, 131)
-    inv, rr = dict(price=92, status="intact"), dict(current_price=dict(ratio=1.111111, classification="conditional"))
-    result = _candidate_scenario(z, [z, middle, far], 110, far, inv, rr)
+    z = zone(93, 99)
+    middle = dict(zone(105, 107, pivot="2026-10-05"), pivot_type="high")
+    far = dict(zone(130, 131, pivot="2026-10-09"), pivot_type="high")
+    inv = dict(available=True, price=92, status="intact")
+    result = _candidate_scenario(z, [z, middle, far], 110, far, inv, {})
     assert (result["current_target"], result["current_rr"], result["band_target"]) == (130, 1.111111, 105)
-    for distinct in (zone(93, 99, "weekly"), zone(93, 99, pivot="2026-10-05")):
-        other = _candidate_scenario(z, [z, distinct, far], 110, far, inv, rr)
+    assert result["band_target_assumption"] == "HYPOTHETICAL_REAPPROACH"
+    for distinct in (zone(93, 100, "weekly"), zone(93, 100, pivot="2026-10-05")):
+        other = _candidate_scenario(z, [z, distinct, far], 110, far, inv, {})
+        assert not other["band_overlap"] and other["band_target"] == 130
+        opposing = dict(distinct, pivot_type="high", entry_role="resistance")
+        other = _candidate_scenario(z, [z, opposing, far], 110, far, inv, {})
         assert other["band_overlap"] and "band_target" not in other
-    inside = _candidate_scenario(z, [z, middle, far], 106, far, inv, rr)
+        assert other["current_rr"] == result["current_rr"]
+    inside = _candidate_scenario(z, [z, middle, far], 106, far, inv, {})
     assert inside["active_obstacle"] and "current_rr" not in inside
+    support = dict(zone(104, 107, pivot="2026-10-05"), entry_role="support")
+    other = _candidate_scenario(z, [z, support, far], 110, far, inv, {})
+    assert not other["active_obstacle"] and not other["band_overlap"]
+    assert other["band_reason"] == "INTERMEDIATE_ROLE_UNCONFIRMED"
+    assert other["current_rr"] == result["current_rr"]
+
+
+def test_role_transition_requires_observed_retest_not_location():
+    z = dict(zone(9, 11), confirmation_bar="2026-11-16")
+    assert _entry_role(z, (), 8)[0] == "unresolved"
+    history = bars(("2026-11-17", 8), ("2026-11-18", 8))
+    # Use a real subsequent high touching the former support from below.
+    from dataclasses import replace
+    history[-1] = replace(history[-1], high=10)
+    assert _entry_role(z, history, 8)[0] == "resistance"
+    assert _entry_role(dict(z, confirmation_bar="2026-11-18"), history, 8)[0] == "unresolved"
+
+
+def test_v3_original_anchor_projection_and_current_vs_band_targets():
+    from decimal import Decimal
+    from app.services.price_structure_wave_fibonacci_v3_service import entry_zone_proposals
+    from app.services.ai_review_service import _compact_chart_structure
+
+    def raw_zone(identifier, kind, low, high, day):
+        pivot = SimpleNamespace(pivot_id=identifier, status="CONFIRMED", timeframe="daily",
+            bar_date=day, confirmation_date="2026-11-16", kind=kind, price=Decimal(str(low)))
+        src = SimpleNamespace(source_id=identifier, evidence_type="PIVOT", status="CONFIRMED")
+        value = SimpleNamespace(zone_id="v3:"+identifier, sources=[src], low=Decimal(str(low)),
+            high=Decimal(str(high)), center=(Decimal(str(low))+Decimal(str(high)))/2,
+            confirmation_quality=Decimal(1), structural_importance=11,
+            current_role="SUPPORT" if kind == "LOW" else "RESISTANCE")
+        return pivot, value
+    pv, sv = raw_zone("p1", "LOW", 9, 10, "2026-11-10")
+    pr, sr = raw_zone("p2", "HIGH", 12, 12.5, "2026-11-11")
+    result = SimpleNamespace(pivots={"daily":[pv,pr]}, sr_maps={"daily":[sv,sr]},
+        deterministic_sr_maps={}, timeframe_zone_maps={})
+    proposals = entry_zone_proposals(result)
+    assert len(proposals) == 2 and all(p["price_anchor_refs"] for p in proposals)
+    chart = fixture.chart_input("daily")
+    original = dict(as_of_date=fixture.SESSION, price_basis="adjusted_close",
+        atr={"daily":{"value":1,"available":True}}, all_zones=[
+            dict(zone(16,17,pivot="2026-11-12"),pivot_type="high")])
+    periods = {"daily":[dict(date=fixture.SESSION,open=10,high=10.5,low=9.5,close=10,volume=100)]}
+    quote = dict(value=10,currency="USD",basis="adjusted_close",as_of=fixture.SESSION)
+    projected = project_entry_scenarios(original, periods=periods, timeframes=chart["timeframes"],
+        quote=quote, session=fixture.SESSION, v3_proposals=proposals)
+    assert len(projected["entry_supports"]) == 1
+    selected = projected["entry_supports"][0]
+    assert selected["source"] == "price_structure_wave_fibonacci_v3"
+    assert selected["entry_scenario"]["current_target"] == 12
+    assert projected["entry_resistances"][0]["zone_low"] == 12
+    chart["structure"] = _compact_chart_structure(projected)
+    from app.services.ai_review_service import _chart_facts
+    from app.services.cross_market_decision_engine_service import canonical_fact_statement
+    support = next(f for f in _chart_facts(chart,"USD") if f["fact_type"]=="chart_support_zone")
+    assert support["source"] == "price_structure_wave_fibonacci_v3"
+    assert json.loads(canonical_fact_statement(support)) == support["fields"]
 
 
 @pytest.mark.parametrize("frame,confirmation", [("daily", "2026-11-23"), ("weekly", "2026-11-16")])
@@ -62,12 +128,18 @@ def test_b_wire_is_lossless_and_old_prompt_unchanged():
 
 
 @pytest.mark.parametrize("market", ["us", "kr"])
-def test_selected_source_scenario_to_renderer_and_denied_number(monkeypatch, market):
+@pytest.mark.parametrize("v3", [False, True])
+def test_selected_source_scenario_to_renderer_and_denied_number(monkeypatch, market, v3):
     chart = fixture.chart_input("daily")
     sc = dict(chart_only=True, reference_price=10, invalidation=7.846774, current_target=16,
               current_rr=2.78652, classification="attractive", band_target=16,
               status="wick_only_review", band_overlap=False, active_obstacle=False)
     chart["structure"]["nearest_supports"][0]["entry_scenario"] = sc
+    if v3:
+        chart["structure"]["nearest_supports"][0].update(
+            source="price_structure_wave_fibonacci_v3", zone_id="v3:fixture",
+            source_refs=["pivot:fixture"], price_anchor_refs=["pivot:fixture"],
+            confirmation_bar="2026-11-16", entry_role="support", entry_role_basis="ORIGINAL_SUPPORT")
     # This global hard-invalid fact is for a different support.
     chart["structure"]["invalidation"].update(support_low=4, price=3, status="hard_invalid")
     monkeypatch.setattr(fixture, "chart_input", lambda _: deepcopy(chart))
@@ -101,6 +173,7 @@ def test_selected_source_scenario_to_renderer_and_denied_number(monkeypatch, mar
     monkeypatch.setattr(renderer, "stock_plan", lambda *args: accepted)
     text = renderer.stock_message(session, ticker, row, execution_profile=fixture.SOL_HIGH_V1)["text"]
     assert "선택 지지 무효화선" in text and "가까운 저항 하단" in text and "손익비 2배 상한" in text
+    assert "2회 연속" in text
     assert len(text.encode("utf-16-le")) // 2 <= 4096
     reg = next(r for r in stock["numeric_registry"] if r["fact_id"] == selected["evidence_ref"].removeprefix("canonical:")
                and r["field_path"] == "fields.entry_scenario.invalidation")

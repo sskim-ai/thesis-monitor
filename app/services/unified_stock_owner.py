@@ -474,8 +474,11 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     structure_ready = structure_ready and all(c["eligible"]
         for consumers in structure_consumers.values() for c in consumers.values()
         if c["consumer"] in {"legacy_local_pivots", "legacy_major_swings_atr", "legacy_boxes"})
+    native_entry = (technical.native_view is not None
+                    and technical.native_view.allowed_use == "MONITORING_TECHNICAL")
     structure = analyze_chart_structure(structure_periods, timeframe_contexts=timeframes,
-        provider_native=technical.native_view is not None) if structure_ready else {}
+        provider_native=technical.native_view is not None,
+        defer_entry_scenarios=native_entry) if structure_ready else {}
     if kr_stock_chart_v3 is not False:
         _exact(kr_stock_chart_v3, expected_hashes["kr_stock_chart_v3"])
         if kr_stock_chart_v3 is not True or market != "kr":
@@ -485,11 +488,16 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
             from app.services.ohlcv_client import OHLCV_PROVIDER_REQUEST_LIMIT
             try:
                 v3 = from_completed_periods(ticker=ticker, cutoff=session_key, periods=periods,
-                    observed_at=plan.frozen_at.isoformat(), provider_limit=OHLCV_PROVIDER_REQUEST_LIMIT)
+                    observed_at=plan.frozen_at.isoformat(), provider_limit=OHLCV_PROVIDER_REQUEST_LIMIT,
+                    include_entry_zones=native_entry)
             except (TypeError, ValueError):
                 v3 = {}
             if v3:
-                structure["price_structure_v3"] = v3
+                if native_entry and v3.get("v3_entry_proposals"):
+                    structure["v3_entry_proposals"] = v3.pop("v3_entry_proposals")
+                    structure["v3_entry_basis_close"] = v3.pop("v3_entry_basis_close")
+                if v3:
+                    structure["price_structure_v3"] = v3
     if us_selected_dated_sr is not None:
         _exact(us_selected_dated_sr, expected_hashes["us_selected_dated_sr"])
         if (market != "us" or plan.contract != "selected-original-stock-plan-v1"
@@ -510,7 +518,7 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
                     security_id=reads[0].canonical_security_id, generation=plan.run_id, cutoff=session_key,
                     observed_at=plan.frozen_at.isoformat(),
                     periods={tf: roles["adjusted_" + tf] for tf in ("daily", "weekly", "monthly")}, receipts=receipts,
-                    provider_limit=OHLCV_PROVIDER_REQUEST_LIMIT)
+                    provider_limit=OHLCV_PROVIDER_REQUEST_LIMIT, include_entry_zones=native_entry)
             except (KeyError, TypeError, ValueError):
                 # Optional structure does not change the existing V2 facts.
                 pass
@@ -531,6 +539,21 @@ def assemble_stock(*, plan: StockPlan, ticker: str, receipts: dict, artifacts: d
     adjusted_reference = completed_bar_reference is not None and completed_bar_reference.availability == 'AVAILABLE'
     isolated_price = (completed_close_source is not None or price_state is not None) and not (
         adjusted_reference and components.get('completed_bar_reference_chart_qualified') is True)
+    if native_entry and not isolated_price:
+        from app.services.ohlcv_structure_service import project_entry_scenarios
+        from app.services.new_buyer_base_contract import number
+        proposals = structure.pop("v3_entry_proposals", [])
+        v3_close = structure.pop("v3_entry_basis_close", None)
+        quote = dict(value=decision.get("current_price"), currency=decision.get("currency"),
+                     basis=decision.get("price_basis"), as_of=decision.get("price_as_of"))
+        if (quote["basis"] != "adjusted_close" or number(v3_close) is None
+                or number(v3_close) != number(quote["value"])):
+            proposals = []
+        structure = project_entry_scenarios(structure, periods=structure_periods,
+            timeframes=timeframes, quote=quote, session=session_key, v3_proposals=proposals)
+    else:
+        structure.pop("v3_entry_proposals", None)
+        structure.pop("v3_entry_basis_close", None)
     chart = {"available": False if isolated_price else bool(timeframes),
         "quality": "unavailable" if isolated_price else "fresh", "source": "kiwoom",
         "timeframes": timeframes, "structure": _compact_chart_structure(structure) if structure else {},

@@ -109,6 +109,46 @@ def absolute_discount(context):
                 valuation_sha256=digest(value), option_id=option['option_id'])
 
 
+def technical_structure_context(context, selected, scenario):
+    """Existing B evidence, with compact observations rather than ref IDs alone.
+
+    Preserve the selected scenario separately. Do not grant new uses or import
+    display-only price levels into the model's ENTRY catalog.
+    """
+    eligible = {r['ref_id'] for r in context['source_use_projection']['source_permissions']
+                if 'ENTRY' in r.get('allowed_uses', ())}
+    support_refs = set(selected.get('evidence_refs', ())) if selected else {
+        ref for row in context.get('r2_eligible_range_catalog', {}).get('tactical_candidates', ())
+        for ref in row.get('evidence_refs', ())}
+    fields = {
+        'chart_timeframe': ('timeframe','candle','volume_ratio_20','price_basis','quality','range_position_pct'),
+        'chart_support_zone': ('zone_low','zone_high','currency','timeframe','entry_role','entry_role_basis','confirmation_bar'),
+        'chart_resistance_zone': ('zone_low','zone_high','currency','timeframe','entry_role','entry_role_basis'),
+        'chart_structure_atr': ('value','currency','timeframe','period'),
+        'chart_fibonacci': ('anchor_type','low_price','high_price','low_date','high_date','retracements','timeframe','confidence','currency'),
+        'chart_major_swing': ('kind','price','currency','timeframe','confirmed_at'),
+        'chart_box': ('box_low','box_high','currency','timeframe','width_pct'),
+        'chart_state': ('state','reasons','user_semantics','blocking_unknowns'),
+    }
+    result = []
+    for row in context['decision_evidence']:
+        ref, label = row['ref_id'], row.get('label')
+        if ref not in eligible or label not in fields:
+            continue
+        if scenario and ref == scenario['evidence_ref']:
+            continue
+        if label == 'chart_support_zone' and ref not in support_refs:
+            continue
+        observation = _statement(row)
+        if not observation:
+            continue
+        value = {k: deepcopy(observation[k]) for k in fields[label] if k in observation}
+        if value:
+            result.append(dict(ref_id=ref, label=label, as_of=row.get('as_of'), observation=value,
+                scope='GENERAL_CHART_CONTEXT_NOT_SELECTED_SCENARIO' if label == 'chart_state' else 'EXISTING_ENTRY_CONTEXT'))
+    return result
+
+
 def build_request(*, settings, context, accepted, core, pass_a, source_generation_id):
     if not settings.newbuyer_qualified_valuation_shadow:
         return None
@@ -161,6 +201,8 @@ def build_request(*, settings, context, accepted, core, pass_a, source_generatio
     scenario = selected_entry_scenario(context, selected)
     if scenario is not None:
         subject['selected_entry_scenario'] = scenario
+    if subject.get('native_technical_context', {}).get('comparison_version') == 1:
+        subject['technical_structure_context'] = technical_structure_context(context, selected, scenario)
     request = dict(contract=contract.CONTRACT, prompt=contract.PROMPT, subject=subject,
                    output_schema=contract.output_schema(subject), shadow_only=True,
                    dispatch_authorized=False, persistence_authorized=False,

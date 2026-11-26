@@ -46,7 +46,8 @@ def valid_reference_lineage(ref):
         return False
 
 
-def attach(structure, *, enabled, ticker, security_id, generation, cutoff, observed_at, periods, receipts, provider_limit):
+def attach(structure, *, enabled, ticker, security_id, generation, cutoff, observed_at, periods, receipts, provider_limit,
+           include_entry_zones=False):
     if not enabled:
         return structure
     target = date.fromisoformat(cutoff)
@@ -117,11 +118,18 @@ def attach(structure, *, enabled, ticker, security_id, generation, cutoff, obser
     if len(plan_hashes) != 1 or len(acquisitions) != 1 or not next(iter(acquisitions)):
         return structure
     context = build_us_price_structure_runtime_context(ticker=ticker, cutoff=reference,
-        raw_by_timeframe=complete, observed_at=observed_at, provider_limit=provider_limit, provider_native=True)
+        raw_by_timeframe=complete, observed_at=observed_at, provider_limit=provider_limit, provider_native=True,
+        include_entry_zones=include_entry_zones)
     if (context.get("as_of") != reference or context.get("current_quote") is not None
             or context.get("native_current_price_qualified") is not False
             or context.get("partial_bar_used_for_pivot_confirmation") != 0):
         return structure
+    if (include_entry_zones and reference == cutoff and context.get('structure_basis_session') == cutoff
+            and context.get('entry_zone_proposals')):
+        # Independent of the display rollout and its four-zone cap. The Source
+        # owner below still checks the canonical quote and each completed frame.
+        structure = dict(structure, v3_entry_proposals=context['entry_zone_proposals'],
+                         v3_entry_basis_close=context.get('structure_basis_close'))
     rollout = build_us_price_structure_rollout_decision(context, ticker=ticker, monitored_subject=True, enabled=True)
     if rollout.render_validation_errors:
         return structure

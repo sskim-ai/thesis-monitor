@@ -154,6 +154,7 @@ def build_us_price_structure_runtime_context(
     observed_at: str,
     provider_limit: int,
     provider_native: bool = False,
+    include_entry_zones: bool = False,
 ) -> dict[str, object]:
     return build_price_structure_runtime_context(
         ticker=ticker,
@@ -166,4 +167,5 @@ def build_us_price_structure_runtime_context(
         observed_at=observed_at,
         provider_limit=provider_limit,
         provider_native=provider_native,
+        include_entry_zones=include_entry_zones,
     )
