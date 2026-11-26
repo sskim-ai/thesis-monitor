@@ -1060,6 +1060,10 @@ NUMERIC_SEMANTICS = {
         (r"(?:동적\s*)?지지(?:구간|대)", r"support zone"),
         "currency",
     ),
+    "chart_rr2_watch_price": _spec(
+        "chart_rr2_watch_price", ("KRW", "USD"), ("기술 손익비 2배 관찰 가격",),
+        (r"손익비.*관찰.*가격",), "currency",
+    ),
     "resistance_zone_price": _spec(
         "resistance_zone_price",
         ("KRW", "USD"),
@@ -1682,6 +1686,22 @@ _FIELD_RULES = (
     NumericFieldRule(("chart_structure_atr",), r"fields\.value", "chart_atr", "currency"),
     NumericFieldRule(
         ("chart_support_zone",), r"fields\.zone_(?:low|high)", "support_zone_price", "currency"
+    ),
+    NumericFieldRule(
+        ("chart_support_zone",),
+        r"fields\.entry_scenario\.reference_price", "chart_close_price", "currency",
+    ),
+    NumericFieldRule(
+        ("chart_support_zone",), r"fields\.entry_scenario\.invalidation", "chart_invalidation_price", "currency",
+    ),
+    NumericFieldRule(
+        ("chart_support_zone",), r"fields\.entry_scenario\.(?:current_target|band_target)", "resistance_zone_price", "currency",
+    ),
+    NumericFieldRule(
+        ("chart_support_zone",), r"fields\.entry_scenario\.(?:rr2_ceiling_inward|rr2_low|rr2_high)", "chart_rr2_watch_price", "currency",
+    ),
+    NumericFieldRule(
+        ("chart_support_zone",), r"fields\.entry_scenario\.current_rr", "current_price_risk_reward_ratio", "x",
     ),
     NumericFieldRule(
         ("chart_resistance_zone",),

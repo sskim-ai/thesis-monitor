@@ -1,5 +1,6 @@
 """B2-owned New Buyer and backend timing, with unchanged accepted v1 body rows."""
 from dataclasses import dataclass
+from decimal import Decimal
 from typing import Literal
 
 from app.services.detailed_stock_message_service import (
@@ -37,8 +38,9 @@ class EntryAssessment:
     evidence_refs: tuple[str, ...] = ()
     confirmed_breakout: bool = False
     invalidation_ref: str | None = None
-    invalidation_price: float | None = None
+    invalidation_price: Decimal | None = None
     invalidation_timeframe: str | None = None
+    scenario: dict | None = None
 
 
 def _reported_quarter_rows(packet, base):
@@ -270,6 +272,11 @@ def _entry_gap_details(catalog, context, selected):
     # A shared price/frame problem explains why every candidate failed. Avoid
     # replacing it with incidental gaps in an unrelated reference candidate.
     reasons = common or {code for codes in reason_sets for code in codes}
+    if (context.get('reference_only_support_reason') == 'NO_QUALIFIED_STRUCTURE_V3_REFERENCE_ONLY'
+            and not (reasons - {'STORED_PRICE_RULE_REFERENCE_ONLY',
+                                'V3_COMPLETED_FRAME_BASIS_MISSING','SOURCE_USE_OR_CURRENCY_INELIGIBLE'})):
+        return ('NO_ELIGIBLE_SUPPORT', '완료봉의 적격 지지 후보 없음 · 표시된 V3 지지는 참고 전용',
+                '같은 가격 기준의 적격 지지 후보 형성 확인')
     labels = (
         ({'PRICE_STATEMENT_INVALID_JSON', 'DAILY_STATEMENT_INVALID_JSON',
           'ZONE_STATEMENT_INVALID_JSON', 'SUPPORT_STATEMENT_INVALID_JSON'},
@@ -331,6 +338,7 @@ def _entry_assessment(model_input, timing, context, market, session):
 
     location, warnings, failure = None, [], None
     invalidation_ref, invalidation_price, invalidation_timeframe = None, None, None
+    scenario = None
 
     def assessed(quality, code, note, refs=(), confirmation=None):
         refs = tuple(sorted(refs))
@@ -340,7 +348,7 @@ def _entry_assessment(model_input, timing, context, market, session):
             warnings=tuple(warnings), evidence_refs=refs,
             confirmed_breakout=_confirmed_breakout(context, refs),
             invalidation_ref=invalidation_ref, invalidation_price=invalidation_price,
-            invalidation_timeframe=invalidation_timeframe)
+            invalidation_timeframe=invalidation_timeframe, scenario=scenario)
 
     if context is None:
         return assessed('INSUFFICIENT_EVIDENCE', 'CONTEXT_MISSING', '진입 근거 상세 없음')
@@ -387,6 +395,55 @@ def _entry_assessment(model_input, timing, context, market, session):
             confirmation='선택 지지·완료봉·기준가격의 연결 확인')
     refs = set(timing["evidence_refs"]) | {daily_id} | {"canonical:chart:" + f for f in frames}
     low, high = number(candidate["low"]), number(candidate["high"])
+    from app.services.entry_candidate_basis import selected_entry_scenario
+    scenario = selected_entry_scenario(context, candidate)
+    if scenario is not None or 'selected_entry_scenario' in model_input:
+        if scenario != model_input.get('selected_entry_scenario'):
+            raise ValueError('detailed_selected_scenario_mismatch')
+    if scenario:
+        proof = scenario['evidence_ref']
+        refs.add(proof)
+        stop = number(scenario.get('invalidation'))
+        frame = scenario['timeframe']
+        if stop is not None and frame in ('daily', 'weekly') and 0 < stop < low:
+            invalidation_ref, invalidation_price, invalidation_timeframe = proof, stop, frame
+            failure = ('완료 주봉의 선택 지지 무효화 조건 재확인' if frame == 'weekly'
+                       else '완료 일봉 종가·거래량·수급으로 선택 지지 무효화 조건 재확인')
+        else:
+            stop = None
+        status = scenario.get('status')
+        if stop is not None and (price <= stop or status in ('hard_invalid', 'accelerated_invalid')):
+            return assessed('BLOCKED', 'SELECTED_SUPPORT_INVALID', '현재 기준선 대비 선택 지지 위험', refs,
+                            '선택 구조와 완료봉 종가 재평가')
+        if status in ('recovered_review', 'lower_timeframe_review', 'higher_timeframe_review'):
+            return assessed('CAUTION', 'SELECTED_WEEKLY_CONFIRMATION', '선택 주봉 구조 확인 필요', refs,
+                            '다음 완료 주봉과 선택 기준선의 관계 확인')
+        if scenario.get('band_overlap') or scenario.get('active_obstacle'):
+            return assessed('CAUTION', 'SUPPORT_RESISTANCE_OVERLAP', '선택 구간 또는 현재가의 구조 중첩', refs,
+                            '겹치는 구조의 해소 확인')
+        state_ref = 'canonical:chart:structure:state'
+        state = _statement(evidence.get(state_ref, {}))
+        reasons = set(state.get('reasons', ()))
+        if (state.get('state') == 'WAIT' and
+                reasons & {'strong_or_medium_resistance_within_2pct', 'distribution'}):
+            note = ' · '.join(v for k,v in (('distribution','분산 매도 수급'),
+                ('strong_or_medium_resistance_within_2pct','근접 저항')) if k in reasons)
+            return assessed('CAUTION', 'COMMON_CHART_RISK', note, refs | {state_ref}, note + ' 해소 확인')
+        if state.get('state') == 'CONFIRM_ENTRY' and state.get('user_semantics') == 'confirmed_breakout_not_buy_command':
+            refs.add(state_ref)
+        if status == 'wick_only_review':
+            warnings.append('저가는 기준선 아래였지만 완료 종가는 기준선 이상')
+        target, ratio = number(scenario.get('current_target')), number(scenario.get('current_rr'))
+        rating = scenario.get('classification')
+        if (stop is None or target is None or not stop < price < target or ratio is None or ratio <= 0
+                or rating not in ('attractive', 'conditional', 'poor_chase')):
+            return assessed('INSUFFICIENT_EVIDENCE', 'CURRENT_PRICE_RISK_REWARD_MISSING',
+                            '선택 지지의 현재가 손익비 미산출', refs, '유효한 무효화선과 가까운 저항 확인')
+        if rating == 'attractive':
+            return assessed('SUPPORTED', 'CURRENT_PRICE_RISK_REWARD_ATTRACTIVE', '선택 지지의 현재가 손익비가 지지함', refs)
+        return assessed('CAUTION', 'CURRENT_PRICE_RISK_REWARD_' + rating.upper(),
+                        '현재가 손익비가 조건부' if rating == 'conditional' else '현재가 추격 손익비가 불리함',
+                        refs, '선택 지지와 손익비 2배 가격 조건 재확인')
     rr_ref = "canonical:chart:structure:risk_reward:current_price"
     inv_ref = "canonical:chart:structure:invalidation"
     inv = _statement(evidence.get(inv_ref, {}))
@@ -495,10 +552,12 @@ def _entry_quality(model_input, timing, context, market, session):
 
 
 def _buyer_action(stance, relation, quality, *, reason_class=None, confirmed_breakout=False,
-                  assessment=None):
+                  assessment=None, technical=None):
     if stance == "AVOID":
         return "신규 매수 회피"
     structural_review = relation == "BELOW" or quality == "BLOCKED"
+    review = ("현재 기준선 대비 선택 지지 구조 재검토" if assessment and assessment.scenario
+              else "지지 이탈 구조 재검토")
     if stance == "WAIT":
         reasons = {
             "BUSINESS_MIXED": "사업 근거 혼재 해소 대기",
@@ -510,9 +569,26 @@ def _buyer_action(stance, relation, quality, *, reason_class=None, confirmed_bre
             "CONFIDENCE_UNCERTAINTY": "판단을 제한하는 근거 확인 대기",
         }
         action = reasons.get(reason_class, "신규매수 판단 근거 확인 대기")
-        return action + " · 지지 이탈 구조 재검토" if structural_review else action
+        return action + " · " + review if structural_review else action
     if structural_review:
-        return "지지 이탈 구조 재검토"
+        return review
+    if technical is not None and quality == 'SUPPORTED' and relation in {'INSIDE', 'ABOVE'}:
+        state, change = technical.get('state'), technical.get('change')
+        if state == 'ADVERSE' or change == 'DETERIORATING':
+            return '기술지표 개선 또는 확인 신호 대기'
+        if assessment and assessment.scenario and assessment.scenario.get('status') == 'wick_only_review':
+            if state == 'SUPPORTIVE' or (state == 'MIXED' and change == 'IMPROVING') or confirmed_breakout:
+                return '조건부 신규 매수 검토 가능'
+            return '완료 종가 회복 유지와 기술지표 개선 확인 대기'
+        if relation == 'INSIDE' and state == 'MIXED' and change == 'IMPROVING':
+            return '조건부 신규 매수 검토 가능'
+        # ABOVE is a price relation, not automatically a chase. An independently
+        # supportive technical assessment or an observed constructive change /
+        # existing confirmed breakout can justify conditional consideration.
+        if (relation == 'ABOVE' and change != 'DETERIORATING'
+                and (state == 'SUPPORTIVE' or (state == 'MIXED' and change == 'IMPROVING')
+                     or confirmed_breakout)):
+            return '조건부 신규 매수 검토 가능'
     if relation == "ABOVE":
         if confirmed_breakout:
             return "돌파·거래량 확인 완료, 선택된 지지 구간 기준의 진입은 가격 조정 대기"
@@ -548,9 +624,11 @@ def _confirmed_breakout(context, refs):
 def _entry_lines(output, model_input, entry_context, market, session, *, assessment=None):
     timing = output["timing_context"]
     result = assessment or _entry_assessment(model_input, timing, entry_context, market, session)
+    technical = output.get('technical_assessment')
     action = _buyer_action(output["new_buyer"], timing["relation"], result.quality,
                            reason_class=output["reason_class"],
-                           confirmed_breakout=result.confirmed_breakout, assessment=result)
+                           confirmed_breakout=result.confirmed_breakout, assessment=result,
+                           technical=technical if b2.c60_technical_input(model_input) else None)
     reason = {"BUSINESS_MIXED":"사업 근거 혼재", "BUSINESS_GATE_NOT_MET":"사업 근거 요건 미충족",
               "BUSINESS_EVIDENCE_UNCERTAINTY":"사업 근거 불확실", "VALUATION_UNRESOLVED":"가치평가 근거 부족",
               "CONFIDENCE_UNCERTAINTY":"확신을 제한하는 근거", "ACTIVE_ADVERSE_UNCOMPENSATED":"활성 중대 위험",
@@ -568,16 +646,21 @@ def _entry_lines(output, model_input, entry_context, market, session, *, assessm
         detail += '\n구조 재검토 조건: ' + result.failure_condition
     lines = [f"신규매수 근거: {reason}", detail]
     refs = set(result.evidence_refs)
-    technical = output.get('technical_assessment')
     if technical is not None:
         explanation = b2.technical_reason(technical['reason'], technical['evidence_refs'])
         label = {'SUPPORTIVE': '지지', 'MIXED': '혼재', 'ADVERSE': '약화',
                  'INSUFFICIENT': '자료 부족'}[technical['state']]
+        change = {'IMPROVING': '회복·개선', 'DETERIORATING': '악화 진행',
+                  'STABLE': '변화 제한'}.get(technical.get('change'))
+        if change:
+            label += ' · ' + change
         lines.append(f'기술지표 판단: {label} — {explanation}')
         refs.update(technical['evidence_refs'])
         if technical['state'] == 'ADVERSE':
-            action = ('기술지표 개선 또는 확인 신호 대기' if action == '신규 매수 검토 가능'
-                      else action + ' · 기술지표 약화 추가 확인')
+            if action in {'신규 매수 검토 가능', '조건부 신규 매수 검토 가능'}:
+                action = '기술지표 개선 또는 확인 신호 대기'
+            elif action != '기술지표 개선 또는 확인 신호 대기':
+                action += ' · 기술지표 약화 추가 확인'
     lines.append(f'최종 신규매수 행동: {action}')
     return tuple(lines), tuple(sorted(refs))
 
@@ -588,24 +671,70 @@ def _entry_invalidation_row(packet, base, assessment, session):
     if not ref or not ref.startswith('canonical:') or not session:
         return None
     fact_id = ref.removeprefix('canonical:')
+    scoped = assessment.scenario is not None
+    path = 'fields.entry_scenario.invalidation' if scoped else 'fields.price'
     try:
-        fact, node, registry, value = _source_number(fact_id, 'fields.price', base.source_stock)
+        fact, node, registry, value = _source_number(fact_id, path, base.source_stock)
     except (KeyError, ValueError):
         return None
     currency = {'kr': 'KRW', 'us': 'USD'}[packet.market]
     fields = fact['fields']
     timeframe = assessment.invalidation_timeframe
-    if (fact['fact_type'] != 'chart_invalidation' or fact['as_of_date'] != session
-            or fields.get('chart_only') is not True or fields.get('timeframe') != timeframe
+    from app.services.new_buyer_base_contract import number
+    owner = fields.get('entry_scenario', {}) if scoped else fields
+    if (fact['fact_type'] != ('chart_support_zone' if scoped else 'chart_invalidation') or fact['as_of_date'] != session
+            or owner.get('chart_only') is not True or fields.get('timeframe') != timeframe
             or fields.get('currency') != currency or registry['unit'] != currency
-            or node.get('ticker') != packet.ticker or value != assessment.invalidation_price):
+            or node.get('ticker') != packet.ticker or number(value) != number(assessment.invalidation_price)):
         return None
     from app.services.price_structure_v3_renderer_service import _price_display
     label = {'daily': '일봉', 'weekly': '주봉', 'monthly': '월봉'}[timeframe]
     return _row('price', 'selected-support-invalidation',
         f'선택 지지 무효화선({session} {label}): {_price_display(value, currency)} · 완료봉 조건으로 판정',
         facts=(ref,), hashes=(digest(fact), digest(node), digest(registry)),
-        numeric=(fact_id + ':fields.price',), formatting='selected-support-invalidation-registry-v1')
+        numeric=(fact_id + ':' + path,), formatting='selected-support-invalidation-registry-v1')
+
+
+def _entry_scenario_row(packet, base, assessment, session):
+    from app.services.new_buyer_base_contract import number
+    from app.services.price_structure_v3_renderer_service import _price_display
+    sc = assessment.scenario
+    if not sc or sc['as_of'] != session:
+        return None
+    ref = sc['evidence_ref']
+    fact_id = ref.removeprefix('canonical:')
+    hashes, paths, lines = set(), [], []
+    unit = {'us':'USD', 'kr':'KRW'}[packet.market]
+    def display(key, *, ratio=False):
+        path = 'fields.entry_scenario.' + key
+        if key not in sc:
+            return None
+        try:
+            f, n, r, value = _source_number(fact_id, path, base.source_stock)
+        except (KeyError, ValueError):
+            return None
+        if (f['fact_type'] != 'chart_support_zone' or f['as_of_date'] != session
+                or n.get('ticker') != packet.ticker or f['fields'].get('currency') != unit
+                or f['fields']['entry_scenario'].get('chart_only') is not True
+                or r['unit'] != ('x' if ratio else unit) or number(value) != number(sc[key])):
+            return None
+        hashes.update((digest(f), digest(n), digest(r)))
+        paths.append(fact_id + ':' + path)
+        return f'{value:g}배' if ratio else _price_display(value, unit)
+    target, rr = display('current_target'), display('current_rr', ratio=True)
+    if target:
+        lines.append('현재가 기준 가까운 저항 하단 ' + target + (' · 손익비 ' + rr if rr else ' · 손익비 미산출'))
+    band, ceiling = display('band_target'), display('rr2_ceiling_inward')
+    if band and ceiling:
+        overlap = sc.get('rr2_intersection')
+        a, b = display('rr2_low'), display('rr2_high')
+        note = (a + '–' + b if a and b else '표시 정밀도보다 좁음' if overlap == 'BELOW_DISPLAY_PRECISION'
+                else '교집합 없음' if overlap == 'EMPTY' else '미확인')
+        lines.append(f'지지 접근 가정: 가까운 저항 {band} · 손익비 2배 상한(내향 표시) {ceiling} · 지지 교집합 {note}')
+    if not lines:
+        return None
+    return _row('price', 'selected-support-rr', '\n'.join(lines), facts=(ref,),
+        hashes=tuple(sorted(hashes)), numeric=tuple(paths), formatting='selected-support-scenario-v1')
 
 
 def _judgment_text(decision, axes, entry_lines):
@@ -678,6 +807,9 @@ def build_detailed_plan_v2(*, packet, base, b2_request, b2_result, authorization
         invalidation = _entry_invalidation_row(packet, base, assessment, price_session)
         if invalidation is not None:
             rows += (invalidation,)
+        scenario = _entry_scenario_row(packet, base, assessment, price_session)
+        if scenario is not None:
+            rows += (scenario,)
     binding = dict(base=presentation.acceptance_sha256, request=digest(b2_request), result=digest(b2_result),
         authorization=digest(authorization.model_dump(mode="json")), rows=[r.model_dump(mode="json") for r in rows])
     return DetailedStockMessagePlanV2(base=presentation, b2_request=b2_request, b2_result=b2_result,

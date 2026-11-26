@@ -4,7 +4,7 @@ Inputs must be accepted, frozen Core/A/B artifacts from the caller's run. This
 module cannot acquire sources, invoke a model, persist an assessment or deliver.
 """
 from copy import deepcopy
-from app.services.entry_candidate_basis import assess_entry_candidates
+from app.services.entry_candidate_basis import assess_entry_candidates, selected_entry_scenario
 from app.services.entry_candidate_basis import statement as _statement  # noqa: F401 - renderer re-export
 from app.services.provider_valuation_calibration_context import parse_context
 from app.services.provider_native_valuation_snapshot import (
@@ -156,6 +156,11 @@ def build_request(*, settings, context, accepted, core, pass_a, source_generatio
                        context=digest(context)))
     if 'native_technical_context' in context:
         subject['native_technical_context'] = deepcopy(context['native_technical_context'])
+    selected = next((c for c in subject['tactical_catalog']
+                     if c['candidate_id'] == subject['selected_tactical_candidate']), None)
+    scenario = selected_entry_scenario(context, selected)
+    if scenario is not None:
+        subject['selected_entry_scenario'] = scenario
     request = dict(contract=contract.CONTRACT, prompt=contract.PROMPT, subject=subject,
                    output_schema=contract.output_schema(subject), shadow_only=True,
                    dispatch_authorized=False, persistence_authorized=False,

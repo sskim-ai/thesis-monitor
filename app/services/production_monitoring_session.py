@@ -21,6 +21,14 @@ from app.services import new_buyer_request_owner as b2
 STAGE_NAMES = {"MARKET": "market", "CORE": "core", "A": "pass-a", "B": "pass-b"}
 
 
+def frozen_context_prompt(stage_name, prompt, context):
+    compact = stage_name == "pass-b" and any(
+        row.get("native_technical_context", {}).get("comparison_version") == 1
+        for row in context.values())
+    encoded = json.dumps(context, ensure_ascii=False, sort_keys=True, separators=(",", ":") if compact else None)
+    return prompt + "\nFROZEN_CONTEXT:\n" + encoded + "\n"
+
+
 class ProductionMonitoringSession:
     POLICY = domain.c.policy
     DETAILED_PRESENTATION = True
@@ -268,7 +276,7 @@ class ProductionMonitoringSession:
         if scan["status"] != "PASS":
             raise ValueError("production_provider_wire_schema_gap")
         destination = self.requests / stage_name / self.market / f"batch-{spec['batch']:02d}"
-        payload = dict(prompt=prompt + "\nFROZEN_CONTEXT:\n" + json.dumps(context, ensure_ascii=False, sort_keys=True) + "\n",
+        payload = dict(prompt=frozen_context_prompt(stage_name, prompt, context),
                        input=deepcopy(context), response_schema=wire)
         for name, value in (("subject-context", context), ("internal-semantic-schema", schema),
                             ("provider-wire-schema", wire), ("provider-wire-projection", projection), ("provider-dialect-scan", scan)):

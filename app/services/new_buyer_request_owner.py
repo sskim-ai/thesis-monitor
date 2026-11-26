@@ -68,6 +68,15 @@ def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
         model_input['native_technical_context'] = deepcopy(subject['native_technical_context'])
         model_input['prompt_version'] += '-native-technical'
         model_input['schema_version'] += '-native-technical'
+        if contract.c60_technical_input(model_input):
+            model_input['prompt_version'] += '-comparison-v1'
+            model_input['schema_version'] += '-optional-change-v1'
+    if 'selected_entry_scenario' in subject:
+        scenario = subject['selected_entry_scenario']
+        if (scenario['candidate_id'] != model_input['timing_context']['selected']
+                or scenario['evidence_ref'] not in model_input['timing_refs']):
+            raise ValueError('v2_selected_entry_scenario_mismatch')
+        model_input['selected_entry_scenario'] = deepcopy(scenario)
     branches = contract.capabilities(model_input)
     model_input.update(allowed_stances=sorted({r['stance'] for r in branches}),
         allowed_wait_reasons=sorted({r['reason'] for r in branches if r['stance']=='WAIT'}),

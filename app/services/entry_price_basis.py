@@ -70,3 +70,70 @@ def frame_price_failures(frame, *, timeframe, frame_as_of, price, session):
 def frame_matches_price(frame, *, timeframe, frame_as_of, price, session):
     return not frame_price_failures(frame, timeframe=timeframe, frame_as_of=frame_as_of,
                                     price=price, session=session)
+
+
+def fixed_rr2_bounds(*, support_low, support_high, invalidation, target):
+    """Exact arithmetic for an already-bound candidate's fixed I/T scenario.
+
+    The caller supplies the nearest eligible target for this hypothetical band,
+    not an arbitrary distant target. This function grants no entry permission
+    and never changes the invalidation or the existing RR classification.
+    Fractions stay local to the calculation; serialize via the existing numeric
+    projection. None means an invalid structure, interval=None an empty overlap.
+    """
+    from fractions import Fraction
+
+    try:
+        low, high, stop, resistance = (Fraction(str(value)) for value in
+            (support_low, support_high, invalidation, target))
+    except (TypeError, ValueError, ZeroDivisionError):
+        return None
+    if not 0 < stop < low <= high < resistance:
+        return None
+    ceiling = (resistance + 2 * stop) / 3
+    interval = (low, min(high, ceiling)) if low <= ceiling else None
+    return dict(maximum=ceiling, interval=interval)
+
+
+def rr2_display_interval(bounds, *, decimals):
+    """Inward display rounding, not an exchange tick or a tradability claim.
+
+    A nonempty exact interval can be too narrow for the display precision.
+    In that case return None; caller distinguishes it from an empty raw overlap.
+    """
+    from math import ceil, floor
+
+    if bounds is None or bounds['interval'] is None:
+        return None
+    scale = 10 ** decimals
+    low, high = bounds['interval']
+    first, last = ceil(low * scale), floor(high * scale)
+    if first > last:
+        return None
+    def display(value):
+        whole, remainder = divmod(value, scale)
+        return f'{whole}.{remainder:0{decimals}d}' if decimals else str(whole)
+    return display(first), display(last)
+
+
+def scenario_for_fact(zone, currency):
+    """Add only displayable chart numbers; an empty intersection is not a narrow one."""
+    from math import floor
+    scenario = zone.get('entry_scenario')
+    if not scenario or currency not in ('KRW', 'USD') or scenario.get('chart_only') is not True:
+        return None
+    result = dict(scenario)
+    bounds = fixed_rr2_bounds(support_low=zone['zone_low'], support_high=zone['zone_high'],
+                              invalidation=result.get('invalidation'), target=result.get('band_target'))
+    if bounds is None:
+        result['rr2_intersection'] = 'UNAVAILABLE'
+    else:
+        decimals = 0 if currency == 'KRW' else 2
+        unit = 10 ** decimals
+        result['rr2_ceiling_inward'] = floor(bounds['maximum'] * unit) / unit
+        display = rr2_display_interval(bounds, decimals=decimals)
+        result['rr2_intersection'] = ('EMPTY' if bounds['interval'] is None else
+                                      'BELOW_DISPLAY_PRECISION' if display is None else 'DISPLAYABLE')
+        if display is not None:
+            result['rr2_low'], result['rr2_high'] = map(float, display)
+    return result

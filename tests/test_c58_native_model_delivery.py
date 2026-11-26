@@ -123,6 +123,9 @@ def outputs(request):
                   if key != 'technical_assessment'}
         technical = branch['properties'].get('technical_assessment')
         if technical is not None:
+            if 'anyOf' in technical:
+                technical = next(branch for branch in technical['anyOf']
+                                 if 'change' not in branch['properties'])
             refs = contract.technical_refs(model_input)
             result['technical_assessment'] = (dict(state='MIXED', evidence_refs=refs[:1],
                 reason='지표의 방향과 가격 위치를 함께 확인합니다.') if refs else

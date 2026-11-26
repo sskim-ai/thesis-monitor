@@ -116,6 +116,9 @@ class CanonicalMonitoringDomain:
             extra = '\n' + context_prompt(contexts) if any('valuation_context' in ctx for ctx in contexts.values()) else ''
             if any('native_technical_context' in ctx for ctx in contexts.values()):
                 extra += '\n' + pre.NATIVE_TECHNICAL_PROMPT
+                if any(ctx.get('native_technical_context', {}).get('comparison_version') == 1
+                       for ctx in contexts.values()):
+                    extra += '\n' + pre.C60_NATIVE_GUIDANCE
             requests.append(self.capture('pass-b',spec,contexts,schema,c.schemas.B_PROMPT+'\n'+c.LIMIT_PROMPT+extra))
         self.freeze_stage('pass-b',requests)
         return requests

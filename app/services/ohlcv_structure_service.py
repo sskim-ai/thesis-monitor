@@ -49,6 +49,7 @@ class LocalPivot:
     atr: float
     volume: float | None
     validated: bool = True
+    confirmation_bar: str | None = None
 
 
 @dataclass(frozen=True)
@@ -301,6 +302,10 @@ def detect_local_pivots(
                     min_required=minimum,
                     atr=atr_value,
                     volume=bars[index].volume,
+                    confirmation_bar=bars[max(index + config.right, next(
+                        i for i in range(index + 1, index + len(right_bars) + 1)
+                        if ((bars[i].high - price if kind == "low" else price - bars[i].low)
+                            + 1e-12 >= minimum)))].date,
                 )
             )
     return sorted(pivots, key=lambda item: (item.index, item.kind))
@@ -392,6 +397,8 @@ def build_price_zones(
                     "pivot_dates": [pivot.date for pivot in group],
                     "pivot_prices": [_round(pivot.price) for pivot in group],
                     "latest_reaction_date": max(pivot.date for pivot in group),
+                    "confirmation_bar": (max(p.confirmation_bar for p in group)
+                                         if all(p.confirmation_bar for p in group) else None),
                 }
             )
     return zones
@@ -1177,16 +1184,26 @@ def calculate_invalidation(
     pct_buffer = 0.015 if timeframe == "weekly" else 0.01
     buffer = max(atr_value * 0.5, entry * pct_buffer)
     invalidation = float(support["zone_low"]) - buffer
-    daily_closes = [bar.close for bar in daily_bars[-2:]]
+    confirmation = support.get("confirmation_bar")
+    def after_confirmation(bar, bar_frame):
+        if not confirmation:
+            return True
+        if "weekly" in (bar_frame, timeframe):
+            return date.fromisoformat(bar.date).isocalendar()[:2] > date.fromisoformat(confirmation).isocalendar()[:2]
+        return bar.date > confirmation
+
+    daily_closes = [bar.close for bar in daily_bars[-2:] if after_confirmation(bar, "daily")]
     hard_daily = len(daily_closes) == 2 and all(close < invalidation for close in daily_closes)
     weekly_close = weekly_bars[-1].close if weekly_bars else None
     # These are comparisons to the *currently selected* support threshold.
     # They do not establish that this support existed at an earlier bar or
     # that a historical above-to-below crossing occurred. Keep the existing
     # hard_* keys for consumers of saved facts, with explicit semantics below.
-    hard_weekly = weekly_close is not None and weekly_close < invalidation
+    hard_weekly = (weekly_close is not None and weekly_close < invalidation
+                   and after_confirmation(weekly_bars[-1], "weekly"))
     accelerated = bool(
         daily_bars
+        and after_confirmation(daily_bars[-1], "daily")
         and daily_bars[-1].close < invalidation
         and volume_ratio is not None
         and volume_ratio >= 1.2
@@ -1194,6 +1211,7 @@ def calculate_invalidation(
     )
     wick_only = bool(
         daily_bars
+        and after_confirmation(daily_bars[-1], "daily")
         and daily_bars[-1].low < invalidation <= daily_bars[-1].close
         and (volume_ratio is None or volume_ratio < 1.2)
     )
@@ -1349,6 +1367,33 @@ def select_nearest_meaningful_zones(
         supports[0] if supports else None,
         resistances[0] if resistances else None,
     )
+
+
+def _candidate_scenario(zone, all_zones, price, resistance, invalid, current_rr):
+    """Bind the current target and the fixed-band target separately, on this zone only."""
+    lo, hi = zone["zone_low"], zone["zone_high"]
+    def identity(z):
+        return (z["timeframe"], z.get("pivot_type"), z["zone_low"], z["zone_high"],
+                tuple(z.get("pivot_dates", ())), tuple(z.get("pivot_prices", ())))
+    others = [z for z in all_zones if z.get("strength") in ("Strong", "Medium")
+              and identity(z) != identity(zone)]
+    overlap = any(z["zone_low"] <= hi and z["zone_high"] >= lo for z in others)
+    active_obstacle = any(z["zone_low"] <= price <= z["zone_high"] for z in others)
+    # Within a non-overlapping band the nearest resistance is constant. A
+    # resistance below the current quote can still be the nearer band target.
+    above_band = min((z["zone_low"] for z in others if z["zone_low"] > hi), default=None)
+    rr = current_rr.get("current_price") or {}
+    return {k: v for k, v in {
+        "reference_price": price, "invalidation": invalid.get("price"),
+        "invalidation_reason": invalid.get("reason"), "status": invalid.get("status"),
+        "current_recovery": invalid.get("current_recovery"),
+        "confirmation_bar": zone.get("confirmation_bar"), "weekly_bar_date": invalid.get("weekly_bar_date"),
+        "current_target": resistance["zone_low"] if resistance else None,
+        "current_rr": rr.get("ratio") if not active_obstacle else None,
+        "classification": rr.get("classification") if not active_obstacle else None,
+        "band_target": None if overlap else above_band, "band_overlap": overlap,
+        "active_obstacle": active_obstacle, "chart_only": True,
+    }.items() if v is not None}
 
 
 def determine_chart_state(
@@ -1693,6 +1738,17 @@ def analyze_chart_structure(
         if current_price is not None
         else {"available": False, "reason": "current_price_unavailable"}
     )
+    choices = [z for z in (*classified["active"], *classified["support"])
+               if z["strength"] in {"Strong", "Medium"}][:2]
+    for zone in choices:
+        inv, rr = invalidation, risk_reward
+        if zone is not support:
+            inv = calculate_invalidation(zone, current_price=current_price,
+                daily_atr=_number(atr_output["daily"].get("value")), weekly_atr=_number(atr_output["weekly"].get("value")),
+                daily_bars=daily_bars, weekly_bars=bars_by_timeframe["weekly"], volume_ratio=volume_ratio,
+                supply_classification=str(supply["classification"]))
+            rr = calculate_risk_reward(current_price=current_price, resistance=resistance, invalidation=inv, support=zone)
+        zone["entry_scenario"] = _candidate_scenario(zone, all_zones, current_price, resistance, inv, rr)
     chart_state = (
         determine_chart_state(
             current_price=current_price,

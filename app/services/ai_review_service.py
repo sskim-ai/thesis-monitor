@@ -1870,6 +1870,11 @@ def _chart_facts(chart: dict[str, object], currency: str) -> list[dict[str, obje
                     if item.get(key) is not None
                 }
                 fields["currency"] = currency
+                if fact_type == "chart_support_zone" and item.get("entry_scenario"):
+                    from app.services.entry_price_basis import scenario_for_fact
+                    scenario = scenario_for_fact(item, currency)
+                    if scenario:
+                        fields["entry_scenario"] = scenario
                 facts.append(
                     {
                         "fact_id": f"chart:structure:{category}:{index}",

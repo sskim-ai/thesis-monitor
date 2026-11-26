@@ -177,6 +177,27 @@ def assess_entry_candidates(context, *, ticker, security_id, source_generation_i
     return result
 
 
+def selected_entry_scenario(context, candidate):
+    """Read the scenario inside the exact eligible source fact, never by matching a low."""
+    if not candidate or not candidate.get('eligible') or not candidate.get('relation_basis_proven'):
+        return None
+    refs = candidate['evidence_refs']
+    if len(refs) != 1:
+        return None
+    row = _index(context['decision_evidence']).get(refs[0], {})
+    fields = statement(row)
+    scenario = fields.get('entry_scenario') or {}
+    quote = context['current_price']
+    if (row.get('label') != 'chart_support_zone' or scenario.get('chart_only') is not True
+            or fields.get('currency') != quote.get('currency') or row.get('as_of') != quote.get('as_of')
+            or number(scenario.get('reference_price')) != number(quote.get('value'))
+            or any(number(fields.get('zone_' + k)) != number(candidate[k]) for k in ('low', 'high'))):
+        return None
+    return dict(candidate_id=candidate['candidate_id'], evidence_ref=refs[0], timeframe=fields['timeframe'],
+                currency=fields['currency'], as_of=row['as_of'], low=candidate['low'], high=candidate['high'],
+                **scenario)
+
+
 def restrict_entry_candidates(context, entries, *, ticker, security_id, source_generation_id):
     """Narrow the model's B selection and preserve each exclusion for diagnosis."""
     result, selected = deepcopy(context), deepcopy(entries)

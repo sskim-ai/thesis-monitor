@@ -62,11 +62,30 @@ is neither fair value nor a standalone buy instruction. Its short reason is the
 only additional prose field; return the closed schema.'''
 
 
+C60_TECHNICAL_PROMPT = """Use a concise Korean synthesis of the useful supplied families and time horizons.
+The optional change field describes recent movement (IMPROVING, DETERIORATING, STABLE,
+UNCLEAR), independently of the four technical states. Omit it or use UNCLEAR if the
+observations do not resolve direction; ADVERSE can be improving and SUPPORTIVE deteriorating.
+Recognize early recovery within a mixed or weak longer-term trend; do not require full
+bullish alignment. A favorable price/RR alone does not prove recovery or a sound structure.
+Explain material conflicting evidence, not a checklist or a majority count. Use qualitative
+language and exact source refs; do not invent numeric observations. Technical analysis never
+changes the frozen economics, selected candidate, or backend price relation."""
+
+
+def c60_technical_input(model_input):
+    return model_input.get('native_technical_context', {}).get('comparison_version') == 1
+
+
 def prompt_for(model_input):
     if 'native_technical_context' not in model_input:
         return PROMPT
-    return ('Judge NewBuyer fundamental/valuation attractiveness and, separately, the supplied native technical evidence.'
+    prompt = ('Judge NewBuyer fundamental/valuation attractiveness and, separately, the supplied native technical evidence.'
             + PROMPT[PROMPT.index('\n'):] + '\n' + NATIVE_TECHNICAL_PROMPT)
+    if c60_technical_input(model_input):
+        from app.services.canonical_monitoring_input import C60_NATIVE_GUIDANCE
+        prompt += '\n' + C60_NATIVE_GUIDANCE + '\n' + C60_TECHNICAL_PROMPT
+    return prompt
 
 
 def technical_refs(model_input):
@@ -79,13 +98,22 @@ def technical_refs(model_input):
 
 def technical_assessment_schema(model_input):
     available = technical_refs(model_input)
-    return v1.obj(dict(
+    current = c60_technical_input(model_input)
+    fields = dict(
         state=dict(type='string', enum=['SUPPORTIVE', 'MIXED', 'ADVERSE', 'INSUFFICIENT'])
               if available else dict(const='INSUFFICIENT'),
         evidence_refs=v1.refs(available, 1) if available else
                       dict(const=[], items=dict(type='string')),
-        reason=dict(type='string', minLength=1, maxLength=240) if available else
-               dict(const='활용 가능한 원본 지표가 없어 기술 해석을 보류합니다.')))
+        reason=dict(type='string', minLength=1, maxLength=400 if current else 240) if available else
+                dict(const='활용 가능한 원본 지표가 없어 기술 해석을 보류합니다.'))
+    original = v1.obj(fields)
+    if not current:
+        return original
+    change = (dict(type='string', enum=['IMPROVING', 'DETERIORATING', 'STABLE', 'UNCLEAR'])
+              if available else dict(const='UNCLEAR'))
+    # Provider strict objects require all their declared properties. Two closed
+    # shapes keep absence genuinely valid without an optional-property wire error.
+    return dict(anyOf=[v1.obj(dict(fields, change=change)), original])
 
 
 def technical_reason(text, refs):

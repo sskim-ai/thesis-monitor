@@ -24,6 +24,26 @@ agreement and disagreement in context, without inventing universal thresholds.
 Technical evidence informs entry context only; it cannot create business direction,
 fundamental cheapness, fair value or a new price range.'''
 
+C60_NATIVE_GUIDANCE = '''Read the available MA alignment and direction, price distance/convergence,
+Bollinger position/width and Envelope, RSI and MACD line versus histogram, volume with price,
+and return/drawdown by their actual bar units. Use meaningful evidence across families and
+completed D/W/M horizons; do not count correlated indicators as independent votes. Compare
+native values at the same supplied bar dates; lag5 means five bars, not five calendar days.
+In recent_comparison, dates/close/volume are [current, previous, lag5]. The previous, lag5 and
+close_relations arrays follow the shared comparison_fields order. Relation strings follow
+relation_dates in chronological order: A=above, B=below,
+E=equal, ?=missing. They are observed closes only, not intraday touches or proof of an older
+historical crossing. Do not infer continuous movement between sparse observations. The existing
+native field evidence ref identifies the source artifact and field, including its supplied
+comparison; do not pretend a historical value occurred on the latest date. No indicator
+recalculation. BB expansion/upper-band progress can support a trend; a lower-band breach and
+recovery may be useful. Negative MACD or incomplete alignment alone is not an entry veto.
+Distinguish constructive early recovery from deterioration and an unsupported bounce; weigh
+price/RR/structure, not perfect indicator agreement. Missing long history is not bearishness.
+Use only supplied eligible candidate prices and their own risk/reward; do not skip closer
+resistance, transfer risk from another candidate, or turn a chart level into fair value.'''
+
+
 
 def native_technical_context(view, context):
     """Copy the Source's native values that survived the existing B projection.
@@ -44,6 +64,9 @@ def native_technical_context(view, context):
               ('provider', 'provider_code', 'market', 'adjusted', 'cutoff',
                'indicator_schema', 'formula_semantics', 'source_hash')}
     result['periods'] = {}
+    if native.get('comparison_version') == 1:
+        result['comparison_version'] = 1
+        result['comparison_fields'] = list(INDICATORS)
     monitoring = native.get('allowed_use') == 'MONITORING_TECHNICAL'
     for timeframe in ('daily', 'weekly', 'monthly'):
         period = native['periods'].get(timeframe, {})
@@ -88,6 +111,19 @@ def native_technical_context(view, context):
             source_hash=period.get('source_hash'), indicators=values,
             indicator_quality=quality, evidence_refs=refs,
             reasons=list(dict.fromkeys(reasons)))
+        comparison = period.get('recent_comparison')
+        if refs and result.get('comparison_version') == 1 and comparison is not None:
+            # Same source hash/field ref already survived ENTRY projection.
+            # Never expose denied or unavailable fields from the artifact's history.
+            compact = deepcopy(comparison)
+            prior, relations = compact.pop('prior_indicators'), compact.pop('close_relations')
+            # Shared column order avoids repeating every field name for D/W/M.
+            compact['previous'] = [prior.get(f, [None, None])[0] if f in refs else None
+                                   for f in INDICATORS]
+            compact['lag5'] = [prior.get(f, [None, None])[1] if f in refs else None
+                               for f in INDICATORS]
+            compact['close_relations'] = [relations.get(f) if f in refs else None for f in INDICATORS]
+            result['periods'][timeframe]['recent_comparison'] = compact
     return result
 
 def subject_inputs(view, authority, receipt, *, generation, atomic=()):
@@ -126,6 +162,13 @@ def b_input(view, cat, sub, chain, classification, capability):
     ctx, entries = restrict_entry_candidates(ctx, entries, ticker=view['ticker'],
         security_id=(view.get('valuation_view') or {}).get('security_id'),
         source_generation_id=chain['source_generation_id'])
+    stocks = (view.get('packet') or {}).get('stocks', [])
+    if len(stocks) == 1 and stocks[0].get('ticker') == view['ticker']:
+        structure = stocks[0].get('chart_context', {}).get('structure', {})
+        v3 = structure.get('price_structure_v3') or {}
+        if (v3.get('ticker') == view['ticker'] and v3.get('eligible_for_b2_timing') is False
+                and not structure.get('nearest_supports') and v3.get('zones')):
+            ctx['reference_only_support_reason'] = 'NO_QUALIFIED_STRUCTURE_V3_REFERENCE_ONLY'
     native = native_technical_context(view, ctx)
     if native is not None:
         ctx['native_technical_context'] = native

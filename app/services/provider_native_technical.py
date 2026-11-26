@@ -81,7 +81,14 @@ class ProviderNativeTechnicalView(BaseModel):
     def prompt_payload(self):
         self.verify()
         result=self.model_dump(mode='json')
-        for period in result['periods'].values():period.pop('rows')
+        for timeframe, period in result['periods'].items():
+            period.pop('rows')
+            if self.allowed_use == 'MONITORING_TECHNICAL':
+                comparison = recent_completed_comparison(self.periods[timeframe])
+                if comparison is not None:
+                    period['recent_comparison'] = comparison
+        if self.allowed_use == 'MONITORING_TECHNICAL':
+            result['comparison_version'] = 1
         result['formula_semantics']=FORMULAS
         result['stored_price_rules_owner']='SEPARATE_NOT_MODIFIED'
         return result
@@ -90,6 +97,46 @@ class ProviderNativeTechnicalView(BaseModel):
 def _valid_number(value):
     try:return type(value) in (int,float) and math.isfinite(value)
     except OverflowError:return False
+
+
+def recent_completed_comparison(period):
+    """Compact observations from the verified native period, not recalculated indicators.
+
+    The caller's period.source_hash already binds the artifact and completed rows.
+    Lag slots are literal completed-row offsets; never search backwards for a null.
+    Relation strings cover only their explicitly listed dates (not an older crossing).
+    """
+    rows = period.rows
+    if (period.status != 'AVAILABLE' or not rows
+            or str(rows[-1]['date'])[:10] != period.completed_as_of):
+        return None
+    samples = [rows[-1-n] if len(rows) > n else None for n in (0, 1, 5)]
+    def finite(row, key):
+        value = row.get(key) if row is not None else None
+        return value if _valid_number(value) else None
+    def native_value(row, field):
+        values = row.get('indicators') if row is not None else None
+        return finite(values if isinstance(values, Mapping) else None, field)
+    fields = [f for f in INDICATORS if period.indicator_quality.get(f) == 'PROVIDER_NATIVE'
+              and _valid_number(period.indicators.get(f))]
+    prior = {f: [native_value(row, f) for row in samples[1:]] for f in fields}
+    prior = {f: values for f, values in prior.items() if any(v is not None for v in values)}
+    recent = rows[-6:]
+    def relation(row, field):
+        close, level = finite(row, 'close'), native_value(row, field)
+        if close is None or level is None:
+            return '?'
+        return 'A' if close > level else 'B' if close < level else 'E'
+    # Compact dated A/B/E/? sequence lets the model distinguish a maintained
+    # relation from an observed intervening breach/recovery. No synthetic dates.
+    relations = {f: ''.join(relation(row, f) for row in recent) for f in fields
+                 if f in INDICATORS[:5] or f.startswith(('BB_', 'ENV_'))}
+    relations = {f: value for f, value in relations.items() if len(value.replace('?', '')) > 1}
+    return dict(dates=[str(row['date'])[:10] if row is not None else None for row in samples],
+        close=[finite(row, 'close') for row in samples],
+        volume=[finite(row, 'volume') for row in samples],
+        prior_indicators=prior, relation_dates=[str(row['date'])[:10] for row in recent],
+        close_relations=relations)
 
 
 def _completed(row, *, timeframe, cutoff, verifier):
