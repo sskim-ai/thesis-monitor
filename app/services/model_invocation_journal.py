@@ -6,7 +6,7 @@ from pathlib import Path
 
 from app.services.unified_snapshot_contract import digest, encoded
 from app.services.model_timeout_retry import (
-    validate_timeout, validate_b2_retry_binding, market_timeout_retry_cap, b2_retry_budget_bounds,
+    validate_timeout, validate_b2_retry_binding, market_timeout_retry_cap, b2_retry_budget_bounds, stock_slot_retry,
 )
 
 
@@ -152,13 +152,14 @@ def _apply(state, event, value, identity):
                 raise ValueError('model_journal_timeout_binding')
             state['timeouts'][slot] = [*existing, proof]
         elif event == 'RETRY_ATTEMPT':
+            stock_retry = stock_slot_retry(policy, slot)
             market_retry = state['bound'][slot]['stage']=='MARKET' and market_timeout_retry_cap(
                 policy,retry_cap=cap,retry_market=identity.get('timeout_retry_market','us'))
             if (not retry_enabled or unresolved != {slot} or len(state['attempts'].get(slot, ())) != 1
                     or len(state['timeouts'].get(slot, ())) != 1
-                    or (slot not in policy['b2_slots'] and not market_retry if policy else state['retry_used'] >= cap)
+                    or (not (stock_retry or market_retry) if policy else state['retry_used'] >= cap)
                     or policy and state['retry_used'] >= identity['maximum']-policy['base_slots']
-                    or identity.get('timeout_retry_market')=='kr' and not (market_retry or policy and slot in policy['b2_slots'])
+                    or identity.get('timeout_retry_market')=='kr' and not (market_retry or stock_retry)
                     or state['physical_calls'] >= identity['maximum']):
                 raise ValueError('model_journal_retry_unavailable')
             _model_attempt(state, slot, value, expected=2)

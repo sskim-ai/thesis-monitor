@@ -357,6 +357,9 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                         retry_cap = getattr(bridge.model.call_budget,'timeout_retry_cap',0)
                         retry_market = getattr(bridge.model.call_budget,'retry_market','us')
                         per_ticker = getattr(bridge.model.call_budget,'b2_retry_policy',None)
+                        from app.services.model_timeout_retry import all_stage_retry
+                        if all_stage_retry(per_ticker) and bound['planned_calls']:
+                            bound['all_stage_timeout_retry_cap'] = bound['planned_calls']
                         if retry_cap and bound['planned_calls'] and retry_market!='kr' and not per_ticker:
                             bound['campaign_timeout_retry_cap'] = retry_cap
                         if getattr(bridge.model.call_budget,'b2_retry_policy',None) and stage == 'B2':
@@ -378,8 +381,9 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                     else:
                         receipt = state['stage_receipts'][-1]
                         loop = asyncio.get_running_loop()
-                        allowance = (bridge.model.call_budget.retry_capacity
-                            if getattr(bridge.model.call_budget,'b2_retry_policy',None) and stage == 'B2'
+                        allowance = (bound.get('all_stage_timeout_retry_cap',0) if all_stage_retry(per_ticker) else
+                            bridge.model.call_budget.retry_capacity
+                            if per_ticker and stage == 'B2'
                             else bound.get('market_timeout_retry_cap',0) if retry_market=='kr' or per_ticker
                             else bound.get('market_timeout_retry_cap',getattr(bridge.model.call_budget,'timeout_retry_cap',0)))
                         timer = _StageTimer(bound,loop,campaign_end, allowance)

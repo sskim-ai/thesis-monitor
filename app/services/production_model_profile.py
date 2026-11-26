@@ -5,6 +5,12 @@ import re
 from app.services.vnext_execution_profile import SOL_HIGH_V1, require_profile
 
 CONTRACT_V2 = 'official-codex-production-transport-v2-sol-high'
+DEFAULT_SOL_INPUT_BYTES = 384 * 1024
+
+
+def sol_prompt_limit_bytes(frozen_market):
+    """Plan-bound US and KR share 512 KiB; other Sol paths retain 384 KiB."""
+    return 512 * 1024 if frozen_market in ('kr', 'us') else DEFAULT_SOL_INPUT_BYTES
 
 
 def sol_high(profile):
@@ -87,7 +93,7 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
             raise ValueError('KR_MARKET_RETRY_BUDGET_APPROVAL_REQUIRED')
         self.b2_retry_policy = None
         if b2_retry_policy is not None:
-            from app.services.model_timeout_retry import b2_retry_binding, b2_retry_budget_bounds
+            from app.services.model_timeout_retry import b2_retry_binding, b2_retry_budget_bounds, all_stage_retry
             if plan is None:
                 raise ValueError('model_per_ticker_retry_original_plan_required')
             binding = b2_retry_binding(plan,b2_retry_policy)
@@ -98,7 +104,8 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
                     or run_ledger.identity.get('b2_retry_policy') != b2_retry_policy
                     or type(approved_max_invocations) is not int
                     or not minimum <= approved_max_invocations <= maximum
-                    or run_ledger.identity['max_models'] != approved_max_invocations):
+                    or (run_ledger.identity['max_models'] < approved_max_invocations if all_stage_retry(binding)
+                        else run_ledger.identity['max_models'] != approved_max_invocations)):
                 raise ValueError('model_per_ticker_retry_requires_new_campaign_cap:'+str(maximum))
             self.b2_retry_policy = binding
             from app.services.model_timeout_retry import market_timeout_retry_cap
@@ -108,8 +115,11 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
         elif run_ledger is not None and run_ledger.identity.get('b2_retry_policy'):
             raise ValueError('model_b2_retry_ledger_policy_mismatch')
         self.retry_enabled = bool(timeout_retry_cap or self.b2_retry_policy)
-        self.retry_capacity = (min(len(self.b2_retry_policy['b2_slots']),
-            approved_max_invocations-self.b2_retry_policy['base_slots'])
+        from app.services.model_timeout_retry import all_stage_retry
+        self.retry_capacity = (approved_max_invocations-self.b2_retry_policy['base_slots']
+            if all_stage_retry(self.b2_retry_policy) else
+            min(len(self.b2_retry_policy['b2_slots']),
+                approved_max_invocations-self.b2_retry_policy['base_slots'])
             if self.b2_retry_policy else timeout_retry_cap)
         self.exhausted, self.timeouts, self.attempts = set(), {}, {}
         self.physical_calls = self.retry_used = 0
@@ -276,15 +286,16 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
             self.stop()
             raise
         fresh = self.run_ledger.identity.get('fresh_timeout_retry_market')
-        from app.services.model_timeout_retry import market_timeout_retry_cap
+        from app.services.model_timeout_retry import market_timeout_retry_cap, stock_slot_retry
+        stock_retry = stock_slot_retry(self.b2_retry_policy, slot_id)
         market_retry = self.bound[slot_id]['stage']=='MARKET' and market_timeout_retry_cap(
             self.b2_retry_policy,retry_cap=self.timeout_retry_cap,retry_market=self.retry_market)
         if (self.physical_calls < self.maximum and len(self.attempts[slot_id]) == 1
                 and (not self.b2_retry_policy or self.retry_used < self.maximum-self.b2_retry_policy['base_slots'])
-                and (slot_id in self.b2_retry_policy['b2_slots'] or market_retry
+                and (stock_retry or market_retry
                     if self.b2_retry_policy else self.retry_used < self.timeout_retry_cap)
-                and (self.retry_market!='kr' or market_retry or self.b2_retry_policy and slot_id in self.b2_retry_policy['b2_slots'])
-                and (not fresh or self.bound[slot_id]['stage'] == 'B2' or market_retry)):
+                and (self.retry_market!='kr' or market_retry or stock_retry)
+                and (not fresh or self.bound[slot_id]['stage'] == 'B2' or market_retry or stock_retry)):
             return True
         if (self.bound[slot_id]['stage'] == 'B2' and self.retry_market!='kr'
                 and not (self.b2_retry_policy and self.timeout_retry_cap)

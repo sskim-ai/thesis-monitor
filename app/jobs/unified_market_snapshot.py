@@ -25,7 +25,10 @@ from app.services.unified_market_run import KST, RunConfiguration, UnifiedMarket
 from app.services.unified_run_artifacts import SECRET_KEY
 from app.services.unified_snapshot_contract import ContractModel, digest
 from app.services.production_source_configuration import ProtocolFile
-from app.services.model_timeout_retry import B2_PER_TICKER_ONE_RETRY_V1, B2_US2_DIAGNOSTIC_V1, B2_SR5_DIAGNOSTIC_V1
+from app.services.model_timeout_retry import (
+    ALL_MODEL_STAGE_ONE_RETRY_V1, B2_PER_TICKER_ONE_RETRY_V1, B2_US2_DIAGNOSTIC_V1,
+    B2_SR5_DIAGNOSTIC_V1, roster_model_ceiling,
+)
 from app.services.selected_source_plan import UsNightPolicy, US_NIGHT_EXCLUDED, US_NIGHT_OPTIONAL
 
 
@@ -128,6 +131,7 @@ class LocalScheduleConfiguration(ContractModel):
     auxiliary_issuer: ProtocolFile | None = None
     kr_market_timeout_retry: bool = Field(default=False, strict=True)
     market_b2_timeout_retry: bool = Field(default=False, strict=True)
+    all_stage_timeout_retry: bool = Field(default=False, strict=True)
     us_night_policy: UsNightPolicy = 'ORIGINAL_CURRENT_PROBE_ONLY'
     one_shot: LocalUsOneShot | None = None
 
@@ -146,6 +150,8 @@ class LocalScheduleConfiguration(ContractModel):
             value.pop('us_night_policy', None)
         if self.one_shot is None:
             value.pop('one_shot', None)
+        if not self.all_stage_timeout_retry:
+            value.pop('all_stage_timeout_retry', None)
         return value
 
 
@@ -262,8 +268,14 @@ def _record_local_failure(directory, exc, *, config, session, generation=None, b
         pass  # Diagnostic failure must not replace the original STOP.
 
 
-def _local_model_cap(config, one_shot_tag):
+def _local_model_cap(config, one_shot_tag, *, subjects=None):
     diagnostic = one_shot_scope(config.market, one_shot_tag, config=config)
+    if getattr(config, 'all_stage_timeout_retry', False):
+        if (diagnostic or config.market_b2_timeout_retry or config.kr_market_timeout_retry
+                or one_shot_tag in US_FULL_20261121_SLOTS
+                or one_shot_tag in (KR_RECOVERY_20261123_TAG, KR_C42_20261123_TAG)):
+            raise ValueError('local_schedule_all_stage_retry_conflict')
+        return None if subjects is None else roster_model_ceiling(subjects)
     if config.market_b2_timeout_retry:
         if diagnostic or config.kr_market_timeout_retry or (
                 config.market == 'us' and one_shot_tag in US_FULL_20261121_SLOTS):
@@ -274,7 +286,20 @@ def _local_model_cap(config, one_shot_tag):
     return 42 if config.market == 'us' else 18
 
 
-async def _local_registered_cycle(config, directory, session, *, one_shot_tag=None):
+def _local_monitoring_subjects(config):
+    from app.config import Settings
+    from app.services.production_source_configuration import ProductionSourceConfiguration
+    from app.services.selected_source_registration import database_target, current_monitoring_subjects
+
+    settings = Settings(_env_file=config.settings_env_file)
+    target,device,inode = database_target(settings,runtime_directory=Path(config.settings_env_file).parent)
+    source_config = ProductionSourceConfiguration.model_validate_json(config.source_configuration.read())
+    if str(target)!=source_config.database_path:
+        raise ValueError('local_schedule_active_database_mismatch')
+    return current_monitoring_subjects(target,device=device,inode=inode,market=config.market)
+
+
+async def _local_registered_cycle(config, directory, session, *, one_shot_tag=None, registered_subjects=None):
     from app.config import Settings
     from app.macro.providers.market import MARKET_SYMBOLS
     from app.services import prospective_class_c_owner as registration
@@ -298,9 +323,12 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     diagnostic = one_shot_scope(market,one_shot_tag,config=config)
     consumer_policy = SelectedConsumerPolicy(us_night=getattr(config, 'us_night_policy', 'ORIGINAL_CURRENT_PROBE_ONLY'))
     sr5 = bool(one_shot_tag and one_shot_tag.startswith('us5-'))
-    subjects = SR5_SUBJECTS if sr5 else US2_SUBJECTS if diagnostic else UNIVERSE[market]
+    all_stage_retry = getattr(config, 'all_stage_timeout_retry', False)
+    subjects = (tuple(registered_subjects) if all_stage_retry else
+        SR5_SUBJECTS if sr5 else US2_SUBJECTS if diagnostic else UNIVERSE[market])
     caps = SR5_CAPS if sr5 else US2_CAPS if diagnostic else LOCAL_CAPS[market]
-    max_models = _local_model_cap(config, one_shot_tag)
+    max_models = (_local_model_cap(config, one_shot_tag, subjects=subjects) if all_stage_retry
+        else _local_model_cap(config, one_shot_tag))
     combined_retry = config.market_b2_timeout_retry
     if combined_retry:
         from app.services.canonical_monitoring_helpers import _batch_topology
@@ -317,7 +345,8 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     kr_market_retry = bool(market=='kr' and config.kr_market_timeout_retry)
     if kr_market_retry and max_models < 19:
         raise ValueError('KR_MARKET_RETRY_BUDGET_APPROVAL_REQUIRED')
-    retry_policy = B2_SR5_DIAGNOSTIC_V1 if sr5 else B2_US2_DIAGNOSTIC_V1 if diagnostic else B2_PER_TICKER_ONE_RETRY_V1 if market=='us' or combined_retry else None
+    retry_policy = (ALL_MODEL_STAGE_ONE_RETRY_V1 if all_stage_retry else B2_SR5_DIAGNOSTIC_V1 if sr5
+        else B2_US2_DIAGNOSTIC_V1 if diagnostic else B2_PER_TICKER_ONE_RETRY_V1 if market=='us' or combined_retry else None)
     market_retry_cap=int(kr_market_retry or combined_retry)
     master = 'local-' + market + '-' + session
     if one_shot_tag is not None:
@@ -371,8 +400,8 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     credentials = credential_binding(settings, market, consumer_policy=consumer_policy)
     now = datetime.now(timezone.utc)
     children = {m: dict(generation=generation if m == market else master+'-reference',
-        execution_generation=execution, subjects=list(UNIVERSE[m]))
-        for m in (('us',) if market == 'us' else ('kr', 'us'))}
+        execution_generation=execution, subjects=list(subjects if all_stage_retry else UNIVERSE[m]))
+        for m in ((market,) if all_stage_retry else ('us',) if market == 'us' else ('kr', 'us'))}
     approval = ledger = None
     owners = {}
     try:
@@ -385,7 +414,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
         ledger = SelectedRunLedger(path=directory/'campaign.jsonl', approval=approval, master_id=master,
             children=children, provider_caps=caps, max_http=sum(caps.values()),
             max_models=max_models, staged_markets=True,
-            timeout_retry_cap=market_retry_cap, timeout_retry_market=market if combined_retry else 'kr' if kr_market_retry else 'us',
+            timeout_retry_cap=market_retry_cap, timeout_retry_market=market if combined_retry or all_stage_retry else 'kr' if kr_market_retry else 'us',
             b2_retry_policy=retry_policy, wallclock_seconds_max=16200,
             database_identity=dict(path=str(target), device=device, inode=inode),
             capture_max_private_export_bytes=64*1024**2,
@@ -397,10 +426,15 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
         _, owners, _ = capture_approved_markets(settings=settings, runtime_directory=runtime_db_root,
             approval=approval, generations={market:generation}, policy=POLICY, ledger=ledger,
             enabled=True, monitoring_only=True, subject_limits={market:len(subjects)},
-            priority_subjects={market:subjects}, **(dict(source_subjects={market:subjects}) if diagnostic else {}))
+            priority_subjects={market:subjects}, **(dict(source_subjects={market:subjects}) if diagnostic else {}),
+            **(dict(audit_path=directory/'registration-eligibility.json') if all_stage_retry else {}))
         _, receipt = registration._state(owners[market])
-        if receipt['calendar']['target'] != session or set(receipt['bindings']) != set(subjects):
+        if (receipt['calendar']['target'] != session
+                or (not set(receipt['bindings']) <= set(subjects) if all_stage_retry
+                    else set(receipt['bindings']) != set(subjects))):
             raise ValueError('local_schedule_completed_session_or_roster_drift')
+        if all_stage_retry:
+            subjects = tuple(sorted(receipt['bindings']))
         listing = json.loads((source_root/'static/kr-list-routing.json').read_bytes())['list'] if market == 'kr' else []
         official = json.loads((source_root/'static/official-security-identity.json').read_bytes())
         auxiliary = (dict(security=json.loads(config.auxiliary_issuer.read()), official_identity_sha256=digest(official))
@@ -599,6 +633,12 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
         # Any interrupted/failed attempt is consumed, not a retry invitation.
         if any((directory/name).exists() for name in ('intent.json', 'terminal.json', 'campaign.jsonl', 'STOP')):
             return dict(status='NO_RUN', reason='SESSION_ALREADY_CONSUMED', normal_messages_sent=False)
+        registered_subjects = None
+        if getattr(config,'all_stage_timeout_retry',False):
+            registered_subjects = _local_monitoring_subjects(config)
+            if not registered_subjects:
+                return dict(status='NO_RUN',reason='NO_ACTIVE_MONITORING_SUBJECTS',normal_messages_sent=False)
+            max_models = _local_model_cap(config,one_shot_tag,subjects=registered_subjects)
         if one_shot_tag:
             once_intent = directory.parent/(one_shot_tag+'.intent.json' if window or one_shot_tag==KR_C42_20261123_TAG else 'intent.json')
             if once_intent.exists():
@@ -612,7 +652,11 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
             max_http=sum(SR5_CAPS.values()) if sr5 else sum(US2_CAPS.values()) if diagnostic else sum(LOCAL_CAPS[market].values()),
             max_models=max_models,
             market_timeout_retry_cap=int(config.market_b2_timeout_retry or market=='kr' and config.kr_market_timeout_retry),
-            b2_retry_policy=B2_SR5_DIAGNOSTIC_V1 if sr5 else B2_US2_DIAGNOSTIC_V1 if diagnostic else B2_PER_TICKER_ONE_RETRY_V1 if market == 'us' or config.market_b2_timeout_retry else None,
+            b2_retry_policy=(ALL_MODEL_STAGE_ONE_RETRY_V1 if getattr(config,'all_stage_timeout_retry',False)
+                else B2_SR5_DIAGNOSTIC_V1 if sr5 else B2_US2_DIAGNOSTIC_V1 if diagnostic
+                else B2_PER_TICKER_ONE_RETRY_V1 if market == 'us' or config.market_b2_timeout_retry else None),
+            **(dict(roster_subject_count=len(registered_subjects), model_cap_basis='CURRENT_ROSTER_UPPER_BOUND_THEN_TWICE_ACTUAL_PLAN')
+               if registered_subjects is not None else {}),
             normal_messages_sent=False,
             **(dict(us_night_policy=config.us_night_policy)
                if config.us_night_policy != 'ORIGINAL_CURRENT_PROBE_ONLY' else {}),
@@ -621,7 +665,8 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
             remaining=(_one_shot_deadline(one_shot_tag, config)-datetime.now(KST)).total_seconds() if one_shot_tag else 16200
             async with asyncio.timeout(min(16200,remaining)):
                 result = await _local_registered_cycle(config, directory, session.isoformat(),
-                    **(dict(one_shot_tag=one_shot_tag) if one_shot_tag else {}))
+                    **(dict(one_shot_tag=one_shot_tag) if one_shot_tag else {}),
+                    **(dict(registered_subjects=registered_subjects) if registered_subjects is not None else {}))
         except BaseException as exc:
             _record_local_failure(directory, exc, config=config, session=session.isoformat())
             durable_json(directory/'terminal.json', dict(status='STOPPED_NO_SEND',
@@ -728,6 +773,9 @@ async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', cl
                 model_plan_sha256=child.plan.sha256, model_slots=len(child.plan.slots),
                 source_acceptance_sha256=digest(child.owner.acceptance()), normal_messages_sent=False)
         model_options = dict(model)
+        if model_options.get('b2_retry_policy') == ALL_MODEL_STAGE_ONE_RETRY_V1:
+            # Source limitations can remove B/B2 slots; never dispatch against the roster forecast.
+            model_options['approved_max_invocations'] = 2 * len(child.plan.slots)
         model_options.setdefault('approved_plan_sha256', child.plan.sha256)
         adapter = load_adapter(settings, child=child, clock=clock, **model_options)
         source['run_ledger'].bind_model_plan(child)

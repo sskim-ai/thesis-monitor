@@ -15,7 +15,9 @@ from app.services.production_b2_execution import ModelTransportError
 from app.services.fixture_context_authority import reject_test_only_production
 from app.services.unified_run_artifacts import durable_bytes, durable_json, sha256_bytes
 from app.services.unified_snapshot_contract import digest, encoded
-from app.services.production_model_profile import CONTRACT_V2, SolHighWirePolicy, SolHighCallBudget, sol_high
+from app.services.production_model_profile import (
+    CONTRACT_V2, SolHighWirePolicy, SolHighCallBudget, sol_high, sol_prompt_limit_bytes,
+)
 from app.services.vnext_execution_profile import SOL_HIGH_V1
 
 CONTRACT = "official-codex-production-transport-v1"
@@ -225,6 +227,7 @@ class OfficialProductionModelTransport:
             raise ValueError("production_model_contract_not_bound")
         validate_binding(self.binding, str(self.binding.executable), profile=self.execution_profile)
         dynamic = self.call_budget is not None and self.call_budget.plan is not None
+        frozen_market = self.cycle[0] if dynamic else None
         payload_sha256 = digest(payload)
         if dynamic:
             slot_scope = self.call_budget.resolve_scope(panel, stage, payload_sha256, slot_scope)
@@ -259,8 +262,9 @@ class OfficialProductionModelTransport:
             artifacts.check(path=path, added_work=len(prompt)+len(schema)+CLI_WORK_ALLOWANCE+MODEL_RESULT_ALLOWANCE,
                 added_result=MODEL_RESULT_ALLOWANCE, role='scratch')
         if self.execution_profile:
-            if len(prompt) > 384 * 1024:
-                raise ValueError('sol_high_input_exceeds_384KiB')
+            prompt_limit = sol_prompt_limit_bytes(frozen_market)
+            if len(prompt) > prompt_limit:
+                raise ValueError(f'sol_high_input_exceeds_{prompt_limit // 1024}KiB')
             if dynamic:
                 self.call_budget.plan.cohort.verify_source_owner(self.cohort_source_owner)
                 if not isinstance(slot_scope, dict) or slot_scope.get('market') != self.cycle[0]:
@@ -385,7 +389,8 @@ class OfficialProductionModelTransport:
 
                         error.confirmed_timeout = confirmed_timeout(path, worker_pid=process.pid,
                             worker_returncode=process.returncode, receipt=receipt,
-                            prompt_sha256=frame['prompt_sha256'], schema_sha256=frame['schema_sha256'])
+                            prompt_sha256=frame['prompt_sha256'], schema_sha256=frame['schema_sha256'],
+                            frozen_market=frozen_market)
                         if error.confirmed_timeout is None:
                             raise ModelTransportError('RECONCILIATION_REQUIRED') from error
                         error.slot_id = slot_scope['slot_id']

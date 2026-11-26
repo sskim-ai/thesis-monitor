@@ -27,6 +27,41 @@ def database_target(settings, *, runtime_directory):
     return path.absolute(), stat.st_dev, stat.st_ino
 
 
+def current_monitoring_subjects(database, *, device, inode, market):
+    """Read only current ACTIVE monitoring candidates; original capture decides eligibility."""
+    import sqlite3
+    import time
+    from app.services.market_session import market_scope_for_security
+    from app.services.minimal_class_c_export import QueryBoundary
+
+    database = Path(database)
+    if market not in ('kr','us') or any(p.is_symlink() for p in (database,*database.parents)):
+        raise ValueError('selected_current_roster_scope_invalid')
+    stat = database.stat()
+    if not database.is_file() or (stat.st_dev,stat.st_ino) != (device,inode):
+        raise ValueError('selected_registration_file_identity_changed')
+    boundary = QueryBoundary()
+    connection = sqlite3.connect(database.as_uri()+'?mode=ro',uri=True,isolation_level=None,timeout=3)
+    try:
+        deadline = time.monotonic()+15
+        connection.set_authorizer(boundary)
+        connection.set_progress_handler(lambda: int(time.monotonic()>deadline),1000)
+        connection.execute('PRAGMA query_only=ON')
+        boundary.boot = False
+        rows = connection.execute(
+            "SELECT w.ticker,w.exchange,s.exchange FROM watchlistitem w "
+            "LEFT JOIN securitymaster s ON s.ticker=w.ticker "
+            "WHERE w.active=1 AND w.monitoring_requested=1 AND w.onboarding_state='ACTIVE' "
+            "ORDER BY w.ticker").fetchall()
+        subjects = tuple(t for t,exchange,security_exchange in rows
+            if market_scope_for_security(t,exchange or security_exchange)==market)
+        if len(subjects)!=len(set(subjects)) or len(subjects)>100:
+            raise ValueError('selected_current_roster_duplicate_or_existing_capacity_limit')
+        return subjects
+    finally:
+        connection.close()
+
+
 def capture_markets(*, permission, approval, generations, policy, enabled=False, connect=None, on_captured=None,
                     market_subjects=None, audit_path=None, staged_markets=False,
                     subject_limits=None, priority_subjects=None, diagnostics=None,

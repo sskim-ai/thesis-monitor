@@ -5,12 +5,31 @@ import os
 import re
 
 B2_PER_TICKER_ONE_RETRY_V1 = 'B2_PER_TICKER_ONE_RETRY_V1'
+ALL_MODEL_STAGE_ONE_RETRY_V1 = 'ALL_MODEL_STAGE_ONE_RETRY_V1'
+FULL_RETRY_POLICIES = (B2_PER_TICKER_ONE_RETRY_V1, ALL_MODEL_STAGE_ONE_RETRY_V1)
 B2_US2_DIAGNOSTIC_V1 = 'B2_US2_DIAGNOSTIC_V1'
 B2_SR5_DIAGNOSTIC_V1 = 'B2_SR5_DIAGNOSTIC_V1'
 
 
+def all_stage_retry(binding):
+    return binding is not None and binding['policy'] == ALL_MODEL_STAGE_ONE_RETRY_V1
+
+
+def stock_slot_retry(binding, slot_id):
+    return bool(binding and (slot_id in binding['b2_slots'] or all_stage_retry(binding)
+        and binding['slot_stages'].get(slot_id) in ('CORE', 'A', 'B', 'B2')))
+
+
+def roster_model_ceiling(subjects):
+    """Pre-Source upper bound; actual frozen slots can only reduce this."""
+    n = len(subjects)
+    if n < 1:
+        raise ValueError('scheduled_monitoring_empty_roster')
+    return 2 * (1 + 3 * ((n + 2) // 3) + n)
+
+
 def retry_policy_limits(policy, *, plan=None):
-    if policy == B2_PER_TICKER_ONE_RETRY_V1:
+    if policy in FULL_RETRY_POLICIES:
         if plan is not None:
             plan.validate()
             if (plan.topology != 'CANONICAL_PRODUCTION'
@@ -19,8 +38,12 @@ def retry_policy_limits(policy, *, plan=None):
                     or sum(s.stage=='MARKET' for s in plan.slots)!=1
                     or any(len(s.subjects)!=1 or len(s.security_ids)!=1 for s in plan.slots if s.stage=='B2')):
                 raise ValueError('model_b2_retry_single_market_plan_required')
-            base, reserves = len(plan.slots),sum(s.stage=='B2' for s in plan.slots)
+            base = len(plan.slots)
+            reserves = base if policy == ALL_MODEL_STAGE_ONE_RETRY_V1 else sum(s.stage=='B2' for s in plan.slots)
             return base,reserves,base+reserves
+        if policy == ALL_MODEL_STAGE_ONE_RETRY_V1:
+            # No fixed population or call count exists for this policy.
+            return 0,0,0
         # Legacy callers without a frozen plan retain the original US contract.
         return 29,13,42
     if policy == B2_US2_DIAGNOSTIC_V1:
@@ -33,7 +56,7 @@ def retry_policy_limits(policy, *, plan=None):
 def b2_retry_binding(plan, policy=B2_PER_TICKER_ONE_RETRY_V1):
     plan.validate()
     if (plan.topology != 'CANONICAL_PRODUCTION' or len(plan.cohort.market_subjects)!=1
-            or (policy!=B2_PER_TICKER_ONE_RETRY_V1 and list(plan.cohort.market_subjects)!=['us'])):
+            or (policy not in FULL_RETRY_POLICIES and list(plan.cohort.market_subjects)!=['us'])):
         raise ValueError('model_b2_retry_original_us_plan_required')
     if policy == B2_US2_DIAGNOSTIC_V1 and tuple(plan.cohort.market_subjects['us']) != ('GOOGL','MU'):
         raise ValueError('model_b2_retry_exact_diagnostic_subjects_required')
@@ -53,16 +76,19 @@ def b2_retry_binding(plan, policy=B2_PER_TICKER_ONE_RETRY_V1):
 def validate_b2_retry_binding(value):
     policy=value.get('policy') if isinstance(value,dict) else None
     base,reserves,maximum = retry_policy_limits(policy)
-    if policy==B2_PER_TICKER_ONE_RETRY_V1:
-        base=len(value.get('slot_stages',{}));reserves=len(value.get('b2_slots',{}));maximum=base+reserves
+    if policy in FULL_RETRY_POLICIES:
+        base = len(value.get('slot_stages',{}))
+        reserves = base if policy == ALL_MODEL_STAGE_ONE_RETRY_V1 else len(value.get('b2_slots',{}))
+        maximum = base + reserves
+    b2_count = list(value.get('slot_stages',{}).values()).count('B2') if policy == ALL_MODEL_STAGE_ONE_RETRY_V1 else reserves
     if (type(value) is not dict or set(value) != {'policy','plan_sha256','base_slots','maximum','slot_stages','b2_slots'}
             or not re.fullmatch('[a-f0-9]{64}', value['plan_sha256'])
             or type(value['base_slots']) is not int or value['base_slots'] != base
             or type(value['maximum']) is not int or value['maximum'] != maximum
-            or len(value['slot_stages']) != base or len(value['b2_slots']) != reserves
+            or len(value['slot_stages']) != base or len(value['b2_slots']) != b2_count
             or base<1 or list(value['slot_stages'].values()).count('MARKET')!=1
             or any(stage not in {'MARKET','CORE','A','B','B2'} for stage in value['slot_stages'].values())
-            or len(set(value['b2_slots'].values())) != reserves
+            or len(set(value['b2_slots'].values())) != b2_count
             or value['policy'] == B2_US2_DIAGNOSTIC_V1 and set(value['b2_slots'].values()) != {'GOOGL','MU'}
             or value['policy'] == B2_SR5_DIAGNOSTIC_V1 and set(value['b2_slots'].values()) != {'CRCL','HUT','TSM','WULF'}
             or set(value['b2_slots']) != {s for s,stage in value['slot_stages'].items() if stage == 'B2'}
@@ -74,6 +100,10 @@ def validate_b2_retry_binding(value):
 def market_timeout_retry_cap(binding, *, retry_cap=0, retry_market='us'):
     if binding is not None:
         validate_b2_retry_binding(binding)
+        if all_stage_retry(binding):
+            if retry_market not in ('kr','us') or type(retry_cap) is not int or retry_cap != 0:
+                raise ValueError('model_all_stage_retry_scope_invalid')
+            return 1
         if (retry_market not in ('kr','us') or type(retry_cap) is not int or retry_cap not in (0,1)
                 or retry_cap and binding['policy']!=B2_PER_TICKER_ONE_RETRY_V1):
             raise ValueError('model_combined_retry_scope_invalid')
@@ -92,13 +122,16 @@ def b2_retry_budget_bounds(binding, *, retry_cap=0, retry_market='us'):
     """US retries share the approved remainder after every initial call is reserved."""
     market_timeout_retry_cap(binding, retry_cap=retry_cap, retry_market=retry_market)
     maximum = binding['maximum'] + retry_cap
+    if all_stage_retry(binding):
+        return maximum, maximum
     minimum = (binding['base_slots']
         if retry_market == 'us' and retry_cap == 0 and binding['policy'] == B2_PER_TICKER_ONE_RETRY_V1
         else maximum)
     return minimum, maximum
 
 
-def confirmed_timeout(path, *, worker_pid, worker_returncode, receipt, prompt_sha256, schema_sha256):
+def confirmed_timeout(path, *, worker_pid, worker_returncode, receipt, prompt_sha256, schema_sha256,
+                      frozen_market=None):
     if (worker_returncode != 0 or receipt.get('status') != 'FAIL'
             or receipt.get('error_code') != 'TRANSPORT_TIMEOUT' or receipt.get('process_started') is not True
             or receipt.get('cli_returncode') != -9):
@@ -124,10 +157,12 @@ def confirmed_timeout(path, *, worker_pid, worker_returncode, receipt, prompt_sh
         if not events.endswith(b'\n') or [json.loads(line)['type'] for line in events.splitlines()] != [
                 'thread.started','turn.started']:
             return None
+        from app.services.production_model_profile import DEFAULT_SOL_INPUT_BYTES, sol_prompt_limit_bytes
         from app.services.unified_run_artifacts import sha256_bytes
         inputs = path/'approved-input'
-        if (any(f.is_symlink() or not f.is_file() or f.stat().st_size > 384*1024
-                for f in (inputs/'prompt.txt',inputs/'provider-wire-schema.json'))
+        caps = ((inputs/'prompt.txt', sol_prompt_limit_bytes(frozen_market)),
+                (inputs/'provider-wire-schema.json', DEFAULT_SOL_INPUT_BYTES))
+        if (any(f.is_symlink() or not f.is_file() or f.stat().st_size > cap for f,cap in caps)
                 or sha256_bytes((inputs/'prompt.txt').read_bytes()) != prompt_sha256
                 or sha256_bytes((inputs/'provider-wire-schema.json').read_bytes()) != schema_sha256
                 or dispatch['timeout_seconds'] != 600 or dispatch['sandbox'] != 'read-only'
