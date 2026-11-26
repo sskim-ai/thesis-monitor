@@ -236,7 +236,9 @@ def append_native_reference_candidates(historical, reference, context):
     price = context.get('current_price')
     current = contract.number((price or {}).get('value'))
     tier = TIER_TO_BAND.get(option['valuation_regime_tier'])
-    comparable = reference.get('quote_basis_comparable') is True and current is not None and current>0
+    quote_comparable = reference.get('quote_basis_comparable') is True and current is not None and current>0
+    denominator_basis = {d['ref_id']: d.get('own_denominator_basis_resolved') is True
+                         for d in reference['direct']}
     candidates = []
     for candidate in rows:
         low,high = contract.number(candidate['low']),contract.number(candidate['high'])
@@ -245,6 +247,8 @@ def append_native_reference_candidates(historical, reference, context):
         row = {k:deepcopy(candidate[k]) for k in ('candidate_id','method_family','quantile_band',
             'low','high','currency','formula_inputs','evidence_refs','assumptions',
             'origin','history_window','history_first','history_last','positive_periods','provider_formula_exact')}
+        # An unadjusted local close does not establish the provider's per-share adjustment basis.
+        comparable = quote_comparable and denominator_basis.get(candidate['formula_inputs']['denominator_ref'], False)
         row['relation_to_price'] = ('BELOW' if current<low else 'ABOVE' if current>high else 'INSIDE') if comparable else 'UNRESOLVED'
         row['quote_basis_comparable'] = bool(comparable)
         row['a_selected_tier'] = row['quantile_band']==tier

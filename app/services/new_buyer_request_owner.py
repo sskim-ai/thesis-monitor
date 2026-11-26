@@ -38,8 +38,8 @@ def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
         # descriptive historical_price_context, with absolute_discount=None.
         raise ValueError('v2_separate_absolute_range_contract_review_required')
     coverage_rows = policy.coverage_gate(coverage,census,coverage_sha,census_sha)
-    row = coverage_rows[subject['ticker']]
-    evaluation, metrics, all_proof = policy.evaluability(subject,row,census,coverage_sha)
+    coverage_row = coverage_rows[subject['ticker']]
+    evaluation, metrics, all_proof = policy.evaluability(subject,coverage_row,census,coverage_sha)
     if evaluation['evaluability_state'] == 'INVALID_INCOMPLETE_CONTRACT':
         raise ValueError('v2_invalid_contradictory_or_incomplete_ownership')
     roles, gate = policy.business_roles(subject,census,confidence)
@@ -182,7 +182,7 @@ def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
             axis_separation=dict(ref_role_separation=True,legacy_model_visible_refs=0,
                 legacy_prose_model_visible=False,blocked_values_model_visible=False),
             v1_request_sha256=v1_request['request_sha256'],
-            frozen_subject_sha256=digest(subject),coverage_row_sha256=row['receipt_sha256']),
+            frozen_subject_sha256=digest(subject),coverage_row_sha256=coverage_row['receipt_sha256']),
         shadow_only=True,dispatch_authorized=False,persistence_authorized=False,
         delivery_authorized=False,default_enabled=False)
     if digest([v1_request,coverage,census,legacy_records,confidence]) != before:

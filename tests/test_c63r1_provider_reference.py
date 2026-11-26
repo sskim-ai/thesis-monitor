@@ -149,7 +149,8 @@ def test_existing_b2_selection_and_no_current_metric_promotion(kwargs,stances,se
     args=inputs(**kwargs)
     first=args['v1_request']; sub=first['subject']
     _,_,_,reference=raw_reference(sub['ticker'],run=sub['source_generation_id'],security_id=sub['security_id'])
-    reference['quote_basis_comparable']=False
+    # Even a verified unadjusted local close cannot certify the provider's per-share basis.
+    reference['quote_basis_comparable']=True
     # Synthetic coverage fixture has different atomic ref names. The new
     # native history rank must not recreate an absent current ratio.
     sub['provider_reference_context']=reference
@@ -161,9 +162,13 @@ def test_existing_b2_selection_and_no_current_metric_promotion(kwargs,stances,se
     context=dict(ticker=sub['ticker'],current_price=sub['current_price'],r2_valuation=ranges)
     sub['historical_price_context']=append_native_reference_candidates(None,reference,context)
     assert sub['absolute_discount'] is None and len(sub['historical_price_context']['candidates'])==6
+    assert all(not r['quote_basis_comparable'] and r['relation_to_price']=='UNRESOLVED'
+               for r in sub['historical_price_context']['candidates'])
     first['output_schema']=base.output_schema(sub)
     first['request_sha256']=digest({k:v for k,v in first.items() if k!='request_sha256'})
     req=owner.build_request(**args)
+    coverage=next(r for r in args['coverage']['rows'] if r['ticker']==sub['ticker'])
+    assert req['backend_audit']['coverage_row_sha256']==coverage['receipt_sha256']
     inp=owner.provider_payload(req,expected_request_sha256=req['request_sha256'])['input']
     assert all(h['current_value'] is None and 'current_percentile' not in h['all']
                for h in inp['provider_reference_context']['history'])
