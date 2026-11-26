@@ -669,7 +669,7 @@ def _entry_lines(output, model_input, entry_context, market, session, *, assessm
         valuation = output['valuation_context']
         economic_refs = set(valuation['business_evidence_refs'] + valuation['valuation_evidence_refs']
                             + output['reason_evidence_refs'])
-        explanation = b2.economic_reason(output['economic_reason'], economic_refs)
+        explanation = b2.economic_reason(output['economic_reason'], economic_refs | b2.historical_price_refs(model_input))
         label = {'SUPPORTIVE':'경제적 가격 지지','NEUTRAL':'중립','BURDENSOME':'가격 부담',
                  'UNRESOLVED':'적격 배수 자료 부족'}[valuation['state']]
         lines.append(f'기업·가격 판단: {label} — {explanation}')
@@ -797,7 +797,7 @@ def _entry_scenario_row(packet, base, assessment, session):
         hashes=tuple(sorted(hashes)), numeric=tuple(paths), formatting='selected-support-scenario-v1')
 
 
-def _historical_price_row(context, output, assessment):
+def _historical_price_row(context, output, assessment, *, scenario_row=None):
     """Render only the exact frozen deterministic candidates, never model numbers."""
     historical = context.get('historical_price_context')
     if not historical or not historical['candidates']:
@@ -810,6 +810,7 @@ def _historical_price_row(context, output, assessment):
     review = output['economic_price_review']
     selected = next((r for r in candidates if r['candidate_id'] == review['candidate_id']), None)
     lines, used = [], []
+    combined = False
     methods = {'HISTORICAL_TRAILING_PE_QUANTILE':'PER', 'HISTORICAL_PB_QUANTILE':'PBR'}
     for family, label in methods.items():
         rows = [r for r in candidates if r['method_family'] == family]
@@ -838,9 +839,17 @@ def _historical_price_row(context, output, assessment):
                 lines.append('경제적 선호 가격 상한: ' + _price_display(float(ceiling), currency)
                              + ' · 현재 투자 매력의 자동 제한 아님')
                 sc = assessment.scenario or {}
+                # Use the very same registered numeric bounds already approved
+                # by the C60 scenario renderer. Do not expose denied numbers
+                # through a second, derived intersection.
+                registry_keys = {sc.get('evidence_ref', '').removeprefix('canonical:')
+                                 + ':fields.entry_scenario.' + key for key in ('rr2_low','rr2_high')}
                 if (output['new_buyer'] != 'AVOID' and assessment.quality != 'BLOCKED'
                         and sc.get('rr2_intersection') == 'DISPLAYABLE'
-                        and context.get('selected_entry_scenario', {}).get('currency') == currency):
+                        and context.get('selected_entry_scenario') == sc
+                        and sc.get('currency') == currency
+                        and scenario_row is not None
+                        and registry_keys <= set(scenario_row.numeric_registry_keys)):
                     lo, hi = number(sc.get('rr2_low')), number(sc.get('rr2_high'))
                     if lo is not None and hi is not None and lo > 0 and hi >= lo:
                         upper = min(hi, ceiling)
@@ -848,15 +857,17 @@ def _historical_price_row(context, output, assessment):
                                 if upper >= lo else '교집합 없음')
                         lines.append('경제적 선호·기술 RR 조건의 관찰 구간: ' + note
                                      + ' · 투자 논지 및 기술 구조 유지 전제')
+                        combined = True
     else:
         lines.append('경제적 가치 시나리오 미확정 · 역사적 참고 범위만 유지')
     refs = {ref for row in used for ref in row['evidence_refs']}
     hashes = {row['candidate_sha256'] for row in used}
-    if assessment.scenario and any('경제적 선호·기술 RR 조건' in line for line in lines):
+    if combined:
         refs.add(assessment.scenario['evidence_ref'])
-        hashes.add(digest(assessment.scenario))
+        hashes.add(scenario_row.acceptance_sha256)
     return _row('valuation', 'historical-price-context', '\n'.join(lines),
         facts=tuple(sorted(refs)), hashes=tuple(sorted(hashes)),
+        numeric=tuple(sorted(registry_keys)) if combined else (),
         formatting='existing-deterministic-historical-reference-v1')
 
 
@@ -925,15 +936,16 @@ def build_detailed_plan_v2(*, packet, base, b2_request, b2_result, authorization
         rows += (*_reported_quarter_rows(packet, base), *_us_sr_rows(packet, base, axes, authorization.security_id))
     support = _selected_support_row(packet, base, axes["entry_timing"], authorization.security_id,
         new_buyer=axes["fundamental_attractiveness"], price_session=price_session, entry_context=entry_context)
+    scenario_row = None
     if support is not None:
         rows += (support,)
         invalidation = _entry_invalidation_row(packet, base, assessment, price_session)
         if invalidation is not None:
             rows += (invalidation,)
-        scenario = _entry_scenario_row(packet, base, assessment, price_session)
-        if scenario is not None:
-            rows += (scenario,)
-    historical = _historical_price_row(context, output, assessment)
+        scenario_row = _entry_scenario_row(packet, base, assessment, price_session)
+        if scenario_row is not None:
+            rows += (scenario_row,)
+    historical = _historical_price_row(context, output, assessment, scenario_row=scenario_row)
     if historical is not None:
         rows += (historical,)
     binding = dict(base=presentation.acceptance_sha256, request=digest(b2_request), result=digest(b2_result),

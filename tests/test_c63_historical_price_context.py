@@ -133,8 +133,16 @@ def test_preferred_edge_intersects_technical_interval_not_value_lower_bound():
     scenario = dict(currency='USD',evidence_ref='entry:zone',rr2_intersection='DISPLAYABLE',
                     rr2_low=105,rr2_high=135)
     inp['selected_entry_scenario']=scenario
-    row = _historical_price_row(inp,chosen,SimpleNamespace(scenario=scenario,quality='SUPPORTED'))
+    approved = SimpleNamespace(numeric_registry_keys=(
+        'entry:zone:fields.entry_scenario.rr2_low','entry:zone:fields.entry_scenario.rr2_high'),
+        acceptance_sha256=digest(scenario))
+    assessment = SimpleNamespace(scenario=scenario,quality='SUPPORTED')
+    row = _historical_price_row(inp,chosen,assessment,scenario_row=approved)
     assert '$105.00–$120.00' in row.text
     assert 'entry:zone' in row.source_fact_ids
-    blocked = _historical_price_row(inp,chosen,SimpleNamespace(scenario=scenario,quality='BLOCKED'))
+    assert set(row.numeric_registry_keys)==set(approved.numeric_registry_keys)
+    denied = _historical_price_row(inp,chosen,assessment)
+    assert '관찰 구간' not in denied.text
+    blocked = _historical_price_row(inp,chosen,SimpleNamespace(scenario=scenario,quality='BLOCKED'),
+                                   scenario_row=approved)
     assert '관찰 구간' not in blocked.text

@@ -225,6 +225,12 @@ def capabilities(model_input):
     return rows
 
 
+def historical_price_refs(model_input):
+    # These identifiers are not business capability refs or qualified multiples.
+    return {ref for row in model_input.get('historical_price_context', {}).get('candidates', ())
+            for ref in [row['candidate_id'], *row['evidence_refs']]}
+
+
 def economic_reason(text, refs):
     from app.services.detailed_stock_message_service import _safe_prose
     return _safe_prose(text, refs)
@@ -291,7 +297,8 @@ def validate_output(output, model_input):
             errors.append('ECONOMIC_WAIT_REF_SCOPE')
         try:
             economic_reason(output['economic_reason'], sorted(set(economic_refs(model_input))
-                | set(model_input['qualified_usable_valuation_facts']) | set(model_input['active_risk_refs'])))
+                | set(model_input['qualified_usable_valuation_facts']) | set(model_input['active_risk_refs'])
+                | historical_price_refs(model_input)))
         except ValueError:
             errors.append('ECONOMIC_REASON_UNBOUND')
     if 'historical_price_context' in model_input:
