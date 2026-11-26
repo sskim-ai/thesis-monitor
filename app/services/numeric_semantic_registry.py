@@ -846,6 +846,10 @@ NUMERIC_SEMANTICS = {
         "index",
         scope="both",
     ),
+    "volatility_point_change": _spec(
+        "volatility_point_change", ("points",), ("VIX 변동폭",),
+        (r"(?:vix|변동성지수).*(?:변동폭|포인트)",), "number", scope="both",
+    ),
     "volatility_return_pct": _spec(
         "volatility_return_pct",
         ("pct",),
@@ -2107,6 +2111,12 @@ _FIELD_RULES = (
         ("market_oil",), r"fields\.price_usd_per_barrel", "oil_price", "USD_per_barrel"
     ),
     NumericFieldRule(("market_oil",), r"fields\.return_pct", "oil_return_pct", "pct"),
+    NumericFieldRule(("market_oil",), r"fields\.previous_value", "oil_price", "USD_per_barrel"),
+    NumericFieldRule(("market_volatility",), r"fields\.previous_value", "volatility_index_level", "index"),
+    NumericFieldRule(("market_volatility",), r"fields\.change_value", "volatility_point_change", "points"),
+    NumericFieldRule(("market_dollar_index",), r"fields\.previous_value", "dollar_index_level", "index"),
+    NumericFieldRule(("market_breakeven_inflation",), r"fields\.previous_level_pct", "breakeven_inflation_level", "pct"),
+    NumericFieldRule(("market_credit_spread",), r"fields\.previous_level_pct", "credit_spread_level", "pct"),
     NumericFieldRule(
         ("market_volatility",),
         r"fields\.level",
@@ -2337,6 +2347,10 @@ def _source_aware_label(
             return series + ' ' + suffix
         return None
     if label := _MARKET_SERIES_LABELS.get((semantic_type, series)):
+        if field_path in {'fields.previous_value', 'fields.previous_level_pct'} and semantic_type in {
+                'oil_price', 'volatility_index_level', 'dollar_index_level',
+                'breakeven_inflation_level', 'credit_spread_level'}:
+            return label + ' 직전 관측'
         return label
     if semantic_type in {"forward_eps", "forward_pe"}:
         source = str(fields.get("forward_pe_source") or "")

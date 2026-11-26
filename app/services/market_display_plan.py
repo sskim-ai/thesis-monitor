@@ -214,6 +214,9 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
             add('indices', series, [fact] if valid else [], bindings if valid else [],
                 text=(f"{series}: {fields['close']:,.2f} USD · {fields['change_value']:+.2f} USD "
                       f"({fields['return_pct']:+.2f}%)") if valid else None)
+        rsp = unique_series('RSP')
+        if rsp and current(rsp) and (ret := bind(rsp, 'return_pct', {'pct','percent'})):
+            add('style', 'S&P500 동일가중', [rsp], [ret], text=f"RSP 동일가중: {ret.value:+.2f}% · {completed}")
     elif display_view is not None:
         for symbol in ('KOSPI', 'KOSDAQ'):
             matches = [f for f in facts if f['fact_type'] == 'market_cross_section_index'
@@ -235,7 +238,7 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
             ('price_usd_per_barrel', {'USD_per_barrel'}, 'USD/배럴') if series == 'DCOILWTICO' else
             ('level', {'index', 'points', 'point'}, '') if series in {'VIXCLS', 'DTWEXBGS'} else
             ('level_pct', {'pct', 'percent'}, '%'))
-        binding = bind(fact, key, units, observation=is_fx) if fact else None
+        binding = bind(fact, key, units, observation=is_fx and display_view is None) if fact else None
         valid = bool(fact and binding and publication.get('contract') == TIME_CONTRACT
             and publication.get('latest_available_at_query_time') is True
             and publication.get('display_eligible') is True
@@ -270,14 +273,31 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
                 delta = f"{derived['change_pct']:+.2f}%" if derived['change_pct'] is not None else '변동률 자료 부족'
                 previous = derived['previous_observation_date'] or '자료 부족'
                 text += f' · {delta} (직전 {previous} 대비)'
+        if valid and not is_fx and display_view is not None:
+            from app.services.market_display_view import publication_comparison_fields
+            change_fields = publication_comparison_fields(fact)
+            prior_date = fields.get('previous_observation_date')
+            delta_key, delta_units = ('change_bp', {'bp'}) if key == 'level_pct' else ('return_pct', {'pct','percent'})
+            prior_key = 'previous_level_pct' if key == 'level_pct' else 'previous_value'
+            if {'fields.' + delta_key, 'fields.' + prior_key} <= change_fields:
+                previous, delta = bind(fact, prior_key, units), bind(fact, delta_key, delta_units)
+                if previous and delta:
+                    bindings.extend([previous, delta])
+                    suffix_delta = 'bp' if delta_key == 'change_bp' else '%'
+                    text += f" · {delta.value:+.2f}{suffix_delta} (직전 {prior_date} 대비)"
+                    if series == 'VIXCLS' and 'fields.change_value' in change_fields:
+                        points = bind(fact, 'change_value', {'points'})
+                        if points:
+                            bindings.append(points)
+                            text += f" · {points.value:+.2f}pt"
         if valid and is_fx:
-            if series == 'USDKRW':
+            if series == 'USDKRW' and (display_view is None or 'fields.change_pct' not in display_fields.get(fact['fact_id'], set())):
                 text = format_dated_fx(KrCloseFxItem(series, '원/달러',
                     binding.value, observation_date=fact['as_of_date']))
             else:
-                previous = bind(fact, 'previous_value', {'KRW'}, observation=True)
-                delta = bind(fact, 'change_value', {'KRW'}, observation=True)
-                pct = bind(fact, 'change_pct', {'pct'}, observation=True)
+                previous = bind(fact, 'previous_value', {'KRW'}, observation=display_view is None)
+                delta = bind(fact, 'change_value', {'KRW'}, observation=display_view is None)
+                pct = bind(fact, 'change_pct', {'pct'}, observation=display_view is None)
                 prior_date = fields.get('previous_observation_date')
                 try:
                     comparable = bool(previous and delta and pct and previous.value > 0
@@ -291,7 +311,7 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
                     comparable = False
                 if comparable:
                     bindings.extend([previous, delta, pct])
-                text = format_dated_fx(KrCloseFxItem(series, FX_LABELS[series], binding.value,
+                text = format_dated_fx(KrCloseFxItem(series, FX_LABELS.get(series, '원/달러'), binding.value,
                     change_value=delta.value if comparable else None,
                     change_pct=pct.value if comparable else None,
                     observation_date=fact['as_of_date'], comparison_date=prior_date if comparable else None))
@@ -308,7 +328,7 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
             if ref not in set(eligible_refs)})
         if display_only:
             add('macro_note', '거시 관측 사용 범위',
-                text='위 거시 관측값 중 판단 사용권이 없는 자료는 날짜별 참고 표시이며, 시장 방향 판단에 사용하지 않았습니다.',
+                text='최신 발표 거시 관측은 실제 관측일의 금융 여건을 설명하며, 완료장 시장 방향의 직접 근거와 구분합니다.',
                 proof={'display_only_refs': display_only, 'directional_authority_added': False},
                 formatter='display-only-note')
     add('judgment', '시장 판단', text='', formatter='accepted-numeric-free-narrative')
@@ -345,7 +365,22 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
                 text=label+(' (확보 업종 기준)' if partial else '')+' · '+' / '.join(values),proof=proof)
 
     if market == 'kr':
-        add('fx_note','환율 관측',text='시장 해석은 당시 입력 기준이며, 환율은 별도 관측값입니다.',formatter='display-only-note')
+        # Existing aggregate flow claims remain market-level observations;
+        # their display does not grant stock attribution or directional rights.
+        catalog = numeric_catalog(source, market=market, assessment_date=assessment_date, eligible_refs=eligible_refs)
+        for claim in catalog['claims']:
+            if claim['claim_type'] != 'DATED_AGGREGATE_FLOW':
+                continue
+            ref = claim['components'][0]['source_fact_ref']
+            fact = by_id.get(ref)
+            if fact is None:
+                continue
+            flow_binding = bind(fact, 'net_buy_amount', {'KRW'}, observation=True)
+            if flow_binding:
+                add('flows', '시장 수급', [fact], [flow_binding], text=claim['rendered_text'],
+                    proof={'existing_numeric_claim_id':claim['claim_id'],
+                           'scope':'AGGREGATE_ONLY_NOT_STOCK_ATTRIBUTION'})
+        add('fx_note','환율 관측',text='환율은 실제 관측일의 금융 여건이며, 당일 수급의 원인으로 단정하지 않습니다.',formatter='display-only-note')
         for series,label in FX_LABELS.items():
             if series != 'USDKRW_KR_CLOSE' and unique_series(series) is not None:
                 macro(series)

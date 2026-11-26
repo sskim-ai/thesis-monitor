@@ -2,9 +2,10 @@
 
 The sealed adapter supplies provenance only after its authority checks. Display
 decisions and alias bindings are rebuilt against the exact canonical source at
-render time. Publication permission is field-scoped to the published level.
+render time. Publication levels and proven source-period changes remain outside current directional authority.
 """
 from datetime import date, datetime
+from math import isclose
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
@@ -164,6 +165,44 @@ def _bindings(source, origin, registry, completed):
     return tuple(sorted(bindings, key=lambda b:(b.alias_ref, b.alias_field)))
 
 
+def publication_comparison_fields(fact):
+    """Only fields backed by the replayed same-response comparison."""
+    fields = fact['fields']
+    pub = fields.get('publication_context', {})
+    try:
+        if (not fields.get('change_input_response_sha256')
+                or fields['change_input_response_sha256'] != pub.get('response_sha256')
+                or date.fromisoformat(fields['previous_observation_date']) >= date.fromisoformat(fact['as_of_date'])):
+            return set()
+        if fact['fact_type'] in {'market_nominal_yield', 'market_real_yield',
+                                'market_breakeven_inflation', 'market_credit_spread'}:
+            level, previous, delta = (fields.get(key) for key in ('level_pct', 'previous_level_pct', 'change_bp'))
+            if all(number(value) for value in (level, previous, delta)) and isclose(
+                    (level - previous) * 100, delta, rel_tol=1e-12, abs_tol=1e-9):
+                allowed = {'fields.previous_level_pct', 'fields.change_bp'}
+                if number(fields.get('change_pp')) and isclose(level - previous, fields['change_pp'],
+                                                               rel_tol=1e-12, abs_tol=1e-9):
+                    allowed.add('fields.change_pp')
+                return allowed
+        else:
+            kind = fact['fact_type']
+            key = {'market_oil': 'price_usd_per_barrel', 'market_volatility': 'level',
+                   'market_dollar_index': 'level', 'market_fx': 'value'}.get(kind)
+            pct_key = 'change_pct' if kind == 'market_fx' else 'return_pct'
+            level, previous, pct = fields.get(key), fields.get('previous_value'), fields.get(pct_key)
+            if all(number(value) for value in (level, previous, pct)) and previous != 0 and isclose(
+                    round((level - previous) / abs(previous) * 100, 4), pct,
+                    rel_tol=1e-12, abs_tol=1e-9):
+                allowed = {'fields.previous_value', 'fields.' + pct_key}
+                if number(fields.get('change_value')) and isclose(level - previous, fields['change_value'],
+                                                                  rel_tol=1e-12, abs_tol=1e-9):
+                    allowed.add('fields.change_value')
+                return allowed
+    except (KeyError, TypeError, ValueError):
+        pass
+    return set()
+
+
 def build_display_view(source, *, market, assessment_date, origin):
     origin = MarketDisplayOrigin.model_validate(origin)
     _require(origin.source_sha256 == digest(source), 'source_hash')
@@ -221,6 +260,11 @@ def build_display_view(source, *, market, assessment_date, origin):
                 valid = False
             if valid:
                 allowed = eligible_fields & {'fields.level_pct','fields.level','fields.price_usd_per_barrel','fields.value'}
+                if allowed:
+                    comparison = eligible_fields & publication_comparison_fields(fact)
+                    if comparison:
+                        allowed |= comparison
+                        basis = 'LATEST_PUBLISHED_WITH_COMPARISON'
             else:
                 reasons.append('publication_current_generation_or_latest_unproven')
         elif ref in alias_fields:
@@ -249,16 +293,57 @@ def verify_display_view(view, source):
     return view
 
 
+def publication_analysis_context(source, display):
+    """Dated observations may explain financial conditions, not market direction."""
+    by_ref = {fact['fact_id']: fact for fact in source['fact_catalog']}
+    registry = {(row['fact_id'], row['field_path']): row for row in source['numeric_registry']}
+    result = {}
+    for decision in display.decisions:
+        if decision.status != 'ELIGIBLE' or decision.basis not in {
+                'LATEST_PUBLISHED_LEVEL_ONLY', 'LATEST_PUBLISHED_WITH_COMPARISON'}:
+            continue
+        fact = by_ref[decision.fact_ref]
+        fields = fact['fields']
+        pub = fields['publication_context']
+        if fact['fact_type'] == 'market_fx':
+            from app.services.latest_published_fx import validate_context
+            if not validate_context(pub, observation_date=fact['as_of_date'],
+                    response_hashes=display.origin.publication_origins[decision.fact_ref]['source_hashes'],
+                    query_as_of=pub['query_as_of'], series=fields['series_code']):
+                continue
+            if fields['series_code'] != 'USDKRW':
+                from app.macro.providers.ecos_daily_fx import DAILY_FX
+                if (fields.get('fx_quote_unit') != DAILY_FX[fields['series_code']][2]
+                        or fields.get('fx_series_basis') != 'ECOS_OFFICIAL_DAILY'):
+                    continue
+        entry = dict(series_code=fields['series_code'], label=fields.get('label', fields['series_code']),
+                     provider=fact['source'], observation_date=fact['as_of_date'],
+                     publication_state=pub['freshness_state'], cadence=pub.get('cadence'),
+                     scope='DATED_FINANCIAL_CONDITIONS_NOT_SESSION_DIRECTION',
+                     values={path.removeprefix('fields.'): dict(value=registry[(decision.fact_ref, path)]['value'],
+                                                               unit=registry[(decision.fact_ref, path)]['unit'])
+                             for path in decision.allowed_fields})
+        if decision.basis == 'LATEST_PUBLISHED_WITH_COMPARISON':
+            entry['previous_observation_date'] = fields['previous_observation_date']
+        for key in ('fx_quote_unit', 'fx_series_basis'):
+            if fields.get(key):
+                entry[key] = fields[key]
+        result[decision.fact_ref] = entry
+    return result
+
+
 def market_views(source, context, schema, *, market, assessment_date, origin):
     directional = MarketDirectionalModelView(market=market, generation_id=origin.generation_id,
         context_sha256=digest(context), schema_sha256=digest(schema), eligible_refs=origin.directional_refs)
     display = build_display_view(source, market=market, assessment_date=assessment_date, origin=origin)
     # Display-only permission cannot enter even an alias in the directional view.
     display_only = {d.fact_ref for d in display.decisions
-                    if d.status == 'ELIGIBLE' and d.basis == 'LATEST_PUBLISHED_LEVEL_ONLY'}
+                    if d.status == 'ELIGIBLE' and d.basis in {'LATEST_PUBLISHED_LEVEL_ONLY', 'LATEST_PUBLISHED_WITH_COMPARISON'}}
     _require(not (display_only & set(context['request_eligible_refs'])), 'directional_display_leak')
     _require(not any(f.get('fields', {}).get('publication_context') for f in context['facts'].values()),
              'directional_publication_alias_leak')
+    if 'macro_context' in context:
+        _require(context['macro_context'] == publication_analysis_context(source, display), 'dated_macro_context_mismatch')
     return dict(directional=directional.model_dump(mode='json'), display=display.model_dump(mode='json'),
         receipt=dict(status='PASS', directional_sha256=digest(directional.model_dump(mode='json')),
             display_sha256=digest(display.model_dump(mode='json')), display_only_refs=sorted(display_only),

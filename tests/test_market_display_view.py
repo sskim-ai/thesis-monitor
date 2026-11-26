@@ -13,7 +13,7 @@ from scripts.r9_rev11_market_qualification import check_projection
 from tests.test_r2b_r5_market_adapter import fixture, project
 
 
-def fresh(market='us', *, missing_publications=(), missing_indices=()):
+def fresh(market='us', *, missing_publications=(), missing_indices=(), comparable=False):
     packet, seed, graph = fixture(market)
     source = graph['markets'][market]
     value = source['component']['value']
@@ -35,8 +35,20 @@ def fresh(market='us', *, missing_publications=(), missing_indices=()):
             temporal = publication_context(provider=provider, series=name, period='2026-09-25',
                 query_as_of=now, retrieved_at=now, response_bytes=b'fictional', cadence='daily',
                 latest_verified=True, daily_required=True)
-            observations.append(dict(series_code=name, value=4., change_pct=1., quality_status='fresh',
-                observed_at='2026-09-25T00:00:00Z', raw_payload=dict(publication_context=temporal)))
+            row = dict(series_code=name, value=4., change_pct=1., quality_status='fresh',
+                observed_at='2026-09-25T00:00:00Z', raw_payload=dict(publication_context=temporal))
+            if comparable and name in {'DGS10','VIXCLS','DCOILWTICO'}:
+                earlier = publication_context(provider=provider, series=name, period='2026-09-24',
+                    query_as_of=now, retrieved_at=now, response_bytes=b'fictional', cadence='daily',
+                    latest_verified=False, daily_required=True)
+                row.update(unit='pct' if name=='DGS10' else 'index' if name=='VIXCLS' else 'USD_per_barrel',
+                           frequency='daily',previous_value=3.5, change_value=.5, change_pct=14.2857)
+                row['raw_payload'].update(previous_observation_date='2026-09-24',
+                    change_input_response_sha256=temporal['response_sha256'])
+                observations.append(dict(series_code=name, value=3.5, quality_status='fresh',
+                    unit=row['unit'],frequency='daily',observed_at='2026-09-24T00:00:00Z',
+                    raw_payload=dict(publication_context=earlier)))
+            observations.append(row)
         doc = dict(observations=observations)
         providers[provider] = dict(value=doc, value_sha256=digest(doc), source_hashes={'synthetic':temporal['response_sha256']})
     pub = dict(contract='fresh-publication-replay-v1', run_id=seed['parent_run_id'],
@@ -52,7 +64,9 @@ def test_separate_views_exact_original_model_contract_and_display(market):
     result = fresh(market)
     source, ctx = result['packet']['market_context'], result['context']
     before = directional.market_context(result['packet'])
-    assert before == ctx and directional.market_schema(ctx) == result['schema']
+    assert before == {key:value for key,value in ctx.items() if key != 'macro_context'}
+    assert ctx['macro_context'] and directional.market_schema(ctx) == result['schema']
+    assert not set(ctx['macro_context']) & set(ctx['facts'])
     receipt = result['views']['receipt']
     assert receipt['directional_context_sha256'] == digest(ctx)
     assert not set(receipt['display_only_refs']) & set(ctx['facts'])
@@ -163,3 +177,41 @@ def test_view_roundtrip_cannot_grant_additional_numeric_field():
     row['allowed_fields'].append('fields.change_bp')
     with pytest.raises(ValueError,match='view_binding_mismatch'):
         verify_display_view(view,result['packet']['market_context'])
+
+
+
+def test_c62_actual_same_response_changes_reach_macro_and_display():
+    result = fresh(comparable=True)
+    ctx = result['context']
+    by_series = {row['series_code']: row for row in ctx['macro_context'].values()}
+    assert by_series['DGS10']['values']['change_bp']['value'] == 50.
+    assert by_series['DGS10']['previous_observation_date'] == '2026-09-24'
+    assert by_series['VIXCLS']['values']['change_value']['value'] == .5
+    assert by_series['DCOILWTICO']['values']['return_pct']['value'] == 14.2857
+    assert 'change_bp' not in by_series['DGS3']['values']
+    display = build_display_plan(result['packet']['market_context'], market='us',
+        assessment_date=result['packet']['assessment_date'], eligible_refs=ctx['request_eligible_refs'],
+        display_view=result['views']['display'])
+    rendered = render_display_plan(display,result['packet']['market_context'],'시장 판단: 방향 혼재')
+    assert '+50.00bp (직전 2026-09-24 대비)' in rendered
+    assert '+0.50pt' in rendered
+    assert '+14.29%' in rendered
+
+
+def test_c62_macro_only_and_reference_scope():
+    ctx = deepcopy(fresh()['context'])
+    ctx.update(facts={}, request_eligible_refs=[], packet_eligible_refs=[])
+    ref = next(iter(ctx['macro_context']))
+    row = dict(market='US', regime='DATA_INSUFFICIENT', confidence='LOW',
+               breadth_state='시장 폭 미확보',leadership='자료 부족',flows_or_participation='자료 부족',
+               rates_or_macro_context='장기 금리 수준은 할인율 부담을 평가할 근거다.',
+               supporting_refs=[],contradicting_refs=[],macro_context_refs=[ref])
+    schema = directional.market_schema(ctx)
+    assert schema['properties']['regime']['enum'] == ['DATA_INSUFFICIENT']
+    assert directional.validate_market(row,ctx)['status']=='PASS'
+    assert ctx['stock_feedback'] is False
+    for bad in (dict(row, regime='BROAD_RISK_ON'),dict(row, supporting_refs=[ref]),
+                dict(row, macro_context_refs=['not-owned']),dict(row, macro_context_refs=[])):
+        assert directional.validate_market(bad,ctx)['status']=='FAIL'
+    ctx['macro_context'] = {}
+    assert directional.validate_market(dict(row,macro_context_refs=[]),ctx)['status']=='PASS'

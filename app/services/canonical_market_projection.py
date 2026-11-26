@@ -5,6 +5,7 @@ and current production callers bind different versioned envelopes.
 """
 from copy import deepcopy
 from datetime import date, datetime
+from math import isclose, isfinite
 import json
 from zoneinfo import ZoneInfo
 
@@ -21,7 +22,7 @@ from app.services.night_futures_product_scope import SERIES as NIGHT_SERIES
 from app.services.night_futures_session_mapping_service import resolve_us_morning_night_reference_date
 from app.services.numeric_semantic_registry import build_numeric_registry
 from app.services.unified_snapshot_contract import digest
-from app.services.market_display_view import display_origin, market_views
+from app.services.market_display_view import display_origin, build_display_view, publication_analysis_context, market_views
 from scripts import m12ds_r4_r4_market as consumer
 
 CONTRACT = 'sealed-market-consumer-projection-v1'
@@ -229,6 +230,88 @@ def _authority(packet, seed, graph, expected):
     return component, cutoff
 
 
+def _same_publication_comparison(fact, observation, observations):
+    """Reuse the replay owner's actual prior row, not a daily-close assumption.
+
+    An unavailable comparison only removes the comparison, never a valid level.
+    This is a consumer projection of the existing same-response replay.
+    """
+    fields = fact['fields']
+    for key in ('previous_level_pct', 'previous_value', 'change_value', 'change_bp',
+                'change_pp', 'change_pct', 'return_pct', 'previous_observation_date',
+                'change_input_response_sha256'):
+        fields.pop(key, None)
+    temporal = observation['raw_payload']['publication_context']
+    raw = observation['raw_payload']
+    prior_date = raw.get('previous_observation_date')
+    response_hash = temporal['response_sha256']
+    if not prior_date or raw.get('change_input_response_sha256') != response_hash:
+        return
+    def finite(value):
+        return isinstance(value, (int, float)) and not isinstance(value, bool) and isfinite(value)
+    try:
+        day = date.fromisoformat(temporal['observation_date'])
+        prior_day = date.fromisoformat(prior_date)
+        if prior_day >= day or not observation.get('unit') or not observation.get('frequency'):
+            return
+        candidates = []
+        for row in observations:
+            pub = row.get('raw_payload', {}).get('publication_context', {})
+            if (row.get('series_code') == observation.get('series_code')
+                    and row.get('unit') == observation.get('unit')
+                    and row.get('frequency') == observation.get('frequency')
+                    and pub.get('response_sha256') == response_hash
+                    and pub.get('provider') == temporal.get('provider')
+                    and pub.get('series_code') == temporal.get('series_code')
+                    and pub.get('query_as_of') == temporal.get('query_as_of')
+                    and finite(row.get('value'))
+                    and row.get('quality_status', 'fresh') in ('fresh', 'verified', 'stale', None)
+                    and date.fromisoformat(pub['observation_date']) < day
+                    and row.get('observed_at', '')[:10] == pub['observation_date']):
+                candidates.append(row)
+        if not candidates:
+            return
+        latest = max(row['raw_payload']['publication_context']['observation_date'] for row in candidates)
+        matches = [row for row in candidates
+                   if row['raw_payload']['publication_context']['observation_date'] == latest]
+        if latest != prior_date or len(matches) != 1:
+            return
+        prior = matches[0]
+        current, previous = observation.get('value'), prior.get('value')
+        change = observation.get('change_value')
+        if (not all(finite(v) for v in (current, previous, change, observation.get('previous_value')))
+                or observation['previous_value'] != previous
+                or not isclose(current - previous, change, rel_tol=1e-12, abs_tol=1e-9)):
+            return
+        kind = fact['fact_type']
+        if kind in {'market_nominal_yield', 'market_real_yield',
+                    'market_breakeven_inflation', 'market_credit_spread'}:
+            fields.update(previous_level_pct=previous, change_bp=change * 100.0)
+            if kind == 'market_real_yield':
+                fields['change_pp'] = change
+        elif kind in {'market_oil', 'market_volatility', 'market_dollar_index', 'market_fx'}:
+            if kind == 'market_fx':
+                prior_raw = prior.get('raw_payload', {})
+                if any(raw.get(key) != prior_raw.get(key)
+                       for key in ('fx_series_basis', 'fx_quote_unit')):
+                    return
+            pct = observation.get('change_pct')
+            if (previous == 0 or not finite(pct)
+                    or not isclose(round(change / abs(previous) * 100, 4), pct,
+                                   rel_tol=1e-12, abs_tol=1e-9)):
+                return
+            fields['previous_value'] = previous
+            fields['change_pct' if kind == 'market_fx' else 'return_pct'] = pct
+            if kind in {'market_fx', 'market_volatility'}:
+                fields['change_value'] = change
+        else:
+            return
+        fields.update(previous_observation_date=prior_date,
+                      change_input_response_sha256=response_hash)
+    except (KeyError, TypeError, ValueError):
+        return
+
+
 def _publication_facts(packet, assessed):
     facts, denials, refs = {}, [], {}
     context = packet['publication_context']
@@ -250,11 +333,12 @@ def _publication_facts(packet, assessed):
                     'temporal': {**temporal, 'temporal_role': 'REFERENCE_LAGGING',
                         'today_signal_eligible': False, 'important_change_eligible': False,
                         'structured_state': 'SOURCE_UNAVAILABLE',
-                        'reason': 'fresh_publication_level_and_source_period_delta_only_no_briefing_comparison'}}
+                        'reason': 'latest_published_financial_context_not_completed_session_direction'}}
                 fact = _observation_fact(observation['series_code'], item, assessed)
                 fact['as_of_date'] = temporal['observation_date']
                 fact['source'] = provider
                 fact.setdefault('fields', {})['publication_context'] = temporal
+                _same_publication_comparison(fact, observation, doc['value']['observations'])
                 ref = fact['fact_id']
                 require(ref not in facts or facts[ref] == fact, 'ambiguous_publication_occurrence:' + ref)
                 facts[ref] = fact
@@ -523,8 +607,11 @@ def _project_market_context(packet, seed, graph, *, expected_authority_sha256, e
     require(context['parity_status'] == boundary['status'] == 'PASS', 'market_consumer_parity_failed')
     require(aliases['status'] == 'PASS', 'market_numeric_alias_failed')
     require(digest(packet) == original, 'market_source_mutated')
-    schema = consumer.market_schema(context)
     origin = display_origin(packet, seed, source, context, aliases, expected_authority_sha256, refs)
+    if packet['publication_context'].get('contract') == 'fresh-publication-replay-v1':
+        display = build_display_view(source, market=market, assessment_date=assessed.isoformat(), origin=origin)
+        context['macro_context'] = publication_analysis_context(source, display)
+    schema = consumer.market_schema(context)
     views = market_views(source, context, schema, market=market, assessment_date=assessed.isoformat(), origin=origin)
     return dict(packet=projected, context=context, schema=schema, views=views,
         receipt=dict(contract=CONTRACT, source_packet_sha256=original, context_sha256=digest(context),

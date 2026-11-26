@@ -3,11 +3,27 @@ from app.services.market_numeric_claim_service import (
     numeric_catalog, validate_catalog, narrative_errors, NUMERIC_FREE_RULE, PROSE_FIELDS,
 )
 from scripts import m12ds_r4_r1_market as previous
+from scripts.m12ds_r2_schemas import refs
 from copy import deepcopy
 import re
 
 NIGHT_EXCLUSION_NOTICE = '한국 야간선물은 이번 미국 점검의 입력에서 제외했습니다.'
 PROMPT = previous.PROMPT + "\n" + NUMERIC_FREE_RULE + "\nDated aggregate flow references are context only, not directional citation refs or stock attribution. Do not infer BUY/SELL or market expectations from these amounts alone." + "\nWhen korean_night_futures.economic_use is false, omit Korean night futures from all narrative fields. No price, change, direction or market inference may be based on them. The backend adds the unavailable/exclusion notice. Other eligible market facts remain usable."
+
+PROMPT += """
+When macro_context is supplied, analyze its latest published dated observations in rates_or_macro_context,
+citing only the actually used macro_context_refs. These are valid financial-conditions context, NOT
+completed-session direction facts. Keep supporting_refs and contradicting_refs within facts and the
+existing regime rules. Even with DATA_INSUFFICIENT market direction, explain available macro conditions.
+If macro observations are absent, say which context is missing without obstructing market analysis.
+Distinguish levels from changes against the actual previous observation; missing changes are unknown.
+Compare the yield curve and nominal/real yields and inflation compensation only on compatible dates.
+Discuss financing costs, discount rates, risk appetite, FX and energy risks without assuming causation
+or an automatic stock effect. DTWEXBGS is the broad dollar index, not DXY. FX impact is exposure-dependent.
+Use actual sector, size, participation and relative strength evidence; price proxies are not
+exchange breadth or cash flows. A single-session rotation does not prove a persistent trend.
+Do not repeat the same market risk as multiple independent signals. Keep market judgment export-only.
+"""
 
 
 def excluded_night_narrative_errors(row, context, *, fields=PROSE_FIELDS):
@@ -45,6 +61,10 @@ def market_context(packet):
 
 def market_schema(context):
     schema = previous.market_schema(context)
+    if 'macro_context' in context:
+        known = list(context['macro_context'])
+        schema['properties']['macro_context_refs'] = refs(known, 1 if known else 0, 12)
+        schema['required'].append('macro_context_refs')
     for key in PROSE_FIELDS:
         schema['properties'][key]['pattern'] = r'^[^0-9]*$'
         schema['properties'][key]['description'] = 'Qualitative narrative only. Numeric facts/dates/instruments are rendered by the typed backend owner.'
@@ -55,6 +75,12 @@ def validate_market(row,context):
     receipt = previous.validate_market(row,context)
     receipt['errors'] += narrative_errors(row)
     receipt['errors'] += excluded_night_narrative_errors(row, context)
+    if 'macro_context' in context:
+        known = set(context['macro_context'])
+        selected = row.get('macro_context_refs')
+        if (not isinstance(selected, list) or len(selected) != len(set(selected))
+                or not set(selected) <= known or (known and not selected)):
+            receipt['errors'].append('macro_context_ref_mismatch')
     receipt['status'] = 'FAIL' if receipt['errors'] else 'PASS'
     return receipt
 
