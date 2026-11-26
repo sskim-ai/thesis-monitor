@@ -119,6 +119,11 @@ class CanonicalMonitoringDomain:
                 if any(ctx.get('native_technical_context', {}).get('comparison_version') == 1
                        for ctx in contexts.values()):
                     extra += '\n' + pre.C60_NATIVE_GUIDANCE
+            if any(ctx.get('r2_valuation', {}).get('historical_context_only') for ctx in contexts.values()):
+                extra += ('\nFor historical_context_only, historical ranges and below_reference_range are'
+                          ' descriptive, not compensation or fair value. B retains its business/holder'
+                          ' duties and provisional NewBuyer contract; B2 evaluates the economic stance.'
+                          ' Never offset active material risk with a historical price relationship.')
             requests.append(self.capture('pass-b',spec,contexts,schema,c.schemas.B_PROMPT+'\n'+c.LIMIT_PROMPT+extra))
         self.freeze_stage('pass-b',requests)
         return requests

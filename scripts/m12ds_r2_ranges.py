@@ -27,7 +27,7 @@ def eligible_range_inputs(subject, entry_catalog, chain):
     return result, entries, exclusions
 
 
-def valuation_policy(subject, classification, security_basis):
+def valuation_policy(subject, classification, security_basis, *, historical_context_only=False):
     ticker, archetype, tier = subject['ticker'], classification['archetype'], classification['valuation_regime_tier']
     option = v.select_policy_option(subject=subject, archetype=archetype, valuation_regime_tier=tier)
     current = subject.get('current_price') or {}
@@ -84,12 +84,17 @@ def valuation_policy(subject, classification, security_basis):
     if option['status'] != 'RESOLVED' and status in ('RESOLVED', 'SINGLE_METHOD_LOW_CONFIDENCE'):
         status = 'FUNDAMENTAL_RANGE_UNRESOLVED'
     valid = option['status'] == 'RESOLVED'
-    # A discount is source-valued, not a technical band or a fitted percent cutoff.
-    discount = bool(valid and price is not None and current.get('currency') == option['currency'] and price < number(option['low']))
-    return {'option':option, 'method_audit':methods, 'security_gate':gate,
-            'fundamental_entry_status':status, 'fundamental_entry_confidence':confidence if valid else 'UNRESOLVED',
-            'fundamental_valid':valid, 'compensating_discount':discount,
-            'method_conflict':status == 'FUNDAMENTAL_RANGE_UNRESOLVED_METHOD_CONFLICT'}
+    # A descriptive historical price relationship is not economic compensation.
+    below = bool(valid and price is not None and current.get('currency') == option['currency'] and price < number(option['low']))
+    result = {'option':option, 'method_audit':methods, 'security_gate':gate,
+              'fundamental_entry_status':status, 'fundamental_entry_confidence':confidence if valid else 'UNRESOLVED',
+              'fundamental_valid':valid, 'compensating_discount':below and not historical_context_only,
+              'method_conflict':status == 'FUNDAMENTAL_RANGE_UNRESOLVED_METHOD_CONFLICT'}
+    if historical_context_only:
+        # The unchanged R2/R3 schema/validator now sees no compensation. The
+        # source-owned candidates are still available to B2 as context.
+        result.update(historical_context_only=True, below_reference_range=below)
+    return result
 
 
 def materialize_ranges(valuation, entry_catalog, tactical_choice):

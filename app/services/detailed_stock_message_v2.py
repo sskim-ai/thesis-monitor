@@ -797,6 +797,69 @@ def _entry_scenario_row(packet, base, assessment, session):
         hashes=tuple(sorted(hashes)), numeric=tuple(paths), formatting='selected-support-scenario-v1')
 
 
+def _historical_price_row(context, output, assessment):
+    """Render only the exact frozen deterministic candidates, never model numbers."""
+    historical = context.get('historical_price_context')
+    if not historical or not historical['candidates']:
+        return None
+    from decimal import ROUND_FLOOR
+    from app.services.new_buyer_base_contract import number
+    from app.services.price_structure_v3_renderer_service import _price_display
+    currency = historical['currency']
+    candidates = historical['candidates']
+    review = output['economic_price_review']
+    selected = next((r for r in candidates if r['candidate_id'] == review['candidate_id']), None)
+    lines, used = [], []
+    methods = {'HISTORICAL_TRAILING_PE_QUANTILE':'PER', 'HISTORICAL_PB_QUANTILE':'PBR'}
+    for family, label in methods.items():
+        rows = [r for r in candidates if r['method_family'] == family]
+        if not rows:
+            continue
+        row = next((r for r in rows if r['a_selected_tier']), None)
+        if row is None:
+            row = next((r for r in rows if r['quantile_band']=='P50_P75'), rows[0])
+        low, high = (_price_display(row[k], currency) for k in ('low','high'))
+        relation = {'BELOW':'하단 미만','INSIDE':'범위 안','ABOVE':'상단 초과'}[row['relation_to_price']]
+        band = row['quantile_band'].replace('_','–')
+        lines.append(f'역사적 {label} 참고({band}): {low}–{high} · 현재가 {relation}')
+        used.append(row)
+    if historical['method_conflict']:
+        lines.append('평가 방법 상충 · 단일 가치 범위 미확정')
+    if selected is not None:
+        used.append(selected)
+        label = methods[selected['method_family']]
+        low, high = (_price_display(selected[k], currency) for k in ('low','high'))
+        lines.append(f'조건부 경제적 가치 시나리오({label}): {low}–{high} · 이익·자본 및 배수 가정 유지 전제')
+        if review['preferred_boundary'] in ('LOW','HIGH'):
+            ceiling = number(selected[review['preferred_boundary'].lower()])
+            precision = number(1 if currency == 'KRW' else '0.01')
+            ceiling = ceiling.quantize(precision, rounding=ROUND_FLOOR)
+            if ceiling > 0:
+                lines.append('경제적 선호 가격 상한: ' + _price_display(float(ceiling), currency)
+                             + ' · 현재 투자 매력의 자동 제한 아님')
+                sc = assessment.scenario or {}
+                if (output['new_buyer'] != 'AVOID' and assessment.quality != 'BLOCKED'
+                        and sc.get('rr2_intersection') == 'DISPLAYABLE'
+                        and context.get('selected_entry_scenario', {}).get('currency') == currency):
+                    lo, hi = number(sc.get('rr2_low')), number(sc.get('rr2_high'))
+                    if lo is not None and hi is not None and lo > 0 and hi >= lo:
+                        upper = min(hi, ceiling)
+                        note = (_price_display(float(lo), currency) + '–' + _price_display(float(upper), currency)
+                                if upper >= lo else '교집합 없음')
+                        lines.append('경제적 선호·기술 RR 조건의 관찰 구간: ' + note
+                                     + ' · 투자 논지 및 기술 구조 유지 전제')
+    else:
+        lines.append('경제적 가치 시나리오 미확정 · 역사적 참고 범위만 유지')
+    refs = {ref for row in used for ref in row['evidence_refs']}
+    hashes = {row['candidate_sha256'] for row in used}
+    if assessment.scenario and any('경제적 선호·기술 RR 조건' in line for line in lines):
+        refs.add(assessment.scenario['evidence_ref'])
+        hashes.add(digest(assessment.scenario))
+    return _row('valuation', 'historical-price-context', '\n'.join(lines),
+        facts=tuple(sorted(refs)), hashes=tuple(sorted(hashes)),
+        formatting='existing-deterministic-historical-reference-v1')
+
+
 def _judgment_text(decision, axes, entry_lines):
     score = decision["directional_buy_score"]
     return "\n".join([
@@ -870,6 +933,9 @@ def build_detailed_plan_v2(*, packet, base, b2_request, b2_result, authorization
         scenario = _entry_scenario_row(packet, base, assessment, price_session)
         if scenario is not None:
             rows += (scenario,)
+    historical = _historical_price_row(context, output, assessment)
+    if historical is not None:
+        rows += (historical,)
     binding = dict(base=presentation.acceptance_sha256, request=digest(b2_request), result=digest(b2_result),
         authorization=digest(authorization.model_dump(mode="json")), rows=[r.model_dump(mode="json") for r in rows])
     return DetailedStockMessagePlanV2(base=presentation, b2_request=b2_request, b2_result=b2_result,

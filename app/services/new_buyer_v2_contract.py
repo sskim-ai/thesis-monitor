@@ -105,6 +105,23 @@ SELL restriction, exact quality limits, and frozen Overall/Holder. Low multiples
 do not prove cheapness, high multiples alone do not prove burden. No implied EPS, target,
 new ratio or price range. Use Korean qualitative prose, without unbound numbers.
 """
+    if 'historical_price_context' in model_input:
+        prompt += '''
+Historical price candidates are source-owned descriptive arithmetic, not target
+prices or established fair value. A's valuation tier is a viewpoint, not proof.
+Consider each eligible method independently; explain conflicting results and
+whether current earnings/book are representative (cyclicality, unusual gains,
+cash conversion, capital allocation). Never average conflicting methods.
+In economic_price_review select one supplied candidate only if its assumptions
+are economically defensible as a conditional value scenario; otherwise use
+UNRESOLVED. An optional LOW/HIGH edge is a PREFERRED review price, not a maximum
+permissible price and not an extra veto on current ATTRACTIVE. Use NONE for no
+preferred edge. Explain the selection or limitation in economic_reason without
+inventing prices, multiples, EPS, or required returns. The reference alone cannot
+create business eligibility, waive missing qualified metrics, override a quality
+or confidence veto, or offset active material risk or SELL. Neither historical
+prices nor technical timing mechanically determine the economic stance.
+'''
     if 'native_technical_context' not in model_input:
         return prompt
     prompt = ('Judge NewBuyer fundamental/valuation attractiveness and, separately, the supplied native technical evidence.'
@@ -237,6 +254,14 @@ def output_schema(model_input):
             active_risk_refs=dict(const=model_input['active_risk_refs']))
         if current:
             fields['economic_reason'] = dict(type='string', minLength=1, maxLength=360)
+        if 'historical_price_context' in model_input:
+            eligible = (model_input['business_gate']['v2_business_gate_pass']
+                        and not model_input['active_risk_refs']
+                        and not model_input['confidence_veto_refs'] and not unresolved)
+            ids = [r['candidate_id'] for r in model_input['historical_price_context']['candidates']] if eligible else []
+            fields['economic_price_review'] = v1.obj(dict(
+                candidate_id=dict(type='string', enum=['UNRESOLVED', *ids]),
+                preferred_boundary=dict(type='string', enum=['NONE','LOW','HIGH'] if ids else ['NONE'])))
         if 'native_technical_context' in model_input:
             fields['technical_assessment'] = technical_assessment_schema(model_input)
         branches.append(v1.obj(fields))
@@ -269,6 +294,10 @@ def validate_output(output, model_input):
                 | set(model_input['qualified_usable_valuation_facts']) | set(model_input['active_risk_refs'])))
         except ValueError:
             errors.append('ECONOMIC_REASON_UNBOUND')
+    if 'historical_price_context' in model_input:
+        price_review = output['economic_price_review']
+        if price_review['candidate_id'] == 'UNRESOLVED' and price_review['preferred_boundary'] != 'NONE':
+            errors.append('HISTORICAL_PREFERRED_PRICE_REQUIRES_SELECTED_CANDIDATE')
     if 'native_technical_context' in model_input:
         technical = output['technical_assessment']
         refs = technical['evidence_refs']
@@ -295,4 +324,6 @@ def presentation_plan(output, model_input):
         plan['economic_reason'] = output['economic_reason']
     if 'technical_assessment' in output:
         plan['technical_assessment'] = deepcopy(output['technical_assessment'])
+    if 'economic_price_review' in output:
+        plan['economic_price_review'] = deepcopy(output['economic_price_review'])
     return plan

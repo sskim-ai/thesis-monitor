@@ -33,6 +33,9 @@ def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
         raise ValueError('v2_v1_frozen_request_drift')
     subject = v1_request['subject']
     if subject['absolute_discount'] is not None:
+        # Do not accept a legacy request carrying an automatic discount grant.
+        # Current C63 historical references arrive through the separate,
+        # descriptive historical_price_context, with absolute_discount=None.
         raise ValueError('v2_separate_absolute_range_contract_review_required')
     coverage_rows = policy.coverage_gate(coverage,census,coverage_sha,census_sha)
     row = coverage_rows[subject['ticker']]
@@ -98,6 +101,19 @@ def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
         model_input['economic_context'] = economic
         model_input['prompt_version'] += '-economic-context'
         model_input['schema_version'] += '-economic-reason'
+        historical = deepcopy(subject.get('historical_price_context'))
+        if historical is not None:
+            if (historical['scope'] != 'HISTORICAL_REFERENCE_NOT_FAIR_VALUE'
+                    or historical['ticker'] != subject['ticker']
+                    or historical['current_price'] != subject['current_price']):
+                raise ValueError('historical_price_context_identity')
+            historical['candidates'] = [row for row in historical['candidates']
+                if not (set(row['evidence_refs']) & blocked)
+                and not any(token in value for value in _strings(row) for token in legacy_tokens)]
+            if historical['candidates']:
+                model_input['historical_price_context'] = historical
+                model_input['prompt_version'] += '-historical-price-context'
+                model_input['schema_version'] += '-historical-price-review'
     branches = contract.capabilities(model_input)
     model_input.update(allowed_stances=sorted({r['stance'] for r in branches}),
         allowed_wait_reasons=sorted({r['reason'] for r in branches if r['stance']=='WAIT'}),

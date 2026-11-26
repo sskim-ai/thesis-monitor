@@ -290,7 +290,8 @@ def economic_context(view, context, classification, *, original_rows=None):
 
 def b_input(view, cat, sub, chain, classification, capability):
     range_subject, entries, exclusions = eligible_range_inputs(sub, cat["entry_catalog"], chain)
-    valuation = valuation_policy(range_subject, classification, sub["security_valuation_basis_state"])
+    valuation = valuation_policy(range_subject, classification, sub["security_valuation_basis_state"],
+        historical_context_only=view.get('contract') == 'fresh-financial-stock-owner-v1')
     valuation["source_use_exclusions"] = exclusions
     common = dict(catalog=cat, source_use_view=chain["projection"], source_use_binding=chain["binding"],
         source_use_expectation=chain["expectation"], source_generation_id=chain["source_generation_id"],

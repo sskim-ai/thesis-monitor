@@ -79,6 +79,10 @@ def tactical_catalog(context, ticker, security, *, source_generation_id=None):
 def absolute_discount(context):
     """Consume the frozen deterministic owner; never derive a range from multiples."""
     value = context['r2_valuation']
+    if value.get('historical_context_only') is True:
+        if value['compensating_discount']:
+            raise ValueError('historical_reference_must_not_compensate_risk')
+        return None
     if not (value['fundamental_valid'] and value['compensating_discount']):
         return None
     option, price = value['option'], context['current_price']
@@ -107,6 +111,65 @@ def absolute_discount(context):
         raise ValueError('shadow_absolute_range_owner_binding')
     return dict(kind='EXACT_OWNED_FUNDAMENTAL_DISCOUNT', evidence_refs=sorted(set(refs)),
                 valuation_sha256=digest(value), option_id=option['option_id'])
+
+
+def historical_price_context(context):
+    """Project existing source-use qualified candidates, not a new price owner.
+
+    A's tier is context. Keep distinct method/band IDs even when the old
+    deterministic intersection is unresolved. Do not grant new source uses.
+    """
+    value = context['r2_valuation']
+    if value.get('historical_context_only') is not True:
+        return None
+    if value['compensating_discount']:
+        raise ValueError('historical_reference_must_not_compensate_risk')
+    price = context.get('current_price') or {}
+    current = contract.number(price.get('value'))
+    if current is None or current <= 0:
+        return None
+    permissions = _unique(context['source_use_projection']['source_permissions'], 'ref_id')
+    catalog = _unique(context['r2_eligible_range_catalog']['fundamental_candidates'], 'candidate_id')
+    candidates = []
+    for audit in value['method_audit']:
+        candidate = audit['candidate']
+        gate = audit['security_gate']
+        if (gate.get('status') != 'PASS' or gate.get('basis_state') != 'RESOLVED'
+                or gate.get('output_status') != 'RESOLVED' or gate.get('ticker') != context['ticker']
+                or catalog.get(candidate['candidate_id']) != candidate
+                or candidate.get('ticker') != context['ticker']
+                or candidate.get('currency') != price.get('currency')
+                or candidate.get('method_family') not in ('HISTORICAL_TRAILING_PE_QUANTILE',
+                                                          'HISTORICAL_PB_QUANTILE')
+                or candidate.get('entry_candidate_not_price_target') is not True
+                or candidate.get('quality_state') != 'ARITHMETICALLY_SAFE_POLICY_SELECTION_REQUIRED'
+                or candidate.get('disqualifying_reasons')):
+            continue
+        refs = candidate.get('evidence_refs') or []
+        if not refs or not all('VALUATION' in (set(permissions.get(ref, {}).get('allowed_uses', ()))
+                - set(permissions.get(ref, {}).get('prohibited_uses', ()))) for ref in refs):
+            continue
+        low, high = (contract.number(candidate.get(k)) for k in ('low','high'))
+        if low is None or high is None or not 0 < low <= high:
+            continue
+        inputs = candidate.get('formula_inputs') or {}
+        if inputs.get('denominator_ref') not in refs or inputs.get('history_ref') not in refs:
+            continue
+        # The existing candidate builder owns arithmetic; this is a projection
+        # of its values and source IDs, not a newly generated range.
+        row = {k: deepcopy(candidate[k]) for k in ('candidate_id','method_family','quantile_band',
+                    'low','high','currency','formula_inputs','evidence_refs','assumptions')}
+        row['relation_to_price'] = 'BELOW' if current < low else 'ABOVE' if current > high else 'INSIDE'
+        row['a_selected_tier'] = audit['eligible_for_selected_tier']
+        row['candidate_sha256'] = digest(candidate)
+        candidates.append(row)
+    if not candidates:
+        return None
+    option = value['option']
+    return dict(scope='HISTORICAL_REFERENCE_NOT_FAIR_VALUE',
+        ticker=context['ticker'], currency=price['currency'], current_price=deepcopy(price),
+        candidates=candidates, method_conflict=value['method_conflict'],
+        a_archetype=option['archetype'], a_regime_tier=option['valuation_regime_tier'])
 
 
 def technical_structure_context(context, selected, scenario):
@@ -206,6 +269,9 @@ def build_request(*, settings, context, accepted, core, pass_a, source_generatio
     if 'economic_context' in context:
         subject['economic_context'] = deepcopy(context['economic_context'])
         subject['economic_context']['overall_reason_class'] = accepted.get('overall_reason_class')
+        historical = historical_price_context(context)
+        if historical is not None:
+            subject['historical_price_context'] = historical
     request = dict(contract=contract.CONTRACT, prompt=contract.PROMPT, subject=subject,
                    output_schema=contract.output_schema(subject), shadow_only=True,
                    dispatch_authorized=False, persistence_authorized=False,
