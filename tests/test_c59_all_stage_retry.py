@@ -137,9 +137,9 @@ def test_roster_changes_and_scheduled_ceiling(tmp_path,monkeypatch):
     conn.commit()
     st=db.stat()
     real=sqlite3.Connection
-    def connect(uri,**kwargs):
-        assert uri==db.as_uri()+'?mode=ro' and kwargs['uri'] is True
-        return real(uri,**kwargs)
+    def connect(database, /, **kwargs):
+        assert database==db.as_uri()+'?mode=ro' and kwargs['uri'] is True
+        return real(database,**kwargs)
     monkeypatch.setattr(sqlite3,'connect',connect)
     def roster(m):
         return current_monitoring_subjects(db,device=st.st_dev,inode=st.st_ino,market=m)
