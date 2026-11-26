@@ -146,6 +146,139 @@ def a_input(view, cat, sub, chain, authority):
         authority=chain["authority"], projection=chain["projection"], binding=chain["binding"], expectation=chain["expectation"],
         prohibited_pass_a_source_refs=authority["pass_a_visibility_exclusions"])
 
+def economic_context(view, context, classification):
+    """Compact existing, eligible business observations, not additional votes.
+
+    The frozen Source and existing source-use projection own the values. Do
+    not promote an absolute/context-only observation to a directional claim,
+    and do not copy valuation, chart, audit-only or denied values.
+    """
+    from app.services.cross_market_decision_engine_service import canonical_fact_statement
+    from app.services.new_buyer_base_contract import number
+    from app.services.unified_snapshot_contract import digest
+    rows = view.get('packet', {}).get('stocks', [])
+    if len(rows) != 1 or rows[0].get('ticker') != view['ticker']:
+        return dict(observations=[], relationships=[])
+    facts = {f['fact_id']: f for f in rows[0].get('fact_catalog', ())}
+    permissions = {r['ref_id']: set(r.get('allowed_uses', ())) - set(r.get('prohibited_uses', ()))
+                   for r in context['source_use_projection']['source_permissions']}
+    observed = []
+    comparison_keys = ('metric','current_value','prior_comparable_value','growth_pct',
+        'period_start','period_end','prior_period_start','prior_period_end','period_type',
+        'currency','statement_basis','issuer_id','source_ticker','source_receipt',
+        'anomaly_cautions','reported_quarter_basis','fiscal_comparability')
+    for row in context['decision_evidence']:
+        ref = row['ref_id']
+        uses = permissions.get(ref, set())
+        if not uses & {'CONTEXT','OVERALL_DIRECTION'}:
+            continue
+        fact = facts.get(ref.removeprefix('canonical:')) if ref.startswith('canonical:') else None
+        fields = (fact or {}).get('fields', {})
+        item = dict(ref_id=ref, as_of=row.get('as_of'))
+        if (fact and fact.get('fact_type') == 'earnings_comparison'
+                and fact.get('interpretation_eligible') is True
+                and row.get('statement') == canonical_fact_statement(fact)
+                and (row.get('source_time') or {}).get('canonical_fact_sha256') == digest(fact)
+                and number(fields.get('current_value')) is not None
+                and number(fields.get('prior_comparable_value')) is not None):
+            values = {k: deepcopy(fields[k]) for k in comparison_keys if k in fields}
+            # Keep the exact reported amounts; percentage growth is unsuitable
+            # for a negative base or a transition through zero.
+            if number(values['prior_comparable_value']) <= 0 or number(values['current_value']) < 0:
+                values.pop('growth_pct', None)
+            item.update(kind='REPORTED_COMPARISON', observation=values)
+        elif row.get('financial_context') and row.get('financial_value') is not None:
+            item.update(kind='REPORTED_FINANCIAL_CONTEXT_ONLY',
+                        observation=dict(value=row['financial_value'], context=deepcopy(row['financial_context'])))
+        elif fact and fact.get('fact_type') == 'earnings' and fact.get('prose_eligible') is True:
+            if (row.get('source_time') or {}).get('canonical_fact_sha256') != digest(fact):
+                continue
+            item.update(kind='REPORTED_ABSOLUTE_CONTEXT_ONLY', observation=deepcopy(fields))
+        elif ref.startswith('canonical:event:') and 'CONTEXT' in uses:
+            # The current RSS owner authenticates a headline, not the contract,
+            # forecast or allegation mentioned in it.
+            item.update(kind='REPORTED_EVENT_CONTEXT_ONLY', observation=row['statement'])
+        else:
+            continue
+        observed.append(item)
+    # The existing selected financial projection also owns absolute context
+    # fields, even when they have no comparative directional fact. Use their
+    # original normalized_hash references only as economic context. No issuer
+    # bridge may transfer a security denominator, and no denied comparison is
+    # resurrected through a second source-field projection.
+    owner = view.get('selected_financial_owner') or {}
+    projection = view.get('projection') or {}
+    if (not owner.get('bridge_receipt') and projection
+            and owner.get('selected_projection_sha256') == digest(projection)
+            and owner.get('monitored_security') == view['ticker']):
+        compared_metrics = {f.get('fields', {}).get('metric') for f in facts.values()
+                            if f.get('fact_type') == 'earnings_comparison'}
+        context_metrics = {'revenue','operating_income','net_income','owners_parent_net_income',
+            'operating_cash_flow','operating_cashflow','assets','liabilities','equity',
+            'stockholders_equity','noncontrolling_interest','cash_and_cash_equivalents',
+            'debt_including_current','interest_bearing_debt_total','inventory',
+            'ppe_capex_cash_outflow','ocf_less_ppe_capex','diluted_eps','diluted_shares',
+            'weighted_average_diluted_shares','dividends','share_repurchases','roe','roic'}
+        fields = [row for row in projection.get('fields', ())
+                  if row.get('ticker') == view['ticker']
+                  and row.get('canonical_security_id') == (view.get('valuation_view') or {}).get('security_id')
+                  and row.get('context_eligible') is True and not row.get('quality_errors')
+                  and row.get('source_use') == 'ABSOLUTE_CONTEXT_ELIGIBLE'
+                  and row.get('metric') in context_metrics - compared_metrics
+                  and number(row.get('value')) is not None and row.get('normalized_hash')]
+        by_ref = {row['normalized_hash']: row for row in fields}
+        # Preserve original current/prior pairing where supplied. A prior
+        # number without an admitted pair is not labeled comparable growth.
+        groups = {}
+        for row in fields:
+            if row.get('current_prior_role') == 'current':
+                key = (row['metric'], row.get('period_role'), row.get('statement_basis'), row.get('currency'))
+                groups.setdefault(key, []).append(row)
+        selected = set()
+        for group in groups.values():
+            latest = max(row.get('period_end') or '' for row in group)
+            candidates = [row for row in group if row.get('period_end') == latest]
+            if len({(row.get('period_start'), row['value'], row.get('semantic')) for row in candidates}) != 1:
+                continue
+            chosen = max(candidates, key=lambda row: (row.get('filing_date') or '', row['normalized_hash']))
+            selected.add(chosen['normalized_hash'])
+        for pair in projection.get('comparison_candidates', ()):
+            if pair.get('current_ref') in selected and pair.get('prior_ref') in by_ref:
+                selected.add(pair['prior_ref'])
+        for ref in sorted(selected):
+            row = by_ref[ref]
+            if ref != digest({k:v for k,v in row.items() if k != 'normalized_hash'}):
+                continue
+            keys = ('metric','value','period_start','period_end','period_role','period_kind',
+                    'current_prior_role','currency','unit','statement_basis','filing_date',
+                    'source_provider','source_document_id','semantic','formal_state')
+            observed.append(dict(ref_id=ref, as_of=row.get('period_end'),
+                kind='REPORTED_ABSOLUTE_CONTEXT_ONLY',
+                observation={k:deepcopy(row[k]) for k in keys if k in row}))
+    # A margin relationship uses two matched original periods, not a new
+    # independent bullish/bearish vote. No denominator or period substitution.
+    relations = []
+    comparisons = [r for r in observed if r['kind'] == 'REPORTED_COMPARISON']
+    revenue = [r for r in comparisons if r['observation']['metric'] == 'revenue']
+    operating = [r for r in comparisons if r['observation']['metric'] == 'operating_income']
+    if len(revenue) == len(operating) == 1:
+        rev, op = revenue[0]['observation'], operating[0]['observation']
+        keys = ('period_start','period_end','prior_period_start','prior_period_end',
+                'period_type','currency','statement_basis','issuer_id','source_ticker','source_receipt')
+        if all(rev.get(k) is not None and rev[k] == op.get(k) for k in keys):
+            curr, prev = number(rev['current_value']), number(rev['prior_comparable_value'])
+            if curr > 0 and prev > 0:
+                a = number(op['current_value']) / curr * 100
+                b = number(op['prior_comparable_value']) / prev * 100
+                relations.append(dict(kind='OPERATING_MARGIN_COMPARISON',
+                    source_refs=[revenue[0]['ref_id'], operating[0]['ref_id']],
+                    current_pct=float(a), prior_pct=float(b), change_pp=float(a-b),
+                    scope='DERIVED_CONTEXT_NOT_INDEPENDENT_DIRECTION'))
+    return dict(observations=observed, relationships=relations,
+                classification={k: deepcopy(classification[k]) for k in ('archetype','valuation_regime_tier')
+                                if k in classification})
+
+
 def b_input(view, cat, sub, chain, classification, capability):
     range_subject, entries, exclusions = eligible_range_inputs(sub, cat["entry_catalog"], chain)
     valuation = valuation_policy(range_subject, classification, sub["security_valuation_basis_state"])
@@ -180,4 +313,6 @@ def b_input(view, cat, sub, chain, classification, capability):
                      ctx['entry_candidate_diagnostics']):
             for row in rows:
                 row.pop('basis_proofs', None)
+    if view.get('contract') == 'fresh-financial-stock-owner-v1':
+        ctx['economic_context'] = economic_context(view, ctx, classification)
     return ctx, entries, valuation

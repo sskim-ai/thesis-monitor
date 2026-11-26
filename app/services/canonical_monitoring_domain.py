@@ -70,7 +70,7 @@ class CanonicalMonitoringDomain:
                     source_metadata=self.subjects[t]['decision_evidence'],source_generation_id=self.source_gen,
                     execution_generation_id=self.gen) for t in evidence})
             requests.append(self.capture('pass-a',spec,contexts,add_limits(schema,self.prepared,spec['subjects']),
-                owner.future_pass_a_prompt_template()+'\n'+c.LIMIT_PROMPT))
+                owner.future_pass_a_prompt_template()+'\n'+c.LIMIT_PROMPT+'\n'+c.schemas.A_BUSINESS_GUIDANCE))
         self.freeze_stage('pass-a',requests)
         return requests
 

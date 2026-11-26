@@ -81,6 +81,23 @@ def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
         model_input['technical_structure_context'] = deepcopy(subject['technical_structure_context'])
         model_input['prompt_version'] += '-entry-structure'
         model_input['schema_version'] += '-entry-structure-refs'
+    if 'economic_context' in subject:
+        # A context-only observation may inform interpretation, never create
+        # an eligible positive business claim or bypass an exact quality block.
+        economic = deepcopy(subject['economic_context'])
+        blocked = {ref for item in visible_roles for ref in item.get('affected_metric_refs', ())}
+        legacy_claims = [claims[r['claim_ref']] for r in legacy['rows']]
+        legacy_tokens = {token for c in legacy_claims
+                         for token in (c['claim_ref'], c['claim'].get('text')) if token}
+        economic['observations'] = [r for r in economic.get('observations', ())
+            if r['ref_id'] not in blocked and not any(token in value
+                for value in _strings(r) for token in legacy_tokens)]
+        retained = {r['ref_id'] for r in economic['observations']}
+        economic['relationships'] = [r for r in economic.get('relationships', ())
+                                     if set(r['source_refs']) <= retained]
+        model_input['economic_context'] = economic
+        model_input['prompt_version'] += '-economic-context'
+        model_input['schema_version'] += '-economic-reason'
     branches = contract.capabilities(model_input)
     model_input.update(allowed_stances=sorted({r['stance'] for r in branches}),
         allowed_wait_reasons=sorted({r['reason'] for r in branches if r['stance']=='WAIT'}),

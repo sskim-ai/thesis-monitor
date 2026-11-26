@@ -388,6 +388,51 @@ def _localized_earnings_line(text, *, packet, source, refs):
             f'{verb}했습니다. 이 관측만으로 같은 흐름이 이어질지는 확인할 수 없습니다.')
 
 
+def _reported_amount_detail(packet, source, refs):
+    """Exact selected comparison numbers, only through the existing registry."""
+    if len(refs) != 1 or not refs[0].startswith('canonical:earnings_comparison:'):
+        return None
+    fact_id = refs[0].removeprefix('canonical:')
+    paths = ['fields.prior_comparable_value', 'fields.current_value']
+    try:
+        prior, current = [_source_number(fact_id, path, source) for path in paths]
+    except (KeyError, ValueError):
+        return None
+    fact = current[0]
+    fields = fact['fields']
+    if (fact['fact_type'] != 'earnings_comparison' or prior[0] != fact
+            or prior[2]['unit'] != current[2]['unit'] or current[2]['unit'] != fields.get('currency')
+            or not fact.get('quality_receipt_sha256') or not fact.get('field_dependency_receipts')
+            or not any(e.ref_id == refs[0] and e.source_time
+                       and e.source_time.canonical_fact_sha256 == digest(fact)
+                       and e.source_time.subject_ticker == packet.ticker for e in packet.evidence)):
+        return None
+    currency = fields['currency']
+    def amount(value):
+        return f'{value/100_000_000:,.2f}억원' if currency == 'KRW' else f'{value/1_000_000:,.2f}백만 {currency}'
+    a, b = prior[3], current[3]
+    label = {'single_quarter':'분기','half_year':'반기','annual':'연간',
+             'CUMULATIVE_YTD':'누적'}.get(fields.get('period_type'), '공시기간')
+    text = f'{label} 공시금액: {amount(a)} → {amount(b)}'
+    hashes = [digest(fact), digest(current[1]), digest(prior[2]), digest(current[2])]
+    if fields.get('metric') in ('operating_income','net_income') and a <= 0:
+        text += (' · 흑자 전환' if a < 0 < b else ' · 적자 축소' if a < b <= 0
+                 else ' · 적자 확대' if b < a <= 0 else '')
+    elif a > 0 and b < 0:
+        text += ' · 적자 전환'
+    elif a > 0 and b >= 0:
+        try:
+            _, _, reg, growth = _source_number(fact_id, 'fields.growth_pct', source)
+        except (KeyError, ValueError):
+            pass
+        else:
+            if reg['unit'] == 'pct':
+                text += f' ({growth:+.2f}%)'
+                paths.append('fields.growth_pct')
+                hashes.append(digest(reg))
+    return text, tuple(hashes), tuple(fact_id + ':' + p for p in paths)
+
+
 def _kr_flow_rows(packet, source):
     from app.services.kr_stock_flow_source import BASIS, PARTICIPANTS, WINDOWS
     if packet.market != 'kr':
@@ -538,10 +583,18 @@ def build_detailed_plan(*, packet, accepted, source_stock, core, pass_a, valuati
             _require(selected.section == 'business' and effect.startswith('DIRECTIONAL_'),
                      'detailed_claim_section_mismatch')
         text = _safe_prose(claim['claim']['text'], refs)
+        hashes, numeric = (digest(claim), digest(core)), ()
         if selected.section == 'business':
-            text = _localized_earnings_line(text, packet=packet, source=source, refs=lineage[selected.ref])
+            localized = _localized_earnings_line(text, packet=packet, source=source, refs=lineage[selected.ref])
+            if localized != text:
+                amount = _reported_amount_detail(packet, source, lineage[selected.ref])
+                if amount is not None:
+                    detail, extra, numeric = amount
+                    localized += '\n' + detail
+                    hashes += extra
+            text = localized
         rows.append(_row(selected.section, selected.ref, text,
-            facts=lineage[selected.ref], hashes=(digest(claim), digest(core))))
+            facts=lineage[selected.ref], hashes=hashes, numeric=numeric))
     _require(sum(r.section == 'monitoring' for r in rows) in {0, 2, 3, 4}, 'detailed_monitoring_cardinality')
     if dated := _kr_dated_structure_row(packet, source):
         rows.append(dated)

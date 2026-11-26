@@ -55,6 +55,10 @@ def preflight_subject(stock, authority, local, *, generation, cutoff, defer_b=Fa
     mode = c.decision_mode(stock, chain["authority"], obs)
     core_input = dict(ticker=stock["ticker"], metadata=metadata, authority=chain["authority"],
                       frozen_fact_fields=fields, observed_propositions=obs, decision_mode=mode)
+    if mode == 'EVIDENCE_BASED' and view.get('contract') == 'fresh-financial-stock-owner-v1':
+        from app.services.canonical_monitoring_input import economic_context
+        core_input['economic_context'] = economic_context(view,
+            dict(decision_evidence=metadata, source_use_projection=chain['projection']), {})
     recovery = c.limitation_catalog(stock, chain["authority"]) if mode == "UNKNOWN_LIMIT" else {}
     row = {"ticker": stock["ticker"], "market": stock["market"], "decision_mode": mode,
         "source_assembly": stock["status"], "source_packet_sha256": io.digest(stock["packet"]),

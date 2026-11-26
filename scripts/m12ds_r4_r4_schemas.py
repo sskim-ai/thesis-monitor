@@ -11,8 +11,18 @@ AUDITOR_REVIEWED_INTERIM_STATEMENT means an auditor-reviewed interim statement, 
 earnings release and not an audited annual statement. A legacy preliminary_earnings storage type
 does not override this proven document description. Do not change evidence authority or direction
 because of this presentation label. If no class is proven, use a neutral filed-statement description.'''
-CORE_PROMPT = r3.CORE_PROMPT + "\n" + DOCUMENT_LABEL_RULE
-B_PROMPT = r3.B_PROMPT + "\n" + DIRECTION_BALANCE_OUTPUT_RULE + "\n" + DOCUMENT_LABEL_RULE
+from scripts.m12ds_r2_schemas import ECONOMIC_BUSINESS_GUIDANCE
+
+A_BUSINESS_GUIDANCE = '''Classify the supplied business's current economic characteristics,
+not its ticker or a permanent sector template. A mature cash-generating business can also
+have capital-intensive growth projects; a cyclical business can have structural product
+advantages. Use eligible non-price evidence about durable profitability, actual business
+execution, capital intensity, financing, and per-share value where present. Missing facts
+are limits on the classification, not adverse observations. Keep this classification
+independent of valuation multiples, price and technical timing.'''
+
+CORE_PROMPT = r3.CORE_PROMPT + "\n" + DOCUMENT_LABEL_RULE + "\n" + ECONOMIC_BUSINESS_GUIDANCE
+B_PROMPT = r3.B_PROMPT + "\n" + DIRECTION_BALANCE_OUTPUT_RULE + "\n" + DOCUMENT_LABEL_RULE + "\n" + ECONOMIC_BUSINESS_GUIDANCE
 
 
 def decision_schema(cap, valuation, entry_catalog):

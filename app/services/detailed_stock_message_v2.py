@@ -577,6 +577,7 @@ def _buyer_action(stance, relation, quality, *, reason_class=None, confirmed_bre
     if stance == "WAIT":
         reasons = {
             "BUSINESS_MIXED": "사업 근거 혼재 해소 대기",
+            "ECONOMIC_UNCERTAINTY": "구체적 기업·가격 불확실성 확인 대기",
             "BUSINESS_GATE_NOT_MET": "사업 근거 확인 대기",
             "BUSINESS_EVIDENCE_UNCERTAINTY": "사업 근거의 불확실성 해소 대기",
             "VALUATION_UNRESOLVED": "가치평가 자료 확인 대기",
@@ -647,6 +648,7 @@ def _entry_lines(output, model_input, entry_context, market, session, *, assessm
                            confirmed_breakout=result.confirmed_breakout, assessment=result,
                            technical=technical if b2.c60_technical_input(model_input) else None)
     reason = {"BUSINESS_MIXED":"사업 근거 혼재", "BUSINESS_GATE_NOT_MET":"사업 근거 요건 미충족",
+              "ECONOMIC_UNCERTAINTY":"현재 가격에서 중요한 경제적 불확실성",
               "BUSINESS_EVIDENCE_UNCERTAINTY":"사업 근거 불확실", "VALUATION_UNRESOLVED":"가치평가 근거 부족",
               "CONFIDENCE_UNCERTAINTY":"확신을 제한하는 근거", "ACTIVE_ADVERSE_UNCOMPENSATED":"활성 중대 위험",
               "VALUATION_NEUTRAL":"중립적 가치평가", "VALUATION_BURDENSOME":"부담스러운 가치평가",
@@ -661,8 +663,18 @@ def _entry_lines(output, model_input, entry_context, market, session, *, assessm
         detail += '\n가격 확인 조건: 추가 확인 조건 미정'
     if result.failure_condition:
         detail += '\n구조 재검토 조건: ' + result.failure_condition
-    lines = [f"신규매수 근거: {reason}", detail]
+    lines = [f"신규매수 근거: {reason}"]
     refs = set(result.evidence_refs)
+    if 'economic_reason' in output:
+        valuation = output['valuation_context']
+        economic_refs = set(valuation['business_evidence_refs'] + valuation['valuation_evidence_refs']
+                            + output['reason_evidence_refs'])
+        explanation = b2.economic_reason(output['economic_reason'], economic_refs)
+        label = {'SUPPORTIVE':'경제적 가격 지지','NEUTRAL':'중립','BURDENSOME':'가격 부담',
+                 'UNRESOLVED':'적격 배수 자료 부족'}[valuation['state']]
+        lines.append(f'기업·가격 판단: {label} — {explanation}')
+        refs.update(economic_refs)
+    lines.append(detail)
     if technical is not None:
         explanation = b2.technical_reason(technical['reason'], technical['evidence_refs'])
         label = {'SUPPORTIVE': '지지', 'MIXED': '혼재', 'ADVERSE': '약화',
@@ -791,7 +803,7 @@ def _judgment_text(decision, axes, entry_lines):
         "AI 분석 판단: " + decision["overall_direction"],
         f"판단 균형: BUY {score:.1f} : SELL {10-score:.1f}",
         "판단 확신도: " + {"HIGH": "높음", "MEDIUM": "중간", "LOW": "낮음"}[decision["confidence"]],
-        "신규 매수자: " + {"ATTRACTIVE": "기업 매력 있음", "WAIT": "조건 확인 대기", "AVOID": "신규 매수 회피"}[
+        "신규 매수자: " + {"ATTRACTIVE": ("기업·가격 투자 매력 있음" if 'economic_reason' in axes else "기업 매력 있음"), "WAIT": "조건 확인 대기", "AVOID": "신규 매수 회피"}[
             axes["fundamental_attractiveness"]],
         *entry_lines,
         "보유자: " + {"HOLDABLE": "HOLD", "REVIEW": "REVIEW", "REDUCE": "REDUCE"}[decision["holder"]],

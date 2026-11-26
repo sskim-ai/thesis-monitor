@@ -203,6 +203,9 @@ def build_request(*, settings, context, accepted, core, pass_a, source_generatio
         subject['selected_entry_scenario'] = scenario
     if subject.get('native_technical_context', {}).get('comparison_version') == 1:
         subject['technical_structure_context'] = technical_structure_context(context, selected, scenario)
+    if 'economic_context' in context:
+        subject['economic_context'] = deepcopy(context['economic_context'])
+        subject['economic_context']['overall_reason_class'] = accepted.get('overall_reason_class')
     request = dict(contract=contract.CONTRACT, prompt=contract.PROMPT, subject=subject,
                    output_schema=contract.output_schema(subject), shadow_only=True,
                    dispatch_authorized=False, persistence_authorized=False,

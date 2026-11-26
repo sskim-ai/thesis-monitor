@@ -262,3 +262,22 @@ def test_missing_required_price_owner_cannot_issue_business(tmp_path, monkeypatc
                         lambda **kwargs: pytest.fail('Missing mandatory source reached issuance'))
     with pytest.raises(ValueError, match='PLAN_GAP_REQUIRED_OWNER_NOT_REQUESTED'):
         assemble_fresh_stock(**inputs, source_window=window(plan), reported_comparison_business=True)
+
+
+def test_c61_reported_amounts_use_exact_existing_selected_registry(source):
+    from app.services.detailed_stock_message_service import _reported_amount_detail
+    result = assemble_fresh_stock(**source)
+    assert result['status'] == 'PASS'
+    stock = result['packet']['stocks'][0]
+    packet = build_decision_evidence_packet(packet=result['packet'], stock=stock)
+    fact = next(f for f in stock['fact_catalog'] if f['fact_type']=='earnings_comparison')
+    ref = 'canonical:'+fact['fact_id']
+    detail = _reported_amount_detail(packet,result,[ref])
+    assert detail is not None and '공시금액' in detail[0]
+    assert set(detail[2]) >= {fact['fact_id']+':fields.current_value',
+                             fact['fact_id']+':fields.prior_comparable_value'}
+    bad = deepcopy(result)
+    row = next(r for r in bad['packet']['stocks'][0]['numeric_registry']
+               if r['fact_id']==fact['fact_id'] and r['field_path']=='fields.current_value')
+    row['prose_allowed'] = False
+    assert _reported_amount_detail(packet,bad,[ref]) is None

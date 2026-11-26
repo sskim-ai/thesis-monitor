@@ -78,10 +78,37 @@ def c60_technical_input(model_input):
 
 
 def prompt_for(model_input):
+    prompt = PROMPT
+    if 'economic_context' in model_input:
+        prompt = prompt.replace(
+            'SUPPORTIVE with an eligible business gate and no active risk or authorized veto\nrequires fundamental ATTRACTIVE.',
+            'SUPPORTIVE permits, but does not require, ATTRACTIVE when the business is assessable.')
+        prompt = prompt.replace('Return only the closed schema. No free prose or newly calculated source facts.',
+            'Return only the closed schema, including the qualitative economic_reason. No new numeric facts.')
+        from scripts.m12ds_r2_schemas import ECONOMIC_BUSINESS_GUIDANCE
+        prompt += '\n' + ECONOMIC_BUSINESS_GUIDANCE + """
+SUPPORTIVE includes a reasonable price for a good company, not only an obvious discount.
+Evaluate the economic merits of the current price with the eligible positive and ordinary
+negative business evidence. HOLD/MIXED is not itself a veto. If the allowed stance branches
+permit either ATTRACTIVE or WAIT, decide based on the actual business and price. A WAIT
+with SUPPORTIVE requires a specific, cited economic uncertainty material at this price,
+not generic future uncertainty, routine monitoring, or technical timing. Use economic_reason
+to explain both the valuation judgment and the stance, including the actual remaining risk
+or why it is economically tolerable. Cite the positive business claim for ATTRACTIVE;
+context observations may inform the explanation but cannot create business eligibility.
+Absolute context field refs are the original normalized source hashes, not new directional
+claims. Use their reported period/role exactly; do not infer a missing prior observation.
+The derived margin relationship shares its two original source refs.
+Do not independently penalize the same ordinary risk again: business analysis identifies
+the risk, valuation evaluates whether it is reflected in the price. Keep active risk AVOID,
+SELL restriction, exact quality limits, and frozen Overall/Holder. Low multiples alone
+do not prove cheapness, high multiples alone do not prove burden. No implied EPS, target,
+new ratio or price range. Use Korean qualitative prose, without unbound numbers.
+"""
     if 'native_technical_context' not in model_input:
-        return PROMPT
+        return prompt
     prompt = ('Judge NewBuyer fundamental/valuation attractiveness and, separately, the supplied native technical evidence.'
-            + PROMPT[PROMPT.index('\n'):] + '\n' + NATIVE_TECHNICAL_PROMPT)
+            + prompt[prompt.index('\n'):] + '\n' + NATIVE_TECHNICAL_PROMPT)
     if c60_technical_input(model_input):
         from app.services.canonical_monitoring_input import C60_NATIVE_GUIDANCE
         prompt += '\n' + C60_NATIVE_GUIDANCE + '\n' + C60_TECHNICAL_PROMPT
@@ -164,16 +191,32 @@ def states(model_input):
     raise ValueError('v2_invalid_evaluability_not_model_resolvable')
 
 
+def economic_refs(model_input):
+    return sorted({r['claim_ref'] for r in model_input['business_context']}
+                  | {r['ref_id'] for r in model_input.get('economic_context', {}).get('observations', ())})
+
+
 def capabilities(model_input):
-    return [dict(valuation_state=state, stance=stance, reason=reason,
-                 reason_evidence_refs=evidence)
-            for state in states(model_input)
-            for stance,reason,evidence in [policy.choices(model_input,state)]]
+    rows = []
+    for state in states(model_input):
+        stance, reason, evidence = policy.choices(model_input, state)
+        rows.append(dict(valuation_state=state, stance=stance, reason=reason,
+                         reason_evidence_refs=evidence))
+        if 'economic_context' in model_input and state == 'SUPPORTIVE' and stance == 'ATTRACTIVE':
+            rows.append(dict(valuation_state=state, stance='WAIT', reason='ECONOMIC_UNCERTAINTY',
+                             reason_evidence_refs=None))
+    return rows
+
+
+def economic_reason(text, refs):
+    from app.services.detailed_stock_message_service import _safe_prose
+    return _safe_prose(text, refs)
 
 
 def output_schema(model_input):
     facts = model_input['qualified_usable_valuation_facts']
-    business = [r['claim_ref'] for r in model_input['business_context']]
+    current = 'economic_context' in model_input
+    business = economic_refs(model_input) if current else [r['claim_ref'] for r in model_input['business_context']]
     branches = []
     for row in capabilities(model_input):
         state, evidence = row['valuation_state'], row['reason_evidence_refs']
@@ -182,14 +225,18 @@ def output_schema(model_input):
             state=dict(const=state),
             authority=dict(const='BACKEND_COMPOSITE_UNUSABLE' if unresolved else 'MODEL_JUDGED'),
             valuation_evidence_refs=dict(const=[]) if unresolved else v1.refs(facts,1),
-            business_evidence_refs=dict(const=[]) if unresolved else v1.refs(business),
+            business_evidence_refs=dict(const=[]) if unresolved else v1.refs(business,
+                1 if current and row['stance'] == 'ATTRACTIVE' else 0),
             all_metrics_unusable_proof_ref=dict(const=model_input['all_metrics_unusable_proof_ref']),
         ))
         fields = dict(contract=dict(const=CONTRACT),input_sha256=dict(const=digest(model_input)),
             valuation_context=valuation, timing_context=dict(const=model_input['timing_context']),
             new_buyer=dict(const=row['stance']),reason_class=dict(const=row['reason']),
-            reason_evidence_refs=v1.refs(facts,1) if evidence is None else dict(const=evidence),
+            reason_evidence_refs=(v1.refs(business,1) if row['reason']=='ECONOMIC_UNCERTAINTY'
+                                  else v1.refs(facts,1) if evidence is None else dict(const=evidence)),
             active_risk_refs=dict(const=model_input['active_risk_refs']))
+        if current:
+            fields['economic_reason'] = dict(type='string', minLength=1, maxLength=360)
         if 'native_technical_context' in model_input:
             fields['technical_assessment'] = technical_assessment_schema(model_input)
         branches.append(v1.obj(fields))
@@ -208,6 +255,20 @@ def validate_output(output, model_input):
     if output['reason_class'] in ('VALUATION_NEUTRAL','VALUATION_BURDENSOME'):
         if set(output['reason_evidence_refs']) != set(val['valuation_evidence_refs']):
             errors.append('V2_REASON_VALUATION_REF_MISMATCH')
+    if 'economic_context' in model_input:
+        if (output['new_buyer'] == 'ATTRACTIVE' and not
+                set(val['business_evidence_refs'] + output['reason_evidence_refs'])
+                    & set(model_input['business_gate']['eligible_positive_core_refs_after_quality'])):
+            errors.append('ECONOMIC_ATTRACTIVE_POSITIVE_REF_REQUIRED')
+        if (output['reason_class'] == 'ECONOMIC_UNCERTAINTY'
+                and (not output['reason_evidence_refs']
+                     or not set(output['reason_evidence_refs']) <= set(economic_refs(model_input)))):
+            errors.append('ECONOMIC_WAIT_REF_SCOPE')
+        try:
+            economic_reason(output['economic_reason'], sorted(set(economic_refs(model_input))
+                | set(model_input['qualified_usable_valuation_facts']) | set(model_input['active_risk_refs'])))
+        except ValueError:
+            errors.append('ECONOMIC_REASON_UNBOUND')
     if 'native_technical_context' in model_input:
         technical = output['technical_assessment']
         refs = technical['evidence_refs']
@@ -230,6 +291,8 @@ def presentation_plan(output, model_input):
         valuation_judgment=output['valuation_context']['state'],
         independent_axes=True,bare_buy_label_allowed=False,production_delivery_allowed=False,
         numeric_owner='EXISTING_BACKEND_VALUATION_RENDERER')
+    if 'economic_reason' in output:
+        plan['economic_reason'] = output['economic_reason']
     if 'technical_assessment' in output:
         plan['technical_assessment'] = deepcopy(output['technical_assessment'])
     return plan

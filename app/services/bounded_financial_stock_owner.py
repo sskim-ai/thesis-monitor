@@ -62,6 +62,16 @@ def build_shadow_numeric_registry(facts):
             row.update(registered=True, unit=unit, semantic_type=spec.semantic_type,
                        formatter=spec.formatter, scope=spec.scope,
                        approved_labels=list(spec.approved_labels), prose_allowed=False)
+            # Reported comparative amounts already have an exact source
+            # occurrence/quality owner. C61 permits deterministic display of
+            # those amounts, not independent recurring-profit or valuation use.
+            fact = by_id[row['fact_id']]
+            if (fact.get('prose_eligible') is True and fact.get('interpretation_eligible') is True
+                    and fact.get('quality_receipt_sha256') and fact.get('field_dependency_receipts')
+                    and row['field_path'] in {'fields.current_value','fields.prior_comparable_value','fields.growth_pct'}
+                    and row.get('financial_quality_state') in {'verified_usable','caution_usable'}
+                    and not row.get('denial_reason')):
+                row['prose_allowed'] = True
     return registry
 
 

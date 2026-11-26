@@ -184,8 +184,14 @@ def business_roles(subject, census, confidence=None):
         invalidated.update(r['core_capability_ref'] for r in links)
     eligible_pos = sorted(set(positive)-invalidated)
     eligible_neg = sorted(set(negative)-invalidated)
-    base = v1.business_gate(subject)
-    admissible = bool(eligible_pos) and not eligible_neg and not risk
+    if 'economic_context' in subject:
+        # Assessability, not a verdict: ordinary negative evidence remains
+        # visible. SELL, exact quality denials and active risks retain scope.
+        base = subject['frozen_overall'] in ('BUY', 'HOLD') and bool(positive) and not risk
+        admissible = bool(eligible_pos) and not risk
+    else:
+        base = v1.business_gate(subject)
+        admissible = bool(eligible_pos) and not eligible_neg and not risk
     gate = sealed(dict(contract='NewBuyerBusinessGateV2', base_business_gate_pass=base,
         base_business_positive_refs=positive, base_business_negative_refs=negative,
         business_quality_blocker_refs=[r['blocker_ref'] for r in roles if r['role']=='BUSINESS_GATE_QUALITY'],

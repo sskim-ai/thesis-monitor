@@ -132,3 +132,24 @@ Choose an available tactical watch zone when supplied, including WAIT/AVOID. TAC
 Never invent a fundamental range. Backend owns all prices, range status and method conflict.
 Respect period, financial scope and industry cautions. No FCF yield, per-share FCF, CCC, ROIC or runway inference.
 Return compact structured Korean rationale with exact refs, no unbound numerical additions.'''
+
+
+ECONOMIC_BUSINESS_GUIDANCE = """Interpret supplied current business facts, not a count of positive or negative rows.
+Assess the existing profit engine and competitive position, evidenced future growth drivers,
+and changes that would invalidate the long-term thesis. Distinguish scale, margins, cash
+conversion, capital allocation (investment, debt, distributions and buybacks), and per-share
+value where the original periods and share basis permit. A change in CAPEX, debt, cash,
+inventory, FCF or buybacks has no mechanical investment polarity. Related revenue, earnings
+and margin observations describe one economic development, not independent votes.
+Use the existing company archetype as a lens, not a fixed ticker rule: durable franchises
+emphasize durable cash generation and capital efficiency; cyclical businesses earnings
+normalization and actual demand/supply; growth/capital-intensive businesses monetization,
+funding, investment returns and dilution; financials their own capital and profitability basis.
+Distinguish actual filing facts from guidance, estimates, headlines and interpretation.
+RSS headlines are triage context, not verified contracts or realized financial effects.
+Do not infer missing figures, a cause, persistence, ROIC, full FCF, or per-share results.
+Separate a temporary ordinary burden from an actual material threat to the thesis.
+For Holder, assess long-term thesis preservation rather than reacting to routine price moves.
+Use specific opposing evidence and explain why it matters; generic future uncertainty
+alone is not a reason to withhold investment merit. Do not use market scores or chart
+conditions to determine business quality. Do not invent numeric claims in prose."""
