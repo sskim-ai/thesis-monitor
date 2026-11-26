@@ -9,7 +9,7 @@ import json
 from typing import Literal
 
 import httpx
-from pydantic import Field, model_validator
+from pydantic import Field, model_validator, model_serializer
 
 from app.models.financial import FinancialSnapshot
 from app.models.security import SecurityMaster
@@ -17,7 +17,7 @@ from app.schemas.thesis import ValuationSnapshot
 from app.services.unified_snapshot_contract import ContractModel, digest
 from app.services.provider_native_valuation_snapshot import (
     INPUT_CONTRACT, ProviderNativeValuationSnapshot, derive_provider_snapshots,
-    ProviderNativeForwardValuationSnapshot, derive_forward_snapshot,
+    ProviderNativeForwardValuationSnapshot, derive_forward_snapshot, provider_reference_context,
 )
 from app.services.security_valuation_basis import (
     SecurityValuationBasisReceipt, UnavailableState, candidate_inventory,
@@ -122,6 +122,14 @@ class CurrentValuationView(ContractModel):
     denominator_scope_receipt: dict | None = None
     security_basis_receipt: SecurityValuationBasisReceipt | None = None
     denominator_candidate_inventory: tuple[dict, ...] = ()
+    provider_reference_context: dict | None = None
+
+    @model_serializer(mode='wrap')
+    def omit_absent_provider_reference(self, handler):
+        result = handler(self)
+        if self.provider_reference_context is None:
+            result.pop('provider_reference_context', None)
+        return result
 
     @model_validator(mode='after')
     def basis_receipt_binding(self):
@@ -144,6 +152,21 @@ class CurrentValuationView(ContractModel):
                         or native.canonical_security_id != self.security_id
                         or native.requested_security_id != self.ticker):
                     raise ValueError('valuation_native_view_binding_mismatch')
+        ref = self.provider_reference_context
+        if ref is not None:
+            native = [m.native_snapshot for m in self.metrics
+                      if m.metric in ('PER','PBR') and m.native_snapshot is not None]
+            if (ref.get('scope') != 'PROVIDER_NATIVE_REFERENCE_NOT_OWN_DENOMINATOR'
+                    or ref.get('overall_direction_use') is not False
+                    or (ref.get('ticker'),ref.get('security_id'),ref.get('run_id'),
+                        ref.get('currency'),ref.get('as_of')) != (self.ticker,self.security_id,
+                            self.run_id,self.currency,self.price_session.isoformat())
+                    or len(native)!=2 or ref.get('snapshot_sha256') != [s.snapshot_sha256 for s in native]
+                    or any(s.security_identity_receipt.get('status') != 'QUALIFIED_EXACT_SECURITY'
+                           or s.provider != ref.get('provider')
+                           or s.raw_sha256 != ref.get('raw_sha256')
+                           or s.source_receipt_sha256 != ref.get('source_receipt_sha256') for s in native)):
+                raise ValueError('valuation_provider_reference_binding_mismatch')
         return self
 
 
@@ -221,6 +244,7 @@ def derive_current_valuation(*, ticker, run_id, security, price, projection, iss
         source_method='existing_derived_trailing_owner_scope_checked' if metric != 'fPER' else 'no_fresh_estimate_owner',
         input_hashes=bindings, denial_reason=reason if metric != 'fPER' else 'NO_FRESH_ESTIMATE_HORIZON_PUBLICATION_CURRENTNESS')
         for metric in ('PER', 'PBR', 'fPER'))
+    reference = None
     if native_input is not None and native_input.get('contract') == 'provider-native-valuation-unavailable-v1':
         if (native_input['run_id'] != run_id or native_input['security_sha256'] != digest(security)
                 or native_input['reason'] not in {'UNAVAILABLE_PROVIDER_REQUEST_NOT_COMPLETED', 'UNAVAILABLE_PROVIDER_RESPONSE'}
@@ -231,6 +255,8 @@ def derive_current_valuation(*, ticker, run_id, security, price, projection, iss
             denial_reason=native_input['reason']) if m.metric != 'fPER' else m for m in metrics)
     elif native_input is not None and native_input.get('contract') == INPUT_CONTRACT:
         snapshots = derive_provider_snapshots(native_input, security=security, run_id=run_id)
+        reference = provider_reference_context(native_input, snapshots,
+            currency=price['currency'], as_of=price['as_of_date'])
         if native_input['receipt']['provider'] == 'finnhub':
             snapshots += (derive_forward_snapshot(native_input, security=security, run_id=run_id),)
         metrics = tuple(CurrentMultiple(metric=s.metric, status='QUALIFIED' if s.display_eligible else 'UNAVAILABLE',
@@ -248,7 +274,8 @@ def derive_current_valuation(*, ticker, run_id, security, price, projection, iss
         price_basis=price['price_basis'], price_context_sha256=digest(price), security_sha256=digest(security),
         financial_projection_sha256=digest(projection), owner_output_sha256=digest(snapshot.model_dump(mode='json')),
         metrics=metrics, unadjusted_price_binding=unadjusted_price_binding, denominator_scope_receipt=scope,
-        security_basis_receipt=basis_receipt, denominator_candidate_inventory=tuple(inventory))
+        security_basis_receipt=basis_receipt, denominator_candidate_inventory=tuple(inventory),
+        provider_reference_context=reference)
 
 
 def _native_metrics(metrics, inputs, *, ticker, run_id, price, security):

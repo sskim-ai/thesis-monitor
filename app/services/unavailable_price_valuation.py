@@ -7,7 +7,7 @@ from pydantic import model_validator
 from app.services.completed_price_state import CurrentPriceState, require_runtime
 from app.services.current_fresh_valuation import CurrentMultiple, CurrentValuationView
 from app.services.provider_native_valuation_snapshot import (
-    INPUT_CONTRACT, derive_provider_snapshots, derive_forward_snapshot,
+    INPUT_CONTRACT, derive_provider_snapshots, derive_forward_snapshot, provider_reference_context,
 )
 from app.services.unified_snapshot_contract import digest
 
@@ -64,8 +64,11 @@ def derive(*, ticker, run_id, security, price, projection, price_state, native_i
         source_method='price_prerequisite_short_circuit', denial_reason='CURRENT_PRICE_UNAVAILABLE',
         input_hashes=(state.receipt_sha256,), price_state_ref=state.receipt_sha256,
         price_dependency='CURRENT_PRICE_ARITHMETIC_REQUIRED') for m in ('PER', 'PBR', 'fPER'))
+    reference = None
     if native_input is not None and native_input.get('contract') == INPUT_CONTRACT:
         snapshots = derive_provider_snapshots(native_input, security=security, run_id=run_id)
+        reference = provider_reference_context(native_input,snapshots,
+            currency=price['currency'],as_of=state.target_session)
         if native_input['receipt']['provider'] == 'finnhub':
             snapshots += (derive_forward_snapshot(native_input, security=security, run_id=run_id),)
         metrics = tuple(UnavailablePriceMultiple(metric=s.metric, status='QUALIFIED' if s.display_eligible else 'UNAVAILABLE',
@@ -83,7 +86,7 @@ def derive(*, ticker, run_id, security, price, projection, price_state, native_i
         price_basis='UNAVAILABLE_COMPLETED_CLOSE', price_context_sha256=digest(price),
         security_sha256=digest(security), financial_projection_sha256=digest(projection),
         owner_output_sha256=digest([state.model_dump(mode='json'), [m.model_dump(mode='json') for m in metrics]]),
-        metrics=metrics, price_state=state)
+        metrics=metrics, price_state=state, provider_reference_context=reference)
 
 
 def parse_view(value):

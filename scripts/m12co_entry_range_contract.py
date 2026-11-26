@@ -212,6 +212,56 @@ def _candidate(
     return result
 
 
+def provider_reference_candidates(reference):
+    """Reuse the existing formula/band owner with independently sourced native
+    field families. These are conditional provider-based reference prices.
+    They never qualify the legacy security-basis receipt, and do not depend
+    on the provider current multiple matching a quote-derived quotient.
+    """
+    if not reference or reference.get('scope')!='PROVIDER_NATIVE_REFERENCE_NOT_OWN_DENOMINATOR':
+        return []
+    direct = {row['metric']:row for row in reference['direct']}
+    methods = {'PER':(MethodFamily.HISTORICAL_TRAILING_PE_QUANTILE,'epsTTM','series.quarterly.peTTM'),
+               'PBR':(MethodFamily.HISTORICAL_PB_QUANTILE,'bookValuePerShareQuarterly','series.quarterly.pb')}
+    result = []
+    for history in reference['history']:
+        metric = history['metric']
+        family, field, series = methods[metric]
+        denominator = direct.get(metric)
+        window = history.get('recent_five_years')
+        if (reference['provider']!='finnhub' or not denominator or denominator['field']!=field
+                or denominator['currency']!=reference['currency'] or history['field']!=series
+                or not window or not window['price_sample_sufficient']
+                or history['current_value'] is None):
+            continue
+        value = _decimal(denominator['value'])
+        if value is None or value<=0:
+            continue
+        for band, low_key, high_key in QUANTILE_BANDS:
+            low,high = _decimal(window.get(low_key)),_decimal(window.get(high_key))
+            if low is None or high is None or low<=0 or high<low:
+                continue
+            row = _candidate(ticker=reference['ticker'],method_family=family,band_name=band,
+                denominator_name='provider_'+field,denominator=value,denominator_ref=denominator['ref_id'],
+                low_multiple=low,high_multiple=high,history_ref=history['ref_id'],
+                basis_refs=(history['current_metric_ref'],),currency=reference['currency'],
+                assumptions=('same provider and economic field family, not exact verified provider formula',
+                    'fixed recent five-year provider quarterly positive observations',
+                    'current provider per-share value is representative only conditionally',
+                    'historical percentile is descriptive, not normative fair value'),
+                generally_meaningful_archetypes=(),conditionally_meaningful_archetypes=(),
+                current_price=None)
+            # Candidate arithmetic and ID reuse the existing builder. Its
+            # source labels keep this branch separate from own weekly methods.
+            row.update(origin='PROVIDER_QUARTERLY_REFERENCE',history_window='RECENT_FIVE_YEARS',
+                       history_first=window['first_positive_period'],
+                       history_last=window['last_positive_period'],
+                       positive_periods=window['positive_periods'],
+                       provider_formula_exact=False)
+            result.append(row)
+    return result
+
+
 def _pb_candidates(
     *,
     ticker: str,

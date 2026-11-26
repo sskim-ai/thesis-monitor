@@ -567,6 +567,156 @@ def derive_provider_snapshots(inputs, *, security, run_id):
     return tuple(result)
 
 
+def _signed_finite(value):
+    """A nonpositive direct observation is not a usable positive multiple."""
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        parsed = Decimal(str(value).strip())
+        result = float(parsed)
+    except (InvalidOperation, ValueError, OverflowError):
+        return None
+    return result if parsed.is_finite() and abs(result) != float('inf') else None
+
+
+def _quarterly_reference_summary(rows, *, as_of, current):
+    """Use provider period observations, not reconstructed point-in-time prices.
+
+    Exact duplicate dates count once; conflicting values for a date do not
+    contribute a percentile. Missing observations do not prove a loss.
+    """
+    from app.services.historical_valuation_service import _percentile
+    from calendar import monthrange
+    if not isinstance(rows, list):
+        return None
+    periods = {}
+    invalid_dates = future_rows = duplicate_rows = 0
+    for row in rows:
+        try:
+            period = date.fromisoformat(row['period'])
+        except (KeyError, TypeError, ValueError):
+            invalid_dates += 1
+            continue
+        if period > as_of:
+            future_rows += 1
+            continue
+        duplicate_rows += int(period in periods)
+        periods.setdefault(period, set()).add(_signed_finite(row.get('v')))
+    if not periods:
+        return None
+    start = as_of.replace(year=as_of.year-5,
+                         day=min(as_of.day, monthrange(as_of.year-5, as_of.month)[1]))
+    def window(selected):
+        if not selected:
+            return None
+        positives = [next(iter(v)) for v in selected.values()
+                     if len(v)==1 and next(iter(v)) is not None and next(iter(v))>0]
+        nonpositive = sum(len(v)==1 and next(iter(v)) is not None and next(iter(v))<=0
+                          for v in selected.values())
+        conflicts = sum(len(v)>1 for v in selected.values())
+        missing = len(selected)-len(positives)-nonpositive-conflicts
+        days = sorted(selected)
+        positive_dates = sorted(d for d,v in selected.items()
+                                if len(v)==1 and next(iter(v)) is not None and next(iter(v))>0)
+        # The common five-year reference window never changes by ticker or
+        # price. A price scenario needs more than a handful of observations;
+        # smaller/negative-only series remain usable descriptive context.
+        result = dict(first_period=days[0].isoformat(), last_period=days[-1].isoformat(),
+            observed_periods=len(days), positive_periods=len(positives),
+            nonpositive_periods=nonpositive, missing_value_periods=missing,
+            conflicting_periods=conflicts,
+            first_positive_period=positive_dates[0].isoformat() if positive_dates else None,
+            last_positive_period=positive_dates[-1].isoformat() if positive_dates else None,
+            price_sample_sufficient=len(positives)>=8 and
+                (positive_dates[-1]-positive_dates[0]).days>=365 if positive_dates else False)
+        if positives:
+            result.update(minimum=min(positives),maximum=max(positives))
+            result.update({f'percentile_{p}':round(_percentile(positives,p), 4)
+                           for p in (25,50,75,90)})
+            if current is not None:
+                result['current_percentile']=round(100*sum(v<=current for v in positives)/len(positives),1)
+        return result
+    return dict(raw_rows=len(rows), duplicate_rows=duplicate_rows,
+        invalid_date_rows=invalid_dates, future_rows=future_rows,
+        all=window(periods), recent_five_years=window({d:v for d,v in periods.items() if d>=start}),
+        recent_window_start=start.isoformat(), as_of=as_of.isoformat())
+
+
+def provider_reference_context(inputs, snapshots, *, currency, as_of):
+    """Read existing admitted native responses, without granting own-EPS basis.
+
+    Field-family comparisons are descriptive product semantics, not a claim
+    that the provider has published its exact numerator/denominator algorithm.
+    """
+    rows = {s.metric:s for s in snapshots if s.metric in ('PER','PBR')}
+    if set(rows) != {'PER','PBR'}:
+        return None
+    per, pb = rows['PER'], rows['PBR']
+    identity = per.security_identity_receipt
+    if (identity.get('status') != 'QUALIFIED_EXACT_SECURITY'
+            or per.returned_security_id != per.requested_security_id
+            or per.security_identity_receipt != pb.security_identity_receipt
+            or per.provider != pb.provider
+            or any(s.state not in {'QUALIFIED_PROVIDER_LATEST_SNAPSHOT',
+                                    'UNAVAILABLE_PROVIDER_FIELD','UNAVAILABLE_PROVIDER_SENTINEL',
+                                    'UNAVAILABLE_METHOD_BASIS'} for s in (per,pb))
+            or any(s.raw_sha256 != sha256_bytes(inputs['raw'])
+                   or s.source_receipt_sha256 != digest(inputs['receipt']) for s in (per,pb))):
+        return None
+    provider = per.provider
+    if ((provider == 'kiwoom' and currency != 'KRW')
+            or (provider == 'finnhub' and (currency != 'USD' or per.currency != currency))):
+        return None
+    body = json.loads(inputs['raw'])
+    fields = body if provider=='kiwoom' else body.get('metric', {})
+    if not isinstance(fields,dict):
+        return None
+    as_of = date.fromisoformat(str(as_of))
+    root = 'native-reference:' + per.canonical_security_id + ':'
+    field_specs = (('eps','PER','PROVIDER_PERIOD_UNSPECIFIED'),
+                   ('bps','PBR','PROVIDER_PERIOD_UNSPECIFIED')) if provider=='kiwoom' else (
+                   ('epsTTM','PER','PROVIDER_TTM'),('bookValuePerShareQuarterly','PBR','PROVIDER_QUARTERLY'))
+    direct = []
+    for field, metric, period in field_specs:
+        value = _signed_finite(fields.get(field))
+        if value is not None:
+            direct.append(dict(ref_id=root+field,field=field,metric=metric,value=value,
+                period=period, period_end=None, currency=currency,
+                unit_context='KRW_PER_SHARE_PROVIDER_FIELD' if provider=='kiwoom'
+                    else 'USD_PER_SHARE_PROVIDER_FILING_CURRENCY_CONTEXT',
+                zero_is_provider_observation_not_proven_zero_earnings=value==0,
+                own_denominator_basis_resolved=False))
+    histories = []
+    if provider=='finnhub':
+        series = body.get('series')
+        quarterly = series.get('quarterly') if isinstance(series,dict) else None
+        if isinstance(quarterly,dict):
+            for metric, field in (('PER','peTTM'),('PBR','pb')):
+                native = rows[metric]
+                summary = _quarterly_reference_summary(quarterly.get(field),as_of=as_of,
+                    current=native.value if native.display_eligible else None)
+                if summary is None:
+                    continue
+                histories.append(dict(ref_id=root+'quarterly.'+field,metric=metric,
+                    field='series.quarterly.'+field,frequency='PROVIDER_QUARTERLY',
+                    current_field=native.provider_field,
+                    current_metric_ref='current-valuation:'+per.canonical_security_id+':'+metric,
+                    current_value=native.value if native.display_eligible else None,
+                    comparison_basis='SAME_PROVIDER_TTM_FIELD_FAMILY' if metric=='PER'
+                                     else 'SAME_PROVIDER_QUARTERLY_PB_FIELD_FAMILY',
+                    exact_provider_formula_verified=False, **summary))
+    if not direct and not histories:
+        return None
+    return dict(scope='PROVIDER_NATIVE_REFERENCE_NOT_OWN_DENOMINATOR',provider=provider,
+        ticker=per.requested_security_id,security_id=per.canonical_security_id,run_id=per.run_id,
+        currency=currency,as_of=as_of.isoformat(),raw_sha256=per.raw_sha256,
+        source_receipt_sha256=per.source_receipt_sha256,
+        snapshot_sha256=[per.snapshot_sha256,pb.snapshot_sha256],
+        retrieval_timestamp=per.retrieval_timestamp.isoformat(),
+        metric_asof=per.metric_asof.isoformat() if per.metric_asof else None,
+        direct=direct,history=histories,overall_direction_use=False)
+
+
 def derive_forward_snapshot(inputs, *, security, run_id):
     """Consume the existing metric/profile pair; never acquire or reprice data."""
     if not PROVIDER_NATIVE_FORWARD_PE_SNAPSHOT_ALLOWED_FOR_VALUATION_CONTEXT:
