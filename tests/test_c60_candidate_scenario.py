@@ -187,3 +187,24 @@ def test_below_is_a_location_not_a_historical_crossing():
     assert "이탈" not in msg._buyer_action("ATTRACTIVE", "BELOW", "BLOCKED", assessment=assessment)
     assert "가치평가" in msg._buyer_action("WAIT", "BELOW", "BLOCKED", assessment=assessment,
                                      reason_class="VALUATION_UNRESOLVED")
+
+
+def test_b_wire_ref_lists_round_trip_without_changing_backend_or_other_stages():
+    from app.services.production_monitoring_session import model_wire_context
+    ids = ["source:z", "source:a"]
+    row = dict(native_technical_context={"comparison_version": 1},
+        decision_evidence=[{"ref_id": k, "statement": k} for k in ids],
+        source_evidence_binding=dict(emitted_ref_ids=ids[:], ordered_retained_refs=ids[:],
+                                     emitted_evidence_sha256="retained"))
+    ctx = {"X": row, "Y": dict(row, native_technical_context={})}
+    before = deepcopy(ctx)
+    projected = model_wire_context("pass-b", ctx)
+    assert ctx == before and projected["Y"] is ctx["Y"]
+    assert model_wire_context("pass-a", ctx) is ctx and model_wire_context("B2", ctx) is ctx
+    recovered = deepcopy(projected)
+    for k in ("emitted_ref_ids", "ordered_retained_refs"):
+        assert recovered["X"]["source_evidence_binding"][k] == {"same_ordered_values_as": "decision_evidence[].ref_id"}
+        recovered["X"]["source_evidence_binding"][k] = [v["ref_id"] for v in recovered["X"]["decision_evidence"]]
+    assert recovered == before
+    ctx["X"]["source_evidence_binding"]["ordered_retained_refs"].reverse()
+    assert model_wire_context("pass-b", ctx) == ctx

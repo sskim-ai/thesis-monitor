@@ -29,6 +29,23 @@ def frozen_context_prompt(stage_name, prompt, context):
     return prompt + "\nFROZEN_CONTEXT:\n" + encoded + "\n"
 
 
+def model_wire_context(stage_name, context):
+    """Reference exact ordered copies of the B evidence IDs on the wire only."""
+    if stage_name != "pass-b":
+        return context
+    projected = dict(context)
+    for ticker, row in context.items():
+        if row.get("native_technical_context", {}).get("comparison_version") != 1:
+            continue
+        binding = row.get("source_evidence_binding", {})
+        ids = [item["ref_id"] for item in row.get("decision_evidence", ())]
+        fields = ("emitted_ref_ids", "ordered_retained_refs")
+        if ids and all(binding.get(key) == ids for key in fields):
+            aliases = {key: {"same_ordered_values_as": "decision_evidence[].ref_id"} for key in fields}
+            projected[ticker] = dict(row, source_evidence_binding={**binding, **aliases})
+    return projected
+
+
 class ProductionMonitoringSession:
     POLICY = domain.c.policy
     DETAILED_PRESENTATION = True
@@ -276,6 +293,7 @@ class ProductionMonitoringSession:
         if scan["status"] != "PASS":
             raise ValueError("production_provider_wire_schema_gap")
         destination = self.requests / stage_name / self.market / f"batch-{spec['batch']:02d}"
+        context = model_wire_context(stage_name, context)
         payload = dict(prompt=frozen_context_prompt(stage_name, prompt, context),
                        input=deepcopy(context), response_schema=wire)
         for name, value in (("subject-context", context), ("internal-semantic-schema", schema),
