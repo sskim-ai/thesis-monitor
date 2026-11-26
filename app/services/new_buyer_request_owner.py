@@ -101,6 +101,31 @@ def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
         model_input['economic_context'] = economic
         model_input['prompt_version'] += '-economic-context'
         model_input['schema_version'] += '-economic-reason'
+        reference = deepcopy(subject.get('provider_reference_context'))
+        reference_refs = set()
+        if reference is not None:
+            if (reference['scope']!='PROVIDER_NATIVE_REFERENCE_NOT_OWN_DENOMINATOR'
+                    or (reference['ticker'],reference['security_id'],reference['run_id'])
+                    != (subject['ticker'],subject['security_id'],subject['source_generation_id'])
+                    or reference.get('overall_direction_use') is not False):
+                raise ValueError('native_reference_subject_identity')
+            for key in ('direct','history'):
+                reference[key] = [r for r in reference[key] if r['ref_id'] not in blocked
+                    and not any(token in value for value in _strings(r) for token in legacy_tokens)]
+            for row in reference['history']:
+                metric_ref = row.get('current_metric_ref')
+                if metric_ref is not None and metric_ref not in facts:
+                    # The independent historical distribution survives. The
+                    # denied current ratio and its relative rank do not.
+                    row['current_value'] = row['current_metric_ref'] = None
+                    for window in ('all','recent_five_years'):
+                        if row.get(window):
+                            row[window].pop('current_percentile',None)
+            if reference['direct'] or reference['history']:
+                model_input['provider_reference_context'] = reference
+                reference_refs = {r['ref_id'] for r in reference['direct']+reference['history']}
+                model_input['prompt_version'] += '-native-valuation-reference'
+                model_input['schema_version'] += '-native-reference-refs'
         historical = deepcopy(subject.get('historical_price_context'))
         if historical is not None:
             if (historical['scope'] != 'HISTORICAL_REFERENCE_NOT_FAIR_VALUE'
@@ -109,6 +134,8 @@ def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
                 raise ValueError('historical_price_context_identity')
             historical['candidates'] = [row for row in historical['candidates']
                 if not (set(row['evidence_refs']) & blocked)
+                and (row.get('origin')!='PROVIDER_QUARTERLY_REFERENCE'
+                     or set(row['evidence_refs'])<=reference_refs)
                 and not any(token in value for value in _strings(row) for token in legacy_tokens)]
             if historical['candidates']:
                 model_input['historical_price_context'] = historical

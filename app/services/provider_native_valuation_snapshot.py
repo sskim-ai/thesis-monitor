@@ -700,7 +700,9 @@ def provider_reference_context(inputs, snapshots, *, currency, as_of):
                 histories.append(dict(ref_id=root+'quarterly.'+field,metric=metric,
                     field='series.quarterly.'+field,frequency='PROVIDER_QUARTERLY',
                     current_field=native.provider_field,
-                    current_metric_ref='current-valuation:'+per.canonical_security_id+':'+metric,
+                    current_metric_state=native.state,
+                    current_metric_ref=('current-valuation:'+per.canonical_security_id+':'+metric
+                                        if native.display_eligible else None),
                     current_value=native.value if native.display_eligible else None,
                     comparison_basis='SAME_PROVIDER_TTM_FIELD_FAMILY' if metric=='PER'
                                      else 'SAME_PROVIDER_QUARTERLY_PB_FIELD_FAMILY',

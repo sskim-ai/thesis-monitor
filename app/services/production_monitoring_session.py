@@ -379,7 +379,9 @@ class ProductionMonitoringSession:
             raise ValueError("production_b2_requires_complete_b")
         first = b1.build_request(settings=SimpleNamespace(newbuyer_qualified_valuation_shadow=True),
             context=shadow_request_context(self.bctx[ticker], self.fresh_stocks[ticker]),
-            accepted=self.brows[ticker], core=self.cores[ticker], pass_a=self.arows[ticker], source_generation_id=self.source_gen)
+            accepted=self.brows[ticker], core=self.cores[ticker], pass_a=self.arows[ticker],
+            source_generation_id=self.source_gen, valuation_view=self.fresh_stocks[ticker]['valuation_view'],
+            forward_view=self.source.get('forward_views', {}).get(ticker) if self.market=='kr' else None)
         subject = first["subject"]
         legacy = []
         for ref in subject["capability"]["confidence"] + subject["capability"]["quality"]:

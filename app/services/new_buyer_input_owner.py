@@ -176,6 +176,92 @@ def historical_price_context(context):
         a_archetype=option['archetype'], a_regime_tier=option['valuation_regime_tier'])
 
 
+def native_reference_for_b2(context, valuation_view, forward_view=None):
+    """Use the same verified view as B, without copying its history into B."""
+    if valuation_view is None:
+        return None
+    from app.services.unavailable_price_valuation import parse_view
+    from app.services.provider_valuation_calibration_context import calibration_context
+    view = parse_view(valuation_view)
+    ref = deepcopy(view.provider_reference_context)
+    if ref is None:
+        return None
+    if forward_view is not None:
+        from app.services.kr_forward_valuation_context import KrForwardValuationView, calibration_context as kr_context
+        forward = KrForwardValuationView.model_validate(forward_view)
+        if forward.native != view:
+            raise ValueError('native_reference_kr_view_mismatch')
+        expected = kr_context(forward)
+    else:
+        expected = calibration_context(view)
+    if expected != context['valuation_context'] or ref['ticker'] != context['ticker']:
+        raise ValueError('native_reference_calibration_view_mismatch')
+    quote = context.get('current_price') or {}
+    price = contract.number(quote.get('value'))
+    # A diagnostic quotient is not a recalculated or replacement native ratio.
+    # Do not infer same-session comparability from close or identity alone.
+    quote_matches = (price is not None and price>0 and price==contract.number(view.price)
+        and quote.get('currency')==view.currency and quote.get('as_of')==view.price_session.isoformat()
+        and quote.get('basis')==view.price_basis)
+    ref['quote_basis_comparable'] = bool(quote_matches and (
+        view.price_basis in ('close','regular_close') or view.unadjusted_price_binding is not None))
+    if quote_matches:
+        ref['reference_quote'] = dict(value=float(price),currency=view.currency,
+            as_of=view.price_session.isoformat(),basis=view.price_basis,
+            scope='DIAGNOSTIC_NOT_PROVIDER_SAME_SESSION_RECOMPUTATION')
+        for row in ref['direct']:
+            value = contract.number(row['value'])
+            if value is not None and value>0:
+                quotient = float(price/value)
+                if quotient != float('inf'):
+                    row['reference_quote_quotient'] = round(quotient,4)
+    return ref
+
+
+def append_native_reference_candidates(historical, reference, context):
+    """Reuse C63's descriptive candidate catalog/selection, not its own-basis gate."""
+    from scripts.m12co_entry_range_contract import provider_reference_candidates
+    from scripts.m12cp_valuation_policy_contract import TIER_TO_BAND
+    rows = provider_reference_candidates(reference)
+    if not rows:
+        return historical
+    value = context['r2_valuation']
+    if value.get('historical_context_only') is not True or value['compensating_discount']:
+        raise ValueError('native_reference_requires_noncompensating_context')
+    option = value['option']
+    price = context.get('current_price')
+    current = contract.number((price or {}).get('value'))
+    tier = TIER_TO_BAND.get(option['valuation_regime_tier'])
+    comparable = reference.get('quote_basis_comparable') is True and current is not None and current>0
+    candidates = []
+    for candidate in rows:
+        low,high = contract.number(candidate['low']),contract.number(candidate['high'])
+        if low is None or high is None or not 0<low<=high:
+            continue
+        row = {k:deepcopy(candidate[k]) for k in ('candidate_id','method_family','quantile_band',
+            'low','high','currency','formula_inputs','evidence_refs','assumptions',
+            'origin','history_window','history_first','history_last','positive_periods','provider_formula_exact')}
+        row['relation_to_price'] = ('BELOW' if current<low else 'ABOVE' if current>high else 'INSIDE') if comparable else 'UNRESOLVED'
+        row['quote_basis_comparable'] = bool(comparable)
+        row['a_selected_tier'] = row['quantile_band']==tier
+        row['candidate_sha256'] = digest(candidate)
+        candidates.append(row)
+    if not candidates:
+        return historical
+    if historical is None:
+        historical = dict(scope='HISTORICAL_REFERENCE_NOT_FAIR_VALUE',ticker=context['ticker'],
+            currency=reference['currency'],current_price=deepcopy(price),candidates=[],method_conflict=False,
+            a_archetype=option['archetype'],a_regime_tier=option['valuation_regime_tier'])
+    # Independent provider and own-weekly methods are never intersected or averaged.
+    comparison_band = tier or 'P50_P75'
+    selected = [r for r in candidates if r['quantile_band']==comparison_band]
+    historical['provider_method_conflict'] = (len(selected)>1 and (
+        max(contract.number(r['low']) for r in selected)>min(contract.number(r['high']) for r in selected)
+        or len({r['relation_to_price'] for r in selected if r['relation_to_price']!='UNRESOLVED'})>1))
+    historical['candidates'].extend(candidates)
+    return historical
+
+
 def technical_structure_context(context, selected, scenario):
     """Existing B evidence, with compact observations rather than ref IDs alone.
 
@@ -216,7 +302,8 @@ def technical_structure_context(context, selected, scenario):
     return result
 
 
-def build_request(*, settings, context, accepted, core, pass_a, source_generation_id):
+def build_request(*, settings, context, accepted, core, pass_a, source_generation_id,
+                  valuation_view=None, forward_view=None):
     if not settings.newbuyer_qualified_valuation_shadow:
         return None
     before = digest([context, accepted, core, pass_a])
@@ -274,6 +361,10 @@ def build_request(*, settings, context, accepted, core, pass_a, source_generatio
         subject['economic_context'] = deepcopy(context['economic_context'])
         subject['economic_context']['overall_reason_class'] = accepted.get('overall_reason_class')
         historical = historical_price_context(context)
+        reference = native_reference_for_b2(context, valuation_view, forward_view)
+        if reference is not None:
+            subject['provider_reference_context'] = reference
+            historical = append_native_reference_candidates(historical,reference,context)
         if historical is not None:
             subject['historical_price_context'] = historical
     request = dict(contract=contract.CONTRACT, prompt=contract.PROMPT, subject=subject,

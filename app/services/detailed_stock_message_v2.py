@@ -674,6 +674,7 @@ def _entry_lines(output, model_input, entry_context, market, session, *, assessm
                  'UNRESOLVED':'적격 배수 자료 부족'}[valuation['state']]
         lines.append(f'기업·가격 판단: {label} — {explanation}')
         refs.update(economic_refs)
+        refs.update(output.get('provider_reference_refs', ()))
     lines.append(detail)
     if technical is not None:
         explanation = b2.technical_reason(technical['reason'], technical['evidence_refs'])
@@ -797,6 +798,53 @@ def _entry_scenario_row(packet, base, assessment, session):
         hashes=tuple(sorted(hashes)), numeric=tuple(paths), formatting='selected-support-scenario-v1')
 
 
+def _provider_reference_row(context):
+    reference = context.get('provider_reference_context')
+    if not reference:
+        return None
+    from app.services.price_structure_v3_renderer_service import _price_display
+    provider = 'Kiwoom' if reference['provider']=='kiwoom' else 'Finnhub'
+    currency = reference['currency']
+    lines, refs = [], set()
+    for item in reference['direct']:
+        label = {'eps':'EPS(기간 미명시)','bps':'BPS(기간 미명시)',
+                 'epsTTM':'EPS(TTM 표기)','bookValuePerShareQuarterly':'BVPS(분기 표기)'}[item['field']]
+        amount = _price_display(item['value'],currency)
+        if item['zero_is_provider_observation_not_proven_zero_earnings']:
+            amount += ' (공급자 0 관측, 실적 0 확정 아님)'
+        lines.append(f'{provider} 직접 {label}: {amount}')
+        refs.add(item['ref_id'])
+    for item in reference['history']:
+        whole = item['all']
+        recent = item.get('recent_five_years')
+        label = item['metric']
+        def display(window):
+            text = (f"{window['positive_periods']}/{window['observed_periods']} 양수 관측"
+                    f" · {window['first_period']}~{window['last_period']}")
+            if window['positive_periods']:
+                text += (f" · P25/50/75 {window['percentile_25']:.2f}/"
+                         f"{window['percentile_50']:.2f}/{window['percentile_75']:.2f}배")
+                if 'current_percentile' in window:
+                    text += f" · 현재 배수 이하 관측 {window['current_percentile']:.1f}%"
+            if window['nonpositive_periods'] or window['missing_value_periods'] or window['conflicting_periods']:
+                text += (f" · 비양수 {window['nonpositive_periods']}, 누락 "
+                         f"{window['missing_value_periods']}, 충돌 {window['conflicting_periods']}")
+            if not window['price_sample_sufficient']:
+                text += ' · 가격 산출용 표본 제한'
+            return text
+        lines.append(f'{provider} 분기 {label} 최근 5년: '+(display(recent) if recent else '관측 없음'))
+        lines.append(f'{provider} 분기 {label} 전체: '+display(whole))
+        refs.add(item['ref_id'])
+        if item.get('current_metric_ref'):
+            refs.add(item['current_metric_ref'])
+    if not lines:
+        return None
+    lines.append('공급자 원래 필드 기준 · 자체 산출 주간 배수와 별개 · 정확한 산식/주식 기준·재무일 미확정')
+    return _row('valuation','provider-native-reference','\n'.join(lines),
+        facts=tuple(sorted(refs)),hashes=(reference['raw_sha256'],reference['source_receipt_sha256']),
+        formatting='provider-native-quarterly-reference-v1')
+
+
 def _historical_price_row(context, output, assessment, *, scenario_row=None):
     """Render only the exact frozen deterministic candidates, never model numbers."""
     historical = context.get('historical_price_context')
@@ -813,22 +861,29 @@ def _historical_price_row(context, output, assessment, *, scenario_row=None):
     combined = False
     methods = {'HISTORICAL_TRAILING_PE_QUANTILE':'PER', 'HISTORICAL_PB_QUANTILE':'PBR'}
     for family, label in methods.items():
-        rows = [r for r in candidates if r['method_family'] == family]
-        if not rows:
-            continue
-        row = next((r for r in rows if r['a_selected_tier']), None)
-        if row is None:
-            row = next((r for r in rows if r['quantile_band']=='P50_P75'), rows[0])
-        low, high = (_price_display(row[k], currency) for k in ('low','high'))
-        relation = {'BELOW':'하단 미만','INSIDE':'범위 안','ABOVE':'상단 초과'}[row['relation_to_price']]
-        band = row['quantile_band'].replace('_','–')
-        lines.append(f'역사적 {label} 참고({band}): {low}–{high} · 현재가 {relation}')
-        used.append(row)
+        for origin in (None,'PROVIDER_QUARTERLY_REFERENCE'):
+            rows = [r for r in candidates if r['method_family']==family and r.get('origin')==origin]
+            if not rows:
+                continue
+            row = next((r for r in rows if r['a_selected_tier']), None)
+            if row is None:
+                row = next((r for r in rows if r['quantile_band']=='P50_P75'), rows[0])
+            low, high = (_price_display(row[k], currency) for k in ('low','high'))
+            relation = {'BELOW':'현재가 하단 미만','INSIDE':'현재가 범위 안','ABOVE':'현재가 상단 초과',
+                        'UNRESOLVED':'현재가와 동일 가격 기준 미확정'}[row['relation_to_price']]
+            band = row['quantile_band'].replace('_','–')
+            name = f'Finnhub 분기 {label}' if origin else f'역사적 {label}'
+            lines.append(f'{name} 참고({band}): {low}–{high} · {relation}')
+            used.append(row)
     if historical['method_conflict']:
         lines.append('평가 방법 상충 · 단일 가치 범위 미확정')
+    if historical.get('provider_method_conflict'):
+        lines.append('공급자 PER·PBR 참고 범위 상충 · 단일 가치 범위 미확정')
     if selected is not None:
         used.append(selected)
         label = methods[selected['method_family']]
+        if selected.get('origin')=='PROVIDER_QUARTERLY_REFERENCE':
+            label = 'Finnhub 분기 '+label
         low, high = (_price_display(selected[k], currency) for k in ('low','high'))
         lines.append(f'조건부 경제적 가치 시나리오({label}): {low}–{high} · 이익·자본 및 배수 가정 유지 전제')
         if review['preferred_boundary'] in ('LOW','HIGH'):
@@ -845,6 +900,8 @@ def _historical_price_row(context, output, assessment, *, scenario_row=None):
                 registry_keys = {sc.get('evidence_ref', '').removeprefix('canonical:')
                                  + ':fields.entry_scenario.' + key for key in ('rr2_low','rr2_high')}
                 if (output['new_buyer'] != 'AVOID' and assessment.quality != 'BLOCKED'
+                        and (selected.get('origin')!='PROVIDER_QUARTERLY_REFERENCE'
+                             or selected.get('quote_basis_comparable') is True)
                         and sc.get('rr2_intersection') == 'DISPLAYABLE'
                         and context.get('selected_entry_scenario') == sc
                         and sc.get('currency') == currency
@@ -945,6 +1002,9 @@ def build_detailed_plan_v2(*, packet, base, b2_request, b2_result, authorization
         scenario_row = _entry_scenario_row(packet, base, assessment, price_session)
         if scenario_row is not None:
             rows += (scenario_row,)
+    provider_reference = _provider_reference_row(context)
+    if provider_reference is not None:
+        rows += (provider_reference,)
     historical = _historical_price_row(context, output, assessment, scenario_row=scenario_row)
     if historical is not None:
         rows += (historical,)

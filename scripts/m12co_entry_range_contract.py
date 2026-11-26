@@ -5,7 +5,7 @@ import re
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from datetime import date
-from decimal import Decimal, ROUND_HALF_EVEN
+from decimal import Decimal, InvalidOperation, ROUND_HALF_EVEN
 from enum import StrEnum
 
 from scripts.m12cn_policy_contract import build_entry_catalog, canonical_sha256
@@ -231,8 +231,7 @@ def provider_reference_candidates(reference):
         window = history.get('recent_five_years')
         if (reference['provider']!='finnhub' or not denominator or denominator['field']!=field
                 or denominator['currency']!=reference['currency'] or history['field']!=series
-                or not window or not window['price_sample_sufficient']
-                or history['current_value'] is None):
+                or not window or not window['price_sample_sufficient']):
             continue
         value = _decimal(denominator['value'])
         if value is None or value<=0:
@@ -241,16 +240,21 @@ def provider_reference_candidates(reference):
             low,high = _decimal(window.get(low_key)),_decimal(window.get(high_key))
             if low is None or high is None or low<=0 or high<low:
                 continue
-            row = _candidate(ticker=reference['ticker'],method_family=family,band_name=band,
-                denominator_name='provider_'+field,denominator=value,denominator_ref=denominator['ref_id'],
-                low_multiple=low,high_multiple=high,history_ref=history['ref_id'],
-                basis_refs=(history['current_metric_ref'],),currency=reference['currency'],
-                assumptions=('same provider and economic field family, not exact verified provider formula',
-                    'fixed recent five-year provider quarterly positive observations',
-                    'current provider per-share value is representative only conditionally',
-                    'historical percentile is descriptive, not normative fair value'),
-                generally_meaningful_archetypes=(),conditionally_meaningful_archetypes=(),
-                current_price=None)
+            try:
+                row = _candidate(ticker=reference['ticker'],method_family=family,band_name=band,
+                    denominator_name='provider_'+field,denominator=value,denominator_ref=denominator['ref_id'],
+                    low_multiple=low,high_multiple=high,history_ref=history['ref_id'],
+                    basis_refs=(),currency=reference['currency'],
+                    assumptions=('same provider and economic field family, not exact verified provider formula',
+                        'fixed recent five-year provider quarterly positive observations',
+                        'current provider per-share value is representative only conditionally',
+                        'historical percentile is descriptive, not normative fair value'),
+                    generally_meaningful_archetypes=(),conditionally_meaningful_archetypes=(),
+                    current_price=None)
+            except (InvalidOperation, OverflowError):
+                # An optional non-displayable arithmetic candidate must not
+                # stop the original current valuation or other methods.
+                continue
             # Candidate arithmetic and ID reuse the existing builder. Its
             # source labels keep this branch separate from own weekly methods.
             row.update(origin='PROVIDER_QUARTERLY_REFERENCE',history_window='RECENT_FIVE_YEARS',

@@ -105,6 +105,28 @@ SELL restriction, exact quality limits, and frozen Overall/Holder. Low multiples
 do not prove cheapness, high multiples alone do not prove burden. No implied EPS, target,
 new ratio or price range. Use Korean qualitative prose, without unbound numbers.
 """
+    if 'provider_reference_context' in model_input:
+        prompt += '''
+Use the provider_reference_context as independently owned descriptive valuation
+context. Direct EPS/BPS are actual provider fields; unknown exact fiscal periods,
+underlying split basis and provider formulas remain unknown. Never reconstruct
+EPS from a ratio. Quarterly distributions are not own weekly PIT history.
+Compare the current atomic ratio only with its same-provider field family and
+only when current_value/current_metric_ref are present. Percentiles are empirical
+ranks among observed positive ratios; inspect nonpositive, missing and conflict
+counts. Missing dates are not proof of losses. Prefer the common recent five-year
+window for current relevance; the whole series is context, not an alternative
+chosen for a desired result. Quote quotients are diagnostics with an explicit
+price basis, not replacement PER/PBR. If a current multiple and direct field
+appear inconsistent, preserve their separate semantics; do not force a match
+or assert cheapness. A provider-based price is a conditional arithmetic
+scenario; exact numerator/denominator equivalence is not certified. A missing
+quote-basis link precludes a precise quote relation/combined technical price,
+not a descriptive reference. Never make business claims from these references.
+Cite only actually used provider_reference_refs in the separate array and keep
+the current valuation and business refs in their existing roles. These optional
+references cannot grant current-multiple usability, override risk or change
+Overall/Holder/technical timing.'''
     if 'historical_price_context' in model_input:
         prompt += '''
 Historical price candidates are source-owned descriptive arithmetic, not target
@@ -225,10 +247,15 @@ def capabilities(model_input):
     return rows
 
 
+def provider_reference_refs(model_input):
+    context = model_input.get('provider_reference_context', {})
+    return {row['ref_id'] for key in ('direct','history') for row in context.get(key, ())}
+
+
 def historical_price_refs(model_input):
     # These identifiers are not business capability refs or qualified multiples.
     return {ref for row in model_input.get('historical_price_context', {}).get('candidates', ())
-            for ref in [row['candidate_id'], *row['evidence_refs']]}
+            for ref in [row['candidate_id'], *row['evidence_refs']]} | provider_reference_refs(model_input)
 
 
 def economic_reason(text, refs):
@@ -260,6 +287,8 @@ def output_schema(model_input):
             active_risk_refs=dict(const=model_input['active_risk_refs']))
         if current:
             fields['economic_reason'] = dict(type='string', minLength=1, maxLength=360)
+        if 'provider_reference_context' in model_input:
+            fields['provider_reference_refs'] = v1.refs(sorted(provider_reference_refs(model_input)),0)
         if 'historical_price_context' in model_input:
             eligible = (model_input['business_gate']['v2_business_gate_pass']
                         and not model_input['active_risk_refs']
@@ -301,6 +330,10 @@ def validate_output(output, model_input):
                 | historical_price_refs(model_input)))
         except ValueError:
             errors.append('ECONOMIC_REASON_UNBOUND')
+    if 'provider_reference_context' in model_input:
+        selected = output['provider_reference_refs']
+        if len(selected)!=len(set(selected)) or not set(selected)<=provider_reference_refs(model_input):
+            errors.append('PROVIDER_REFERENCE_REF_SCOPE')
     if 'historical_price_context' in model_input:
         price_review = output['economic_price_review']
         if price_review['candidate_id'] == 'UNRESOLVED' and price_review['preferred_boundary'] != 'NONE':
