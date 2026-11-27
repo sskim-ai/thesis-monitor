@@ -108,6 +108,7 @@ def request_from_frame(frame):
                 from app.services.research_artifact_budget import plain_path
 
                 from app.services.model_timeout_retry import b2_retry_binding, b2_retry_budget_bounds
+                from app.services.model_invocation_journal import running_slots
                 per_ticker = value.get('b2_retry_policy')
                 cap = value.get('timeout_retry_cap', 0)
                 retry_market = value.get('timeout_retry_market','us')
@@ -136,7 +137,7 @@ def request_from_frame(frame):
                     identity['timeout_retry_market']='kr'
                 state = read_invocation_journal(journal.read_bytes(), identity)
                 if (state['stopped'] or state['bound'].get(slot_id) != scope
-                        or state['used']-state['accepted'].keys()-state['exhausted'] != {slot_id}
+                        or running_slots(state,per_ticker) != {slot_id}
                         or state['attempts'][slot_id][-1] != attempt
                         or len(state['timeouts'].get(slot_id, ())) != attempt['ordinal']-1
                         or state['physical_calls'] != value['physical_call']):
@@ -215,8 +216,23 @@ class OfficialProductionModelTransport:
         self.cycle = (market, run_id)
         self.counts, self.total = {}, 0
 
-    async def request(self, payload, *, model, effort, timeout, stage="B2", panel=None, slot_scope=None):
+    async def request(self, payload, *, model, effort, timeout, stage="B2", panel=None, slot_scope=None,
+                      deferred_retry=False):
         kwargs = dict(model=model, effort=effort, timeout=timeout, stage=stage, panel=panel, slot_scope=slot_scope)
+        from app.services.model_timeout_retry import stage_tail_retry
+        tail = stage_tail_retry(getattr(self.call_budget,'b2_retry_policy',None))
+        if tail and stage!='MARKET':
+            try:
+                return await self._request_once(payload,**kwargs,retry=deferred_retry)
+            except ModelTransportError as exc:
+                if getattr(exc,'confirmed_timeout',None) is not None:
+                    pending = self.call_budget.confirmed_timeout(exc.slot_id,exc.confirmed_timeout)
+                    if deferred_retry and pending:
+                        raise ValueError('model_retry_second_retry_forbidden') from exc
+                    exc.deferred_retry_pending = pending
+                raise
+        if deferred_retry:
+            raise ValueError('stage_tail_retry_not_enabled')
         if not getattr(self.call_budget,'retry_enabled',False):
             return await self._request_once(payload, **kwargs)
         try:

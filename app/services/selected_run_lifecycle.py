@@ -461,7 +461,9 @@ class SelectedRunLedger:
                 cap = self.identity.get('timeout_retry_cap',0)
                 per_ticker = s['models'][m].get('b2_retry_binding')
                 if cap or per_ticker:
-                    from app.services.model_timeout_retry import market_timeout_retry_cap, stock_slot_retry, all_stage_retry
+                    from app.services.model_timeout_retry import (market_timeout_retry_cap, stock_slot_retry, all_stage_retry,
+                        stage_tail_retry, dependency_skips, initial_stage_done)
+                    tail = stage_tail_retry(per_ticker)
                     stock_retry = stock_slot_retry(per_ticker, v['slot'])
                     retry_maximum = per_ticker['maximum'] if all_stage_retry(per_ticker) else self.identity['max_models']
                     if s['model_total'] >= retry_maximum:
@@ -471,11 +473,23 @@ class SelectedRunLedger:
                         per_ticker,retry_cap=cap,retry_market=retry_market)
                     attempt = v['attempt']
                     bound = s['timeout_attempts'].get(v['slot'], [])
+                    if tail:
+                        accepted = {call['slot'] for k,call in s['used'].items() if k in s['completed']
+                                    and call.get('kind')=='MODEL' and call.get('market')==m}
+                        parked = {sid for sid,old in s['timeout_attempts'].items()
+                                  if sid not in s['timeout_exhausted'] and old[-1] in s['timed_out']}
+                        if (v['slot'] in dependency_skips(per_ticker,s['timeout_exhausted'])
+                                or not set(per_ticker['slot_dependencies'][v['slot']])<=accepted
+                                or any(per_ticker['slot_stages'][sid]!=v['stage'] or len(s['timeout_attempts'][sid])!=1
+                                       for sid in parked)
+                                or (bound and not initial_stage_done(per_ticker,v['stage'],
+                                    s['timeout_attempts'],s['timeout_exhausted']))):
+                            raise ValueError('selected_stage_tail_dependency_or_order_gap')
                     if (not isinstance(attempt,dict)
                             or v['stage'] != s['models'][m]['slot_stages'].get(v['slot'])
                             or v['slot'] in s['timeout_exhausted']
-                            or any(key not in s['timeout_exhausted'] and old[-1] in s['timed_out']
-                                for key,old in s['timeout_attempts'].items() if key != v['slot'])
+                            or (not tail and any(key not in s['timeout_exhausted'] and old[-1] in s['timed_out']
+                                for key,old in s['timeout_attempts'].items() if key != v['slot']))
                             or key != 'MODEL:'+v['attempt']['attempt_id']
                             or attempt['ordinal'] != len(bound)+1 or len(bound)>1
                             or bound and (bound[0] not in s['timed_out']
@@ -524,7 +538,8 @@ class SelectedRunLedger:
                 raise ValueError('selected_model_timeout_not_pending')
             s['timed_out'][key]=proof
             s['pending']=None
-        elif event == 'MODEL_B2_TIMEOUT_EXHAUSTED':
+        elif event in ('MODEL_B2_TIMEOUT_EXHAUSTED','MODEL_SLOT_TIMEOUT_EXHAUSTED'):
+            from app.services.model_timeout_retry import stage_tail_retry
             slot = v['slot']
             scope = s['models'].get(v['market'],{})
             calls = s['timeout_attempts'].get(slot,())
@@ -532,7 +547,10 @@ class SelectedRunLedger:
             per_ticker = scope.get('b2_retry_binding')
             if (not (cap or per_ticker) or s['pending'] or s['state'] != 'MODEL_BUDGETED'
                     or cap and per_ticker
-                    or scope.get('slot_stages',{}).get(slot) != 'B2' or slot in s['timeout_exhausted']
+                    or (scope.get('slot_stages',{}).get(slot) not in ('CORE','A','B','B2')
+                        or not stage_tail_retry(per_ticker) if event=='MODEL_SLOT_TIMEOUT_EXHAUSTED'
+                        else scope.get('slot_stages',{}).get(slot) != 'B2')
+                    or slot in s['timeout_exhausted']
                     or not calls or any(key not in s['timed_out'] for key in calls)
                     or (len(calls)!=2 if per_ticker else len(calls)==1 and s['retry_used']<cap)):
                 raise ValueError('selected_model_b2_timeout_not_exhausted')
@@ -563,10 +581,12 @@ class SelectedRunLedger:
             omitted = set(v.get('timeout_slots',()))
             if (omitted != set(s['timeout_exhausted']) or not omitted<=required_slots):
                 raise ValueError('selected_partial_render_timeout_binding')
+            from app.services.model_timeout_retry import dependency_skips
+            skipped = dependency_skips(s['models'].get(m,{}).get('b2_retry_binding'),omitted)
             if (not staged or m not in required or m in s['rendered_markets'] or s['pending']
                     or s['state']!='MODEL_BUDGETED' or m not in s['models']
                     or (s['models'][m].get('inherited_market_slot') and not s['models'][m].get('market_lineage'))
-                    or len(completed) != len(set(completed)) or set(completed) != required_slots-omitted):
+                    or len(completed) != len(set(completed)) or set(completed) != required_slots-omitted-skipped):
                 raise ValueError('selected_market_render_incomplete')
             s['rendered_markets'][m] = v['result_sha256']
             accounted=set(s['rendered_markets'])|set(s['failed_markets'])
@@ -718,6 +738,10 @@ class SelectedRunLedger:
         self._external()
         self._event('MODEL_B2_TIMEOUT_EXHAUSTED',market=slot['market'],slot=slot['slot_id'])
 
+    def model_slot_timeout_exhausted(self, slot):
+        self._external()
+        self._event('MODEL_SLOT_TIMEOUT_EXHAUSTED',market=slot['market'],slot=slot['slot_id'])
+
     def before_onboarding_model(self, *, market, ticker, stage, payload_sha256):
         self._external()
         runtime = self.state().get('runtime') or {}
@@ -814,13 +838,23 @@ class SelectedRunLedger:
 
             if result.get('status') not in {TERMINAL, PARTIAL}:
                 raise ValueError('selected_mixed_limitation_terminal_required')
-            verify_mixed_render(child.plan, messages, result.get('limitation_receipts',{}), omitted=omissions)
+            verify_mixed_render(child.plan, messages, result.get('limitation_receipts',{}), omitted=omissions,
+                include_summary=child.include_summary)
         b2_slots = {s.subjects[0]:s.slot_id for s in child.plan.slots if s.stage=='B2'}
+        if child.plan.batch_local_dependencies:
+            state = self.state()
+            roots = set(state['timeout_exhausted'])
+            expected = {t:(s.slot_id,s.stage+'_UNISSUED_TIMEOUT')
+                        for s in child.plan.slots if s.slot_id in roots for t in s.subjects}
+            valid_omissions = ({t:(row.get('slot_id'),row.get('status')) for t,row in omissions.items()}==expected
+                and all(row.get('attempts')==2 for row in omissions.values()))
+        else:
+            valid_omissions = set(omissions)<=set(b2_slots) and all(
+                row.get('slot_id')==b2_slots[t] and row.get('status')=='B2_UNISSUED_TIMEOUT'
+                for t,row in omissions.items())
         if (partial and (not (self.identity.get('timeout_retry_cap') or self.identity.get('b2_retry_policy')) or not omissions
-                or not set(omissions)<=set(b2_slots)
-                or result.get('expected_message_count')!=len(binding['message_ids'])
-                or any(row.get('slot_id')!=b2_slots[t] or row.get('status')!='B2_UNISSUED_TIMEOUT'
-                       for t,row in omissions.items()))):
+                or result.get('expected_message_count')!=len(binding['message_ids']) or not valid_omissions)
+                or child.plan.batch_local_dependencies and not valid_omissions):
             raise ValueError('selected_partial_market_terminal_scope')
         if (result.get('status') not in {TERMINAL,PARTIAL} or result.get('child_binding')!=binding
                 or result.get('normal_messages_sent') is not False
@@ -830,7 +864,7 @@ class SelectedRunLedger:
                 or [r.get('stage') for r in result.get('stage_receipts',[])]!=list(RESEARCH_STAGES)
                 or any(r.get('status')!='PASS' for r in result['stage_receipts'])):
             raise ValueError('selected_original_market_terminal_required')
-        extra = dict(timeout_slots=sorted(b2_slots[t] for t in omissions)) if omissions else {}
+        extra = dict(timeout_slots=sorted({row['slot_id'] for row in omissions.values()})) if omissions else {}
         self._event('RENDER_MARKET',market=child.market,result_sha256=digest(result), **extra)
         return result
 

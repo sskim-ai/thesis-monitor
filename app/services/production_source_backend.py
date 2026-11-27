@@ -183,6 +183,7 @@ class CanonicalProductionSourceBackend:
         child, proof = await _source_sync(prepare_child, root=root, frozen=frozen, outcome=outcome,
             policy=policy, registration_owner=registration_owner, kis_plan=kis_plan, enabled=True,
             execution_generation=execution_generation, mixed_limitations=mixed_limitations,
+            batch_local_dependencies=run_ledger.identity.get('b2_retry_policy')=='ALL_MODEL_STAGE_ONE_RETRY_V1',
             on_cancel=lambda result: result[0].owner.close())
         try:
             child.verify()

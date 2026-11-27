@@ -61,7 +61,7 @@ def coverage_and_forward(*,root,frozen,whole,collection_seal_sha256,kis_plan=Non
 
 
 def prepare_child(*,root,frozen,outcome,policy,registration_owner,kis_plan=None,enabled=False,execution_generation=None,
-                  mixed_limitations=False):
+                  mixed_limitations=False,batch_local_dependencies=False):
     if enabled is not True:raise ValueError('selected_source_preparation_default_off')
     from app.services.selected_source_composition import SelectedSourceRunBinding
     from app.services.canonical_source_inputs import build_source_replay_inputs
@@ -95,7 +95,8 @@ def prepare_child(*,root,frozen,outcome,policy,registration_owner,kis_plan=None,
         allow_partial_evidence=frozen.get('available_evidence_policy')=='FIELD_LOCAL_DATED_USE_V1',
         execution_generation=execution_generation,mixed_limitations=mixed_limitations)
     try:
-        child=MarketResearchChild(compile_model_plan(cohort,topology='CANONICAL_PRODUCTION'),owner,
+        child=MarketResearchChild(compile_model_plan(cohort,topology='CANONICAL_PRODUCTION',
+            batch_local_dependencies=batch_local_dependencies),owner,
             include_summary=True)
         child.verify()
     except Exception:
