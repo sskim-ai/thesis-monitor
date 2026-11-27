@@ -95,7 +95,8 @@ def prepare_child(*,root,frozen,outcome,policy,registration_owner,kis_plan=None,
         allow_partial_evidence=frozen.get('available_evidence_policy')=='FIELD_LOCAL_DATED_USE_V1',
         execution_generation=execution_generation,mixed_limitations=mixed_limitations)
     try:
-        child=MarketResearchChild(compile_model_plan(cohort,topology='CANONICAL_PRODUCTION'),owner)
+        child=MarketResearchChild(compile_model_plan(cohort,topology='CANONICAL_PRODUCTION'),owner,
+            include_summary=True)
         child.verify()
     except Exception:
         owner.close();raise

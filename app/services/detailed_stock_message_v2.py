@@ -641,14 +641,25 @@ def _confirmed_breakout(context, refs):
             and {"two_close_breakout", "volume_ratio_confirmed"}.issubset(state.get("reasons", ())))
 
 
+def final_entry_action(output, model_input, assessment):
+    """One action owner for both detailed and cohort presentation."""
+    technical = output.get('technical_assessment')
+    action = _buyer_action(output['new_buyer'], output['timing_context']['relation'], assessment.quality,
+        reason_class=output['reason_class'], confirmed_breakout=assessment.confirmed_breakout,
+        assessment=assessment, technical=technical if b2.c60_technical_input(model_input) else None)
+    if technical and technical['state'] == 'ADVERSE':
+        if action in {'신규 매수 검토 가능','조건부 신규 매수 검토 가능'}:
+            action = '기술지표 개선 또는 확인 신호 대기'
+        elif action != '기술지표 개선 또는 확인 신호 대기':
+            action += ' · 기술지표 약화 추가 확인'
+    return action
+
+
 def _entry_lines(output, model_input, entry_context, market, session, *, assessment=None):
     timing = output["timing_context"]
     result = assessment or _entry_assessment(model_input, timing, entry_context, market, session)
     technical = output.get('technical_assessment')
-    action = _buyer_action(output["new_buyer"], timing["relation"], result.quality,
-                           reason_class=output["reason_class"],
-                           confirmed_breakout=result.confirmed_breakout, assessment=result,
-                           technical=technical if b2.c60_technical_input(model_input) else None)
+    action = final_entry_action(output, model_input, result)
     reason = {"BUSINESS_MIXED":"사업 근거 혼재", "BUSINESS_GATE_NOT_MET":"사업 근거 요건 미충족",
               "ECONOMIC_UNCERTAINTY":"현재 가격에서 중요한 경제적 불확실성",
               "BUSINESS_EVIDENCE_UNCERTAINTY":"사업 근거 불확실", "VALUATION_UNRESOLVED":"가치평가 근거 부족",
@@ -688,11 +699,6 @@ def _entry_lines(output, model_input, entry_context, market, session, *, assessm
             label += ' · ' + change
         lines.append(f'기술지표 판단: {label} — {explanation}')
         refs.update(technical['evidence_refs'])
-        if technical['state'] == 'ADVERSE':
-            if action in {'신규 매수 검토 가능', '조건부 신규 매수 검토 가능'}:
-                action = '기술지표 개선 또는 확인 신호 대기'
-            elif action != '기술지표 개선 또는 확인 신호 대기':
-                action += ' · 기술지표 약화 추가 확인'
     lines.append(f'최종 신규매수 행동: {action}')
     return tuple(lines), tuple(sorted(refs))
 
@@ -944,8 +950,18 @@ def _historical_price_row(context, output, assessment, *, scenario_row=None):
         formatting='existing-deterministic-historical-reference-v1')
 
 
-def _judgment_text(decision, axes, entry_lines):
+def _judgment_text(decision, axes, entry_lines, *, step2=False, price=None):
     score = decision["directional_buy_score"]
+    if step2:
+        from app.services.price_structure_v3_renderer_service import _price_display
+        quote = ('기준가격: '+_price_display(price.price,price.currency)
+                 if price is not None and price.price is not None else '기준가격: 미확보')
+        return "\n".join([quote, 'AI 분석 판단: '+decision['overall_direction'],
+            f'판단 균형: BUY {score:.1f} : SELL {10-score:.1f}',
+            '판단 확신도: '+{'HIGH':'높음','MEDIUM':'중간','LOW':'낮음'}[decision['confidence']],
+            '신규 매수자: '+axes['fundamental_attractiveness'],
+            '보유자: '+{'HOLDABLE':'HOLD','REVIEW':'REVIEW','REDUCE':'REDUCE'}[decision['holder']],
+            entry_lines[-1], decision['holder_reason']])
     return "\n".join([
         "AI 분석 판단: " + decision["overall_direction"],
         f"판단 균형: BUY {score:.1f} : SELL {10-score:.1f}",
@@ -998,13 +1014,21 @@ def build_detailed_plan_v2(*, packet, base, b2_request, b2_result, authorization
     assessment = _entry_assessment(context, output['timing_context'], entry_context, packet.market, price_session)
     entry_lines, entry_refs = _entry_lines(output, context, entry_context, packet.market, price_session,
                                          assessment=assessment)
-    text = _judgment_text(decision, axes, entry_lines)
+    step2 = context.get('step2_quality_version') == 1
+    text = _judgment_text(decision, axes, entry_lines, step2=step2, price=base.valuation)
     row = _row("judgment", "axes-v2", text,
         facts=tuple(sorted(set(output["reason_evidence_refs"] + output["active_risk_refs"]
             + output["valuation_context"]["valuation_evidence_refs"] + axes["entry_timing"]["evidence_refs"]) | set(entry_refs))),
         hashes=(base.acceptance_sha256, digest(b2_result), digest(authorization.model_dump(mode="json"))),
         formatting="accepted-independent-b2-axes-v2")
     rows = (row, *(r for r in presentation.rows if r.section != "judgment"))
+    if step2:
+        # These are the exact accepted entry/economic lines, not a second model.
+        for i, line in enumerate(entry_lines[:-1]):
+            section = 'valuation' if line.startswith(('신규매수 근거:', '기업·가격 판단:')) else 'price'
+            rows += (_row(section, 'step2-entry-'+str(i), line, facts=tuple(entry_refs),
+                hashes=(digest(b2_result),digest(authorization.model_dump(mode='json'))),
+                formatting='accepted-independent-b2-axes-v2'),)
     if packet.market == "us":
         rows += (*_reported_quarter_rows(packet, base), *_us_sr_rows(packet, base, axes, authorization.security_id))
     support = _selected_support_row(packet, base, axes["entry_timing"], authorization.security_id,
@@ -1035,7 +1059,21 @@ def render_detailed_v2(packet, plan, *, entry_context=None):
         b2_result=plan.b2_result, authorization=plan.authorization, entry_context=entry_context)
     if expected != plan:
         raise ValueError("detailed_v2_plan_changed")
-    text = _render_rows(packet, plan.rows)
+    model_input = plan.b2_request['provider_request']['input']
+    if model_input.get('step2_quality_version') == 1:
+        from datetime import datetime
+        from zoneinfo import ZoneInfo
+        base = plan.base.base if isinstance(plan.base, KrForwardMessagePlan) else plan.base
+        session = _completed_price_session(packet, base, plan.authorization.security_id)
+        generated = datetime.fromisoformat(base.source_stock['packet']['generated_at'])
+        header = [f'{packet.company_name}({packet.ticker})',
+            '기준 완료장: '+(session or '미확보'),
+            '분석 기준 시각(KST): '+generated.astimezone(ZoneInfo('Asia/Seoul')).strftime('%Y-%m-%d %H:%M')]
+        text = _render_rows(packet, plan.rows, header=header,
+            section_order=('judgment','core','business','valuation','price','flow',
+                           'thesis_state','warnings','monitoring','reevaluation'))
+    else:
+        text = _render_rows(packet, plan.rows)
     forbidden = {"기존 등록 가격 규칙", "데이터 주의", "다음 확인", "미확인"}
     if any(line.strip() in forbidden for line in text.splitlines()):
         raise ValueError("detailed_v2_removed_heading")

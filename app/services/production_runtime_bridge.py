@@ -297,9 +297,20 @@ class ProductionRuntimeBridgeV1:
             if stage in {'VALIDATE', 'RENDER'}:
                 scope = dict(execution_profile=self.execution_profile) if self.execution_profile else {}
                 from app.services.production_message_renderer import limitation_message
-                messages = [self._render_market(session)] + [(limitation_message(session, t) if t in limits else
-                    stock_message(session, t, b2_rows[t], **scope))
+                child_binding = getattr(self,'child_binding',{})
+                include_summary = child_binding.get('include_summary') is True
+                messages = [self._render_market(session)] + [
+                    (limitation_message(session,t,include_summary=True) if include_summary else limitation_message(session,t))
+                    if t in limits else stock_message(session,t,b2_rows[t],**scope,
+                        **({'include_summary':True} if include_summary else {}))
                     for t in subjects if t not in omitted]
+                if include_summary:
+                    from app.services.monitoring_summary import summary_message
+                    completed = session.projected[session.market]['packet']['market_context']['session']['latest_completed_regular_session_date']
+                    summary = summary_message(market=session.market, generation=session.gen,
+                        subjects=subjects, messages=messages[1:], omitted=omitted,
+                        completed=completed, cutoff=child_binding['cutoff'])
+                    messages.insert(1,summary)
                 for message in messages:
                     message['snapshot_sha256'] = request['snapshot_sha256']
                     if self.execution_profile:
@@ -313,7 +324,8 @@ class ProductionRuntimeBridgeV1:
                         decision_sha256=m['limitation_decision_sha256']) for m in messages if m['message_id'] in limits}
                     if {t:r['decision_sha256'] for t,r in receipts.items()} != decisions:
                         raise ValueError('production_render_limitation_decision_drift')
-                    verify_mixed_render(budget.plan, messages, receipts, omitted=omitted)
+                    verify_mixed_render(budget.plan, messages, receipts, omitted=omitted,
+                        include_summary=include_summary)
                     output['limitation_receipts'] = receipts
             else:
                 messages = request['inputs']['RENDER']['output']['messages']

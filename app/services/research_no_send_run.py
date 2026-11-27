@@ -43,6 +43,7 @@ class PreparedResearchEnvelope(ContractModel):
 class MarketResearchChild:
     plan: ModelExecutionPlan
     owner: object
+    include_summary: bool = False
 
     def verify(self):
         self.plan.validate()
@@ -65,7 +66,11 @@ class MarketResearchChild:
             cohort_sha256=c.sha256, plan_sha256=self.plan.sha256,
             source_relationship_sha256=digest(self.owner.relationship(self.market)),
             consumed_source_sha256=digest(self.owner.source(self.market)),
-            message_ids=['MARKET_'+self.market.upper(), *c.market_subjects[self.market]])
+            message_ids=['MARKET_'+self.market.upper(),
+                         *(['SUMMARY_'+self.market.upper()] if self.include_summary else []),
+                         *c.market_subjects[self.market]])
+        if self.include_summary:
+            binding['include_summary'] = True
         if c.limitation_subjects:
             binding['limitation_subjects'] = list(c.limitation_subjects)
         return binding
@@ -426,7 +431,8 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                 verify_render_partition(messages=messages, subjects=bridge.child.plan.cohort.market_subjects['us'],
                     slots=bridge.child.plan.slots, b2=outputs['B2']['output'],
                     journal=read_invocation_journal(calls.journal.path.read_bytes(), calls.journal.identity),
-                    accepted_content_sha256=outputs['VALIDATE']['output']['content_sha256'],plan=bridge.child.plan)
+                    accepted_content_sha256=outputs['VALIDATE']['output']['content_sha256'],plan=bridge.child.plan,
+                    include_summary=bridge.child.include_summary)
             state.update(status=PARTIAL if omitted else TERMINAL,messages=messages,messages_sha256=digest(messages))
             if bridge.child.plan.cohort.limitation_subjects:
                 from app.services.model_execution_plan import verify_mixed_render
@@ -434,7 +440,8 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                 receipts = outputs['RENDER']['output']['limitation_receipts']
                 if receipts != outputs['VALIDATE']['output']['limitation_receipts']:
                     raise ValueError('research_limitation_validate_render_drift')
-                verify_mixed_render(bridge.child.plan, messages, receipts, omitted=omitted)
+                verify_mixed_render(bridge.child.plan, messages, receipts, omitted=omitted,
+                    include_summary=bridge.child.include_summary)
                 state['limitation_receipts'] = receipts
             if omitted:
                 state.update(unissued=omitted, expected_message_count=len(bridge.child_binding['message_ids']))

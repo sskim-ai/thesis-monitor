@@ -665,9 +665,9 @@ def detailed_render(packet, plan):
     return original.model_copy(update={'text': _render_rows(packet, plan.rows)})
 
 
-def _render_rows(packet, rows):
-    lines = [f'{packet.company_name}({packet.ticker})', f'판단 기준일: {packet.assessment_date}']
-    for section in SECTION_ORDER:
+def _render_rows(packet, rows, *, header=None, section_order=SECTION_ORDER):
+    lines = list(header) if header is not None else [f'{packet.company_name}({packet.ticker})', f'판단 기준일: {packet.assessment_date}']
+    for section in section_order:
         selected = [r for r in rows if r.section == section]
         if not selected:
             continue

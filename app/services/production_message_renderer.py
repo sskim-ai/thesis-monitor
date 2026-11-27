@@ -53,7 +53,7 @@ def market_message(session, *, sector_taxonomy_version=None, macro_display_captu
     return message
 
 
-def stock_message(session, ticker, b2_row, *, execution_profile=None):
+def stock_message(session, ticker, b2_row, *, execution_profile=None, include_summary=False):
     source = session.fresh_stocks[ticker]
     packet = DecisionEvidencePacket.model_validate(source['evidence_packet'])
     base = build_detailed_plan(packet=packet, accepted=stock_plan(session, ticker, packet), source_stock=source,
@@ -68,6 +68,9 @@ def stock_message(session, ticker, b2_row, *, execution_profile=None):
     plan = build_detailed_plan_v2(packet=packet, base=base, b2_request=request, entry_context=entry_context,
         b2_result=b2_row['result'], authorization=parse_authorization(b2_row['authorization'], execution_profile=execution_profile))
     message = dict(message_id=ticker, **render_detailed_v2(packet, plan, entry_context=entry_context))
+    if include_summary:
+        from app.services.monitoring_summary import accepted_stock_summary
+        message['summary_row'] = accepted_stock_summary(packet, plan, entry_context)
     if session.market == 'us':
         context = getattr(session, 'projected', {}).get('us', {}).get('context', {})
         if market_owner.excluded_night_narrative_errors(message, context, fields=('text',)):
@@ -77,7 +80,7 @@ def stock_message(session, ticker, b2_row, *, execution_profile=None):
     return message
 
 
-def limitation_message(session, ticker):
+def limitation_message(session, ticker, *, include_summary=False):
     from app.services.detailed_stock_message_service import build_unknown_plan, detailed_render
     from app.services.selected_news_rate_limit import disclose
 
@@ -91,6 +94,12 @@ def limitation_message(session, ticker):
     rendered = detailed_render(packet, plan)
     if rendered.ticker != ticker or not rendered.validation.valid:
         raise ValueError('production_limitation_render_reject')
-    return disclose(dict(message_id=ticker, generation_id=session.gen,
+    message = dict(message_id=ticker, generation_id=session.gen,
         decision_mode='UNKNOWN_LIMIT', text=rendered.text, plan_sha256=plan.acceptance_sha256,
-        limitation_decision_sha256=digest(decision)), [source.get('event_view', {})], expected_count=1)
+        limitation_decision_sha256=digest(decision))
+    if include_summary:
+        from app.services.price_structure_v3_renderer_service import _price_display
+        message['summary_row'] = dict(ticker=ticker, status='UNKNOWN_LIMIT',
+            price=_price_display(plan.valuation.price,plan.valuation.currency) if plan.valuation.price is not None else '미확보',
+            plan_sha256=plan.acceptance_sha256)
+    return disclose(message, [source.get('event_view', {})], expected_count=1)

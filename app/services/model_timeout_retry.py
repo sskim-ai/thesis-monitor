@@ -212,7 +212,8 @@ def verify_b2_coverage(output, *, subjects, slots, exhausted, bound, attempts):
             raise ValueError('production_partial_b2_original_timeout_gap')
 
 
-def verify_render_partition(*, messages, subjects, slots, b2, journal, accepted_content_sha256, plan=None):
+def verify_render_partition(*, messages, subjects, slots, b2, journal, accepted_content_sha256, plan=None,
+                            include_summary=False):
     from app.services.unified_snapshot_contract import digest
 
     omitted = b2.get('unissued',{})
@@ -231,10 +232,15 @@ def verify_render_partition(*, messages, subjects, slots, b2, journal, accepted_
     verify_b2_coverage(b2, subjects=ordinary, slots=slots, exhausted=journal['exhausted'],
         bound=journal['bound'], attempts=journal['attempts'])
     market=next(iter(plan.cohort.market_subjects)) if plan is not None else 'us'
+    expected_ids = {'MARKET_'+market.upper(),*subjects}
+    if include_summary:
+        expected_ids.add('SUMMARY_'+market.upper())
+        from app.services.monitoring_summary import verify_summary_message
+        verify_summary_message(messages=messages,market=market,subjects=subjects,omitted=omitted)
     if (journal['stopped'] or journal['inherited']
             or set(journal['accepted']) != {s.slot_id for s in slots}-journal['exhausted']
             or journal['used'] != set(journal['accepted']) | journal['exhausted']
-            or sorted(m['message_id'] for m in messages) != sorted({'MARKET_'+market.upper(),*subjects}-set(omitted))
+            or sorted(m['message_id'] for m in messages) != sorted(expected_ids-set(omitted))
             or digest(messages) != accepted_content_sha256
             or any(m.get('NO_SEND') is not True or not m.get('text') for m in messages)):
         raise ValueError('research_timeout_render_partition_drift')
@@ -311,7 +317,8 @@ def read_no_send_partition(cycle, *, plan, invocation_journal):
         expected['timeout_retry_market']='kr'
     journal = read_invocation_journal(raw, expected)
     verify_render_partition(messages=messages,subjects=plan.cohort.market_subjects[market],slots=plan.slots,b2=b2,
-        journal=journal,accepted_content_sha256=outputs['VALIDATE']['output']['content_sha256'],plan=plan)
+        journal=journal,accepted_content_sha256=outputs['VALIDATE']['output']['content_sha256'],plan=plan,
+        include_summary=binding.get('include_summary') is True)
     for ticker, row in b2['rows'].items():
         folder = plain_path(cycle/'b2'/ticker)
         result = row['result']

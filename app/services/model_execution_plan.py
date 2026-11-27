@@ -232,7 +232,7 @@ def compile_model_plan(cohort, *, topology):
     return result
 
 
-def verify_mixed_render(plan, messages, limitation_receipts, *, omitted=()):
+def verify_mixed_render(plan, messages, limitation_receipts, *, omitted=(), include_summary=False):
     """Require exact per-ticker coverage; limitations consume no B or B2 slot."""
     limits = set(plan.cohort.limitation_subjects)
     if not limits:
@@ -241,7 +241,7 @@ def verify_mixed_render(plan, messages, limitation_receipts, *, omitted=()):
         return
     subjects = set(plan.cohort.market_subjects['us'])
     omitted = set(omitted)
-    ids = ['MARKET_US', *sorted(subjects-omitted)]
+    ids = ['MARKET_US', *(['SUMMARY_US'] if include_summary else []), *sorted(subjects-omitted)]
     by_id = {m['message_id']: m for m in messages}
     if (not omitted <= subjects-limits
             or sorted(m['message_id'] for m in messages) != sorted(ids)
