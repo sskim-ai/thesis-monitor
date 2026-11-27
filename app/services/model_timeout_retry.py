@@ -39,6 +39,12 @@ def initial_stage_done(binding, stage, used, exhausted):
     return {s for s,v in binding['slot_stages'].items() if v==stage} <= set(used)|dependency_skips(binding,exhausted)
 
 
+def earlier_stages_done(binding,stage,accepted,exhausted):
+    order = ('MARKET','CORE','A','B','B2')
+    prior = {s for s,v in binding['slot_stages'].items() if order.index(v)<order.index(stage)}
+    return prior <= set(accepted)|set(exhausted)|dependency_skips(binding,exhausted)
+
+
 def timeout_omissions(plan, exhausted, bound, attempts):
     """A failed batch is the root; never report a dependent uncalled slot as a timeout."""
     result = {}
@@ -122,7 +128,7 @@ def b2_retry_binding(plan, policy=B2_PER_TICKER_ONE_RETRY_V1):
         base_slots=base, maximum=maximum,
         slot_stages={s.slot_id:s.stage for s in plan.slots},
         b2_slots={s.slot_id:s.subjects[0] for s in plan.slots if s.stage == 'B2' and len(s.subjects) == 1})
-    if plan.batch_local_dependencies:
+    if getattr(plan,'batch_local_dependencies',False):
         if policy!=ALL_MODEL_STAGE_ONE_RETRY_V1:
             raise ValueError('stage_tail_requires_existing_all_stage_budget')
         value['slot_dependencies'] = {s.slot_id:list(s.dependencies) for s in plan.slots}
@@ -377,6 +383,8 @@ def read_no_send_partition(cycle, *, plan, invocation_journal):
     per_ticker = identity.get('b2_retry_policy')
     market=next(iter(plan.cohort.market_subjects))
     retry_market=identity.get('timeout_retry_market','us')
+    if plan.batch_local_dependencies and not stage_tail_retry(per_ticker):
+        raise ValueError('research_timeout_cold_stage_tail_binding_missing')
     if per_ticker is not None and (per_ticker != b2_retry_binding(plan,per_ticker['policy'])
             or cap not in (0,1) or cap and per_ticker['policy']!=B2_PER_TICKER_ONE_RETRY_V1
             or retry_market!=market):

@@ -25,13 +25,15 @@ POLICY = retry.ALL_MODEL_STAGE_ONE_RETRY_V1
 STAGES = ('MARKET','CORE','A','B','B2')
 
 
-def admitted(folder, market, subjects, *, limited=False):
+def admitted(folder, market, subjects, *, limited=False, batch_local=False):
     from dataclasses import replace
     from app.services.model_execution_plan import compile_model_plan
     plan = old.listed_plan(subjects) if market=='us' else fixture.plan_for('kr',subjects)
     if limited:
         plan = compile_model_plan(replace(plan.cohort,limitation_subjects=(subjects[-1],)),
             topology='CANONICAL_PRODUCTION')
+    if batch_local:
+        plan = compile_model_plan(plan.cohort,topology='CANONICAL_PRODUCTION',batch_local_dependencies=True)
     ceiling = retry.roster_model_ceiling(subjects)
     maximum = 2*len(plan.slots)
     now = datetime.now(timezone.utc)

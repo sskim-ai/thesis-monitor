@@ -462,7 +462,7 @@ class SelectedRunLedger:
                 per_ticker = s['models'][m].get('b2_retry_binding')
                 if cap or per_ticker:
                     from app.services.model_timeout_retry import (market_timeout_retry_cap, stock_slot_retry, all_stage_retry,
-                        stage_tail_retry, dependency_skips, initial_stage_done)
+                        stage_tail_retry, dependency_skips, initial_stage_done, earlier_stages_done)
                     tail = stage_tail_retry(per_ticker)
                     stock_retry = stock_slot_retry(per_ticker, v['slot'])
                     retry_maximum = per_ticker['maximum'] if all_stage_retry(per_ticker) else self.identity['max_models']
@@ -480,6 +480,7 @@ class SelectedRunLedger:
                                   if sid not in s['timeout_exhausted'] and old[-1] in s['timed_out']}
                         if (v['slot'] in dependency_skips(per_ticker,s['timeout_exhausted'])
                                 or not set(per_ticker['slot_dependencies'][v['slot']])<=accepted
+                                or not earlier_stages_done(per_ticker,v['stage'],accepted,s['timeout_exhausted'])
                                 or any(per_ticker['slot_stages'][sid]!=v['stage'] or len(s['timeout_attempts'][sid])!=1
                                        for sid in parked)
                                 or (bound and not initial_stage_done(per_ticker,v['stage'],

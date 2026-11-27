@@ -187,7 +187,7 @@ class ProductionRuntimeBridgeV1:
             session = ProductionMonitoringSession(directory/'canonical', market=child.market,
                 generation_id=cohort.run_id, source=expected['collection']['monitoring_input'],
                 source_generation_id=cohort.source_generation, frozen_cohort=cohort, cohort_source_owner=child.owner,
-                batch_local_dependencies=child.plan.batch_local_dependencies)
+                **({'batch_local_dependencies':True} if child.plan.batch_local_dependencies else {}))
             self._restore_upstream(session, request)
             return session, SimpleNamespace(production_envelope=PreparedResearchEnvelope.model_validate(
                 expected['collection']['production_envelope']))
@@ -228,7 +228,7 @@ class ProductionRuntimeBridgeV1:
             rows = upstream['rows']
             with artifact_role('scratch'):
                 captured = session.build(stage)
-            if session.batch_local_dependencies:
+            if getattr(session,'batch_local_dependencies',False):
                 from app.services.model_timeout_retry import timeout_omissions
                 budget = self.model.call_budget
                 omitted = {t:r for t,r in timeout_omissions(budget.plan,budget.exhausted,budget.bound,budget.attempts).items()

@@ -7,7 +7,7 @@ from pathlib import Path
 from app.services.unified_snapshot_contract import digest, encoded
 from app.services.model_timeout_retry import (
     validate_timeout, validate_b2_retry_binding, market_timeout_retry_cap, b2_retry_budget_bounds, stock_slot_retry,
-    stage_tail_retry, dependency_skips, initial_stage_done,
+    stage_tail_retry, dependency_skips, initial_stage_done, earlier_stages_done,
 )
 
 
@@ -132,6 +132,7 @@ def _apply(state, event, value, identity):
                         or scope.get('market')!=identity.get('timeout_retry_market','us')
                         or scope['stage'] == 'B2' and scope.get('subjects') != [policy['b2_slots'][slot]])
                     or (tail and (slot in dependency_skips(policy,state['exhausted'])
+                        or not earlier_stages_done(policy,scope['stage'],state['accepted'],state['exhausted'])
                         or set(scope['dependency_outputs'])!=set(policy['slot_dependencies'][slot])))
                     or any(state['accepted'].get(k) != v for k,v in scope['dependency_outputs'].items())):
                 raise ValueError('model_journal_binding_or_dependency_gap')
