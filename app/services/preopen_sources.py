@@ -92,14 +92,21 @@ def _window(row, provider, *, at, base_cutoff, zone):
     return lower, today - timedelta(days=min(wanted, 31)), wanted > 31, set(watermark.get('ids') or ())
 
 
-def _incremental(candidates, *, lower, previous, checked, zone):
+def _incremental(candidates, *, lower, base_cutoff, previous, checked, zone):
+    # Without a provider watermark, the base cutoff can exclude old headlines
+    # from the preview. It cannot establish completed provider coverage.
+    boundary = lower or base_cutoff
+    if boundary is None:
+        return []
+    boundary_date = boundary.astimezone(zone).date()
     result, seen, titles = [], set(previous), set()
     for candidate in candidates:
         at = _instant(candidate['published_at'])
         day = date.fromisoformat(candidate['published_date'])
         if candidate['id'] in seen or (at and at > checked):
             continue
-        if lower and (at <= lower if at else day < lower.astimezone(zone).date()):
+        outside_window = at <= boundary if at else day < boundary_date
+        if outside_window:
             continue
         title = normalize_title(candidate['title'])
         if not candidate['official'] and title in titles:
@@ -494,7 +501,8 @@ async def collect_preopen_sources(market, *, opening_session, rows, cutoff, run_
                     candidates, gap = value
                 gap = gap or any((at := _instant(event['published_at'])) is not None and at > received
                                  for event in candidates)
-                events = _incremental(candidates, lower=lower, previous=previous, checked=received, zone=zone)
+                events = _incremental(candidates, lower=lower, base_cutoff=base_cutoff,
+                                      previous=previous, checked=received, zone=zone)
                 if events:
                     result['events'].setdefault(ticker, []).extend(events)
                 material = any(row['material'] and row['incremental'] == 'CONFIRMED' for row in events)

@@ -24,10 +24,10 @@ def owned(ticker, *, provider, at, previous=(), cik=None, corp_code=None):
         event_watermarks={provider: watermark}))
 
 
-def execute(market, *, at, rows=(), handler=None, run_roots=None, window=timedelta(minutes=5),
+def execute(market, *, at, rows=(), handler=None, run_roots=None, window=timedelta(minutes=5), base_cutoff=None,
             **settings):
     return asyncio.run(sources.collect_preopen_sources(market, opening_session=OPEN, rows=rows,
-        cutoff=at + window, run_roots=run_roots or {}, settings=Settings(_env_file=None,
+        cutoff=at + window, run_roots=run_roots or {}, base_cutoff=base_cutoff, settings=Settings(_env_file=None,
         ohlcv_base_url=settings.pop('ohlcv_base_url', ''), **settings),
         enable_network=handler is not None, clock=lambda: at,
         transport=httpx.MockTransport(handler) if handler is not None else None))
@@ -127,6 +127,25 @@ def test_naver_separates_relevant_headline_from_issuer_facts_and_ambiguous_times
     assert headline['url'].endswith('/contract') and headline['incremental'] == 'CONFIRMED'
     assert not headline['official'] and not headline['material']
     assert coverage(result, ticker='005001', provider='naver_news')['status'] == 'PARTIAL'
+
+
+def test_missing_provider_watermark_excludes_old_reports_and_leaves_newness_unconfirmed():
+    row = owned('ACME', provider='sec_edgar', at=US_AT - timedelta(days=3), cik='123456')
+    row['preopen']['event_watermarks'].clear()
+
+    def send(request):
+        if request.url.host == 'news.google.com':
+            return httpx.Response(200, text='<rss><channel></channel></rss>')
+        return httpx.Response(200, json=dict(cik='123456', filings=dict(files=[], recent=dict(
+            form=['10-Q', '8-K'], accessionNumber=['0000123456-26-000001', '0000123456-26-000002'],
+            primaryDocument=['old.htm', 'update.htm'], filingDate=['2026-11-27', '2026-11-30'],
+            acceptanceDateTime=['2026-11-27T14:00:00Z', '2026-11-30T12:00:00Z'], items=['', '2.02']))))
+
+    result = execute('us', at=US_AT, rows=[row], handler=send, sec_user_agent='fixture',
+                     base_cutoff=datetime.fromisoformat('2026-11-27T15:00:00Z'))
+    update, = result['events']['ACME']
+    assert update['id'] == '0000123456-26-000002' and update['incremental'] == 'UNCONFIRMED'
+    assert coverage(result, ticker='ACME', provider='sec_edgar')['status'] == 'PARTIAL'
 
 
 def test_deadline_preserves_completed_sources_and_prevents_new_requests(monkeypatch):
