@@ -76,3 +76,77 @@ def test_telegram_long_preview_keeps_all_content_and_utf16_limit():
     joined='\n'.join(part.split('\n',1)[1] for part in parts)
     assert all(line in joined for line in lines)
     assert telegram_render_parts('짧은 문안')==['짧은 문안']
+
+
+def test_partition_preserves_original_delimiters_and_bullets():
+    text = '  첫 줄  \n\n\n• ' + '길다 📈 ' * 2000 + '\n\n 끝  '
+    parts = telegram_render_parts(text)
+    assert len(parts) > 1
+    assert ''.join(p.removeprefix(f'[{i}/{len(parts)}]\n')
+                   for i, p in enumerate(parts, 1)) == text
+    assert max(len(p.encode('utf-16-le')) // 2 for p in parts) <= 4096
+
+
+@pytest.mark.parametrize('uses,denied,visible_date,owner', [
+    (['CONTEXT'], [], '2026-11-26','005930'),
+    (['ENTRY'], ['ENTRY'], '2026-11-26','005930'),
+    (['ENTRY'], [], '2026-11-25','005930'),
+    (['ENTRY'], [], '2026-11-26','000660'),
+])
+def test_display_does_not_grant_technical_flow(uses, denied, visible_date, owner, monkeypatch):
+    from app.services import detailed_stock_message_service as svc
+    stock = dict(ticker='005930',price_and_positioning=dict(supply=dict(
+        canonical_security_id='KR:005930',as_of_date='2026-11-26')))
+    src = dict(fresh_run_id='source',packet=dict(stocks=[stock]))
+    ref = 'canonical:positioning:2026-11-26'
+    ctx = dict(ticker='005930',valuation_context=dict(security_id='KR:005930'),
+        decision_evidence=[dict(ref_id=ref,as_of=visible_date)],source_use_projection=dict(
+            ticker=owner,source_generation_id='source',
+            source_permissions=[dict(ref_id=ref,allowed_uses=uses,prohibited_uses=denied)]))
+    monkeypatch.setattr(svc, '_kr_flow_rows', lambda *a: pytest.fail('used inadmissible registry rows'))
+    assert svc.kr_flow_model_context(src,ticker='005930',market='kr',
+        security_id='KR:005930',source_context=ctx)['status'] == 'UNAVAILABLE'
+
+
+def test_us_published_fx_requires_existing_display_permission():
+    from tests.test_market_display_view import fresh
+    from app.services.market_display_plan import build_display_plan
+    for missing in ((), ('USDKRW',)):
+        result = fresh('us', missing_publications=missing)
+        source, ctx = result['packet']['market_context'], result['context']
+        plan = build_display_plan(source, market='us', assessment_date=result['packet']['assessment_date'],
+            eligible_refs=ctx['request_eligible_refs'], display_view=result['views']['display'])
+        rows = [r for r in plan.items if r.block_id=='fx' and r.status=='AVAILABLE']
+        assert len(rows) == (0 if missing else 1)
+        if rows:
+            assert rows[0].fact_ids == ('market:fx:USDKRW',)
+            assert [b.field_path for b in rows[0].bindings] == ['fields.value']
+            assert rows[0].fact_ids[0] not in ctx['request_eligible_refs']
+
+
+def test_summary_separates_realized_limit_from_timeout():
+    gen='frozen'; subjects=('AAA','BBB','CCC')
+    detail = _detail('AAA',gen)
+    limit=dict(message_id='BBB',generation_id=gen,plan_sha256='limit-plan',
+        summary_row=dict(ticker='BBB',status='UNKNOWN_LIMIT',price='미확보',plan_sha256='limit-plan'))
+    omitted={'CCC':dict(status='B2_UNISSUED_TIMEOUT')}
+    s=summary_message(market='us',generation=gen,subjects=subjects,messages=[detail,limit],
+        omitted=omitted,completed='2026-11-25',cutoff='2026-11-27T08:10:00+09:00')
+    verify_summary_message(messages=[dict(message_id='MARKET_US'),s,detail,limit],market='us',
+        subjects=subjects,omitted=omitted,expected_completed='2026-11-25')
+    assert [r['status'] for r in s['summary_binding']['rows']] == ['COMPLETE','UNKNOWN_LIMIT','B2_UNISSUED_TIMEOUT']
+
+
+@pytest.mark.parametrize('market', ['kr', 'us'])
+def test_summary_from_typed_synthetic_detail(market, monkeypatch):
+    from tests.test_c44_renderer_replay import synthetic_renderer_case
+    from app.services import production_message_renderer as renderer
+    from app.services.vnext_execution_profile import SOL_HIGH_V1
+    session,t,accepted,result,_ = synthetic_renderer_case(market)
+    monkeypatch.setattr(renderer, 'stock_plan', lambda *_: accepted)
+    message=renderer.stock_message(session,t,result,execution_profile=SOL_HIGH_V1,include_summary=True)
+    row=message['summary_row']
+    assert row['plan_sha256']==message['plan_sha256'] and row['ticker']==t
+    assert row['overall']==accepted.decision['overall_direction']
+    assert row['economic']==result['result']['output']['new_buyer_shadow']['new_buyer']
+    assert row['action'] in message['text'] and row['status']=='COMPLETE'

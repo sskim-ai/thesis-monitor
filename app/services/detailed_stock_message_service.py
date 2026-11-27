@@ -476,7 +476,7 @@ def _kr_flow_rows(packet, source):
     return rows
 
 
-def kr_flow_model_context(source, *, ticker, market, security_id):
+def kr_flow_model_context(source, *, ticker, market, security_id, source_context=None):
     """Reuse exactly the admitted renderer numbers as B2 context, not direction."""
     identity = dict(ticker=ticker, security_id=security_id,
                     source_generation=source['fresh_run_id'])
@@ -486,6 +486,19 @@ def kr_flow_model_context(source, *, ticker, market, security_id):
     stock = source['packet']['stocks'][0]
     supply = stock.get('price_and_positioning', {}).get('supply') or {}
     if stock.get('ticker') != ticker or supply.get('canonical_security_id') != security_id:
+        return dict(**identity, status='UNAVAILABLE')
+    ref = 'canonical:positioning:' + str(supply.get('as_of_date'))
+    context = source_context or {}
+    projection = context.get('source_use_projection', {})
+    if (context.get('ticker') != ticker or projection.get('ticker') != ticker
+            or projection.get('source_generation_id') != source['fresh_run_id']
+            or context.get('valuation_context', {}).get('security_id') != security_id):
+        return dict(**identity, status='UNAVAILABLE')
+    visible = [r for r in context.get('decision_evidence', ()) if r['ref_id'] == ref]
+    grants = [r for r in projection.get('source_permissions', ()) if r['ref_id'] == ref]
+    if (len(visible) != 1 or visible[0]['as_of'] != supply.get('as_of_date')
+            or len(grants) != 1 or 'ENTRY' not in grants[0]['allowed_uses']
+            or 'ENTRY' in grants[0].get('prohibited_uses', ())):
         return dict(**identity, status='UNAVAILABLE')
     rows = _kr_flow_rows(SimpleNamespace(market=market,ticker=ticker), source)
     if not rows:

@@ -425,7 +425,8 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                     or calls.used & inherited or accepted != (calls.used-exhausted) | inherited
                     or any(m.get('NO_SEND') is not True or not m.get('text') for m in messages)):
                 raise ValueError('research_render_coverage_or_content_drift')
-            if bridge.child.include_summary:
+            include_summary = bridge.child_binding.get('include_summary') is True
+            if include_summary:
                 from app.services.monitoring_summary import verify_summary_message
                 from app.services.analysis_report_service import telegram_render_parts
                 verify_summary_message(messages=messages,market=bridge.child.market,
@@ -442,7 +443,7 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                     slots=bridge.child.plan.slots, b2=outputs['B2']['output'],
                     journal=read_invocation_journal(calls.journal.path.read_bytes(), calls.journal.identity),
                     accepted_content_sha256=outputs['VALIDATE']['output']['content_sha256'],plan=bridge.child.plan,
-                    include_summary=bridge.child.include_summary)
+                    include_summary=include_summary)
             state.update(status=PARTIAL if omitted else TERMINAL,messages=messages,messages_sha256=digest(messages))
             if bridge.child.plan.cohort.limitation_subjects:
                 from app.services.model_execution_plan import verify_mixed_render
@@ -451,7 +452,7 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                 if receipts != outputs['VALIDATE']['output']['limitation_receipts']:
                     raise ValueError('research_limitation_validate_render_drift')
                 verify_mixed_render(bridge.child.plan, messages, receipts, omitted=omitted,
-                    include_summary=bridge.child.include_summary)
+                    include_summary=include_summary)
                 state['limitation_receipts'] = receipts
             if omitted:
                 state.update(unissued=omitted, expected_message_count=len(bridge.child_binding['message_ids']))

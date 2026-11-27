@@ -192,9 +192,23 @@ def _report_blocks(text: str, max_chars: int) -> Iterable[str]:
 def split_telegram_text(
     text: str,
     max_chars: int = TELEGRAM_TEXT_MAX_CHARS,
+    *, preserve_text: bool = False,
 ) -> list[str]:
     if max_chars < 100:
         raise ValueError("max_chars must be at least 100")
+    if preserve_text:
+        chunks = []
+        start = 0
+        while len(text) - start > max_chars:
+            end = start + max_chars
+            for delimiter in ("\n\n", "\n", " "):
+                pos = text.rfind(delimiter, start, end)
+                if pos >= start:
+                    end = pos + len(delimiter)
+                    break
+            chunks.append(text[start:end])
+            start = end
+        return [*chunks, text[start:]]
     chunks: list[str] = []
     current = ""
     for block in _report_blocks(text, max_chars):
@@ -219,7 +233,7 @@ def telegram_render_parts(text: str) -> list[str]:
     if len(text.encode('utf-16-le')) // 2 <= 4096:
         return [text]
     budget = 2000 if any(ord(c)>0xffff for c in text) else 4000
-    chunks = split_telegram_text(text,max_chars=budget)
+    chunks = split_telegram_text(text,max_chars=budget,preserve_text=True)
     parts = [f"[{i}/{len(chunks)}]\n{chunk}" for i,chunk in enumerate(chunks,1)]
     if any(len(part.encode('utf-16-le')) // 2 > 4096 for part in parts):
         raise ValueError('telegram_part_exceeds_utf16_limit')

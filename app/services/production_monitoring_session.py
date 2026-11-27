@@ -34,20 +34,20 @@ def model_wire_context(stage_name, context):
         return context
     projected = dict(context)
     for ticker, row in context.items():
-        if row.get("native_technical_context", {}).get("comparison_version") != 1:
-            continue
-        binding = row.get("source_evidence_binding", {})
-        ids = [item["ref_id"] for item in row.get("decision_evidence", ())]
-        fields = ("emitted_ref_ids", "ordered_retained_refs")
-        if ids and all(binding.get(key) == ids for key in fields):
-            aliases = {key: {"same_ordered_values_as": "decision_evidence[].ref_id"} for key in fields}
-            projected[ticker] = dict(row, source_evidence_binding={**binding, **aliases})
+        native = row.get("native_technical_context") or {}
+        if native.get("comparison_version") == 1:
+            binding = row.get("source_evidence_binding", {})
+            ids = [item["ref_id"] for item in row.get("decision_evidence", ())]
+            fields = ("emitted_ref_ids", "ordered_retained_refs")
+            if ids and all(binding.get(key) == ids for key in fields):
+                aliases = {key: {"same_ordered_values_as": "decision_evidence[].ref_id"} for key in fields}
+                projected[ticker] = dict(row, source_evidence_binding={**binding, **aliases})
         # The extra path is B2 analysis context, not an expansion of the B batch.
-        native = row['native_technical_context']
-        if any('recent_path' in period for period in native['periods'].values()):
+        periods = native.get('periods', {})
+        if any('recent_path' in period for period in periods.values()):
             projected[ticker] = dict(projected[ticker], native_technical_context=dict(native,
                 periods={tf:{k:v for k,v in period.items() if k != 'recent_path'}
-                         for tf,period in native['periods'].items()}))
+                         for tf,period in periods.items()}))
     return projected
 
 
@@ -390,7 +390,8 @@ class ProductionMonitoringSession:
             source_generation_id=self.source_gen, valuation_view=self.fresh_stocks[ticker]['valuation_view'],
             forward_view=self.source.get('forward_views', {}).get(ticker) if self.market=='kr' else None,
             technical_flow_context=kr_flow_model_context(self.fresh_stocks[ticker],
-                ticker=ticker, market=self.market, security_id=self.bctx[ticker]['valuation_context']['security_id']))
+                ticker=ticker, market=self.market, security_id=self.bctx[ticker]['valuation_context']['security_id'],
+                source_context=self.bctx[ticker]))
         subject = first["subject"]
         legacy = []
         for ref in subject["capability"]["confidence"] + subject["capability"]["quality"]:

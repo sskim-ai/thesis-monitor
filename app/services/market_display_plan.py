@@ -326,7 +326,10 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
                         and f.get('fields',{}).get('series_code')} - set(US_MACRO))
         for series in (*US_MACRO,*extra):
             macro(series)
-        display_only = sorted({ref for item in items if item.block_id == 'macro'
+        usdkrw = unique_series('USDKRW')
+        if display_fields is not None and usdkrw and 'fields.value' in display_fields.get(usdkrw['fact_id'], set()):
+            macro('USDKRW')
+        display_only = sorted({ref for item in items if item.block_id in {'macro','fx'}
             and item.status == 'AVAILABLE' for ref in item.fact_ids
             if ref not in set(eligible_refs)})
         if display_only:
