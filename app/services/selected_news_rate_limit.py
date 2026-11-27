@@ -167,7 +167,7 @@ def replay_skip(row, *, frozen, plan, outcome, ticker, root, window):
     return dict(acquisition_class='OPTIONAL_NEWS_RATE_LIMITED', window=window, rate_limit=row)
 
 
-def disclose(message, rate_limit_events, *, expected_count):
+def disclose(message, rate_limit_events, *, expected_count, allow_partition=False):
     bindings = [event.get('binding', {}) for event in rate_limit_events]
     affected = [b for b in bindings if b.get('denial') == STATUS]
     if not affected:
@@ -179,6 +179,6 @@ def disclose(message, rate_limit_events, *, expected_count):
         raise ValueError('optional_news_render_scope_mismatch')
     notice = NOTICE + (' 대상: ' + ', '.join(subjects) if expected_count > 1 else '')
     text = message['text'].rstrip() + '\n\n' + notice
-    if len(text.encode('utf-16-le')) // 2 > 4096:
+    if not allow_partition and len(text.encode('utf-16-le')) // 2 > 4096:
         raise ValueError('optional_news_render_exceeds_message_limit')
     return {**message, 'text': text, 'content_sha256': digest(text)}

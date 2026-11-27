@@ -131,12 +131,19 @@ def summary_message(*, market,generation,subjects,messages,omitted,completed,cut
         plan_sha256=digest(binding),content_sha256=digest(text),summary_binding=binding)
 
 
-def verify_summary_message(*, messages,market,subjects,omitted):
+def verify_summary_message(*, messages,market,subjects,omitted,expected_cutoff=None,
+                           expected_generation=None,expected_completed=None):
     matches=[m for m in messages if m['message_id']=='SUMMARY_'+market.upper()]
     if len(matches)!=1:
         raise ValueError('summary_message_missing_or_duplicate')
     actual=matches[0]
     binding=actual['summary_binding']
+    ids=['MARKET_'+market.upper(),'SUMMARY_'+market.upper(),*[t for t in subjects if t not in omitted]]
+    if ([m['message_id'] for m in messages] != ids
+            or (expected_cutoff is not None and binding['cutoff'] != expected_cutoff)
+            or (expected_generation is not None and actual['generation_id'] != expected_generation)
+            or (expected_completed is not None and binding['completed'] != expected_completed)):
+        raise ValueError('summary_frozen_cohort_binding_drift')
     expected=summary_message(market=market,generation=actual['generation_id'],subjects=subjects,
         messages=[m for m in messages if m['message_id'] in subjects],omitted=omitted,
         completed=binding['completed'],cutoff=binding['cutoff'])

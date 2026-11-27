@@ -236,7 +236,12 @@ def verify_render_partition(*, messages, subjects, slots, b2, journal, accepted_
     if include_summary:
         expected_ids.add('SUMMARY_'+market.upper())
         from app.services.monitoring_summary import verify_summary_message
-        verify_summary_message(messages=messages,market=market,subjects=subjects,omitted=omitted)
+        verify_summary_message(messages=messages,market=market,subjects=subjects,omitted=omitted,
+            expected_cutoff=plan.cohort.cutoff if plan is not None else None,
+            expected_generation=plan.cohort.run_id if plan is not None else None)
+        from app.services.analysis_report_service import telegram_render_parts
+        if any(m.get('telegram_parts') != telegram_render_parts(m['text']) for m in messages):
+            raise ValueError('research_telegram_partition_drift')
     if (journal['stopped'] or journal['inherited']
             or set(journal['accepted']) != {s.slot_id for s in slots}-journal['exhausted']
             or journal['used'] != set(journal['accepted']) | journal['exhausted']

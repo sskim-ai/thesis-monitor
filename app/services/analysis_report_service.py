@@ -208,3 +208,19 @@ def split_telegram_text(
     if current:
         chunks.append(current)
     return chunks or ["분석할 수 있는 데이터가 없습니다."]
+
+
+def telegram_render_parts(text: str) -> list[str]:
+    """NO_SEND physical preview using the existing paragraph/line splitter.
+
+    Preserve the full logical text in its existing message; part numbering
+    is transport presentation, not additional analytical messages.
+    """
+    if len(text.encode('utf-16-le')) // 2 <= 4096:
+        return [text]
+    budget = 2000 if any(ord(c)>0xffff for c in text) else 4000
+    chunks = split_telegram_text(text,max_chars=budget)
+    parts = [f"[{i}/{len(chunks)}]\n{chunk}" for i,chunk in enumerate(chunks,1)]
+    if any(len(part.encode('utf-16-le')) // 2 > 4096 for part in parts):
+        raise ValueError('telegram_part_exceeds_utf16_limit')
+    return parts

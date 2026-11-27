@@ -247,13 +247,14 @@ class PreparedResearchBridge(ProductionRuntimeBridgeV1):
         model.bind_cycle(market=child.market, run_id=child.plan.cohort.run_id)
 
     def _render_market(self, session):
-        if self._retained_kr_ecos_body is None:
-            return super()._render_market(session)
         from app.services.production_message_renderer import market_message
+        if self._retained_kr_ecos_body is None:
+            return market_message(session,allow_partition=True) if self.child.include_summary else super()._render_market(session)
         from app.services.production_source_context import POLICY
 
         return market_message(session,sector_taxonomy_version='sector-universe-user-confirmed-v2',
-            ecos_fx_body=self._retained_kr_ecos_body,fx_source_policy=POLICY)
+            ecos_fx_body=self._retained_kr_ecos_body,fx_source_policy=POLICY,
+            allow_partition=self.child.include_summary)
 
     def snapshot(self):
         self.child.verify()
@@ -424,6 +425,15 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                     or calls.used & inherited or accepted != (calls.used-exhausted) | inherited
                     or any(m.get('NO_SEND') is not True or not m.get('text') for m in messages)):
                 raise ValueError('research_render_coverage_or_content_drift')
+            if bridge.child.include_summary:
+                from app.services.monitoring_summary import verify_summary_message
+                from app.services.analysis_report_service import telegram_render_parts
+                verify_summary_message(messages=messages,market=bridge.child.market,
+                    subjects=bridge.child.plan.cohort.market_subjects[bridge.child.market],omitted=omitted,
+                    expected_cutoff=bridge.child_binding['cutoff'],expected_generation=bridge.child_binding['run_id'])
+                for message in messages:
+                    if message.get('telegram_parts') != telegram_render_parts(message['text']):
+                        raise ValueError('research_telegram_partition_drift')
             if getattr(calls,'retry_enabled',False) and getattr(calls,'retry_market','us')!='kr':
                 from app.services.model_invocation_journal import read_invocation_journal
                 from app.services.model_timeout_retry import verify_render_partition

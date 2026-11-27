@@ -144,6 +144,18 @@ create business eligibility, waive missing qualified metrics, override a quality
 or confidence veto, or offset active material risk or SELL. Neither historical
 prices nor technical timing mechanically determine the economic stance.
 '''
+    if model_input.get('step2_quality_version') == 1:
+        prompt += """
+Use actual business observations, including cash generation, capital allocation,
+competitive evidence and growth progress when present. A prior investment thesis
+is a hypothesis to assess, not a newly verified success. Headlines are leads,
+not confirmed results. Do not infer competitive facts from a financial ratio.
+Distinguish ordinary business uncertainty from a concrete economic limitation.
+If historical candidates are selectable but none is chosen, explain the
+economic reason in economic_reason. If none is selectable, do not repeat
+backend source-availability or selection-restriction notices.
+Finish complete, concise Korean sentences well below the character limit.
+"""
     if 'native_technical_context' not in model_input:
         return prompt
     prompt = ('Judge NewBuyer fundamental/valuation attractiveness and, separately, the supplied native technical evidence.'
@@ -165,6 +177,11 @@ never another approval requirement. Missing native fields alone are not adverse.
 expected return or probability. Consider actual upside and downside, including a near target.
 Use qualitative prose; numeric values are rendered separately by the backend.'''
     if model_input.get('step2_quality_version') == 1:
+        prompt = prompt.replace(
+            'Use state to express the material *current* entry risk: ADVERSE for\n'
+            'decisive adverse evidence, MIXED for genuinely competing evidence without a decisive veto.',
+            'Use state to express observed trend, momentum and structural evidence: ADVERSE for '
+            'decisive observed deterioration, MIXED for genuinely competing technical observations.')
         prompt += """
 STEP 2: Separate observed technical state from deterministic entry quality.
 Monthly bars describe long-term structure, weekly bars the medium-term trend and
@@ -177,8 +194,10 @@ overlap alone do not establish ADVERSE technical state. Actual observed structur
 breakdown, persistent weakness or decisive adverse evidence can establish ADVERSE.
 Backend entry quality retains all current RR, overlap and invalidation restrictions.
 If technical_flow_context is supplied, interpret the exact KR share quantities in
-their own overlapping windows with price/volume; do not sum the windows or infer
-intent, future direction, or business value. NOT_APPLICABLE is not missing evidence.
+their own overlapping windows with matching dated price/volume; do not sum the windows
+or infer intent, future direction, or business value. A path of twenty closes spans
+nineteen close-to-close changes: use an existing native RETURN_20D for a twenty-bar
+return if supplied, and never invent an earlier close. NOT_APPLICABLE is not missing evidence.
 Cite its supplied ref_id only in technical_assessment. A single current observation
 does not establish a trend. Finish concise Korean sentences well below the maximum.
 Do not repeat numeric facts or generic source caveats. Explain the actual economic

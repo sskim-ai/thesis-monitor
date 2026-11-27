@@ -1048,6 +1048,10 @@ def build_detailed_plan_v2(*, packet, base, b2_request, b2_result, authorization
     historical = _historical_price_row(context, output, assessment, scenario_row=scenario_row)
     if historical is not None:
         rows += (historical,)
+    elif step2:
+        rows += (_row('valuation','historical-price-unavailable',
+            '경제적 선호 가격 미산출 · 적격 주당지표·역사적 배수 조합 미확보',
+            facts=(),hashes=(digest(b2_request),),formatting='existing-deterministic-historical-reference-v1'),)
     binding = dict(base=presentation.acceptance_sha256, request=digest(b2_request), result=digest(b2_result),
         authorization=digest(authorization.model_dump(mode="json")), rows=[r.model_dump(mode="json") for r in rows])
     return DetailedStockMessagePlanV2(base=presentation, b2_request=b2_request, b2_result=b2_result,

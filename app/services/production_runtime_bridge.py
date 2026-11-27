@@ -311,6 +311,9 @@ class ProductionRuntimeBridgeV1:
                         subjects=subjects, messages=messages[1:], omitted=omitted,
                         completed=completed, cutoff=child_binding['cutoff'])
                     messages.insert(1,summary)
+                    from app.services.analysis_report_service import telegram_render_parts
+                    for message in messages:
+                        message['telegram_parts'] = telegram_render_parts(message['text'])
                 for message in messages:
                     message['snapshot_sha256'] = request['snapshot_sha256']
                     if self.execution_profile:

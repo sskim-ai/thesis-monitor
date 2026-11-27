@@ -321,7 +321,10 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
                 'derived_registry_sha256':digest(derived['numeric_registry']), 'direction_eligible':False} if derived else {})} if valid else {})
 
     if market == 'us':
-        for series in US_MACRO:
+        extra = sorted({f['fields']['series_code'] for f in facts
+                        if f.get('fact_type') == 'market_credit_spread'
+                        and f.get('fields',{}).get('series_code')} - set(US_MACRO))
+        for series in (*US_MACRO,*extra):
             macro(series)
         display_only = sorted({ref for item in items if item.block_id == 'macro'
             and item.status == 'AVAILABLE' for ref in item.fact_ids
@@ -336,7 +339,7 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
     observed, sector_audit = sector_observations(facts, registry, market=market,
         completed=completed, bad_registry=bad_sector_registry)
     for venue in (('US',) if market == 'us' else ('KOSPI', 'KOSDAQ')):
-        candidates = []
+        candidates, auxiliary = [], []
         for v, code, category, fact, row in observed:
             if v != venue:
                 continue
@@ -346,9 +349,14 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
                 candidates.append((code,fact,binding))
             elif category in {'US_SEMICONDUCTOR_WATCH','KR_SIZE_STYLE_INDEX'}:
                 label = auxiliary_label(market, venue, code)
-                add('sector_auxiliary',venue+' '+label,[fact],[binding],
-                    text=f"{venue} {label} {fact['fields'].get('sector') or code}: {binding.value:+.2f}% · {completed}",
-                    proof=dict(provider=PROVIDERS[market],registry_sha256=REGISTRY_SHA256,category=category,observation_only=True))
+                auxiliary.append((label,fact,binding,category,code))
+        if auxiliary:
+            lines = [f"{label} {fact['fields'].get('sector') or code} {binding.value:+.2f}%"
+                     for label,fact,binding,category,code in auxiliary]
+            add('sector_auxiliary',venue+' 규모·관찰 지수',[f for _,f,_,_,_ in auxiliary],
+                [b for _,_,b,_,_ in auxiliary],text=venue+' · '+' / '.join(lines)+f' · {completed}',
+                proof=dict(provider=PROVIDERS[market],registry_sha256=REGISTRY_SHA256,
+                    categories=[c for _,_,_,c,_ in auxiliary],observation_only=True))
         partial = len(candidates) < detailed_count(venue)
         proof = dict(venue=venue, session=completed,
             taxonomy='configured-sector-etf-proxies' if market == 'us' else 'kiwoom-sector-index-v1',
@@ -368,6 +376,7 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
         # Existing aggregate flow claims remain market-level observations;
         # their display does not grant stock attribution or directional rights.
         catalog = numeric_catalog(source, market=market, assessment_date=assessment_date, eligible_refs=eligible_refs)
+        grouped_flows = {}
         for claim in catalog['claims']:
             if claim['claim_type'] != 'DATED_AGGREGATE_FLOW':
                 continue
@@ -381,10 +390,13 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
                 amount = Decimal(str(flow_binding.value)) / Decimal(100000000)
                 labels = {'foreign':'외국인','institution':'기관','retail':'개인'}
                 fields = fact['fields']
-                text = f"{fields['market_scope']} {labels[fields['actor']]} {amount:+,.2f}억원"
-                add('flows', '시장 수급', [fact], [flow_binding], text=text,
-                    proof={'existing_numeric_claim_id':claim['claim_id'],
-                           'scope':'AGGREGATE_ONLY_NOT_STOCK_ATTRIBUTION'})
+                grouped_flows.setdefault(fields['market_scope'],[]).append(
+                    (fact,flow_binding,claim['claim_id'],f"{labels[fields['actor']]} {amount:+,.2f}억원"))
+        for venue, group in grouped_flows.items():
+            add('flows',venue+' 시장 수급',[f for f,_,_,_ in group],[b for _,b,_,_ in group],
+                text=f"{venue} 순매수 (KRX·NXT 통합, {completed}) · "+' / '.join(t for _,_,_,t in group),
+                proof={'existing_numeric_claim_ids':[c for _,_,c,_ in group],
+                       'scope':'AGGREGATE_ONLY_NOT_STOCK_ATTRIBUTION'})
         add('fx_note','환율 관측',text='환율은 실제 관측일의 금융 여건이며, 당일 수급의 원인으로 단정하지 않습니다.',formatter='display-only-note')
         for series,label in FX_LABELS.items():
             if series != 'USDKRW_KR_CLOSE' and unique_series(series) is not None:

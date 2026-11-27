@@ -22,7 +22,8 @@ def source_only_message(owner, handle):
 
 
 def market_message(session, *, sector_taxonomy_version=None, macro_display_capture=None,
-                   fx_observations=(),fx_source_policy=None,fx_cutoff=None,ecos_fx_body=None,ecos_fx_prior=()):
+                   fx_observations=(),fx_source_policy=None,fx_cutoff=None,ecos_fx_body=None,ecos_fx_prior=(),
+                   allow_partition=False):
     if macro_display_capture is not None:
         raise ValueError('sealed_macro_capture_offline_source_only_not_current_owner')
     data = session.projected[session.market]
@@ -49,7 +50,7 @@ def market_message(session, *, sector_taxonomy_version=None, macro_display_captu
         from app.services.selected_news_rate_limit import disclose
         subjects=set(session.fresh_stocks)
         message = disclose(message, [s.get('event_view', {}) for s in session.fresh_stocks.values()],
-            expected_count=len(subjects))
+            expected_count=len(subjects),allow_partition=allow_partition)
     return message
 
 
@@ -76,7 +77,7 @@ def stock_message(session, ticker, b2_row, *, execution_profile=None, include_su
         if market_owner.excluded_night_narrative_errors(message, context, fields=('text',)):
             raise ValueError('production_stock_excluded_night_narrative')
         from app.services.selected_news_rate_limit import disclose
-        message = disclose(message, [source.get('event_view', {})], expected_count=1)
+        message = disclose(message, [source.get('event_view', {})], expected_count=1,allow_partition=include_summary)
     return message
 
 
@@ -102,4 +103,4 @@ def limitation_message(session, ticker, *, include_summary=False):
         message['summary_row'] = dict(ticker=ticker, status='UNKNOWN_LIMIT',
             price=_price_display(plan.valuation.price,plan.valuation.currency) if plan.valuation.price is not None else '미확보',
             plan_sha256=plan.acceptance_sha256)
-    return disclose(message, [source.get('event_view', {})], expected_count=1)
+    return disclose(message, [source.get('event_view', {})], expected_count=1,allow_partition=include_summary)
