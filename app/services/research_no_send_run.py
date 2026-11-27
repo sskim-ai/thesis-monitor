@@ -417,11 +417,15 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
             accepted = set(calls.accepted)
             omitted = outputs['B2']['output'].get('unissued',{})
             exhausted = getattr(calls,'exhausted',set())
+            from app.services.model_timeout_retry import stage_tail_retry, dependency_skips
+            tail = stage_tail_retry(getattr(calls,'b2_retry_policy',None))
+            skipped = dependency_skips(getattr(calls,'b2_retry_policy',None),exhausted)
             if (omitted and not getattr(calls,'retry_enabled',False)
                     or sorted(m['message_id'] for m in messages) != sorted(set(bridge.child_binding['message_ids'])-set(omitted))
                     or digest(messages) != outputs['VALIDATE']['output']['content_sha256']
                     or exhausted != {v['slot_id'] for v in omitted.values()}
-                    or accepted != {s.slot_id for s in bridge.child.plan.slots}-exhausted
+                    or accepted != {s.slot_id for s in bridge.child.plan.slots}-exhausted-skipped
+                    or set(calls.used)&skipped
                     or calls.used & inherited or accepted != (calls.used-exhausted) | inherited
                     or any(m.get('NO_SEND') is not True or not m.get('text') for m in messages)):
                 raise ValueError('research_render_coverage_or_content_drift')
@@ -435,11 +439,11 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                 for message in messages:
                     if message.get('telegram_parts') != telegram_render_parts(message['text']):
                         raise ValueError('research_telegram_partition_drift')
-            if getattr(calls,'retry_enabled',False) and getattr(calls,'retry_market','us')!='kr':
+            if tail or (getattr(calls,'retry_enabled',False) and getattr(calls,'retry_market','us')!='kr'):
                 from app.services.model_invocation_journal import read_invocation_journal
                 from app.services.model_timeout_retry import verify_render_partition
 
-                verify_render_partition(messages=messages, subjects=bridge.child.plan.cohort.market_subjects['us'],
+                verify_render_partition(messages=messages, subjects=bridge.child.plan.cohort.market_subjects[bridge.child.market],
                     slots=bridge.child.plan.slots, b2=outputs['B2']['output'],
                     journal=read_invocation_journal(calls.journal.path.read_bytes(), calls.journal.identity),
                     accepted_content_sha256=outputs['VALIDATE']['output']['content_sha256'],plan=bridge.child.plan,

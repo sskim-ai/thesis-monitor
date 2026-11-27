@@ -65,7 +65,13 @@ class ProductionMonitoringSession:
 
     def __init__(self, root, *, market, generation_id, source, source_generation_id=None,
                  authority_native_v2=False, native_owner_parent=None, native_parent_scope=None,
-                 manual_native_v1=False, manual_source_owner=None, frozen_cohort=None, cohort_source_owner=None):
+                 manual_native_v1=False, manual_source_owner=None, frozen_cohort=None, cohort_source_owner=None,
+                 batch_local_dependencies=False):
+        if batch_local_dependencies and frozen_cohort is None:
+            raise ValueError('partial_batch_requires_frozen_cohort')
+        self.batch_local_dependencies = batch_local_dependencies
+        self.unissued = {}
+        self._failed_batches = set()
         if frozen_cohort is not None:
             from app.services.model_execution_plan import FrozenCohort
             if type(frozen_cohort) is not FrozenCohort:
@@ -218,13 +224,28 @@ class ProductionMonitoringSession:
         rows = [row for row in domain.owner._batch_topology(cohort=self._frozen_cohort) if row["market"] == self.market]
         if sorted(t for row in rows for t in row["subjects"]) != sorted(self.cohort_subjects()):
             raise ValueError("production_canonical_batch_topology_drift")
+        if self.batch_local_dependencies:
+            rows = [r for r in rows if not set(r['subjects'])&set(self.unissued)]
         return deepcopy(rows)
+
+    def mark_batch_timeout(self, stage, request, omissions):
+        key = (stage,request['batch'])
+        if (not self.batch_local_dependencies or stage not in ('CORE','A','B')
+                or request not in self.captured.get(stage,()) or key in self._accepted_batches
+                or key in self._failed_batches or set(omissions)!=set(request['subjects'])
+                or set(omissions)&set(self.unissued)
+                or any(row['status']!=stage+'_UNISSUED_TIMEOUT' or row['attempts']!=2
+                       or row['request_sha256']!=request['payload_sha256'] for row in omissions.values())):
+            raise ValueError('production_partial_batch_scope')
+        self._failed_batches.add(key)
+        self.unissued.update(deepcopy(omissions))
 
     def cohort_subjects(self):
         return UNIVERSE[self.market] if self._frozen_cohort is None else self._frozen_cohort.market_subjects.get(self.market, ())
 
     def ordinary_subjects(self):
-        return tuple(t for t in self.cohort_subjects() if t not in self.limitation_subjects)
+        return tuple(t for t in self.cohort_subjects()
+                     if t not in self.limitation_subjects and t not in self.unissued)
 
     def decision_batch_topology(self):
         rows = self.batch_topology()
@@ -235,7 +256,9 @@ class ProductionMonitoringSession:
     def limitation_decision(self, ticker):
         self._verify_native_source()
         limited = self.limitation_subjects
-        if (ticker not in limited or set(self.limits["core"]) != limited or set(self.limits["pass-a"]) != limited
+        active = limited-set(self.unissued)
+        if (ticker not in active or set(self.limits["core"])-set(self.unissued) != active
+                or set(self.limits["pass-a"])-set(self.unissued) != active
                 or self.limits["pass-b"] or any(limited & set(x) for x in (self.cores, self.arows, self.brows))):
             raise ValueError("production_limitation_stage_coverage")
         return deepcopy(self.limits["pass-a"][ticker])
@@ -320,7 +343,8 @@ class ProductionMonitoringSession:
         if stage not in STAGE_NAMES or stage in self.captured:
             raise ValueError("production_request_rebuild_or_unknown_stage")
         previous = list(STAGE_NAMES)[:list(STAGE_NAMES).index(stage)]
-        if any(name not in self.captured or any((name, r["batch"]) not in self._accepted_batches for r in self.captured[name]) for name in previous):
+        settled = self._accepted_batches | self._failed_batches
+        if any(name not in self.captured or any((name, r["batch"]) not in settled for r in self.captured[name]) for name in previous):
             raise ValueError("production_upstream_stage_incomplete")
         if stage == "MARKET":
             ctx = self.projected[self.market]["context"]
@@ -355,7 +379,8 @@ class ProductionMonitoringSession:
         self._verify_native_source()
         if self._manual_source_owner is not None and stage != "MARKET":
             raise ValueError("MANUAL_NATIVE_ECONOMIC_CONSUMER_CONTRACT_PENDING")
-        if request not in self.captured.get(stage, ()) or (stage, request["batch"]) in self._accepted_batches:
+        if (request not in self.captured.get(stage, ())
+                or (stage,request["batch"]) in self._accepted_batches|self._failed_batches):
             raise ValueError("production_response_scope_or_duplicate")
         destination = Path(request["directory"])
         schema = json.loads((destination / "internal-semantic-schema.json").read_bytes())

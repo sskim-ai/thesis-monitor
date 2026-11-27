@@ -25,6 +25,29 @@ from app.services.production_model_profile import sol_high
 from app.services import new_buyer_request_owner as canonical_b2
 
 
+async def execute_stage_tail(items, issue, *, budget):
+    """Serial first pass, then one FIFO retry of only proved timeouts.
+    Items are (frozen slot id, request/call descriptor); no persistence or resume.
+    """
+    rows, pending = {}, []
+    for slot,item in items:
+        try:
+            rows[slot] = await issue(item,False)
+        except ModelTransportError as exc:
+            if (getattr(exc,'slot_id',None)!=slot or not getattr(exc,'confirmed_timeout',None)
+                    or getattr(exc,'deferred_retry_pending',False) is not True):
+                raise
+            pending.append((slot,item))
+    for slot,item in pending:
+        try:
+            rows[slot] = await issue(item,True)
+        except ModelTransportError as exc:
+            if (getattr(exc,'slot_id',None)!=slot or not getattr(exc,'confirmed_timeout',None)
+                    or slot not in budget.exhausted):
+                raise
+    return rows
+
+
 class SourceBackend(Protocol):
     async def policy(self, market, session, run_id) -> ProductionSnapshotPolicy: ...
     async def collect(self, request, directory: Path) -> ProductionCollection: ...
@@ -71,7 +94,7 @@ class ProductionRuntimeBridgeV1:
             raise ValueError('production_source_envelope_required')
         return result
 
-    async def _invoke(self, session, stage, request, directory):
+    async def _invoke(self, session, stage, request, directory, *, deferred_retry=False):
         reject_test_only_production(request)
         if self._native_owner_parents:
             raise ValueError('offline_native_parent_requires_explicit_native_response_path')
@@ -83,13 +106,23 @@ class ProductionRuntimeBridgeV1:
         if profile:
             if dynamic:
                 session.verify_model_build(stage, request)
-                scope['slot_scope'] = budget.bind_stage(stage, request)
+                if deferred_retry:
+                    matches = [row for row in budget.bound.values()
+                               if row['stage']==stage and row['batch_id']==request['batch']
+                               and row['subjects']==list(request['subjects'])]
+                    if (len(matches)!=1 or matches[0]['payload_sha256']!=digest(payload)
+                            or matches[0]['build_receipt_sha256']!=digest(request)):
+                        raise ValueError('production_deferred_request_drift')
+                    scope['slot_scope'] = matches[0]
+                    scope['deferred_retry'] = True
+                else:
+                    scope['slot_scope'] = budget.bind_stage(stage, request)
             else:
                 subjects = request['subjects']
                 if stage != 'MARKET' and len(subjects) != 1:
                     raise ValueError('sol_high_multi_subject_batch_outside_four_panel_plan')
                 scope['panel'] = session.market.upper() + '_MARKET' if stage == 'MARKET' else subjects[0]
-        for index in range(1, 2 if profile else 4):
+        for index in ((2,) if deferred_retry else range(1, 2 if profile else 4)):
             transport_failure = None
             path = directory / ('attempt-'+str(index))
             receipt = dict(request_sha256=digest(payload), classification='INTENT', ordinal=index)
@@ -153,7 +186,8 @@ class ProductionRuntimeBridgeV1:
             cohort = child.plan.cohort
             session = ProductionMonitoringSession(directory/'canonical', market=child.market,
                 generation_id=cohort.run_id, source=expected['collection']['monitoring_input'],
-                source_generation_id=cohort.source_generation, frozen_cohort=cohort, cohort_source_owner=child.owner)
+                source_generation_id=cohort.source_generation, frozen_cohort=cohort, cohort_source_owner=child.owner,
+                batch_local_dependencies=child.plan.batch_local_dependencies)
             self._restore_upstream(session, request)
             return session, SimpleNamespace(production_envelope=PreparedResearchEnvelope.model_validate(
                 expected['collection']['production_envelope']))
@@ -190,9 +224,41 @@ class ProductionRuntimeBridgeV1:
         for stage in STAGES[:STAGES.index(request['stage'])]:
             if stage not in {'MARKET', 'CORE', 'A', 'B'}:
                 continue
-            rows = request['inputs'][stage]['output']['rows']
+            upstream = request['inputs'][stage]['output']
+            rows = upstream['rows']
             with artifact_role('scratch'):
                 captured = session.build(stage)
+            if session.batch_local_dependencies:
+                from app.services.model_timeout_retry import timeout_omissions
+                budget = self.model.call_budget
+                omitted = {t:r for t,r in timeout_omissions(budget.plan,budget.exhausted,budget.bound,budget.attempts).items()
+                           if r['status']==stage+'_UNISSUED_TIMEOUT'}
+                if upstream.get('unissued',{})!=omitted:
+                    raise ValueError('production_upstream_timeout_binding')
+                by_batch = {row['batch']:row for row in rows}
+                if len(by_batch)!=len(rows):
+                    raise ValueError('production_upstream_batch_duplicate')
+                failures = []
+                for item in captured:
+                    matches = [s for s in budget.slots if s.stage==stage
+                               and s.batch_id==(None if stage=='MARKET' else item['batch'])
+                               and s.subjects==tuple(item['subjects'])]
+                    if len(matches)!=1:
+                        raise ValueError('production_upstream_slot_scope')
+                    sid = matches[0].slot_id
+                    if sid in budget.exhausted:
+                        failures.append((item,{t:omitted[t] for t in item['subjects']}))
+                        continue
+                    row = by_batch.pop(item['batch'])
+                    if (row['subjects']!=list(item['subjects']) or row['payload_sha256']!=digest(item['payload'])
+                            or row['raw_sha256']!=budget.accepted.get(sid)):
+                        raise ValueError('production_upstream_payload_drift')
+                    session.accept(stage,item,row['output'])
+                if by_batch or {t for _,om in failures for t in om}!=set(omitted):
+                    raise ValueError('production_upstream_batch_coverage')
+                for item,om in failures:
+                    session.mark_batch_timeout(stage,item,om)
+                continue
             if len(rows) != len(captured):
                 raise ValueError('production_upstream_batch_coverage')
             for item, row in zip(captured, rows, strict=True):
@@ -217,27 +283,53 @@ class ProductionRuntimeBridgeV1:
         validate_stage_v2(probe, request)
         session, collection = self._session(request, directory)
         stage = request['stage']
+        from app.services.model_timeout_retry import stage_tail_retry, timeout_omissions, verify_tail_coverage
+        budget = getattr(self.model,'call_budget',None)
+        tail = stage_tail_retry(getattr(budget,'b2_retry_policy',None))
         if stage in {'MARKET', 'CORE', 'A', 'B'}:
             from app.services.research_artifact_budget import artifact_role
             rows = []
             with artifact_role('scratch'):
                 items = session.build(stage)
-            for item in items:
-                budget = getattr(self.model, 'call_budget', None)
-                if stage == 'MARKET' and getattr(budget, 'market_origin', None) is not None:
-                    rows.append(budget.inherit_market(session=session, item=item, snapshot=request['snapshot']))
-                else:
-                    rows.append(await self._invoke(session, stage, item, directory/('model-'+str(item['batch']))))
+            unissued = {}
+            if tail and stage!='MARKET':
+                scheduled = []
+                for item in items:
+                    matches = [s for s in budget.slots if s.stage==stage and s.batch_id==item['batch']
+                               and s.subjects==tuple(item['subjects'])]
+                    if len(matches)!=1:
+                        raise ValueError('production_stage_tail_slot_scope')
+                    scheduled.append((matches[0].slot_id,item))
+                async def issue(item,retry):
+                    return await self._invoke(session,stage,item,directory/('model-'+str(item['batch'])),
+                        deferred_retry=retry)
+                accepted = await execute_stage_tail(scheduled,issue,budget=budget)
+                rows = [accepted[s] for s,_ in scheduled if s in accepted]
+                unissued = {t:r for t,r in timeout_omissions(budget.plan,budget.exhausted,budget.bound,budget.attempts).items()
+                            if r['status']==stage+'_UNISSUED_TIMEOUT'}
+                for slot,item in scheduled:
+                    if slot in budget.exhausted:
+                        session.mark_batch_timeout(stage,item,{t:unissued[t] for t in item['subjects']})
+            else:
+                for item in items:
+                    if stage == 'MARKET' and getattr(budget, 'market_origin', None) is not None:
+                        rows.append(budget.inherit_market(session=session, item=item, snapshot=request['snapshot']))
+                    else:
+                        rows.append(await self._invoke(session, stage, item, directory/('model-'+str(item['batch']))))
             output = dict(rows=rows, generation_id=session.gen)
+            if unissued:
+                output['unissued'] = unissued
         elif stage == 'B2':
             rows, unissued = {}, {}
-            limited = session.limitation_subjects
+            upstream_omitted = session.unissued if tail else {}
+            limited = session.limitation_subjects-set(upstream_omitted)
             ordinary = session.ordinary_subjects()
-            if set(ordinary) | limited != set(collection.production_envelope.subjects) or (
+            if set(ordinary) | limited | set(upstream_omitted) != set(collection.production_envelope.subjects) or (
                     limited and self.execution_profile is None):
                 raise ValueError('production_b2_verified_cohort_partition_required')
             decisions = {ticker:digest(session.limitation_decision(ticker)) for ticker in sorted(limited)}
-            for ticker in ordinary:
+            calls = {}
+            def prepare(ticker):
                 item = session.b2_request(ticker)
                 reject_test_only_production(item)
                 binding = dict(generation_id=session.gen, source_generation_id=session.source_gen,
@@ -253,24 +345,46 @@ class ProductionRuntimeBridgeV1:
                         execution_generation_id=session.gen, source_generation_id=session.source_gen,
                         payload=payload, payload_sha256=auth.request_sha256,
                         original_authorization_sha256=digest(auth.model_dump(mode='json'))))
-                try:
-                    result = await execute_b2(item, auth, current_binding=binding, transport=self.model, directory=directory/ticker)
-                except ModelTransportError as exc:
-                    if (b2_scope is None or not getattr(budget,'retry_enabled',False)
-                            or not getattr(exc,'confirmed_timeout',None) or exc.slot_id != b2_scope['slot_id']
-                            or exc.slot_id not in budget.exhausted):
-                        raise
-                    omission = dict(status='B2_UNISSUED_TIMEOUT', slot_id=exc.slot_id,
-                        request_sha256=auth.request_sha256, attempts=len(budget.attempts[exc.slot_id]))
-                    durable_json(directory/ticker/'unissued.json',omission,exclusive=True)
-                    unissued[ticker] = omission
-                    continue
+                return item,auth,binding,b2_scope
+            async def issue(ticker,retry=False):
+                if not retry:
+                    calls[ticker] = prepare(ticker)
+                item,auth,binding,b2_scope = calls[ticker]
+                result = await execute_b2(item,auth,current_binding=binding,transport=self.model,directory=directory/ticker,
+                    **({'deferred_retry':True} if retry else {}))
                 if b2_scope is not None:
-                    budget.record_acceptance(b2_scope['slot_id'], payload_sha256=auth.request_sha256,
+                    budget.record_acceptance(b2_scope['slot_id'],payload_sha256=auth.request_sha256,
                                              output_sha256=result['attempts'][-1]['raw_sha256'])
-                rows[ticker] = dict(authorization=auth.model_dump(mode='json'), result=result)
+                return dict(authorization=auth.model_dump(mode='json'),result=result)
+            if tail:
+                scheduled = [(s.slot_id,s.subjects[0]) for s in budget.slots
+                             if s.stage=='B2' and s.subjects[0] in ordinary]
+                if {t for _,t in scheduled}!=set(ordinary):
+                    raise ValueError('production_stage_tail_b2_scope')
+                accepted = await execute_stage_tail(scheduled,issue,budget=budget)
+                rows = {t:accepted[s] for s,t in scheduled if s in accepted}
+                unissued = timeout_omissions(budget.plan,budget.exhausted,budget.bound,budget.attempts)
+                if {t:r for t,r in unissued.items() if r['status']!='B2_UNISSUED_TIMEOUT'}!=upstream_omitted:
+                    raise ValueError('production_stage_tail_upstream_omission_drift')
+                for ticker,omission in unissued.items():
+                    if omission['status']=='B2_UNISSUED_TIMEOUT':
+                        durable_json(directory/ticker/'unissued.json',omission,exclusive=True)
+            else:
+                for ticker in ordinary:
+                    try:
+                        rows[ticker] = await issue(ticker)
+                    except ModelTransportError as exc:
+                        item,auth,binding,b2_scope = calls[ticker]
+                        if (b2_scope is None or not getattr(budget,'retry_enabled',False)
+                                or not getattr(exc,'confirmed_timeout',None) or exc.slot_id != b2_scope['slot_id']
+                                or exc.slot_id not in budget.exhausted):
+                            raise
+                        omission = dict(status='B2_UNISSUED_TIMEOUT', slot_id=exc.slot_id,
+                            request_sha256=auth.request_sha256, attempts=len(budget.attempts[exc.slot_id]))
+                        durable_json(directory/ticker/'unissued.json',omission,exclusive=True)
+                        unissued[ticker] = omission
             output = dict(rows=rows, generation_id=session.gen)
-            if limited:
+            if session.limitation_subjects:
                 output['limitation_decisions'] = decisions
             if unissued:
                 output['unissued'] = unissued
@@ -280,13 +394,17 @@ class ProductionRuntimeBridgeV1:
             subjects = collection.production_envelope.subjects
             budget = getattr(self.model,'call_budget',None)
             omitted = b2.get('unissued',{})
-            limits = session.limitation_subjects
+            limits = session.limitation_subjects-set(omitted) if tail else session.limitation_subjects
             decisions = {ticker:digest(session.limitation_decision(ticker)) for ticker in sorted(limits)}
             if b2.get('limitation_decisions',{}) != decisions or (limits and stage == 'DELIVER'):
                 raise ValueError('production_limitation_no_send_decision_binding')
             if omitted and (stage not in {'VALIDATE','RENDER'} or not getattr(budget,'retry_enabled',False)):
                 raise ValueError('production_partial_b2_no_send_required')
-            if omitted:
+            if tail:
+                verify_tail_coverage(b2,budget.plan,exhausted=budget.exhausted,bound=budget.bound,attempts=budget.attempts)
+                if {t:r for t,r in omitted.items() if r['status']!='B2_UNISSUED_TIMEOUT'}!=session.unissued:
+                    raise ValueError('production_stage_tail_restored_omission_drift')
+            elif omitted:
                 from app.services.model_timeout_retry import verify_b2_coverage
 
                 verify_b2_coverage(b2, subjects=tuple(t for t in subjects if t not in limits),
@@ -320,7 +438,7 @@ class ProductionRuntimeBridgeV1:
                         message['NO_SEND'] = True
                 output = dict(messages=messages, generation_id=session.gen, finality_claim='NOT_CLAIMED') if stage == 'RENDER' else dict(
                     status='PASS', message_count=len(messages), content_sha256=digest(messages), generation_id=session.gen)
-                if limits:
+                if session.limitation_subjects:
                     from app.services.model_execution_plan import verify_mixed_render
 
                     receipts = {m['message_id']: dict(plan_sha256=m['plan_sha256'], content_sha256=digest(m['text']),

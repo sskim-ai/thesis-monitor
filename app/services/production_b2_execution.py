@@ -127,16 +127,32 @@ class ModelTransport(Protocol):
     async def request(self, payload: dict, *, model: str, effort: str, timeout: int) -> bytes: ...
 
 
-async def execute_b2(request, authorization, *, current_binding, transport: ModelTransport, directory: Path):
+async def execute_b2(request, authorization, *, current_binding, transport: ModelTransport, directory: Path,
+                     deferred_retry=False):
     verify_authorization(request, authorization, **current_binding)
     frozen = deepcopy(request)
     payload = canonical.provider_payload(frozen, expected_request_sha256=authorization.request_sha256)
-    durable_json(directory / "authorization.json", authorization.model_dump(mode="json"), exclusive=True)
     from app.services.research_artifact_budget import artifact_role
-    with artifact_role('scratch'):
-        durable_json(directory / "request.json", frozen, exclusive=True)
-    attempts = []
-    for ordinal in range(1, authorization.transport_form_retries + 2):
+    if deferred_retry:
+        if (type(authorization) is not ProductionB2ExecutionAuthorizationV2
+                or json.loads((directory/'authorization.json').read_bytes())!=authorization.model_dump(mode='json')
+                or json.loads((directory/'request.json').read_bytes())!=frozen
+                or (directory/'accepted.json').exists()):
+            raise ValueError('production_b2_deferred_original_request_drift')
+        first = json.loads((directory/'attempt-1'/'receipt.json').read_bytes())
+        if (first.get('ordinal')!=1 or first.get('classification')!='TRANSPORT_FAILURE'
+                or first.get('request_sha256')!=authorization.request_sha256
+                or first.get('authorization_sha256')!=digest(authorization.model_dump(mode='json'))):
+            raise ValueError('production_b2_deferred_original_timeout_gap')
+        attempts = [first]
+        ordinals = (2,)
+    else:
+        durable_json(directory / "authorization.json", authorization.model_dump(mode="json"), exclusive=True)
+        with artifact_role('scratch'):
+            durable_json(directory / "request.json", frozen, exclusive=True)
+        attempts = []
+        ordinals = range(1, authorization.transport_form_retries + 2)
+    for ordinal in ordinals:
         verify_authorization(frozen, authorization, **current_binding)
         if request != frozen:
             raise ValueError("production_b2_request_mutation")
@@ -149,6 +165,8 @@ async def execute_b2(request, authorization, *, current_binding, transport: Mode
         try:
             from app.services.research_no_send_run import current_stage_timer
             scope = dict(stage='B2', panel=authorization.ticker) if type(authorization) is ProductionB2ExecutionAuthorizationV2 else {}
+            if deferred_retry:
+                scope['deferred_retry'] = True
             call = transport.request(deepcopy(payload), model=authorization.model,
                 effort=authorization.effort, timeout=authorization.timeout_seconds, **scope)
             raw = await call if current_stage_timer() is not None else await asyncio.wait_for(call, authorization.timeout_seconds)

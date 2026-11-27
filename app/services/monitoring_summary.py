@@ -99,8 +99,12 @@ def _render(market, completed, cutoff, rows):
         lines.extend(('',title))
         for row in selected:
             if row['status']!='COMPLETE':
-                lines.append(row['ticker']+' — '+('B2 타임아웃·분석 미완료' if row['status']=='B2_UNISSUED_TIMEOUT'
-                             else '판단 자료 부족(OBSERVE) · '+row.get('price','미확보')))
+                status = row['status']
+                if status in {'CORE_UNISSUED_TIMEOUT','A_UNISSUED_TIMEOUT','B_UNISSUED_TIMEOUT','B2_UNISSUED_TIMEOUT'}:
+                    label = status.split('_',1)[0]+' 타임아웃·분석 미완료'
+                else:
+                    label = '판단 자료 부족(OBSERVE) · '+row.get('price','미확보')
+                lines.append(row['ticker']+' — '+label)
                 continue
             lines.extend((f"{row['ticker']} {row['price']} | {row['overall']} · 보유 {row['holder']} · 기술 {row['technical']} · RR {row['rr']}",
                 f"지지 {row['support']} | RR2 {row['rr2']} | 경제 {row['economic_preferred']}",
@@ -118,9 +122,10 @@ def summary_message(*, market,generation,subjects,messages,omitted,completed,cut
     rows=[]
     for ticker in subjects:
         if ticker in omitted:
-            if omitted[ticker]['status']!='B2_UNISSUED_TIMEOUT':
+            status = omitted[ticker]['status']
+            if status not in {'CORE_UNISSUED_TIMEOUT','A_UNISSUED_TIMEOUT','B_UNISSUED_TIMEOUT','B2_UNISSUED_TIMEOUT'}:
                 raise ValueError('summary_unknown_omission')
-            rows.append(dict(ticker=ticker,status='B2_UNISSUED_TIMEOUT',omission_sha256=digest(omitted[ticker])))
+            rows.append(dict(ticker=ticker,status=status,omission_sha256=digest(omitted[ticker])))
         else:
             m=by_id[ticker]
             row=m['summary_row']

@@ -17,7 +17,7 @@ def all_stage_retry(binding):
 
 def stage_tail_retry(binding):
     """New canonical plans use the existing budget with subject-local dependencies."""
-    return isinstance(binding,dict) and all_stage_retry(binding) and 'slot_dependencies' in binding
+    return isinstance(binding,dict) and binding.get('policy')==ALL_MODEL_STAGE_ONE_RETRY_V1 and 'slot_dependencies' in binding
 
 
 def dependency_skips(binding, exhausted):
@@ -299,8 +299,13 @@ def verify_render_partition(*, messages, subjects, slots, b2, journal, accepted_
             raise ValueError('research_timeout_plan_scope_drift')
         limits = set(plan.cohort.limitation_subjects)
         ordinary = tuple(t for t in subjects if t not in limits)
-    verify_b2_coverage(b2, subjects=ordinary, slots=slots, exhausted=journal['exhausted'],
-        bound=journal['bound'], attempts=journal['attempts'])
+    skipped = set()
+    if plan is not None and plan.batch_local_dependencies:
+        verify_tail_coverage(b2,plan,exhausted=journal['exhausted'],bound=journal['bound'],attempts=journal['attempts'])
+        skipped = dependency_skips(b2_retry_binding(plan,ALL_MODEL_STAGE_ONE_RETRY_V1),journal['exhausted'])
+    else:
+        verify_b2_coverage(b2, subjects=ordinary, slots=slots, exhausted=journal['exhausted'],
+            bound=journal['bound'], attempts=journal['attempts'])
     market=next(iter(plan.cohort.market_subjects)) if plan is not None else 'us'
     expected_ids = {'MARKET_'+market.upper(),*subjects}
     if include_summary:
@@ -313,7 +318,8 @@ def verify_render_partition(*, messages, subjects, slots, b2, journal, accepted_
         if any(m.get('telegram_parts') != telegram_render_parts(m['text']) for m in messages):
             raise ValueError('research_telegram_partition_drift')
     if (journal['stopped'] or journal['inherited']
-            or set(journal['accepted']) != {s.slot_id for s in slots}-journal['exhausted']
+            or set(journal['accepted']) != {s.slot_id for s in slots}-journal['exhausted']-skipped
+            or set(journal['used'])&skipped
             or journal['used'] != set(journal['accepted']) | journal['exhausted']
             or sorted(m['message_id'] for m in messages) != sorted(expected_ids-set(omitted))
             or digest(messages) != accepted_content_sha256
@@ -405,7 +411,14 @@ def read_no_send_partition(cycle, *, plan, invocation_journal):
                 or validate_result(result['output'],json.loads(plain_path(folder/'request.json').read_bytes()),
                     expected_request_sha256=result['request_sha256'])['status'] != 'PASS'):
             raise ValueError('research_timeout_cold_b2_artifact_drift')
+    if plan.batch_local_dependencies:
+        for stage in ('CORE','A','B'):
+            expected_omissions = {t:r for t,r in omitted.items() if r['status']==stage+'_UNISSUED_TIMEOUT'}
+            if outputs[stage]['output'].get('unissued',{})!=expected_omissions:
+                raise ValueError('research_timeout_cold_upstream_omission_drift')
     for ticker, omission in omitted.items():
+        if plan.batch_local_dependencies and omission['status']!='B2_UNISSUED_TIMEOUT':
+            continue
         folder = plain_path(cycle/'b2'/ticker)
         if ((folder/'accepted.json').exists() or (folder/'accepted.json').is_symlink()
                 or json.loads(plain_path(folder/'unissued.json').read_bytes()) != omission):
