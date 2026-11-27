@@ -54,6 +54,15 @@ class EventRelevanceService:
         raw_event: RawEvent,
         target: SecurityMaster,
     ) -> RelevanceVerdict:
+        def other_securities():
+            yield from session.exec(
+                select(SecurityMaster).where(SecurityMaster.ticker != target.ticker)
+            ).all()
+
+        return self.validate_against(raw_event, target, other_securities())
+
+    def validate_against(self, raw_event, target, other_securities) -> RelevanceVerdict:
+        """Apply the same relevance checks to an already bound security universe."""
         if raw_event.provider in OFFICIAL_PROVIDERS:
             return RelevanceVerdict(
                 True,
@@ -95,9 +104,9 @@ class EventRelevanceService:
                 "material_action_headline_does_not_name_target_company",
             )
         other_hits: list[tuple[SecurityMaster, str, int]] = []
-        for security in session.exec(
-            select(SecurityMaster).where(SecurityMaster.ticker != target.ticker)
-        ).all():
+        for security in other_securities:
+            if security.ticker == target.ticker:
+                continue
             for alias in self.security_service.aliases(security):
                 if _contains(title, alias):
                     other_hits.append((security, alias, title.find(alias)))

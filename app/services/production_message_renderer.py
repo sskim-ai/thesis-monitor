@@ -23,7 +23,7 @@ def source_only_message(owner, handle):
 
 def market_message(session, *, sector_taxonomy_version=None, macro_display_capture=None,
                    fx_observations=(),fx_source_policy=None,fx_cutoff=None,ecos_fx_body=None,ecos_fx_prior=(),
-                   allow_partition=False):
+                   allow_partition=False, include_preopen=False):
     if macro_display_capture is not None:
         raise ValueError('sealed_macro_capture_offline_source_only_not_current_owner')
     data = session.projected[session.market]
@@ -46,6 +46,12 @@ def market_message(session, *, sector_taxonomy_version=None, macro_display_captu
         numeric_catalog=context['numeric_catalog'], display_plan=display)
     message = dict(message_id='MARKET_'+session.market.upper(), generation_id=session.gen,
         text=render_daily_digest(None, accepted_market=plan), plan_sha256=digest(plan.model_dump(mode='json')))
+    if include_preopen:
+        from app.services.preopen_sources import saved_market_rows
+
+        saved = saved_market_rows(display, source)
+        if saved:
+            message['preopen_market'] = saved
     if session.market == 'us':
         from app.services.selected_news_rate_limit import disclose
         subjects=set(session.fresh_stocks)
@@ -100,7 +106,11 @@ def limitation_message(session, ticker, *, include_summary=False):
         limitation_decision_sha256=digest(decision))
     if include_summary:
         from app.services.detailed_stock_message_service import reference_price_display
+        from app.services.monitoring_summary import preopen_source_context
+
         message['summary_row'] = dict(ticker=ticker, status='UNKNOWN_LIMIT',
             price=reference_price_display(plan.valuation.price,plan.valuation.currency) if plan.valuation.price is not None else '미확보',
-            plan_sha256=plan.acceptance_sha256)
+            plan_sha256=plan.acceptance_sha256,
+            preopen=dict(version=1, market=session.market, security_id=plan.valuation.security_id,
+                         **preopen_source_context(source)))
     return disclose(message, [source.get('event_view', {})], expected_count=1,allow_partition=include_summary)

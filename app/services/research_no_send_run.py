@@ -249,12 +249,13 @@ class PreparedResearchBridge(ProductionRuntimeBridgeV1):
     def _render_market(self, session):
         from app.services.production_message_renderer import market_message
         if self._retained_kr_ecos_body is None:
-            return market_message(session,allow_partition=True) if self.child.include_summary else super()._render_market(session)
+            return (market_message(session, allow_partition=True, include_preopen=True)
+                    if self.child.include_summary else super()._render_market(session))
         from app.services.production_source_context import POLICY
 
         return market_message(session,sector_taxonomy_version='sector-universe-user-confirmed-v2',
             ecos_fx_body=self._retained_kr_ecos_body,fx_source_policy=POLICY,
-            allow_partition=self.child.include_summary)
+            allow_partition=self.child.include_summary, include_preopen=self.child.include_summary)
 
     def snapshot(self):
         self.child.verify()
@@ -462,6 +463,8 @@ async def _run(bridge, path, *, local_output_rejection, artifacts, campaign_end=
                 state.update(unissued=omitted, expected_message_count=len(bridge.child_binding['message_ids']))
             state['model_acceptances'] = calls.state()
             state['storage_inventory'] = artifacts.measure()
+            if include_summary:
+                state['completed_at'] = datetime.now(timezone.utc).isoformat()
         except (Exception, asyncio.CancelledError) as exc:
             from app.services.unified_market_run import UnifiedMarketRun
             state.update(status='FAILED_NO_SEND',error_chain=UnifiedMarketRun._error(exc),

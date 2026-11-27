@@ -31,8 +31,8 @@ class FredProvider:
 
     def __init__(self, transport: httpx.AsyncBaseTransport | None = None, *,
                  clock: Callable[[], datetime] | None = None,
-                 series: tuple[str, ...] | None = None) -> None:
-        self.settings = get_settings()
+                 series: tuple[str, ...] | None = None, settings=None) -> None:
+        self.settings = settings if settings is not None else get_settings()
         self.transport = transport
         self.clock = clock or (lambda: datetime.now(timezone.utc))
         self.series = tuple(FRED_SERIES) if series is None else tuple(series)

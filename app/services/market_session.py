@@ -130,6 +130,21 @@ def is_exchange_session_date(calendar_name: str, value: date) -> bool:
             return False
 
 
+def exchange_session_open(calendar_name: str, value: date) -> datetime | None:
+    """Return the scheduled opening instant, including special session hours."""
+    try:
+        calendar = _exchange_calendar(calendar_name)
+        return calendar.session_open(calendar.date_to_session(value)).to_pydatetime()
+    except (ValueError, IndexError, TypeError):
+        try:
+            calendar = exchange_calendar.get_calendar(
+                calendar_name, start=value - timedelta(days=370), end=value + timedelta(days=370),
+            )
+            return calendar.session_open(calendar.date_to_session(value)).to_pydatetime()
+        except (ValueError, IndexError, TypeError):
+            return None
+
+
 def us_market_session(as_of: datetime | None = None) -> MarketSessionState:
     current = as_of or datetime.now(timezone.utc)
     if current.tzinfo is None:

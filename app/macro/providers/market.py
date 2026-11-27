@@ -102,15 +102,7 @@ class OhlcvMarketProvider:
                     )
                     response = await get(
                         "/ohlcv",
-                        params={
-                            "symbol": symbol,
-                            "market": "US",
-                            "periods": "daily",
-                            "count": 2,
-                            "include_indicators": "false",
-                            "indicator_limit": 0,
-                            "adjusted": "true",
-                        },
+                        params=completed_market_read_params(symbol),
                     )
                     response.raise_for_status()
                     observation = normalize_market_observation(response.json(), symbol=symbol,
@@ -132,3 +124,10 @@ class OhlcvMarketProvider:
                 except (httpx.HTTPError, KeyError, TypeError, ValueError) as exc:
                     result.warnings.append(f"{symbol}: {type(exc).__name__}")
         return result
+
+
+def completed_market_read_params(symbol):
+    if symbol not in MARKET_SYMBOLS:
+        raise ValueError('unregistered_market_series')
+    return dict(symbol=symbol, market='US', periods='daily', count=2,
+                include_indicators='false', indicator_limit=0, adjusted='true')

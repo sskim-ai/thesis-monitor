@@ -363,11 +363,40 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
             evidence_sha256=digest(r.model_dump(mode='json')), input_hashes=input_hashes)
             for r in evidence.evidence},
         'quality_view': quality, 'valuation_view': stock['current_valuation_view'],
+        'preopen_source': _preopen_source(fp, fin['acquisition'], fin['receipts']),
         'observed_business_cardinality': result['observed_business_cardinality'] + len(context_facts) + len((event or {}).get('facts', [])),
         **(dict(event_view=event, event_fact_refs=['canonical:' + f['fact_id'] for f in event['facts']]) if event else {}),
         'context_fact_refs': ['canonical:' + f['fact_id'] for f in context_facts],
         'input_hashes': input_hashes,
         'fresh_run_id': plan.run_id, 'complete_source_adapter_qualified': False}
+
+
+def _preopen_source(financial_plan, acquisition, receipts):
+    """Project the verified identity and discovery receipts, independently of model use."""
+    security = financial_plan['security']
+    fields = ('ticker', 'canonical_security_id', 'canonical_company_id', 'exchange', 'country',
+        'company_name', 'legal_name', 'cik', 'corp_code', 'security_type', 'share_class',
+        'aliases', 'search_aliases', 'known_products', 'known_brands', 'known_subsidiaries',
+        'identity_provider', 'identity_quality')
+    value = dict(security={field: security[field] for field in fields if field in security},
+                 event_watermarks={})
+    provider = financial_plan['provider']
+    if provider not in {'sec_edgar', 'opendart'}:
+        return value
+    discovery = [r for r in receipts if r.get('stage') == 'discovery'
+                 and not r.get('failure_class') and 'retained_sec_origin' not in r]
+    if discovery:
+        identifier = 'accessionNumber' if provider == 'sec_edgar' else 'receipt_no'
+        ids = sorted({row[identifier] for row in acquisition.get('selected_filings', ())
+                      if row.get(identifier)})
+        value['event_watermarks'][provider] = dict(status='CHECKED', ids=ids,
+            requested_at=min((r['started_at'] for r in discovery), key=datetime.fromisoformat),
+            received_at=max((r['finished_at'] for r in discovery), key=datetime.fromisoformat),
+            source_query_cutoff=financial_plan['cutoff'],
+            lookback_start=financial_plan.get('begin'),
+            coverage='RECENT_SUBMISSIONS' if provider == 'sec_edgar' else 'PERIODIC_FINANCIAL_FILINGS',
+            source_receipt_sha256=digest(discovery))
+    return value
 
 
 def _current_context_facts(projection, receipt):

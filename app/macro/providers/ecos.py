@@ -28,8 +28,8 @@ class EcosProvider:
     name = "ecos"
 
     def __init__(self, transport: httpx.AsyncBaseTransport | None = None, *,
-                 clock: Callable[[], datetime] | None = None, daily_fx=()) -> None:
-        self.settings = get_settings()
+                 clock: Callable[[], datetime] | None = None, daily_fx=(), settings=None) -> None:
+        self.settings = settings if settings is not None else get_settings()
         self.transport = transport
         self.clock = clock or (lambda: datetime.now(timezone.utc))
         self.daily_fx = tuple(daily_fx)

@@ -10,6 +10,110 @@ from zoneinfo import ZoneInfo
 from app.services.unified_snapshot_contract import digest
 
 
+def preopen_source_context(source):
+    """Keep only actual checked scopes and existing event IDs; unknown stays visible."""
+    owned = source.get('preopen_source', {})
+    watermarks = dict(owned.get('event_watermarks', {}))
+    events = source.get('event_view', {})
+    receipt, binding = events.get('receipt', {}), events.get('binding', {})
+    provider = binding.get('provider')
+    if provider:
+        checked = (receipt.get('request_started_at') is not None and receipt.get('received_at') is not None
+                   and binding.get('denial') in (None, 'no_qualified_business_event'))
+        watermarks[provider] = dict(status='CHECKED' if checked else 'UNAVAILABLE',
+            acquisition_class=receipt.get('acquisition_class'),
+            coverage='BOUNDED_NEWS_SEARCH', requested_at=receipt.get('request_started_at'),
+            received_at=receipt.get('received_at'), source_query_cutoff=receipt.get('source_query_cutoff'),
+            ids=sorted({row['event_fingerprint'] for row in binding.get('selected', ())
+                        if row.get('status') == 'PASS' and row.get('event_fingerprint')}),
+            source_receipt_sha256=receipt.get('source_receipt_sha256'))
+    return dict(security=owned.get('security'), event_watermarks=watermarks)
+
+
+def _preopen_stock(packet, plan, base, context, output, assessment, session, selected,
+                   support_row, scenario_row, scenario_value):
+    from app.services.new_buyer_base_contract import number
+
+    source = base.source_stock
+    valuation = base.valuation
+    currency, security_id = valuation.currency, plan.authorization.security_id
+    projection = source.get('completed_session_current_price') or {}
+    close_ref = next((key for row in plan.rows if row.section == 'price'
+                      for key in row.numeric_registry_keys if key.endswith(':fields.current_price')), None)
+    close = (valuation.price if close_ref and session is not None
+        and projection.get('availability') == 'AVAILABLE'
+        and projection.get('price_as_of') == session == valuation.price_session.isoformat()
+        and projection.get('current_price') == valuation.price
+        and projection.get('currency') == currency
+        and projection.get('adjustment_basis') == valuation.price_basis else None)
+    sc = assessment.scenario or {}
+    support = None
+    if support_row is not None:
+        ref = support_row.source_fact_ids[0]
+        evidence = next(row for row in packet.evidence if row.ref_id == ref)
+        from app.services.entry_candidate_basis import statement
+
+        entries = base.accepted_calibration.entries
+        support = dict(candidate_id=output['timing_context']['selected'], ref=ref,
+            low=entries['tactical_watch_low'], high=entries['tactical_watch_high'],
+            timeframe=statement({'statement': evidence.statement}).get('timeframe'),
+            status=sc.get('status'))
+    stop_row = next((row for row in plan.rows if row.row_id == 'price:selected-support-invalidation'), None)
+    stop = float(assessment.invalidation_price) if stop_row is not None else None
+    target, rr = scenario_value('current_target'), scenario_value('current_rr')
+    target_basis = sc.get('current_target_basis') if target is not None else None
+    applicable_from = (close if close is not None and stop is not None and target is not None
+        and stop < close < target and rr is not None and target_basis
+        and sc.get('possible_current_barrier') is None and not sc.get('current_rr_reason')
+        and not sc.get('current_overlap') and not sc.get('active_obstacle') else None)
+    current_scenario = None
+    if stop_row is not None or scenario_row is not None:
+        current_scenario = dict(target=target, target_basis=target_basis, stop=stop,
+            stop_ref=assessment.invalidation_ref if stop is not None else None,
+            stop_timeframe=assessment.invalidation_timeframe if stop is not None else None,
+            status=sc.get('status'), rr=rr, possible_barrier=scenario_value('possible_current_barrier'),
+            reason=sc.get('current_rr_reason'), applicable_from=applicable_from)
+    band_target = scenario_value('band_target')
+    support_scenario = None
+    if scenario_row is not None:
+        support_scenario = dict(target=band_target,
+            target_basis=sc.get('band_target_basis') if band_target is not None else None,
+            assumption=sc.get('band_target_assumption') if band_target is not None else None,
+            rr=scenario_value('band_rr'), intersection=sc.get('rr2_intersection'),
+            rr2_low=scenario_value('rr2_low'), rr2_high=scenario_value('rr2_high'),
+            reason=sc.get('band_reason'), overlap=sc.get('band_overlap'))
+    history = context.get('historical_price_context') or {}
+    review = output.get('economic_price_review') or {}
+    side = review.get('preferred_boundary', 'NONE')
+    boundary = number(selected.get(side.lower())) if selected and side in ('LOW', 'HIGH') else None
+    candidate_row = next((row for row in plan.rows if row.row_id == 'valuation:historical-price-context'), None)
+    if (boundary is None or boundary <= 0 or not candidate_row
+            or selected.get('candidate_sha256') not in candidate_row.source_hashes):
+        boundary = None
+    quote = history.get('current_price') or {}
+    comparable = (boundary is not None and selected.get('currency') == quote.get('currency') == currency
+                  and close is not None and quote.get('as_of') == session and quote.get('basis') == valuation.price_basis
+                  and number(quote.get('value')) == number(close)
+                  and (selected.get('origin') != 'PROVIDER_QUARTERLY_REFERENCE'
+                       or selected.get('quote_basis_comparable') is True))
+    economics = dict(candidate_id=review.get('candidate_id'), origin=selected.get('origin', 'HISTORICAL_REFERENCE') if selected else None,
+        side=side, price=float(boundary) if boundary is not None else None,
+        price_basis=valuation.price_basis if comparable else None,
+        status='CONDITIONAL' if boundary is not None else 'UNSELECTED' if selected else
+            'UNRESOLVED' if history.get('candidates') else 'UNAVAILABLE')
+    provenance = preopen_source_context(source)
+    technical = output.get('technical_assessment', {})
+    return dict(version=1, security_id=security_id, market=packet.market,
+        exchange=(provenance['security'] or {}).get('exchange') or projection.get('exchange'), currency=currency,
+        price_basis=valuation.price_basis if close is not None else None, price_precision=1 if currency == 'KRW' else .01,
+        close=close, close_ref=close_ref if close is not None else None, close_session=session,
+        close_reason=None if close is not None else 'COMPLETED_CLOSE_UNAVAILABLE',
+        support=support, current_scenario=current_scenario, support_scenario=support_scenario, economics=economics,
+        active_material_risk=bool(context['active_risk_refs']), confidence_veto=bool(context['confidence_veto_refs']),
+        technical_state=technical.get('state'), technical_change=technical.get('change'),
+        entry_quality=assessment.quality, entry_reason=assessment.reason_code, **provenance)
+
+
 def accepted_stock_summary(packet, plan, entry_context):
     from app.services.detailed_stock_message_v2 import (
         _completed_price_session, _entry_assessment, final_entry_action,
@@ -78,7 +182,9 @@ def accepted_stock_summary(packet, plan, entry_context):
         economic=output['new_buyer'],technical=state,entry_quality=assessment.quality,
         rr=rr_text, support=(price(entries['tactical_watch_low'])+'–'+price(entries['tactical_watch_high']) if support else '미산출'),
         rr2=rr2,economic_preferred=economic,action=action,action_class=action_class,
-        plan_sha256=plan.acceptance_sha256)
+        plan_sha256=plan.acceptance_sha256,
+        preopen=_preopen_stock(packet, plan, base, context, output, assessment, session, selected,
+                               support, scenario, value))
 
 
 def _render(market, completed, cutoff, rows):
