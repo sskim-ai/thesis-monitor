@@ -164,6 +164,29 @@ SUPPORTIVE can be deteriorating, and MIXED need not be fully recovered. Change i
 never another approval requirement. Missing native fields alone are not adverse. RR is not
 expected return or probability. Consider actual upside and downside, including a near target.
 Use qualitative prose; numeric values are rendered separately by the backend.'''
+    if model_input.get('step2_quality_version') == 1:
+        prompt += """
+STEP 2: Separate observed technical state from deterministic entry quality.
+Monthly bars describe long-term structure, weekly bars the medium-term trend and
+daily bars actual entry momentum. Explain material disagreements and emerging recovery.
+The recent_path arrays are chronological, at the exact supplied completed dates;
+use the available close, volume, RSI14, MACD, MACD_HIST and VOLUME_RATIO_20
+path to distinguish sustained recovery from intermittent rebounds. Null is unknown.
+Do not penalize missing long windows. Low RR, price distance or nearby resistance
+overlap alone do not establish ADVERSE technical state. Actual observed structural
+breakdown, persistent weakness or decisive adverse evidence can establish ADVERSE.
+Backend entry quality retains all current RR, overlap and invalidation restrictions.
+If technical_flow_context is supplied, interpret the exact KR share quantities in
+their own overlapping windows with price/volume; do not sum the windows or infer
+intent, future direction, or business value. NOT_APPLICABLE is not missing evidence.
+Cite its supplied ref_id only in technical_assessment. A single current observation
+does not establish a trend. Finish concise Korean sentences well below the maximum.
+Do not repeat numeric facts or generic source caveats. Explain the actual economic
+counterargument and, where selection is allowed but no historical candidate is chosen,
+explain the specific representative-earnings, method, or price-basis limitation in
+economic_reason. No obligation to select a candidate. Prefer the actual supplied
+business and cash-generation evidence over generic statements about uncertainty.
+"""
     return prompt
 
 
@@ -179,6 +202,9 @@ def technical_refs(model_input):
         scenario = model_input.get('selected_entry_scenario') or {}
         if scenario.get('evidence_ref') in model_input.get('timing_refs', ()):
             refs.add(scenario['evidence_ref'])
+    flow = model_input.get('technical_flow_context') or {}
+    if flow.get('status') == 'AVAILABLE' and flow.get('windows'):
+        refs.add(flow['ref_id'])
     return sorted(refs)
 
 
@@ -190,7 +216,8 @@ def technical_assessment_schema(model_input):
               if available else dict(const='INSUFFICIENT'),
         evidence_refs=v1.refs(available, 1) if available else
                       dict(const=[], items=dict(type='string')),
-        reason=dict(type='string', minLength=1, maxLength=400 if current else 240) if available else
+        reason=dict(type='string', minLength=1, maxLength=600 if model_input.get('step2_quality_version') == 1
+                    else 400 if current else 240) if available else
                 dict(const='활용 가능한 원본 지표가 없어 기술 해석을 보류합니다.'))
     original = v1.obj(fields)
     if not current:
@@ -286,7 +313,8 @@ def output_schema(model_input):
                                   else v1.refs(facts,1) if evidence is None else dict(const=evidence)),
             active_risk_refs=dict(const=model_input['active_risk_refs']))
         if current:
-            fields['economic_reason'] = dict(type='string', minLength=1, maxLength=360)
+            fields['economic_reason'] = dict(type='string', minLength=1,
+                maxLength=600 if model_input.get('step2_quality_version') == 1 else 360)
         if 'provider_reference_context' in model_input:
             fields['provider_reference_refs'] = v1.refs(sorted(provider_reference_refs(model_input)),0)
         if 'historical_price_context' in model_input:

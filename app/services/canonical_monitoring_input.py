@@ -124,6 +124,19 @@ def native_technical_context(view, context):
                                for f in INDICATORS]
             compact['close_relations'] = [relations.get(f) if f in refs else None for f in INDICATORS]
             result['periods'][timeframe]['recent_comparison'] = compact
+        path = period.get('recent_path')
+        if refs and available and path is not None:
+            from app.services.provider_native_technical import RECENT_PATH_FIELDS
+            dates = path['dates']
+            if (not 0 < len(dates) <= 20 or dates != sorted(set(dates))
+                    or dates[-1] != as_of
+                    or any(len(path[key]) != len(dates) for key in ('close','volume'))
+                    or any(len(vals) != len(dates) for vals in path['indicators'].values())):
+                raise ValueError('native_recent_path_alignment')
+            result['periods'][timeframe]['recent_path'] = dict(
+                dates=deepcopy(dates), close=deepcopy(path['close']), volume=deepcopy(path['volume']),
+                indicators={f:deepcopy(path['indicators'][f]) for f in RECENT_PATH_FIELDS
+                            if f in refs and f in path['indicators']})
     return result
 
 def subject_inputs(view, authority, receipt, *, generation, atomic=()):

@@ -119,6 +119,10 @@ class CanonicalMonitoringDomain:
                 if any(ctx.get('native_technical_context', {}).get('comparison_version') == 1
                        for ctx in contexts.values()):
                     extra += '\n' + pre.C60_NATIVE_GUIDANCE
+                    extra += ('\nCompare eligible tactical candidates by actual anchor/timeframe, '
+                              'distance, invalidation and nearest resistance. Select a meaningful '
+                              'observation zone, not simply maximum RR or closest price. '
+                              'Do not use a chart zone as economic value.')
             if any(ctx.get('r2_valuation', {}).get('historical_context_only') for ctx in contexts.values()):
                 extra += ('\nFor historical_context_only, historical ranges and below_reference_range are'
                           ' descriptive, not compensation or fair value. B retains its business/holder'

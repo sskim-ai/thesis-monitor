@@ -311,7 +311,7 @@ def technical_structure_context(context, selected, scenario):
 
 
 def build_request(*, settings, context, accepted, core, pass_a, source_generation_id,
-                  valuation_view=None, forward_view=None):
+                  valuation_view=None, forward_view=None, technical_flow_context=None):
     if not settings.newbuyer_qualified_valuation_shadow:
         return None
     before = digest([context, accepted, core, pass_a])
@@ -358,6 +358,12 @@ def build_request(*, settings, context, accepted, core, pass_a, source_generatio
                        context=digest(context)))
     if 'native_technical_context' in context:
         subject['native_technical_context'] = deepcopy(context['native_technical_context'])
+    if technical_flow_context is not None:
+        if (technical_flow_context['ticker'] != ticker
+                or technical_flow_context['security_id'] != subject['security_id']
+                or technical_flow_context['source_generation'] != source_generation_id):
+            raise ValueError('b2_stock_flow_subject_scope')
+        subject['technical_flow_context'] = deepcopy(technical_flow_context)
     selected = next((c for c in subject['tactical_catalog']
                      if c['candidate_id'] == subject['selected_tactical_candidate']), None)
     scenario = selected_entry_scenario(context, selected)

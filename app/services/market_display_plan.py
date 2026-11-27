@@ -344,7 +344,7 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
                 value=row['value'],unit=row['unit'],registry_row_sha256=digest(row),fact_sha256=digest(fact))
             if category in {'KR_DETAILED_INDUSTRY','US_BROAD_SECTOR'}:
                 candidates.append((code,fact,binding))
-            elif category == 'US_SEMICONDUCTOR_WATCH' or sector_taxonomy_version is not None:
+            elif category in {'US_SEMICONDUCTOR_WATCH','KR_SIZE_STYLE_INDEX'}:
                 label = auxiliary_label(market, venue, code)
                 add('sector_auxiliary',venue+' '+label,[fact],[binding],
                     text=f"{venue} {label} {fact['fields'].get('sector') or code}: {binding.value:+.2f}% · {completed}",
@@ -377,7 +377,12 @@ def build_display_plan(source, *, market, assessment_date, eligible_refs, displa
                 continue
             flow_binding = bind(fact, 'net_buy_amount', {'KRW'}, observation=True)
             if flow_binding:
-                add('flows', '시장 수급', [fact], [flow_binding], text=claim['rendered_text'],
+                from decimal import Decimal
+                amount = Decimal(str(flow_binding.value)) / Decimal(100000000)
+                labels = {'foreign':'외국인','institution':'기관','retail':'개인'}
+                fields = fact['fields']
+                text = f"{fields['market_scope']} {labels[fields['actor']]} {amount:+,.2f}억원"
+                add('flows', '시장 수급', [fact], [flow_binding], text=text,
                     proof={'existing_numeric_claim_id':claim['claim_id'],
                            'scope':'AGGREGATE_ONLY_NOT_STOCK_ATTRIBUTION'})
         add('fx_note','환율 관측',text='환율은 실제 관측일의 금융 여건이며, 당일 수급의 원인으로 단정하지 않습니다.',formatter='display-only-note')

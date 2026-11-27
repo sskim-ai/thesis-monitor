@@ -42,6 +42,12 @@ def model_wire_context(stage_name, context):
         if ids and all(binding.get(key) == ids for key in fields):
             aliases = {key: {"same_ordered_values_as": "decision_evidence[].ref_id"} for key in fields}
             projected[ticker] = dict(row, source_evidence_binding={**binding, **aliases})
+        # The extra path is B2 analysis context, not an expansion of the B batch.
+        native = row['native_technical_context']
+        if any('recent_path' in period for period in native['periods'].values()):
+            projected[ticker] = dict(projected[ticker], native_technical_context=dict(native,
+                periods={tf:{k:v for k,v in period.items() if k != 'recent_path'}
+                         for tf,period in native['periods'].items()}))
     return projected
 
 
@@ -377,11 +383,14 @@ class ProductionMonitoringSession:
         ordinary = set(self.ordinary_subjects())
         if ticker not in ordinary or set(self.brows) != ordinary:
             raise ValueError("production_b2_requires_complete_b")
+        from app.services.detailed_stock_message_service import kr_flow_model_context
         first = b1.build_request(settings=SimpleNamespace(newbuyer_qualified_valuation_shadow=True),
             context=shadow_request_context(self.bctx[ticker], self.fresh_stocks[ticker]),
             accepted=self.brows[ticker], core=self.cores[ticker], pass_a=self.arows[ticker],
             source_generation_id=self.source_gen, valuation_view=self.fresh_stocks[ticker]['valuation_view'],
-            forward_view=self.source.get('forward_views', {}).get(ticker) if self.market=='kr' else None)
+            forward_view=self.source.get('forward_views', {}).get(ticker) if self.market=='kr' else None,
+            technical_flow_context=kr_flow_model_context(self.fresh_stocks[ticker],
+                ticker=ticker, market=self.market, security_id=self.bctx[ticker]['valuation_context']['security_id']))
         subject = first["subject"]
         legacy = []
         for ref in subject["capability"]["confidence"] + subject["capability"]["quality"]:
@@ -391,4 +400,5 @@ class ProductionMonitoringSession:
                 existing_materiality=effect["materiality"], legacy_claim_sha256=digest(claim)))
         coverage, census = self.source["coverage"], self.source["census"]
         return b2.build_request(enabled=True, v1_request=first, coverage=coverage, census=census,
-            coverage_sha=coverage["receipt_sha256"], census_sha=census["receipt_sha256"], legacy_records=legacy)
+            coverage_sha=coverage["receipt_sha256"], census_sha=census["receipt_sha256"], legacy_records=legacy,
+            step2_quality=True)

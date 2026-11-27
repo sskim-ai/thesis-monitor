@@ -87,6 +87,9 @@ class ProviderNativeTechnicalView(BaseModel):
                 comparison = recent_completed_comparison(self.periods[timeframe])
                 if comparison is not None:
                     period['recent_comparison'] = comparison
+                recent = recent_completed_path(self.periods[timeframe])
+                if recent is not None:
+                    period['recent_path'] = recent
         if self.allowed_use == 'MONITORING_TECHNICAL':
             result['comparison_version'] = 1
         result['formula_semantics']=FORMULAS
@@ -97,6 +100,27 @@ class ProviderNativeTechnicalView(BaseModel):
 def _valid_number(value):
     try:return type(value) in (int,float) and math.isfinite(value)
     except OverflowError:return False
+
+
+RECENT_PATH_FIELDS = ('RSI14','MACD','MACD_HIST','VOLUME_RATIO_20')
+
+
+def recent_completed_path(period):
+    """Exact last twenty completed observations; no interpolation/calculation."""
+    if (period.status != 'AVAILABLE' or not period.rows
+            or str(period.rows[-1]['date'])[:10] != period.completed_as_of):
+        return None
+    rows = period.rows[-20:]
+    def finite(value):
+        return value if _valid_number(value) else None
+    fields = {field: [finite((r.get('indicators') or {}).get(field)) for r in rows]
+              for field in RECENT_PATH_FIELDS
+              if period.indicator_quality.get(field) == 'PROVIDER_NATIVE'
+              and _valid_number(period.indicators.get(field))}
+    return dict(dates=[str(r['date'])[:10] for r in rows],
+                close=[finite(r.get('close')) for r in rows],
+                volume=[finite(r.get('volume')) for r in rows],
+                indicators=fields)
 
 
 def recent_completed_comparison(period):

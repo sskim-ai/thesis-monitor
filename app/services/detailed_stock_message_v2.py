@@ -598,6 +598,8 @@ def _buyer_action(stance, relation, quality, *, reason_class=None, confirmed_bre
         # to satisfy an independent approval flag.
         if state == 'MIXED':
             return '조건부 신규 매수 검토 가능'
+        if state == 'INSUFFICIENT' and (relation == 'INSIDE' or confirmed_breakout):
+            return '조건부 신규 매수 검토 가능 · 기술적 확인 필요'
         if state == 'SUPPORTIVE' and (relation == 'ABOVE' or change == 'DETERIORATING'
                                       or (assessment and getattr(assessment, 'warnings', ()))):
             return '조건부 신규 매수 검토 가능'
@@ -750,9 +752,10 @@ def _entry_scenario_row(packet, base, assessment, session):
             return None
         hashes.update((digest(f), digest(n), digest(r)))
         paths.append(fact_id + ':' + path)
-        return f'{value:g}배' if ratio else f'{value:.2f}%' if pct else _price_display(value, unit)
+        return (('2배 미만(반올림 경계)' if number(value) < 2 and f'{value:.2f}' == '2.00'
+                 else f'{value:.2f}배') if ratio else f'{value:.2f}%' if pct else _price_display(value, unit))
     target, rr = display('current_target'), display('current_rr', ratio=True)
-    if rr and sc.get('classification') in ('conditional', 'poor_chase') and number(rr.removesuffix('배')) >= 2:
+    if rr and sc.get('classification') in ('conditional', 'poor_chase') and (number(rr.removesuffix('배')) or 0) >= 2:
         rr = '2배 미만(반올림 경계)'
     reason_labels = {'ACTIVE_RESISTANCE_OVERLAP': '현재가 저항 중첩',
         'SUPPORT_RESISTANCE_OVERLAP': '지지·저항 중첩',
@@ -838,7 +841,8 @@ def _provider_reference_row(context):
                 text += ' · 가격 산출용 표본 제한'
             return text
         lines.append(f'{provider} 분기 {label} 최근 5년: '+(display(recent) if recent else '관측 없음'))
-        lines.append(f'{provider} 분기 {label} 전체: '+display(whole))
+        if not recent or recent['positive_periods'] == 0:
+            lines.append(f'{provider} 분기 {label} 전체: '+display(whole))
         refs.add(item['ref_id'])
         if item.get('current_metric_ref'):
             refs.add(item['current_metric_ref'])
@@ -924,7 +928,11 @@ def _historical_price_row(context, output, assessment, *, scenario_row=None):
                                      + ' · 투자 논지 및 기술 구조 유지 전제')
                         combined = True
     else:
-        lines.append('경제적 가치 시나리오 미확정 · 역사적 참고 범위만 유지')
+        selectable = (context['business_gate']['v2_business_gate_pass']
+                      and not context['active_risk_refs'] and not context['confidence_veto_refs']
+                      and context['valuation_evaluability']['evaluability_state'] == 'EVALUABLE')
+        lines.append('경제적 가치 시나리오 미확정 · 역사적 참고 범위만 유지' if selectable
+                     else '기존 기업·가치평가 조건에 따른 경제적 시나리오 선택 제한')
     refs = {ref for row in used for ref in row['evidence_refs']}
     hashes = {row['candidate_sha256'] for row in used}
     if combined:

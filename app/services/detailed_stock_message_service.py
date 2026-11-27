@@ -476,6 +476,36 @@ def _kr_flow_rows(packet, source):
     return rows
 
 
+def kr_flow_model_context(source, *, ticker, market, security_id):
+    """Reuse exactly the admitted renderer numbers as B2 context, not direction."""
+    identity = dict(ticker=ticker, security_id=security_id,
+                    source_generation=source['fresh_run_id'])
+    if market != 'kr':
+        return dict(**identity, status='NOT_APPLICABLE')
+    from types import SimpleNamespace
+    stock = source['packet']['stocks'][0]
+    supply = stock.get('price_and_positioning', {}).get('supply') or {}
+    if stock.get('ticker') != ticker or supply.get('canonical_security_id') != security_id:
+        return dict(**identity, status='UNAVAILABLE')
+    rows = _kr_flow_rows(SimpleNamespace(market=market,ticker=ticker), source)
+    if not rows:
+        return dict(**identity, status='UNAVAILABLE')
+    windows = []
+    for row in rows:
+        values = {}
+        for key in row.numeric_registry_keys:
+            ref, field = key.rsplit(':',1)
+            _, _, _, value = _source_number(ref,field,source)
+            values[field.removeprefix('fields.')] = value
+        windows.append(dict(window=row.row_id.removeprefix('flow:kr-stock-net-buy-'),
+            observation=values, source_row_sha256=row.acceptance_sha256))
+    fact_id = rows[0].source_fact_ids[0]
+    return dict(**identity,status='AVAILABLE',ref_id='canonical:'+fact_id,
+        as_of=supply['as_of_date'],unit='shares',basis=supply['basis'],
+        period_comparison=supply['period_comparison'],windows=windows,
+        scope='TECHNICAL_CONTEXT_ONLY_NOT_DIRECTION_OR_STOCK_VALUE')
+
+
 def _kr_dated_structure_row(packet, source):
     from app.services.kr_dated_structure import CONTRACT
     if packet.market != 'kr':

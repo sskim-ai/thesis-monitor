@@ -23,7 +23,8 @@ def _strings(value):
 
 
 def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
-                  coverage_sha=None, census_sha=None, legacy_records=None, confidence=None):
+                  coverage_sha=None, census_sha=None, legacy_records=None, confidence=None,
+                  step2_quality=False):
     if not enabled:
         return None
     before = digest([v1_request,coverage,census,legacy_records,confidence])
@@ -67,6 +68,12 @@ def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
         legacy_context_backend_audit_sha256=legacy['receipt_sha256'],
         prompt_version=contract.PROMPT_VERSION,schema_version=contract.SCHEMA_VERSION,
         policy_sha256=roles['receipt_sha256'])
+    if step2_quality:
+        model_input['step2_quality_version'] = 1
+        model_input['prompt_version'] += '-step2'
+        model_input['schema_version'] += '-step2'
+    if 'technical_flow_context' in subject:
+        model_input['technical_flow_context'] = deepcopy(subject['technical_flow_context'])
     if 'native_technical_context' in subject:
         model_input['native_technical_context'] = deepcopy(subject['native_technical_context'])
         model_input['prompt_version'] += '-native-technical'
