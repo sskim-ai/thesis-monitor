@@ -89,28 +89,7 @@ def market_schema(context):
         schema['required'].append('macro_context_refs')
     for key in PROSE_FIELDS:
         schema['properties'][key]['maxLength'] = 500
-        schema['properties'][key]['pattern'] = r'^[^0-9]*
-        schema['properties'][key]['description'] = 'Qualitative narrative only. Numeric facts/dates/instruments are rendered by the typed backend owner.'
-    return schema
-
-
-def validate_market(row,context):
-    receipt = previous.validate_market(row,context)
-    receipt['errors'] += narrative_errors(row)
-    receipt['errors'] += excluded_night_narrative_errors(row, context)
-    if 'macro_context' in context:
-        known = set(context['macro_context'])
-        selected = row.get('macro_context_refs')
-        if (not isinstance(selected, list) or len(selected) != len(set(selected))
-                or not set(selected) <= known or (known and not selected)):
-            receipt['errors'].append('macro_context_ref_mismatch')
-    receipt['status'] = 'FAIL' if receipt['errors'] else 'PASS'
-    return receipt
-
-
-def numeric_boundary(context,source):
-    return validate_catalog(context['numeric_catalog'],source)
-
+        schema['properties'][key]['pattern'] = r'^[^0-9]*$'
         schema['properties'][key]['description'] = 'Qualitative narrative only. Numeric facts/dates/instruments are rendered by the typed backend owner.'
     return schema
 
