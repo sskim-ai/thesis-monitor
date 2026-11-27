@@ -284,6 +284,17 @@ def _source_number(ref, field_path, source):
     return fact, node, reg, value
 
 
+def _registry_amount(value, unit):
+    precision = 0 if unit in {'KRW', 'shares', 'count'} else 2
+    return f'{value:,.{precision}f}'
+
+
+def reference_price_display(value, currency):
+    """Use the accepted price row's precision, including half-cent quotes."""
+    amount = _registry_amount(value, currency)
+    return amount + '원' if currency == 'KRW' else '$' + amount
+
+
 def _numeric(selection, source):
     stock = source['packet']['stocks'][0]
     fact, node, reg, value = _source_number(selection.ref, selection.field_path, source)
@@ -322,8 +333,7 @@ def _numeric(selection, source):
             label = f'{session} 완료 세션 차트 기준가격 (조정종가)'
     # Formatting follows the canonical registry's unit; never a price currency
     # copied onto an issuer financial amount or an ad-hoc currency conversion.
-    precision = 0 if unit in {'KRW', 'shares', 'count'} else 2
-    text = f'{label}: {value:,.{precision}f} {unit}'
+    text = f'{label}: {_registry_amount(value, unit)} {unit}'
     return _row(selection.section, selection.ref + ':' + selection.field_path, text,
         facts=(selection.ref,), hashes=(digest(fact), digest(node), digest(reg)),
         numeric=(selection.ref + ':' + selection.field_path,), formatting='canonical-registry-unit-v1')

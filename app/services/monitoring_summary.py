@@ -15,6 +15,7 @@ def accepted_stock_summary(packet, plan, entry_context):
         _completed_price_session, _entry_assessment, final_entry_action,
     )
     from app.services.kr_forward_valuation_message import KrForwardMessagePlan
+    from app.services.detailed_stock_message_service import reference_price_display
     from app.services.new_buyer_base_contract import number
     from app.services.price_structure_v3_renderer_service import _price_display
 
@@ -71,7 +72,8 @@ def accepted_stock_summary(packet, plan, entry_context):
     action_class = ('REVIEW_NOW' if action=='신규 매수 검토 가능'
                     else 'CONDITIONAL' if action.startswith('조건부 신규 매수 검토 가능')
                     else 'AVOID' if output['new_buyer']=='AVOID' else 'WAIT')
-    return dict(ticker=packet.ticker,status='COMPLETE',price=price(base.valuation.price),
+    quote = reference_price_display(base.valuation.price,currency) if base.valuation.price is not None else '미산출'
+    return dict(ticker=packet.ticker,status='COMPLETE',price=quote,
         overall=decision['overall_direction'],holder={'HOLDABLE':'HOLD','REVIEW':'REVIEW','REDUCE':'REDUCE'}[decision['holder']],
         economic=output['new_buyer'],technical=state,entry_quality=assessment.quality,
         rr=rr_text, support=(price(entries['tactical_watch_low'])+'–'+price(entries['tactical_watch_high']) if support else '미산출'),

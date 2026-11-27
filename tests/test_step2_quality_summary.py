@@ -150,3 +150,15 @@ def test_summary_from_typed_synthetic_detail(market, monkeypatch):
     assert row['overall']==accepted.decision['overall_direction']
     assert row['economic']==result['result']['output']['new_buyer_shadow']['new_buyer']
     assert row['action'] in message['text'] and row['status']=='COMPLETE'
+
+
+@pytest.mark.parametrize('price,display', [(2.635,'$2.63'),(2.945,'$2.94')])
+def test_current_reference_price_uses_original_registry_precision(price,display):
+    from app.services.detailed_stock_message_service import reference_price_display
+    from app.services.detailed_stock_message_v2 import _judgment_text
+    decision=dict(directional_buy_score=5,overall_direction='HOLD',confidence='MEDIUM',
+        holder='HOLDABLE',holder_reason='보유 근거')
+    text=_judgment_text(decision,dict(fundamental_attractiveness='WAIT'),['조건 대기'],
+        step2=True,price=SimpleNamespace(price=price,currency='USD'))
+    assert reference_price_display(price,'USD') == display
+    assert text.splitlines()[0]=='기준가격: '+display

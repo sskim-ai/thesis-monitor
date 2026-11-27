@@ -99,8 +99,8 @@ def limitation_message(session, ticker, *, include_summary=False):
         decision_mode='UNKNOWN_LIMIT', text=rendered.text, plan_sha256=plan.acceptance_sha256,
         limitation_decision_sha256=digest(decision))
     if include_summary:
-        from app.services.price_structure_v3_renderer_service import _price_display
+        from app.services.detailed_stock_message_service import reference_price_display
         message['summary_row'] = dict(ticker=ticker, status='UNKNOWN_LIMIT',
-            price=_price_display(plan.valuation.price,plan.valuation.currency) if plan.valuation.price is not None else '미확보',
+            price=reference_price_display(plan.valuation.price,plan.valuation.currency) if plan.valuation.price is not None else '미확보',
             plan_sha256=plan.acceptance_sha256)
     return disclose(message, [source.get('event_view', {})], expected_count=1,allow_partition=include_summary)

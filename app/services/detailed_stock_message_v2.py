@@ -953,8 +953,8 @@ def _historical_price_row(context, output, assessment, *, scenario_row=None):
 def _judgment_text(decision, axes, entry_lines, *, step2=False, price=None):
     score = decision["directional_buy_score"]
     if step2:
-        from app.services.price_structure_v3_renderer_service import _price_display
-        quote = ('기준가격: '+_price_display(price.price,price.currency)
+        from app.services.detailed_stock_message_service import reference_price_display
+        quote = ('기준가격: '+reference_price_display(price.price,price.currency)
                  if price is not None and price.price is not None else '기준가격: 미확보')
         return "\n".join([quote, 'AI 분석 판단: '+decision['overall_direction'],
             f'판단 균형: BUY {score:.1f} : SELL {10-score:.1f}',
