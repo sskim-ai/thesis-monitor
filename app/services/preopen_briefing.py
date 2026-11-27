@@ -67,7 +67,16 @@ def _stock_coverage(coverage, ticker):
 def _event_line(event, cutoff):
     date_text = event.get('published_at') or event.get('published_date')
     source = event.get('provider', '출처 미확인')
-    label = '공식 변경' if confirmed_material_event(event, cutoff) else '내용·시각 확인 필요'
+    if confirmed_material_event(event, cutoff):
+        label = '중요 공식 공시 확인'
+    elif event.get('official'):
+        label = '정정 공시 확인' if event.get('revision') else '공식 공시 확인'
+        if event.get('timestamp_uncertain') or not event.get('published_at'):
+            label += ' · 발표시각 미확인'
+        if event.get('incremental') != 'CONFIRMED':
+            label += ' · 신규 여부 확인 필요'
+    else:
+        label = '보도 내용 확인 필요'
     return f"{label} · {event.get('title') or '제목 미확인'} ({source}, {date_text or '시각 미확인'})"
 
 
@@ -134,7 +143,9 @@ def render_briefing(market, window, base, sources, generated_at):
             overlays[ticker] = (f'{ticker} · 기준 {base.session} 원문 참고\n'
                                 '오늘 · 저장된 가격 비교 자료 미확보')
             continue
-        events = sources['events'].get(ticker, ())
+        events = sorted(sources['events'].get(ticker, ()), key=lambda event: (
+            not confirmed_material_event(event, cutoff), not event.get('official'), not event.get('material'),
+        ))
         result = assess_stock(
             row, opening_session=window.opening_session,
             cutoff=cutoff, events=events,

@@ -105,6 +105,24 @@ def test_dart_date_only_revisions_retain_uncertainty_and_429_stops_provider():
     assert 'test secret' not in str(result) and 'private response body' not in str(result)
 
 
+def test_dart_date_only_material_filing_is_reviewable_without_timed_confirmation():
+    row = owned('005001', provider='opendart', at=KR_AT - timedelta(days=3), corp_code='00005001')
+
+    def send(_request):
+        return httpx.Response(200, json=dict(status='000', total_page=1, list=[
+            dict(corp_code='00005001', rcept_dt='20261130', rcept_no='20261130000002',
+                 report_nm='[기재정정] 단일판매 공급계약'),
+        ]))
+
+    result = execute('kr', at=KR_AT, rows=[row], handler=send, opendart_api_key='fixture')
+    event, = result['events']['005001']
+    assert event['official'] and event['revision'] and event['material']
+    assert event['incremental'] == 'CONFIRMED' and event['timestamp_uncertain']
+    filing_scope = coverage(result, ticker='005001', provider='opendart')
+    assert filing_scope['status'] == 'HEADLINE_REVIEW'
+    assert not filing_scope['material_change']
+
+
 def test_naver_separates_relevant_headline_from_issuer_facts_and_ambiguous_timestamps():
     row = owned('005001', provider='naver_news', at=KR_AT - timedelta(days=3))
     row['preopen']['security']['company_name'] = 'Acme Industries'
@@ -203,6 +221,32 @@ def test_kr_uses_exact_saved_etf_and_only_eligible_completed_others(monkeypatch,
     assert observed['SOXX']['observed_date'] == '2026-11-27'
     offline = execute('kr', at=KR_AT, run_roots=run_roots)
     assert offline['market'] == [observed['SPY']] and offline['requests'] == {}
+
+
+def test_kr_excludes_unfinished_etf_prices_and_disallowed_lineage():
+    def send(request):
+        series = request.url.params['symbol']
+        prior = dict(date='2026-11-25', close=100.0)
+        latest = dict(date='2026-11-27', close=101.0)
+        meta = dict(provider='ohlcv_analyst', adjusted=True, upstream_provider='kiwoom')
+        if series == 'QQQ':
+            latest['bar_state'] = 'PARTIAL'
+        elif series == 'IWM':
+            prior['complete'] = False
+        elif series == 'RSP':
+            latest['completion_state'] = 'UNCONFIRMED'
+        elif series == 'SOXX':
+            meta['upstream_provider'] = 'alpha_vantage'
+        return httpx.Response(200, json=dict(meta=meta, resolved_symbol={'code': series},
+            periods={'daily': [prior, latest]}))
+
+    result = execute('kr', at=KR_AT, handler=send, ohlcv_base_url='https://ohlcv.test')
+    observation, = result['market']
+    assert observation['series'] == 'SPY' and observation['value'] == 101.0
+    assert result['requests'] == {'ohlcv_analyst': 5}
+    states = {r['series']: r['status'] for r in result['coverage'] if r['provider'] == 'ohlcv_analyst'}
+    assert states == {'SPY': 'OBSERVED', 'QQQ': 'UNAVAILABLE', 'IWM': 'UNAVAILABLE',
+                      'RSP': 'UNAVAILABLE', 'SOXX': 'UNAVAILABLE'}
 
 
 def test_market_producer_keeps_only_registry_bound_values():

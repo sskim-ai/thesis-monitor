@@ -76,6 +76,9 @@ def test_no_send_preview_is_frozen_per_market_date_and_destination(tmp_path):
     preview = json.loads(Path(first["preview_path"]).read_text())
     assert preview["messages"][0]["text"] == "first"
     assert preview["metadata"]["base_session"] == "2026-11-27"
+    assert preview.pop('messages_sha256') == digest(preview['messages'])
+    Path(first['preview_path']).write_text(json.dumps(preview))
+    assert existing_preopen_preview(**earlier) == second
     for change in (
         {"market": "us"}, {"opening_session": date(2026, 12, 1)},
         {"fingerprint": digest("other")},
@@ -83,6 +86,34 @@ def test_no_send_preview_is_frozen_per_market_date_and_destination(tmp_path):
         distinct = asyncio.run(delivery(tmp_path, "new", **change))
         assert distinct["session_sha256"] != first["session_sha256"]
         assert not distinct["duplicate"]
+
+
+@pytest.mark.parametrize('damage,legacy', [
+    ('logical_text', True), ('physical_text', True), ('removed_message', False), ('empty_messages', True),
+])
+def test_frozen_preview_rejects_changed_content(tmp_path, damage, legacy):
+    original = messages('first') + [{"message_id": "detail", "text": "original detail"}]
+    first = asyncio.run(delivery(tmp_path, 'unused', messages=original))
+    path = Path(first['preview_path'])
+    preview = json.loads(path.read_text())
+    if legacy:
+        preview.pop('messages_sha256')
+    if damage == 'logical_text':
+        preview['messages'][0]['text'] = 'changed briefing'
+    elif damage == 'physical_text':
+        preview['messages'][0]['telegram_parts'][0]['text'] = 'changed part'
+    elif damage == 'removed_message':
+        preview['messages'].pop()
+    else:
+        preview['messages'].clear()
+    path.write_text(json.dumps(preview))
+
+    with pytest.raises(ValueError, match='preopen_prior_manifest_content_mismatch'):
+        existing_preopen_preview(root=tmp_path, market='kr', opening_session=OPENING,
+                                 recipient_fingerprint=SYNTHETIC_DESTINATION)
+    with pytest.raises(ValueError, match='preopen_prior_manifest_content_mismatch'):
+        asyncio.run(delivery(tmp_path, 'replacement'))
+    assert json.loads(path.read_text()) == preview
 
 
 def test_live_reuses_exact_physical_parts_and_no_send_keeps_separate_receipts(tmp_path):

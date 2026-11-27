@@ -68,10 +68,16 @@ def _delivery_status(path, scope, session_key, *, dry_run, duplicate, failure_ty
     if (manifest["scope"] != scope or manifest["session_sha256"] != session_key
             or manifest["mode"] != mode):
         raise ValueError("preopen_prior_manifest_mismatch")
+    messages = manifest.get("messages")
+    if (not isinstance(messages, list) or not messages
+            or any(not isinstance(message, dict) for message in messages)
+            or ("messages_sha256" in manifest and manifest["messages_sha256"] != digest(messages))
+            or render_preopen_messages(messages) != messages):
+        raise ValueError("preopen_prior_manifest_content_mismatch")
 
     expected = "DRY_RUN_NOT_SENT" if dry_run else "SENT"
     parts = []
-    for message in manifest["messages"]:
+    for message in messages:
         for part in message["telegram_parts"]:
             identity = {
                 "run_id": session_key,
@@ -113,7 +119,7 @@ def _delivery_status(path, scope, session_key, *, dry_run, duplicate, failure_ty
         "manifest_path": str(path),
         "preview_path": str(path) if dry_run else None,
         "normal_messages_sent": not dry_run and status == "COMPLETE",
-        "logical_count": len(manifest["messages"]),
+        "logical_count": len(messages),
         "physical_count": len(parts),
         "completed_parts": completed,
         "uncertain_parts": uncertain,
@@ -173,6 +179,7 @@ async def deliver_preopen(
             "mode": "NO_SEND" if dry_run else "LIVE_AUTHORIZED",
             "metadata": sanitized(metadata or {}),
             "messages": rendered,
+            "messages_sha256": digest(rendered),
         }, exclusive=True)
         delivery = ProductionDelivery(
             root=path.parent / "parts", fingerprint=recipient_fingerprint,

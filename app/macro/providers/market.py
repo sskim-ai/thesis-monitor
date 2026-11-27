@@ -36,9 +36,14 @@ MARKET_SYMBOLS = {
     "AMZN": "big_tech",
     "META": "big_tech",
 }
+UNFINISHED_DAILY_STATES = {
+    "PROVISIONAL", "PARTIAL", "OPEN", "LIVE", "IN_PROGRESS", "INCOMPLETE", "UNCONFIRMED", "UNKNOWN",
+}
 
 
-def normalize_market_observation(payload: dict, *, symbol: str, source_url: str) -> CollectedObservation | None:
+def normalize_market_observation(
+    payload: dict, *, symbol: str, source_url: str, completed_only: bool = False,
+) -> CollectedObservation | None:
     """Shared by live collection and child-byte offline replay."""
     bars = payload.get("periods", {}).get("daily", [])
     if not bars:
@@ -46,6 +51,13 @@ def normalize_market_observation(payload: dict, *, symbol: str, source_url: str)
     ordered = sorted(bars, key=lambda row: str(row['date']))
     if len({row['date'] for row in ordered}) != len(ordered):
         raise ValueError('market_duplicate_daily_occurrence')
+    if completed_only and any(
+        row.get('is_partial') is True or row.get('complete') is False
+        or any(str(row.get(field, '')).upper() in UNFINISHED_DAILY_STATES
+               for field in ('bar_state', 'completion_state'))
+        for row in ordered[-2:]
+    ):
+        raise ValueError('market_unfinished_daily_bar')
     latest = ordered[-1]
     value = float(latest['close'])
     previous = float(ordered[-2]['close']) if len(ordered) > 1 else None

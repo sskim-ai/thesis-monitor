@@ -142,3 +142,25 @@ def test_render_eligible_quote_keeps_price_and_observation_scope(monkeypatch):
     summary = result[1]['text']
     assert '55.21 USD' in summary and '08:35:00 ET · fixture · 지연 5초' in summary
     assert '선택 지지 시나리오 참고 RR 2.12배' in summary and '경제적 선호가 이내(조건부)' in summary
+
+
+@pytest.mark.parametrize('market,at,published,expected', [
+    ('us', '2026-11-30T08:31:00-05:00', '2026-11-30T08:01:00-05:00', '중요 공식 공시 확인'),
+    ('kr', '2026-11-30T07:31:00+09:00', None, '정정 공시 확인 · 발표시각 미확인'),
+])
+def test_official_filing_precedes_news_in_the_summary(market, at, published, expected):
+    now = datetime.fromisoformat(at)
+    base_day = date(2026, 11, 27)
+    row = dict(ticker='AAA', status='COMPLETE', economic='WAIT')
+    base = SimpleNamespace(status='COMPLETE', is_current=True, cutoff=None, session=base_day,
+                           messages=(), rows=[row])
+    news = [dict(title=f'언론 보도 {i}', official=False) for i in range(1, 4)]
+    filing = dict(title='공급계약 공시', published_at=published, published_date='2026-11-30',
+                  official=True, material=True, revision=published is None,
+                  timestamp_uncertain=published is None, incremental='CONFIRMED')
+    market_message, summary = briefing.render_briefing(market, briefing.preopen_window(market, now),
+        base, dict(market=[], events={'AAA': [*news, filing]}, coverage=[]), now)
+    text = summary['text']
+    assert text.index(f'{expected} · 공급계약 공시') < text.index('언론 보도 1')
+    assert '언론 보도 3' not in text
+    assert ('공식 변경 · 기존 판단 적용 재검토' in market_message['text']) == (published is not None)

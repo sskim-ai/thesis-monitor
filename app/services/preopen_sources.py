@@ -25,10 +25,13 @@ from app.services.event_identity import attribute_claim_actor, event_fingerprint
 from app.services.event_relevance_service import EventRelevanceService, extract_structured_flags
 from app.services.market_session import NEW_YORK, SEOUL, is_exchange_session_date, preceding_exchange_session_date
 from app.services.news_query_service import NewsQueryService
+from app.services.preopen_applicability import confirmed_material_event
 from app.services.unified_run_artifacts import sha256_bytes
+from app.services.unified_source_policy import UnifiedSourcePolicy
 
 
 US_ETFS = ('SPY', 'QQQ', 'IWM', 'RSP', 'SOXX')
+ETF_SOURCE_POLICY = UnifiedSourcePolicy(frozenset({'ohlcv_analyst', 'kiwoom', 'kiwoom_rest'}))
 US_MACRO = ('DGS3', 'DGS5', 'DGS10', 'DGS30', 'DCOILWTICO', 'VIXCLS', 'DTWEXBGS', 'BAMLH0A0HYM2')
 KR_INDICES = ('KOSPI', 'KOSDAQ')
 DART_MATERIAL = {'earnings', 'capital_raise', 'convertible_bond', 'warrant', 'supply_contract',
@@ -303,7 +306,8 @@ async def _etf(client, series, expected, settings):
             or payload.get('meta', {}).get('adjusted') is not True
             or payload.get('meta', {}).get('provider') not in {'ohlcv_analyst', 'kiwoom'}):
         raise ValueError('preopen_market_symbol_or_basis')
-    observation = normalize_market_observation(payload, symbol=series, source_url='')
+    ETF_SOURCE_POLICY.check_lineage(payload)
+    observation = normalize_market_observation(payload, symbol=series, source_url='', completed_only=True)
     if observation is None or observation.observed_at.date() != expected:
         raise ValueError('preopen_market_completed_session_mismatch')
     return _market_row(observation, 'ohlcv_analyst', source_ref=sha256_bytes(response.content))
@@ -499,13 +503,14 @@ async def collect_preopen_sources(market, *, opening_session, rows, cutoff, run_
                     gap = len(times) != len(publications) or (capped and not naver_covered)
                 else:
                     candidates, gap = value
-                gap = gap or any((at := _instant(event['published_at'])) is not None and at > received
+                checked_through = min(received, cutoff)
+                gap = gap or any((at := _instant(event['published_at'])) is not None and at > checked_through
                                  for event in candidates)
                 events = _incremental(candidates, lower=lower, base_cutoff=base_cutoff,
-                                      previous=previous, checked=received, zone=zone)
+                                      previous=previous, checked=checked_through, zone=zone)
                 if events:
                     result['events'].setdefault(ticker, []).extend(events)
-                material = any(row['material'] and row['incremental'] == 'CONFIRMED' for row in events)
+                material = any(confirmed_material_event(event, checked_through) for event in events)
                 gap = gap or clipped or lower is None or any(row['incremental'] != 'CONFIRMED' for row in events)
                 status = ('PARTIAL' if gap else 'CONFIRMED_CHANGE' if material
                           else 'HEADLINE_REVIEW' if events else 'NO_SIGNIFICANT_CHANGE')
