@@ -159,17 +159,22 @@ class ModelExecutionPlan:
     topology: str
     slots: tuple[PlannedModelSlot, ...]
     execution_profile: str = SOL_HIGH_V1.contract
+    batch_local_dependencies: bool = False
 
     def to_dict(self):
-        return dict(contract=CONTRACT, cohort=self.cohort.to_dict(), topology=self.topology,
+        result = dict(contract=CONTRACT, cohort=self.cohort.to_dict(), topology=self.topology,
                     execution_profile=self.execution_profile, slots=json.loads(encoded([asdict(s) for s in self.slots])))
+        if self.batch_local_dependencies:
+            result['batch_local_dependencies'] = True
+        return result
 
     @property
     def sha256(self):
         return digest(self.to_dict())
 
     def validate(self):
-        expected = compile_model_plan(self.cohort, topology=self.topology)
+        expected = compile_model_plan(self.cohort, topology=self.topology,
+            batch_local_dependencies=self.batch_local_dependencies)
         if expected.to_dict() != self.to_dict():
             raise ValueError('model_stage_plan_drift_or_missing_slot')
 
@@ -186,13 +191,16 @@ class ModelExecutionPlan:
         raw['source_owner_bindings'] = tuple(tuple(b) for b in raw['source_owner_bindings'])
         if 'limitation_subjects' in raw:
             raw['limitation_subjects'] = tuple(raw['limitation_subjects'])
-        result = compile_model_plan(FrozenCohort(**raw), topology=value['topology'])
+        result = compile_model_plan(FrozenCohort(**raw), topology=value['topology'],
+            batch_local_dependencies=value.get('batch_local_dependencies',False))
         if result.to_dict() != value:
             raise ValueError('model_stage_plan_drift_or_missing_slot')
         return result
 
 
-def compile_model_plan(cohort, *, topology):
+def compile_model_plan(cohort, *, topology, batch_local_dependencies=False):
+    if type(batch_local_dependencies) is not bool or (batch_local_dependencies and topology!='CANONICAL_PRODUCTION'):
+        raise ValueError('batch_local_dependency_scope')
     if type(cohort) is not FrozenCohort or topology not in ('CANONICAL_PRODUCTION', 'SPLIT_RESEARCH'):
         raise ValueError('explicit_frozen_cohort_and_topology_required')
     from app.services.canonical_monitoring_helpers import _batch_topology
@@ -217,14 +225,25 @@ def compile_model_plan(cohort, *, topology):
                 add(market, 'ADJUDICATION', None, (ticker,), (blind,))
         else:
             previous = (market_id,)
+            by_batch = {}
             for stage in ('CORE', 'A', 'B'):
                 rows = [(r['batch'], [t for t in r['subjects'] if stage != 'B' or t not in limits])
                     for r in batches if r['market'] == market]
-                ids = tuple(add(market, stage, batch, tickers, previous) for batch, tickers in rows if tickers)
-                previous = ids or previous
+                current = {}
+                for batch,tickers in rows:
+                    if not tickers:
+                        continue
+                    deps = ((market_id,) if stage=='CORE' else (by_batch[batch],)) if batch_local_dependencies else previous
+                    current[batch] = add(market,stage,batch,tickers,deps)
+                previous = tuple(current.values()) or previous
+                by_batch = current
             for ticker in (t for t in subjects if t not in limits):
-                add(market, 'B2', None, (ticker,), previous)
-    result = ModelExecutionPlan(cohort, topology, tuple(slots))
+                deps = previous
+                if batch_local_dependencies:
+                    batch = next(r['batch'] for r in batches if r['market']==market and ticker in r['subjects'])
+                    deps = (by_batch[batch],)
+                add(market,'B2',None,(ticker,),deps)
+    result = ModelExecutionPlan(cohort, topology, tuple(slots),batch_local_dependencies=batch_local_dependencies)
     b_batches = sum(bool(set(b['subjects']) - limits) for b in batches)
     if (topology == 'CANONICAL_PRODUCTION'
             and len(slots) != len(cohort.market_subjects) + 2*len(batches) + b_batches + len(cohort.subjects) - len(limits)):
@@ -243,9 +262,9 @@ def verify_mixed_render(plan, messages, limitation_receipts, *, omitted=(), incl
     omitted = set(omitted)
     ids = ['MARKET_US', *(['SUMMARY_US'] if include_summary else []), *sorted(subjects-omitted)]
     by_id = {m['message_id']: m for m in messages}
-    if (not omitted <= subjects-limits
+    if (not omitted <= (subjects if plan.batch_local_dependencies else subjects-limits)
             or sorted(m['message_id'] for m in messages) != sorted(ids)
-            or set(limitation_receipts) != limits
+            or set(limitation_receipts) != limits-omitted
             or {s.subjects[0] for s in plan.slots if s.stage == 'B2'} != subjects-limits
             or {t for s in plan.slots if s.stage == 'B' for t in s.subjects} != subjects-limits):
         raise ValueError('model_render_mixed_census')

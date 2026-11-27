@@ -15,6 +15,59 @@ def all_stage_retry(binding):
     return binding is not None and binding['policy'] == ALL_MODEL_STAGE_ONE_RETRY_V1
 
 
+def stage_tail_retry(binding):
+    """New canonical plans use the existing budget with subject-local dependencies."""
+    return isinstance(binding,dict) and all_stage_retry(binding) and 'slot_dependencies' in binding
+
+
+def dependency_skips(binding, exhausted):
+    if not stage_tail_retry(binding):
+        return set()
+    dependencies = binding['slot_dependencies']
+    failed = set(exhausted)
+    if not failed <= set(dependencies):
+        raise ValueError('timeout_slot_outside_plan')
+    unavailable = set(failed)
+    while True:
+        added = {s for s,deps in dependencies.items() if set(deps)&unavailable}
+        if added <= unavailable:
+            return unavailable-failed
+        unavailable.update(added)
+
+
+def initial_stage_done(binding, stage, used, exhausted):
+    return {s for s,v in binding['slot_stages'].items() if v==stage} <= set(used)|dependency_skips(binding,exhausted)
+
+
+def timeout_omissions(plan, exhausted, bound, attempts):
+    """A failed batch is the root; never report a dependent uncalled slot as a timeout."""
+    result = {}
+    if not set(exhausted) <= {s.slot_id for s in plan.slots}:
+        raise ValueError('timeout_slot_outside_plan')
+    for slot in plan.slots:
+        if slot.slot_id not in exhausted:
+            continue
+        if slot.stage not in ('CORE','A','B','B2') or len(attempts[slot.slot_id])!=2:
+            raise ValueError('stage_tail_timeout_exhaustion_scope')
+        scope = bound[slot.slot_id]
+        if scope['stage']!=slot.stage or tuple(scope['subjects'])!=slot.subjects:
+            raise ValueError('stage_tail_timeout_scope_drift')
+        for ticker in slot.subjects:
+            if ticker in result:
+                raise ValueError('duplicate_timeout_root_subject')
+            result[ticker] = dict(status=slot.stage+'_UNISSUED_TIMEOUT',slot_id=slot.slot_id,
+                request_sha256=scope['payload_sha256'],attempts=2)
+    return result
+
+
+def verify_tail_coverage(b2, plan, *, exhausted, bound, attempts):
+    expected = timeout_omissions(plan,exhausted,bound,attempts)
+    ordinary = {s.subjects[0] for s in plan.slots if s.stage=='B2'}
+    if b2.get('unissued',{})!=expected or set(b2['rows'])!=ordinary-set(expected):
+        raise ValueError('stage_tail_final_coverage_drift')
+    return expected
+
+
 def stock_slot_retry(binding, slot_id):
     return bool(binding and (slot_id in binding['b2_slots'] or all_stage_retry(binding)
         and binding['slot_stages'].get(slot_id) in ('CORE', 'A', 'B', 'B2')))
@@ -69,6 +122,10 @@ def b2_retry_binding(plan, policy=B2_PER_TICKER_ONE_RETRY_V1):
         base_slots=base, maximum=maximum,
         slot_stages={s.slot_id:s.stage for s in plan.slots},
         b2_slots={s.slot_id:s.subjects[0] for s in plan.slots if s.stage == 'B2' and len(s.subjects) == 1})
+    if plan.batch_local_dependencies:
+        if policy!=ALL_MODEL_STAGE_ONE_RETRY_V1:
+            raise ValueError('stage_tail_requires_existing_all_stage_budget')
+        value['slot_dependencies'] = {s.slot_id:list(s.dependencies) for s in plan.slots}
     validate_b2_retry_binding(value)
     return value
 
@@ -81,7 +138,10 @@ def validate_b2_retry_binding(value):
         reserves = base if policy == ALL_MODEL_STAGE_ONE_RETRY_V1 else len(value.get('b2_slots',{}))
         maximum = base + reserves
     b2_count = list(value.get('slot_stages',{}).values()).count('B2') if policy == ALL_MODEL_STAGE_ONE_RETRY_V1 else reserves
-    if (type(value) is not dict or set(value) != {'policy','plan_sha256','base_slots','maximum','slot_stages','b2_slots'}
+    required = {'policy','plan_sha256','base_slots','maximum','slot_stages','b2_slots'}
+    if stage_tail_retry(value):
+        required.add('slot_dependencies')
+    if (type(value) is not dict or set(value) != required
             or not re.fullmatch('[a-f0-9]{64}', value['plan_sha256'])
             or type(value['base_slots']) is not int or value['base_slots'] != base
             or type(value['maximum']) is not int or value['maximum'] != maximum
@@ -94,6 +154,16 @@ def validate_b2_retry_binding(value):
             or set(value['b2_slots']) != {s for s,stage in value['slot_stages'].items() if stage == 'B2'}
             or any(not s or not t for s,t in value['b2_slots'].items())):
         raise ValueError('model_b2_per_ticker_retry_binding_invalid')
+    if stage_tail_retry(value):
+        stages = value['slot_stages']
+        deps = value['slot_dependencies']
+        previous = {'CORE':'MARKET','A':'CORE','B':'A','B2':'B'}
+        if (not isinstance(deps,dict) or set(deps)!=set(stages)
+                or any(not isinstance(ds,list) or
+                    (ds!=[] if stages[s]=='MARKET' else
+                     len(ds)!=1 or stages.get(ds[0])!=previous[stages[s]])
+                    for s,ds in deps.items())):
+            raise ValueError('stage_tail_dependency_binding_invalid')
     return value
 
 

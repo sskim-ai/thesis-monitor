@@ -297,12 +297,19 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
                 and (self.retry_market!='kr' or market_retry or stock_retry)
                 and (not fresh or self.bound[slot_id]['stage'] == 'B2' or market_retry or stock_retry)):
             return True
-        if (self.bound[slot_id]['stage'] == 'B2' and self.retry_market!='kr'
+        from app.services.model_timeout_retry import stage_tail_retry
+        tail = stage_tail_retry(self.b2_retry_policy)
+        if ((tail and self.bound[slot_id]['stage'] in ('CORE','A','B','B2')
+                and len(self.attempts[slot_id])==2)
+                or (self.bound[slot_id]['stage'] == 'B2' and self.retry_market!='kr'
                 and not (self.b2_retry_policy and self.timeout_retry_cap)
-                and (not self.b2_retry_policy or len(self.attempts[slot_id]) == 2)):
+                and (not self.b2_retry_policy or len(self.attempts[slot_id]) == 2))):
             self._journal_state('RETRY_EXHAUSTED', slot_id=slot_id)
             try:
-                self.run_ledger.model_b2_timeout_exhausted(self.bound[slot_id])
+                if tail:
+                    self.run_ledger.model_slot_timeout_exhausted(self.bound[slot_id])
+                else:
+                    self.run_ledger.model_b2_timeout_exhausted(self.bound[slot_id])
             except Exception:
                 self.stop()
                 raise
@@ -356,4 +363,9 @@ class SolHighCallBudget(FourPanelSolHighCallBudgetV1):
                           timeout_retries=self.retry_used, unissued=len(self.exhausted))
         if self.b2_retry_policy:
             result['b2_retry_policy'] = self.b2_retry_policy
+            from app.services.model_timeout_retry import stage_tail_retry, dependency_skips
+            if stage_tail_retry(self.b2_retry_policy):
+                skipped = dependency_skips(self.b2_retry_policy,self.exhausted)
+                result['dependency_skipped_slots'] = sorted(skipped)
+                result['remaining_planned_slots'] -= len(skipped)
         return result

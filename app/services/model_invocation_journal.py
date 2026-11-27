@@ -7,12 +7,20 @@ from pathlib import Path
 from app.services.unified_snapshot_contract import digest, encoded
 from app.services.model_timeout_retry import (
     validate_timeout, validate_b2_retry_binding, market_timeout_retry_cap, b2_retry_budget_bounds, stock_slot_retry,
+    stage_tail_retry, dependency_skips, initial_stage_done,
 )
 
 
 def _empty():
     return dict(bound={}, used=set(), accepted={}, inherited={}, stopped=False,
                 attempts={}, timeouts={}, exhausted=set(), retry_used=0, physical_calls=0)
+
+
+def running_slots(state, policy):
+    unresolved = state['used']-state['accepted'].keys()-state['exhausted']
+    if not stage_tail_retry(policy):
+        return unresolved
+    return {s for s in unresolved if len(state['attempts'].get(s,()))!=len(state['timeouts'].get(s,()))}
 
 
 def read_invocation_journal(raw, identity=None):
@@ -113,6 +121,9 @@ def _apply(state, event, value, identity):
         cap = identity.get('timeout_retry_cap', 0)
         retry_enabled = bool(cap or policy)
         unresolved = state['used'] - state['accepted'].keys() - state['exhausted']
+        tail = stage_tail_retry(policy)
+        running = running_slots(state,policy)
+        parked = unresolved-running
         if event == 'BIND':
             scope = value['scope']
             if (slot in state['bound'] or slot != scope['slot_id']
@@ -120,6 +131,8 @@ def _apply(state, event, value, identity):
                     or policy and (scope['stage'] != policy['slot_stages'].get(slot)
                         or scope.get('market')!=identity.get('timeout_retry_market','us')
                         or scope['stage'] == 'B2' and scope.get('subjects') != [policy['b2_slots'][slot]])
+                    or (tail and (slot in dependency_skips(policy,state['exhausted'])
+                        or set(scope['dependency_outputs'])!=set(policy['slot_dependencies'][slot])))
                     or any(state['accepted'].get(k) != v for k,v in scope['dependency_outputs'].items())):
                 raise ValueError('model_journal_binding_or_dependency_gap')
             state['bound'][slot] = scope
@@ -135,7 +148,10 @@ def _apply(state, event, value, identity):
         elif event == 'CONSUME':
             if (slot not in state['bound'] or slot in state['used']
                     or slot == identity.get('inherited_market_slot')
-                    or unresolved or len(state['used']) >= (policy['base_slots'] if policy else identity['maximum'] - cap)
+                    or running or (tail and any(
+                        policy['slot_stages'][other]!=policy['slot_stages'][slot]
+                        or len(state['attempts'][other])!=1 for other in parked))
+                    or len(state['used']) >= (policy['base_slots'] if policy else identity['maximum'] - cap)
                     or state['physical_calls'] >= identity['maximum']):
                 raise ValueError('model_journal_used_parallel_or_exhausted')
             if retry_enabled:
@@ -147,7 +163,7 @@ def _apply(state, event, value, identity):
             validate_timeout(proof)
             attempt = state['attempts'].get(slot, ())
             existing = state['timeouts'].get(slot, [])
-            if (not retry_enabled or unresolved != {slot} or not attempt or len(existing) != len(attempt)-1
+            if (not retry_enabled or running != {slot} or not attempt or len(existing) != len(attempt)-1
                     or any(proof[k] != attempt[-1][k] for k in ('attempt_id','prompt_sha256','schema_sha256'))):
                 raise ValueError('model_journal_timeout_binding')
             state['timeouts'][slot] = [*existing, proof]
@@ -155,7 +171,10 @@ def _apply(state, event, value, identity):
             stock_retry = stock_slot_retry(policy, slot)
             market_retry = state['bound'][slot]['stage']=='MARKET' and market_timeout_retry_cap(
                 policy,retry_cap=cap,retry_market=identity.get('timeout_retry_market','us'))
-            if (not retry_enabled or unresolved != {slot} or len(state['attempts'].get(slot, ())) != 1
+            if (not retry_enabled or (running or slot not in parked
+                    or not initial_stage_done(policy,state['bound'][slot]['stage'],state['used'],state['exhausted'])
+                    or any(policy['slot_stages'][other]!=policy['slot_stages'][slot] for other in parked)
+                    if tail else unresolved != {slot}) or len(state['attempts'].get(slot, ())) != 1
                     or len(state['timeouts'].get(slot, ())) != 1
                     or (not (stock_retry or market_retry) if policy else state['retry_used'] >= cap)
                     or policy and state['retry_used'] >= identity['maximum']-policy['base_slots']
@@ -167,15 +186,17 @@ def _apply(state, event, value, identity):
             state['physical_calls'] += 1
         elif event == 'RETRY_EXHAUSTED':
             attempts = state['attempts'].get(slot, ())
-            if (not retry_enabled or unresolved != {slot} or state['bound'][slot]['stage'] != 'B2'
-                    or identity.get('timeout_retry_market')=='kr'
+            if (not retry_enabled or (running or slot not in parked
+                    or state['bound'][slot]['stage'] not in ('CORE','A','B','B2')
+                    if tail else unresolved != {slot} or state['bound'][slot]['stage']!='B2'
+                    or identity.get('timeout_retry_market')=='kr')
                     or policy and cap
                     or not attempts or len(state['timeouts'].get(slot, ())) != len(attempts)
                     or (len(attempts) != 2 if policy else len(attempts) == 1 and state['retry_used'] < cap)):
                 raise ValueError('model_journal_b2_exhaustion_unproven')
             state['exhausted'].add(slot)
         elif event == 'ACCEPT':
-            if (slot not in unresolved or retry_enabled and (
+            if (slot not in running or retry_enabled and (
                     len(state['timeouts'].get(slot, ())) == len(state['attempts'][slot])
                     or value.get('attempt_id') != state['attempts'][slot][-1]['attempt_id'])):
                 raise ValueError('model_journal_acceptance_gap')
