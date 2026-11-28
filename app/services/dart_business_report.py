@@ -161,19 +161,41 @@ _SOURCE_SUBJECT = re.compile(
     r"^(?:(?:당사(?:의)?\s*)?(?:주요\s*)?(?:종속(?:회사|기업)|자회사)(?:인)?\s*)?"
     r"((?:㈜|\(주\))?[^\W\d_][\w&·ㆍ]{1,28}?)(?:은|는)\s+")
 _HEADING = re.compile(r"^[■●◆]\s*[^.]{1,100}$|^(?:[가-힣]\.\s*)[^.]{1,45}(?:부문|사업)$")
+_DIVISION_COMPANY = re.compile(_SCOPE_MARKER.pattern + r"\s*[■●◆]\s*[\w㈜()&·ㆍ -]{1,60}")
+_DIVISION_ONLY = re.compile(r"\[[^\[\]]{0,60}(?:부문|사업부)\s*\]")
+_LEGAL_FORM = r"(?:㈜|\(주\)|주식회사)"
+_NAMED_COMPANY = re.compile(_LEGAL_FORM + r"|(?:대상|해당)회사\s*[:：]")
+_BARE_COMPANY = re.compile(
+    r"(?:(?:\d{1,2}|[가-힣])[.)]\s*)?"
+    rf"({_LEGAL_FORM}\s*[\w&·ㆍ-]{{1,40}}|[\w&·ㆍ-]{{1,40}}\s*{_LEGAL_FORM})"
+    r"(?:\s*\d{1,2}\)\s*[^.!?]{1,25})?")
+_COMPANY_LIST = re.compile(rf"(?:{_LEGAL_FORM}[^\]]+?(?:[,;]|\s및\s).*?{_LEGAL_FORM}"
+                          r"|(?:대상|해당)회사\s*[:：].+?(?:[,;]|\s및\s))")
 
 
 def source_heading(text):
     text = text.strip()
+    bare = _BARE_COMPANY.fullmatch(text)
+    if bare:
+        return bare[1]
     if (_SCOPE_MARKER.fullmatch(text) or _HEADING.fullmatch(text)
+            or _DIVISION_COMPANY.fullmatch(text)
             or re.fullmatch(r"\[[^]]{1,60}\]\s*(?:대상|해당)회사\s*[:：]\s*.{1,60}", text)):
         return text
+    return ""
+
+
+def _continuing_heading(label):
+    if (_DIVISION_COMPANY.fullmatch(label) or _NAMED_COMPANY.search(label) or _DIVISION_ONLY.fullmatch(label)
+            or re.fullmatch(r"[■●◆]\s*[\w&·ㆍ-]{2,40}", label)):
+        return label
     return ""
 
 
 def _sentences(raw, heading=""):
     offset = 0
     named = ""
+    sentences = []
     for chunk in re.split(r"</?SPAN(?=[\s>])[^<>]*>|<BR\s*/?>|\n", raw, flags=re.I):
         pos = raw.find(chunk, offset) if chunk else offset
         offset = pos + len(chunk)
@@ -182,6 +204,9 @@ def _sentences(raw, heading=""):
         if label:
             heading, named = label, ""
             continue
+        if content.startswith(("[", "■", "●", "◆")):
+            # An incomplete or unfamiliar heading still ends the preceding scope.
+            heading = named = ""
         for sentence in re.split(r"(?<=[다요음임됨함][.!?])\s*|(?<=[.!?])\s+(?!\d)", content):
             marker = _SCOPE_MARKER.match(sentence)
             if marker:
@@ -189,10 +214,18 @@ def _sentences(raw, heading=""):
             lead = sentence[marker.end():] if marker else sentence
             explicit = _SOURCE_SUBJECT.match(lead)
             if explicit and (marker or explicit.start(1) or re.match(r"[A-Z㈜(]", explicit[1])):
+                if (not marker and explicit[1] not in heading and not _DIVISION_ONLY.fullmatch(heading)
+                        and _continuing_heading(heading)):
+                    heading = ""
                 named = explicit[0].strip()[:-1]
+            if (not named and _COMPANY_LIST.search(heading)
+                    and re.search(r"당사|(?:^|\s)회사(?:는|의|가|에서)", sentence)):
+                # A first-person claim under a list of companies has no single stated actor.
+                continue
             prefix = " ".join(s for s in (heading, named) if s and s not in sentence)
             if 18 <= len(sentence) <= 350 and len(prefix) + len(sentence) <= 347:
-                yield sentence, pos, prefix
+                sentences.append((sentence, pos, prefix))
+    return sentences, _continuing_heading(heading)
 
 
 def _text_candidate(sentence, section, scope, line, prefix):
@@ -272,18 +305,27 @@ def parse_dart_business_report(xml: bytes, *, corp_code: str, report_code: str) 
             sections.append(dict(chapter=chapter, title=sub, line=lineno(begin)))
         for section, scope, a, b in _scoped(doc, chapter, sub, begin, stop):
             previous = []
+            business_heading = ""
             blocks = list(_blocks(doc, a, b))
             for i, (kind, p, q) in enumerate(blocks):
                 raw = doc[p:q]
                 if kind == "text":
-                    if not plain(raw):
+                    paragraph = plain(raw)
+                    if not paragraph:
                         continue
                     lead = source_heading(previous[-1]) if previous else ""
-                    for sentence, rel, prefix in _sentences(raw, lead):
+                    # Company headings span data tables. Unit/period hints stay local to each table.
+                    sentences, last_heading = _sentences(raw, business_heading or lead)
+                    if scope == "business_section":
+                        # Some XML paragraphs split a single literal heading across styled spans.
+                        if _SCOPE_MARKER.fullmatch(paragraph) or _DIVISION_COMPANY.fullmatch(paragraph):
+                            last_heading = _continuing_heading(paragraph)
+                        business_heading = last_heading
+                    for sentence, rel, prefix in sentences:
                         row = _text_candidate(sentence, section, scope, lineno(p + rel), prefix)
                         if row:
                             texts.append(row)
-                    previous = (previous + [plain(raw)])[-2:]
+                    previous = (previous + [paragraph])[-2:]
                     continue
                 rows = _grid(raw, p, lineno)
                 if not rows:
@@ -294,7 +336,7 @@ def parse_dart_business_report(xml: bytes, *, corp_code: str, report_code: str) 
                         for cell in dict.fromkeys(row):
                             if len(cell.text) < 35 or not cell.tag == "TE":
                                 continue
-                            for sentence, _, prefix in _sentences(cell.text):
+                            for sentence, _, prefix in _sentences(cell.text)[0]:
                                 candidate = _text_candidate(sentence, section, scope, cell.line, prefix)
                                 if candidate:
                                     score, topic, obj = candidate

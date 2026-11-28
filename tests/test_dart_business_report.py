@@ -124,6 +124,50 @@ def test_subsidiary_title_and_actor_survive_same_paragraph_switch():
     assert "기타부문" in excerpt and "가상물류" in excerpt and "장비부문" not in excerpt
 
 
+def test_compound_heading_keeps_the_company_when_a_peer_takes_over():
+    first = "당분기말 현재 당사의 수주잔고 총액은 전분기보다 크게 증가하였습니다."
+    second = "신규 설비 도입에 따른 생산능력의 확대를 완료하였습니다."
+    data = ("<P><SPAN>[기반시설(건설부문)]</SPAN><SPAN>■ 가상건설</SPAN></P>"
+            f"<P><SPAN>{first}</SPAN><SPAN>[기반시설(무역부문)]■ 가상무역</SPAN></P>"
+            "<P>가. 주요 생산시설</P>" + table([[td("시설 현황")]]) + f"<P>{second}</P>")
+    rows = {r["source_text"]: r["excerpt"] for r in parse(report(data))["texts"]}
+    assert rows[first] == "[기반시설(건설부문)] ■ 가상건설 — " + first
+    assert rows[second] == "[기반시설(무역부문)]■ 가상무역 — " + second
+
+
+def test_company_heading_crosses_sales_paragraphs_and_tables_within_its_section():
+    first = "배송 경쟁력 강화를 위해 유통사와의 협력을 확대하고 있습니다."
+    second = "당사의 신규수주는 주요 고객의 재계약으로 증가하였습니다."
+    third = "연결 기업은 일회성 비용의 영향으로 영업이익이 감소하였습니다."
+    sales_table = table([[td("판매처"), td("㈜가상고객")]])
+    data = ("<P><SPAN>[ ㈜가상유통 ]</SPAN><SPAN>(1) 판매조직</SPAN></P><P>(2) 판매경로</P>"
+            + sales_table + "<P>(3) 판매 방법 및 조건</P>" + sales_table
+            + f"<P>(4) 판매전략</P><P>{first}</P>"
+            + "<P>가상건설(주)</P>" + sales_table + f"<P>{second}</P>"
+            + f"</SECTION-2><SECTION-2><TITLE>2. 시장 현황</TITLE><P>{third}</P>")
+    rows = {r["source_text"]: r["excerpt"] for r in parse(report(data))["texts"]}
+    assert rows[first] == "[ ㈜가상유통 ] — " + first
+    assert rows[second] == "가상건설(주) — " + second
+    assert rows[third] == third
+
+
+def test_unresolved_division_replaces_the_previous_company_without_granting_consolidated_scope():
+    quote = "당분기 중 진행한 공장 증설로 사업부의 생산능력이 확대되었습니다."
+    data = ("<P>[산업부문] ■ 가상생산</P><P>(2) 설비투자</P>"
+            "<P>[기타부문]</P>" + table([[td("투자 현황")]]) + f"<P>{quote}</P>")
+    row, = parse(report(data))["texts"]
+    assert (row["source_text"], row["excerpt"], row["scope"]) == (quote, "[기타부문] — " + quote, "business_section")
+
+
+def test_first_person_claim_under_multiple_named_companies_is_optional():
+    data = ("<P>[설비부문] 대상회사 : ㈜가상기계, ㈜가상조립</P>" + table([[td("생산 현황")]])
+            + "<P>당사의 생산능력은 신규 설비 가동에 힘입어 확대되었습니다.</P>"
+            + "<P>2. ㈜가상조립</P><P>1) 영업 개황</P>"
+            + "<P>당사의 수주잔고는 주요 고객과의 재계약으로 증가하였습니다.</P>")
+    row, = parse(report(data))["texts"]
+    assert row["excerpt"].startswith("㈜가상조립 — 당사의 수주잔고")
+
+
 def test_compound_contract_subtotals_cannot_be_used_as_a_whole_payment():
     def contract(amount):
         data = table([[td(k), td(v)] for k,v in [
