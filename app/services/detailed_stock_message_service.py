@@ -533,10 +533,10 @@ def _kr_dated_structure_row(packet, source):
     from app.services.kr_dated_structure import CONTRACT
     if packet.market != 'kr':
         return None
-    chart = source['packet']['stocks'][0]['chart_context']
+    chart = source['packet']['stocks'][0].get('chart_context') or {}
     ref = chart.get('structure', {}).get('price_structure_v3') or {}
     if (ref.get('contract') != CONTRACT or ref.get('ticker') != packet.ticker
-            or not ref.get('as_of') or ref['as_of'] != chart['timeframes']['daily'].get('as_of_date')
+            or not ref.get('as_of') or ref['as_of'] != chart.get('timeframes', {}).get('daily', {}).get('as_of_date')
             or ref.get('adjustment_basis') != 'provider_adjusted_price_v1'
             or ref.get('eligible_for_current_price') is not False
             or ref.get('eligible_for_b2_timing') is not False or not ref.get('zones')):
