@@ -105,6 +105,13 @@ SELL restriction, exact quality limits, and frozen Overall/Holder. Low multiples
 do not prove cheapness, high multiples alone do not prove burden. No implied EPS, target,
 new ratio or price range. Use Korean qualitative prose, without unbound numbers.
 """
+    if model_input.get('economic_context', {}).get('filing_scope'):
+        prompt += """
+When an issuer filing explains your economic judgment, identify the product, segment or
+operating change in economic_reason and cite its observation ref in business_evidence_refs.
+Keep overlapping segment and product amounts separate. Attribute causes to the issuer and
+describe plans as plans. Keep dated reported diluted EPS separate from direct provider TTM EPS.
+"""
     if 'provider_reference_context' in model_input:
         prompt += '''
 Use the provider_reference_context as independently owned descriptive valuation

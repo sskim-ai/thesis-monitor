@@ -114,6 +114,12 @@ def _preopen_stock(packet, plan, base, context, output, assessment, session, sel
         entry_quality=assessment.quality, entry_reason=assessment.reason_code, **provenance)
 
 
+def _rr_basis(quality, rr, target, barrier):
+    if quality == 'BLOCKED' or rr is None or target is None:
+        return None
+    return 'ENTRY 적격 저항 기준' + (' · 중간 장벽 역할 미확정' if barrier is not None else '')
+
+
 def accepted_stock_summary(packet, plan, entry_context):
     from app.services.detailed_stock_message_v2 import (
         _completed_price_session, _entry_assessment, final_entry_action,
@@ -155,6 +161,7 @@ def accepted_stock_summary(packet, plan, entry_context):
            '표시 정밀도 미만' if scenario and sc.get('rr2_intersection')=='BELOW_DISPLAY_PRECISION' else '미산출')
     if assessment.quality=='BLOCKED':
         rr_text=rr2='구조 재검토'
+    rr_basis = _rr_basis(assessment.quality, rr, value('current_target'), value('possible_current_barrier'))
     historical = context.get('historical_price_context') or {}
     review = output.get('economic_price_review') or {}
     selected = next((r for r in historical.get('candidates',()) if r['candidate_id']==review.get('candidate_id')),None)
@@ -180,7 +187,7 @@ def accepted_stock_summary(packet, plan, entry_context):
     return dict(ticker=packet.ticker,status='COMPLETE',price=quote,
         overall=decision['overall_direction'],holder={'HOLDABLE':'HOLD','REVIEW':'REVIEW','REDUCE':'REDUCE'}[decision['holder']],
         economic=output['new_buyer'],technical=state,entry_quality=assessment.quality,
-        rr=rr_text, support=(price(entries['tactical_watch_low'])+'–'+price(entries['tactical_watch_high']) if support else '미산출'),
+        rr=rr_text, **({'rr_basis': rr_basis} if rr_basis else {}), support=(price(entries['tactical_watch_low'])+'–'+price(entries['tactical_watch_high']) if support else '미산출'),
         rr2=rr2,economic_preferred=economic,action=action,action_class=action_class,
         plan_sha256=plan.acceptance_sha256,
         preopen=_preopen_stock(packet, plan, base, context, output, assessment, session, selected,
@@ -212,7 +219,8 @@ def _render(market, completed, cutoff, rows):
                     label = '판단 자료 부족(OBSERVE) · '+row.get('price','미확보')
                 lines.append(row['ticker']+' — '+label)
                 continue
-            lines.extend((f"{row['ticker']} {row['price']} | {row['overall']} · 보유 {row['holder']} · 기술 {row['technical']} · RR {row['rr']}",
+            rr_note = ' (' + row['rr_basis'] + ')' if row.get('rr_basis') else ''
+            lines.extend((f"{row['ticker']} {row['price']} | {row['overall']} · 보유 {row['holder']} · 기술 {row['technical']} · RR {row['rr']}{rr_note}",
                 f"지지 {row['support']} | RR2 {row['rr2']} | 경제 {row['economic_preferred']}",
                 row['action']))
     return '\n'.join(lines)

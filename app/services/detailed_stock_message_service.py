@@ -652,7 +652,7 @@ def build_detailed_plan(*, packet, accepted, source_stock, core, pass_a, valuati
     if dated := _kr_dated_structure_row(packet, source):
         rows.append(dated)
     rows.extend(_kr_flow_rows(packet, source))
-    if not any(r.section == 'flow' for r in rows):
+    if packet.market != 'us' and not any(r.section == 'flow' for r in rows):
         rows.append(_row('flow', 'unavailable', '자료 부족', hashes=(digest(source),),
                          formatting='explicit-unavailable-v1'))
     rows.extend(_valuation_rows(valuation))

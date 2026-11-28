@@ -46,6 +46,16 @@ class AcceptedMarketCalibration(FrozenModel):
     display_plan: MarketDisplayPlan | None = None
 
 
+def _session_index_line(plan):
+    moves = []
+    for item in plan.items:
+        if item.block_id == 'indices' and item.status == 'AVAILABLE':
+            change = next((b.value for b in item.bindings if b.field_path == 'fields.return_pct'), None)
+            if change is not None:
+                moves.append(item.label + (' 상승' if change > 0 else ' 하락' if change < 0 else ' 보합'))
+    return '완료장 지수 흐름 · ' + ', '.join(moves) if moves else None
+
+
 def calibration_market_render(plan):
     from app.services.us_full_message_service import render_us_full_market_message
 
@@ -70,6 +80,14 @@ def calibration_market_render(plan):
         if (plan.display_plan.market != plan.market
                 or plan.display_plan.assessment_date != plan.assessment_date):
             raise ValueError('accepted_market_display_identity_invalid')
+        session_line = _session_index_line(plan.display_plan)
+        lines = [*([session_line] if session_line else []),
+                 '시장 환경 종합 판단 · ' + labels[plan.decision['regime']], lines[1],
+                 '시장 폭 판단 · ' + str(plan.decision['breadth_state']),
+                 '업종 주도력 · ' + str(plan.decision['leadership']),
+                 ('동일가중·소형주 가격 흐름과 실제 수급 · ' if plan.market == 'us' else '수급·참여 관측 · ')
+                 + str(plan.decision['flows_or_participation']),
+                 '금융 여건 (각 지표 관측일 기준) · ' + str(plan.decision['rates_or_macro_context'])]
         narrative = '\n'.join(lines)
         text = render_display_plan(plan.display_plan, plan.source_context, narrative)
         if final_display_audit(text, plan.display_plan, plan.source_context, narrative)['status'] != 'PASS':

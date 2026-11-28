@@ -36,6 +36,10 @@ from app.services.bounded_fpi_followup import verify_followup
 
 METRICS = ("revenue", "operating_income", "net_income")
 CONTRACT = "bounded-official-financial-projection-v1"
+DART_BUSINESS_BALANCE_CONCEPTS = {
+    'cash_and_cash_equivalents': 'ifrs-full_cashandcashequivalents',
+    'inventory': 'ifrs-full_inventories',
+}
 # Process-local producer provenance, rebuilt by original sealed-input replay.
 # A public projection/hash cannot populate this registry.
 _ORIGINAL_PROJECT_REPLAYS = {}
@@ -105,8 +109,110 @@ def field_record(plan, *, metric, value, lineage, quality, raw_sha, role, allow_
     return result
 
 
+def reported_filing_context(plan, acquisition, directory, receipts):
+    """Use current discovery-selected documents from the verified acquisition only."""
+    from pathlib import Path
+    from app.services.bounded_financial_acquisition import sec_document_identity
+    from app.services.reported_filing_context import extract_filing, select_observations
+
+    if plan['provider'] != 'sec_edgar':
+        return []
+    texts, fields = [], []
+    for doc in acquisition['documents']:
+        filing = doc['filing']
+        if (filing not in acquisition['selected_filings'] or filing.get('role') != 'current'
+                or filing['form'].split('/')[0] not in ('10-K', '10-Q', '20-F', '40-F', '6-K')
+                or not filing.get('reportDate') or not filing.get('filingDate')
+                or not filing['reportDate'] <= filing['filingDate'] <= plan['cutoff'][:10]):
+            continue
+        url = sec_document_identity(doc['url'], plan, filing)
+        if not url.lower().endswith(('.htm', '.html', '.xhtml')):
+            continue
+        raw = _raw(Path(directory), doc['artifact'], receipts)
+        excerpts, segments = extract_filing(plan, filing, url.rsplit('/', 1)[1], raw)
+        texts.extend(excerpts)
+        fields.extend(segments)
+    return select_observations(texts, fields)
+
+
+def _sec_context_fields(plan, filing, raw, extended_sec_fields, *, business_analysis_fields=False):
+    fields, denied = [], []
+    payload = json.loads(raw)
+    if str(payload.get('cik', '')).lstrip('0') != plan['issuer'].lstrip('0'):
+        raise ValueError('issuer_mismatch')
+    raw_sha = sha256_bytes(raw)
+    concepts = {
+        'NetCashProvidedByUsedInOperatingActivities': ('operating_cashflow', 'duration'),
+        'NetIncomeLoss': ('owners_parent_net_income', 'duration'),
+        'Assets': ('assets', 'instant'), 'Liabilities': ('liabilities', 'instant'),
+        'StockholdersEquity': ('stockholders_equity', 'instant'),
+        'LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities': ('debt_including_current', 'instant'),
+    }
+    if extended_sec_fields:
+        concepts.update({
+            'StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest': ('equity', 'instant'),
+            'MinorityInterest': ('noncontrolling_interest', 'instant'),
+            'CashAndCashEquivalentsAtCarryingValue': ('cash_and_cash_equivalents', 'instant'),
+        })
+    if business_analysis_fields:
+        concepts.update({
+            'EarningsPerShareDiluted': ('diluted_eps', 'duration'),
+            'PaymentsToAcquirePropertyPlantAndEquipment': ('ppe_capex_cash_outflow', 'duration'),
+            'PaymentsForRepurchaseOfCommonStock': ('share_repurchases', 'duration'),
+            'PaymentsOfDividendsCommonStock': ('dividends', 'duration'),
+        })
+    for concept, (metric, kind) in concepts.items():
+        groups = {}
+        units = payload.get('facts', {}).get('us-gaap', {}).get(concept, {}).get('units', {})
+        for unit, items in units.items():
+            for ordinal, item in enumerate(items):
+                if item.get('accn') != filing['accessionNumber'] or item.get('end') != filing['reportDate']:
+                    continue
+                key = (item.get('start'), item.get('end'), unit)
+                groups.setdefault(key, []).append((ordinal, item))
+        if not groups:
+            denied.append(dict(metric=metric, reason='EXACT_CURRENT_OCCURRENCE_ABSENT'))
+        for (start, end, unit), candidates in groups.items():
+            errors = []
+            if len(candidates) != 1:
+                denied.append(dict(metric=metric, reason='AMBIGUOUS_EXACT_OCCURRENCE', period=[start, end]))
+                continue
+            ordinal, item = candidates[0]
+            if (item.get('form') != filing['form'] or item.get('filed') != filing['filingDate']
+                    or not isinstance(item.get('fy'), int) or isinstance(item.get('fy'), bool)
+                    or item.get('fp') not in ('Q1', 'Q2', 'Q3', 'FY')):
+                errors.append('FILING_OR_FISCAL_METADATA_MISMATCH')
+            expected_unit = 'USD/shares' if metric == 'diluted_eps' else 'USD'
+            if unit != expected_unit:
+                errors.append('UNSUPPORTED_CONTEXT_UNIT' if metric == 'diluted_eps' else 'UNSUPPORTED_CONTEXT_CURRENCY')
+            if (kind == 'instant' and start is not None) or (kind == 'duration' and not start):
+                errors.append('DURATION_INSTANT_MISMATCH')
+            role = 'point_in_time' if kind == 'instant' else 'reported_duration'
+            if kind == 'duration' and item.get('fp') in ('Q1', 'Q2', 'Q3', 'FY') and start == f"{item.get('fy')}-01-01":
+                expected_end = {'Q1': '03-31', 'Q2': '06-30', 'Q3': '09-30', 'FY': '12-31'}[item['fp']]
+                if end == f"{item['fy']}-{expected_end}":
+                    role = 'full_year' if item['fp'] == 'FY' else 'year_to_date_cumulative'
+            elif kind == 'duration':
+                try:
+                    if (date.fromisoformat(end)-date.fromisoformat(start)).days in range(70, 101):
+                        role = 'reported_quarter_duration'
+                except (ValueError, TypeError):
+                    errors.append('PERIOD_UNRESOLVED')
+            lineage = dict(source_document_id=item.get('accn'), source_document_type=item.get('form'),
+                filing_date=item.get('filed'), occurrence_id=f'facts.us-gaap.{concept}.units.{unit}[{ordinal}]',
+                semantic='us-gaap:'+concept, period_start=start if kind == 'duration' else end,
+                period_end=end, period_role=role, period_kind=kind,
+                statement_basis='sec_companyfacts_entity_wide', currency='USD' if unit == 'USD/shares' else unit, unit=unit, unit_scale=1,
+                exact_source_occurrence=deepcopy(item), fiscal_year=item.get('fy'), fiscal_period=item.get('fp'),
+                consolidation_explicitly_proven=False, accounting_standard='US-GAAP')
+            fields.append(field_record(plan, metric=metric, value=item.get('val'), lineage=lineage,
+                quality=errors, raw_sha=raw_sha, role='current', allow_instant=True))
+    return fields, denied
+
+
 def reported_context_fields(plan, acquisition, directory, receipts, *, expected_projection,
-                            project_options=None, documentary_input=None, extended_sec_fields=False):
+                            project_options=None, documentary_input=None, extended_sec_fields=False,
+                            business_analysis_fields=False):
     """Opt-in absolute CF/BS occurrences through the original capture boundary.
 
     This does not add metrics to the comparative/Native owner. In particular,
@@ -118,7 +224,8 @@ def reported_context_fields(plan, acquisition, directory, receipts, *, expected_
         raise ValueError('reported_context_plain_source_directory_required')
     for receipt in receipts:
         names = [receipt['logical_id'].split(':')[-1]+'.plan.json']
-        if receipt.get('artifact'): names.append(receipt['artifact'])
+        if receipt.get('artifact'):
+            names.append(receipt['artifact'])
         for name in names:
             path = directory/name
             if Path(name).name != name or path.is_symlink() or not path.is_file() or path.stat().st_nlink != 1:
@@ -136,67 +243,8 @@ def reported_context_fields(plan, acquisition, directory, receipts, *, expected_
         if filing.get('form') not in ('10-Q', '10-K') or not acquisition.get('companyfacts_artifact'):
             return dict(fields=[], denied=[dict(metric='all', reason='FOREIGN_CONTEXT_FIELD_SCOPE_NOT_QUALIFIED')])
         raw = _raw(directory, acquisition['companyfacts_artifact'], receipts)
-        payload = json.loads(raw)
-        if str(payload.get('cik', '')).lstrip('0') != plan['issuer'].lstrip('0'):
-            raise ValueError('issuer_mismatch')
-        concepts = {
-            'NetCashProvidedByUsedInOperatingActivities': ('operating_cashflow', 'duration'),
-            'NetIncomeLoss': ('owners_parent_net_income', 'duration'),
-            'Assets': ('assets', 'instant'), 'Liabilities': ('liabilities', 'instant'),
-            'StockholdersEquity': ('stockholders_equity', 'instant'),
-            'LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities': ('debt_including_current', 'instant'),
-        }
-        if extended_sec_fields:
-            concepts.update({
-                'StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest': ('equity', 'instant'),
-                'MinorityInterest': ('noncontrolling_interest', 'instant'),
-                'CashAndCashEquivalentsAtCarryingValue': ('cash_and_cash_equivalents', 'instant'),
-            })
-        for concept, (metric, kind) in concepts.items():
-            groups = {}
-            units = payload.get('facts', {}).get('us-gaap', {}).get(concept, {}).get('units', {})
-            for unit, items in units.items():
-                for ordinal, item in enumerate(items):
-                    if item.get('accn') != filing['accessionNumber'] or item.get('end') != filing['reportDate']:
-                        continue
-                    key = (item.get('start'), item.get('end'), unit)
-                    groups.setdefault(key, []).append((ordinal, item))
-            if not groups:
-                denied.append(dict(metric=metric, reason='EXACT_CURRENT_OCCURRENCE_ABSENT'))
-            for (start, end, unit), candidates in groups.items():
-                errors = []
-                if len(candidates) != 1:
-                    denied.append(dict(metric=metric, reason='AMBIGUOUS_EXACT_OCCURRENCE', period=[start, end]))
-                    continue
-                ordinal, item = candidates[0]
-                if (item.get('form') != filing['form'] or item.get('filed') != filing['filingDate']
-                        or not isinstance(item.get('fy'), int) or isinstance(item.get('fy'), bool)
-                        or item.get('fp') not in ('Q1', 'Q2', 'Q3', 'FY')):
-                    errors.append('FILING_OR_FISCAL_METADATA_MISMATCH')
-                if unit != 'USD':
-                    errors.append('UNSUPPORTED_CONTEXT_CURRENCY')
-                if (kind == 'instant' and start is not None) or (kind == 'duration' and not start):
-                    errors.append('DURATION_INSTANT_MISMATCH')
-                role = 'point_in_time' if kind == 'instant' else 'reported_duration'
-                if kind == 'duration' and item.get('fp') in ('Q1', 'Q2', 'Q3', 'FY') and start == f"{item.get('fy')}-01-01":
-                    expected_end = {'Q1': '03-31', 'Q2': '06-30', 'Q3': '09-30', 'FY': '12-31'}[item['fp']]
-                    if end == f"{item['fy']}-{expected_end}":
-                        role = 'full_year' if item['fp'] == 'FY' else 'year_to_date_cumulative'
-                elif kind == 'duration':
-                    try:
-                        if (date.fromisoformat(end)-date.fromisoformat(start)).days in range(70, 101):
-                            role = 'reported_quarter_duration'
-                    except (ValueError, TypeError):
-                        errors.append('PERIOD_UNRESOLVED')
-                lineage = dict(source_document_id=item.get('accn'), source_document_type=item.get('form'),
-                    filing_date=item.get('filed'), occurrence_id=f'facts.us-gaap.{concept}.units.{unit}[{ordinal}]',
-                    semantic='us-gaap:'+concept, period_start=start if kind == 'duration' else end,
-                    period_end=end, period_role=role, period_kind=kind,
-                    statement_basis='sec_companyfacts_entity_wide', currency=unit, unit=unit, unit_scale=1,
-                    exact_source_occurrence=deepcopy(item), fiscal_year=item.get('fy'), fiscal_period=item.get('fp'),
-                    consolidation_explicitly_proven=False, accounting_standard='US-GAAP')
-                fields.append(field_record(plan, metric=metric, value=item.get('val'), lineage=lineage,
-                    quality=errors, raw_sha=sha256_bytes(raw), role='current', allow_instant=True))
+        fields, denied = _sec_context_fields(plan, filing, raw, extended_sec_fields,
+                                            business_analysis_fields=business_analysis_fields)
     elif plan['provider'] == 'opendart':
         from app.services.opendart_financial_recovery_service import FieldSpec, select_basis_occurrence
         docs = [d for d in acquisition['documents'] if d['filing'].get('receipt_no') == filing['receipt_no']
@@ -204,7 +252,8 @@ def reported_context_fields(plan, acquisition, directory, receipts, *, expected_
         if len(docs) != 1:
             return dict(fields=[], denied=[dict(metric='all', reason='EXACT_CONSOLIDATED_DOCUMENT_REQUIRED')])
         raw = _raw(directory, docs[0]['artifact'], receipts)
-        payload = json.loads(raw); rows = payload.get('list', [])
+        payload = json.loads(raw)
+        rows = payload.get('list', [])
         if payload.get('status') != '000' or any(
                 str(r.get('rcept_no')) != filing['receipt_no'] or str(r.get('corp_code')) != plan['issuer']
                 or str(r.get('bsns_year')) != str(filing['business_year']) or r.get('reprt_code') != filing['report_code']
@@ -212,6 +261,9 @@ def reported_context_fields(plan, acquisition, directory, receipts, *, expected_
             raise ValueError('STATEMENT_RESPONSE_FILING_IDENTITY_MISMATCH')
         specs = {k: FIELD_SPECS[k] for k in ('assets', 'equity', 'operating_cash_flow')}
         specs['liabilities'] = FieldSpec('liabilities', ('ifrs-full_liabilities',), (), ('BS',))
+        if business_analysis_fields:
+            specs.update({k: FieldSpec(k, (concept,), (), ('BS',))
+                          for k, concept in DART_BUSINESS_BALANCE_CONCEPTS.items()})
         recovered = None
         if documentary_input is not None:
             from app.services.opendart_financial_recovery_service import promote_recovered_fields
@@ -235,7 +287,8 @@ def reported_context_fields(plan, acquisition, directory, receipts, *, expected_
             lineage = documentary_lineage or opendart_field_lineage(row, logical_field=metric, report_code=filing['report_code'],
                 source_column=spec.source_column, selected=True, requested_fs_div='CFS')
             errors = [] if lineage['lineage_verified'] else [lineage['denial_reason']]
-            if row.get('account_detail') not in (None, '-'): errors.append('DIMENSIONAL_CONTEXT_NOT_TOTAL')
+            if row.get('account_detail') not in (None, '-'):
+                errors.append('DIMENSIONAL_CONTEXT_NOT_TOTAL')
             witness = dict(source_document_id=filing['receipt_no'], source_document_type=filing['report_code'],
                 filing_date=filing['receipt_date'], occurrence_id=lineage['source_row_identity'],
                 semantic=row['account_id'], period_start=lineage['amount_period_start'],
@@ -257,7 +310,8 @@ def reported_context_fields(plan, acquisition, directory, receipts, *, expected_
     def replay_context():
         p, a, r, expected, options = deepcopy(frozen)
         return reported_context_fields(p, a, directory, r, expected_projection=expected, project_options=options,
-            documentary_input=documentary_input, extended_sec_fields=extended_sec_fields)
+            documentary_input=documentary_input, extended_sec_fields=extended_sec_fields,
+            business_analysis_fields=business_analysis_fields)
     _ORIGINAL_PROJECT_REPLAYS[('reported-context', digest(result))] = replay_context
     return result
 

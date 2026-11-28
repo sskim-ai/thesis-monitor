@@ -108,6 +108,10 @@ NUMERIC_SEMANTICS = {
         ),
         "currency_amount",
     ),
+    "segment_revenue": _spec("segment_revenue", ("KRW", "USD", "TWD", "JPY", "EUR"),
+        ("제품·사업부 매출",), (r"제품·사업부 매출",), "currency_amount"),
+    "segment_operating_income": _spec("segment_operating_income", ("KRW", "USD", "TWD", "JPY", "EUR"),
+        ("사업부 영업이익",), (r"사업부 영업이익",), "currency_amount"),
     "revenue": _spec(
         "revenue",
         ("KRW", "USD", "TWD", "JPY", "EUR"),
@@ -1412,6 +1416,8 @@ _FIELD_RULES = (
         "free_cash_flow_ppe",
         "currency",
     ),
+    NumericFieldRule(("reported_segment",), r"fields\.segment_revenue", "segment_revenue", "currency"),
+    NumericFieldRule(("reported_segment",), r"fields\.segment_operating_income", "segment_operating_income", "currency"),
     NumericFieldRule(("earnings",), r"fields\.revenue\.value", "revenue", "currency"),
     NumericFieldRule(
         ("earnings",),

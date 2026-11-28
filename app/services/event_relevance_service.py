@@ -44,6 +44,20 @@ def _contains(text: str, alias: str) -> bool:
     return alias in text
 
 
+def operating_headline_lead(title, aliases):
+    """A company-named operating development to check against a filing, not a confirmed event."""
+    headline = title.lower().rsplit(' - ', 1)[0]
+    names = [re.escape(alias.lower().strip()) for alias in aliases if alias and len(alias.strip()) >= 2]
+    if not names:
+        return False
+    subject = r'(?<![\w])(?:' + '|'.join(names) + r')(?![\w])(?:\s*\([a-z.:-]+\))?'
+    action = (r'\s+(?:has |have )?(?:secured?|securing|signs?|signed|won|wins?)\b[^.!?;]{0,55}'
+              r'\b(?:customer commitments?|supply agreements?|supply contracts?|colocation agreements?)\b')
+    facility = (r'\b(?:break(?:s|ing)? ground|broke ground|begins? construction)\s+(?:on|at)\s+'
+                + subject + r"[’']s\s+(?:[\w-]+\s+){0,4}(?:plant|factory|fab|facility)\b")
+    return bool(re.search(subject + action, headline) or re.search(facility, headline))
+
+
 class EventRelevanceService:
     def __init__(self) -> None:
         self.security_service = SecurityMasterService()

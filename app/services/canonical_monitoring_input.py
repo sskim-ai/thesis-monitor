@@ -154,10 +154,74 @@ def subject_inputs(view, authority, receipt, *, generation, atomic=()):
     return cat, sub, chain
 
 def a_input(view, cat, sub, chain, authority):
-    return preflight_current_pass_a_subject(ticker=view["ticker"], source_generation_id=chain["source_generation_id"],
+    gate = preflight_current_pass_a_subject(ticker=view["ticker"], source_generation_id=chain["source_generation_id"],
         execution_generation_id=chain["execution_generation_id"], catalog=cat, source_packet=sub,
         authority=chain["authority"], projection=chain["projection"], binding=chain["binding"], expectation=chain["expectation"],
         prohibited_pass_a_source_refs=authority["pass_a_visibility_exclusions"])
+
+    final = gate['model_context']
+    if final and (compatible := pass_a_filing_context(view, final)):
+        from app.services.unified_snapshot_contract import digest
+        final['filing_context_only'] = compatible
+        gate['receipt']['final_model_view_sha256'] = digest(final)
+    return gate
+
+
+def pass_a_filing_context(view, final):
+    rows = filing_observations(view)
+    if not rows:
+        return []
+    from scripts.m12cq_two_pass_contract import pass_a_leakage_scan
+    # The contextual material cannot be cited as an independent archetype or tier vote.
+    eligible = {r['ref_id'] for r in final['eligible_non_price_evidence']}
+    eligible &= {r['ref_id'] for r in final['source_use_projection']['source_permissions']
+                 if 'PASS_A_ARCHETYPE' in r['allowed_uses'] and 'PASS_A_ARCHETYPE' not in r.get('prohibited_uses', ())}
+    documents = {f['fields'].get('source_receipt') for f in view['packet']['stocks'][0]['fact_catalog']
+                 if f['fact_type'] == 'earnings_comparison' and 'canonical:' + f['fact_id'] in eligible}
+    return [r for r in rows if r['observation']['source_document_id'] in documents
+            and pass_a_leakage_scan([r])['status'] == 'PASS']
+
+
+def filing_observations(view):
+    from app.services.unified_snapshot_contract import digest
+    stocks = (view.get('packet') or {}).get('stocks', [])
+    owner = view.get('selected_financial_owner') or {}
+    if (len(stocks) != 1 or not stocks[0].get('reported_filing_context')
+            or owner.get('owner_type') != 'direct_sec' or owner.get('bridge_receipt')
+            or owner.get('monitored_security') != view['ticker'] or stocks[0]['ticker'] != view['ticker']
+            or owner.get('selected_projection_sha256') != digest(view.get('projection'))):
+        return []
+    security_id = (view.get('valuation_view') or {}).get('security_id')
+    result = []
+    for item in stocks[0]['reported_filing_context']:
+        source = item['observation']
+        if item['kind'] == 'FILING_EXCERPT_CONTEXT_ONLY':
+            issuer, security, ref = source['issuer_id'], source['security_id'], digest(source)
+        elif item['kind'] == 'REPORTED_SEGMENT_CONTEXT_ONLY':
+            issuer, security = source['provider_issuer_id'], source['canonical_security_id']
+            if not source.get('context_eligible') or source.get('quality_errors') or source.get('direction_eligible') is not False:
+                continue
+            ref = digest({k: v for k, v in source.items() if k != 'normalized_hash'})
+        else:
+            continue
+        if (ref == item['ref_id'] and source['ticker'] == view['ticker']
+                and issuer == owner['issuer_identity'] and security == security_id):
+            if item['kind'] == 'REPORTED_SEGMENT_CONTEXT_ONLY':
+                registry = item.get('numeric_registry_entry') or {}
+                if (registry.get('fact_id') != ref or registry.get('registered') is not True
+                        or registry.get('semantic_type') != source['metric']
+                        or registry.get('unit') != source['currency'] or registry.get('value') != source['value']):
+                    continue
+                keys = ('source_document_id','document','filing_date','dimensions','semantic','metric',
+                        'value','currency','unit','period_start','period_end','statement_basis')
+                result.append(dict(ref_id=ref, as_of=source['period_end'], kind=item['kind'],
+                    observation={k: deepcopy(source[k]) for k in keys}))
+            else:
+                result.append(dict(ref_id=ref, as_of=source['filing_date'], kind=item['kind'],
+                    observation={k: source[k] for k in ('source_document_id','document','document_type',
+                        'report_end','classification','excerpt')}))
+    return result
+
 
 def economic_context(view, context, classification, *, original_rows=None):
     """Compact existing, eligible business observations, not additional votes.
@@ -175,7 +239,8 @@ def economic_context(view, context, classification, *, original_rows=None):
     facts = {f['fact_id']: f for f in rows[0].get('fact_catalog', ())}
     permissions = {r['ref_id']: set(r.get('allowed_uses', ())) - set(r.get('prohibited_uses', ()))
                    for r in context['source_use_projection']['source_permissions']}
-    observed = []
+    filing_rows = filing_observations(view)
+    observed = list(filing_rows)
     originals = None if original_rows is None else {r['ref_id']: r for r in original_rows}
     comparison_keys = ('metric','current_value','prior_comparable_value','growth_pct',
         'period_start','period_end','prior_period_start','prior_period_end','period_type',
@@ -296,7 +361,15 @@ def economic_context(view, context, classification, *, original_rows=None):
                     source_refs=[revenue[0]['ref_id'], operating[0]['ref_id']],
                     current_pct=float(a), prior_pct=float(b), change_pp=float(a-b),
                     scope='DERIVED_CONTEXT_NOT_INDEPENDENT_DIRECTION'))
+    leads = [dict(title=r['title'], published_at=r['published_at'], source_use='HEADLINE_FOLLOWUP_ONLY')
+             for r in (view.get('event_view') or {}).get('binding', {}).get('selected', ())
+             if r.get('review_scope') == 'HEADLINE_FOLLOWUP_ONLY'
+             and r.get('reason') == 'business_relevance_failure' and r.get('published_at')]
     return dict(observations=observed, relationships=relations,
+                **({'unverified_headlines_to_check': leads[:2]} if leads else {}),
+                **({'filing_scope': 'Issuer statements are attributed context. Product and segment dimensions '
+                    'can overlap. Keep each period, unit and classification separate; do not sum dimensions, '
+                    'infer a security denominator, or convert plans to realized results.'} if filing_rows else {}),
                 classification={k: deepcopy(classification[k]) for k in ('archetype','valuation_regime_tier')
                                 if k in classification})
 

@@ -237,6 +237,9 @@ def replay_news(source: BoundNewsInput, *, security: dict, business_cutoff: date
     if values != norm["normalized"] or rejected != norm["rejected"] or candidates != norm.get("candidates"):
         raise ValueError("news_raw_normalization_replay_mismatch")
     binding.update(candidates=candidates, source_items=publication)
+    from app.services.event_relevance_service import operating_headline_lead
+    from app.services.security_master_service import SecurityMasterService
+    aliases = SecurityMasterService().aliases(SecurityMaster.model_validate(read.security))
     seen, selected = set(), []
     for event in events:
         fp = event_fingerprint(event)
@@ -261,6 +264,8 @@ def replay_news(source: BoundNewsInput, *, security: dict, business_cutoff: date
                 audit["reason"] = "identity_failure"
             elif not event.requires_review or not _baseline_evidence([event]):
                 audit["reason"] = "business_relevance_failure"
+                if fp not in seen and operating_headline_lead(event.title, aliases):
+                    audit["review_scope"] = "HEADLINE_FOLLOWUP_ONLY"
             elif fp in seen:
                 audit["reason"] = "duplicate"
             else:

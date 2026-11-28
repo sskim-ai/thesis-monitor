@@ -311,13 +311,19 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
         if not bridge and fin.get('current_financial_parent') is None:
             from app.services.bounded_financial_projection import reported_context_fields
             supplemental = reported_context_fields(fp, fin['acquisition'], fin['directory'], fin['receipts'],
-                expected_projection=projection, extended_sec_fields=True, project_options={k:fin[k]
+                expected_projection=projection, extended_sec_fields=True, business_analysis_fields=True,
+                project_options={k:fin[k]
                     for k in ('field_semantics','statement_basis_policy','basis_execution_generation',
                               'current_purpose_intake') if k in fin})
             fields = [r for r in supplemental['fields'] if r['context_eligible'] and not r['quality_errors']]
             if fields:
                 # Included in the existing stock binding, outside directional facts and valuation.
                 stock['reported_absolute_context_fields'] = fields
+        if not bridge and fp['provider'] == 'sec_edgar':
+            from app.services.bounded_financial_projection import reported_filing_context
+            filings = reported_filing_context(fp, fin['acquisition'], fin['directory'], fin['receipts'])
+            if filings:
+                stock['reported_filing_context'] = filings
         from app.services.reported_business_projection import _BUILDER_PERMIT, issue
         stock['reported_business_projection'] = issue(stock=stock, packet=packet, facts=facts,
             plan=fp, acquisition=fin['acquisition'], projection=projection, selected_owner=selected_owner,

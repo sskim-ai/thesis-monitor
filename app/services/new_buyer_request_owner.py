@@ -22,6 +22,23 @@ def _strings(value):
             yield from _strings(item)
 
 
+def _link_reported_eps(reference, observations):
+    """Allow comparison with period-labelled reported EPS, never equate it to provider TTM."""
+    reported = []
+    for item in observations:
+        row = item.get('observation')
+        if (item.get('kind') == 'REPORTED_ABSOLUTE_CONTEXT_ONLY' and isinstance(row, dict)
+                and row.get('metric') == 'diluted_eps' and row.get('semantic') == 'us-gaap:EarningsPerShareDiluted'
+                and row.get('unit') == 'USD/shares' and row.get('currency') == reference['currency']
+                and row.get('source_document_id') and row.get('period_start') and row.get('period_end')):
+            reported.append(item['ref_id'])
+    if reported:
+        for field in reference['direct']:
+            if field['field'] == 'epsTTM':
+                field['reported_diluted_eps_context_refs'] = reported
+                field['period_equivalence'] = 'NOT_ESTABLISHED_PROVIDER_TTM_VS_REPORTED_DURATION'
+
+
 def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
                   coverage_sha=None, census_sha=None, legacy_records=None, confidence=None,
                   step2_quality=False):
@@ -132,6 +149,7 @@ def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
                     for window in ('all','recent_five_years'):
                         if row.get(window):
                             row[window].pop('current_percentile',None)
+            _link_reported_eps(reference, economic['observations'])
             if reference['direct'] or reference['history']:
                 model_input['provider_reference_context'] = reference
                 reference_refs = {r['ref_id'] for r in reference['direct']+reference['history']}
@@ -199,14 +217,18 @@ def build_request(*, enabled=False, v1_request=None, coverage=None, census=None,
 
 def _required_order_only(schema):
     """JSON Schema required is a set; preserve every other array and value."""
-    if not isinstance(schema,dict):return deepcopy(schema)
+    if not isinstance(schema,dict):
+        return deepcopy(schema)
     result=deepcopy(schema)
     for key in ('properties','patternProperties','$defs','definitions','dependentSchemas'):
-        if key in schema:result[key]={k:_required_order_only(v) for k,v in schema[key].items()}
+        if key in schema:
+            result[key]={k:_required_order_only(v) for k,v in schema[key].items()}
     for key in ('anyOf','oneOf','allOf','prefixItems'):
-        if key in schema:result[key]=[_required_order_only(v) for v in schema[key]]
+        if key in schema:
+            result[key]=[_required_order_only(v) for v in schema[key]]
     for key in ('items','additionalProperties','not','if','then','else','contains','propertyNames'):
-        if key in schema:result[key]=_required_order_only(schema[key])
+        if key in schema:
+            result[key]=_required_order_only(schema[key])
     if 'required' in schema:
         values=schema['required']
         if (not isinstance(values,list) or any(not isinstance(v,str) for v in values)

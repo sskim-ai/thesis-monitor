@@ -105,6 +105,39 @@ def context_value(node):
         period_resolution_method='EXACT_INLINE_XBRL_CONTEXT')
 
 
+def monetary_value(node, unit, *, qualified=True):
+    """Read an inline monetary occurrence with its own unit, transform, scale and sign."""
+    attrs = node['attrs']
+    measures = [n for n in descendants(unit) if n['name'] == (INSTANCE, 'measure')]
+    if len(measures) != 1 or any(n['name'] == (INSTANCE, 'divide') for n in descendants(unit)):
+        raise ValueError('INLINE_UNIT_UNSUPPORTED')
+    unit_ns, currency = qname(content(measures[0]), measures[0]['ns'])
+    if unit_ns != 'http://www.xbrl.org/2003/iso4217' or not re.fullmatch('[A-Z]{3}', currency):
+        raise ValueError('INLINE_CURRENCY_UNRESOLVED')
+    if not qualified or attrs.get('continuedat') or any(k.endswith(':nil') and v != 'false' for k, v in attrs.items()):
+        raise ValueError('INLINE_PURPOSE_OR_VALUE_UNRESOLVED')
+    fmt_ns, fmt = qname(attrs.get('format', ''), node['ns'])
+    if attrs.get('format') and (fmt != 'num-dot-decimal' or not re.fullmatch(
+            r'https?://www\.xbrl\.org/inlineXBRL/transformation/\d{4}-\d{2}-\d{2}', fmt_ns)):
+        raise ValueError('INLINE_TRANSFORM_UNSUPPORTED')
+    scale = int(attrs.get('scale', '0'))
+    if str(scale) != attrs.get('scale', '0') or not -12 <= scale <= 12 or attrs.get('sign', '') not in {'', '-'}:
+        raise ValueError('INLINE_SCALE_OR_SIGN_INVALID')
+    if ('decimals' in attrs and 'precision' in attrs or
+            any(v != 'INF' and not re.fullmatch(r'-?\d+', v)
+                for k, v in attrs.items() if k in {'decimals', 'precision'}) or
+            'precision' in attrs and attrs['precision'] != 'INF' and int(attrs['precision']) <= 0):
+        raise ValueError('INLINE_ACCURACY_SEMANTICS_INVALID')
+    literal = content(node)
+    if not re.fullmatch(r'(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?', literal):
+        raise ValueError('INLINE_NUMERIC_LITERAL_UNSUPPORTED')
+    amount = Decimal(literal.replace(',', '')) * (-1 if attrs.get('sign') == '-' else 1)
+    value = amount * Decimal(10) ** scale
+    if not value.is_finite():
+        raise ValueError('INLINE_NONFINITE')
+    return currency, literal, scale, amount, value
+
+
 def extract(raw, *, issuer_cik, filing, source_url, context_documents=()):
     parser = InlineDocument()
     parser.feed(raw.decode('utf-8', errors='replace'))
@@ -157,33 +190,7 @@ def extract(raw, *, issuer_cik, filing, source_url, context_documents=()):
             period = context_value(ctx[0])
             if period['issuer_cik'] != str(issuer_cik).zfill(10):
                 raise ValueError('INLINE_ISSUER_MISMATCH')
-            measures = [n for n in descendants(unit[0]) if n['name'] == (INSTANCE, 'measure')]
-            if len(measures) != 1 or any(n['name'] == (INSTANCE, 'divide') for n in descendants(unit[0])):
-                raise ValueError('INLINE_UNIT_UNSUPPORTED')
-            unit_ns, currency = qname(content(measures[0]), measures[0]['ns'])
-            if unit_ns != 'http://www.xbrl.org/2003/iso4217' or not re.fullmatch('[A-Z]{3}', currency):
-                raise ValueError('INLINE_CURRENCY_UNRESOLVED')
-            if (not qualified or attrs.get('continuedat') or any(k.endswith(':nil') and v != 'false' for k, v in attrs.items())):
-                raise ValueError('INLINE_PURPOSE_OR_VALUE_UNRESOLVED')
-            fmt_ns, fmt = qname(attrs.get('format', ''), node['ns'])
-            if attrs.get('format') and (fmt != 'num-dot-decimal' or not re.fullmatch(
-                    r'https?://www\.xbrl\.org/inlineXBRL/transformation/\d{4}-\d{2}-\d{2}', fmt_ns)):
-                raise ValueError('INLINE_TRANSFORM_UNSUPPORTED')
-            scale = int(attrs.get('scale', '0'))
-            if str(scale) != attrs.get('scale', '0') or not -12 <= scale <= 12 or attrs.get('sign', '') not in {'', '-'}:
-                raise ValueError('INLINE_SCALE_OR_SIGN_INVALID')
-            if ('decimals' in attrs and 'precision' in attrs or
-                    any(v != 'INF' and not re.fullmatch(r'-?\d+', v)
-                        for k, v in attrs.items() if k in {'decimals', 'precision'}) or
-                    'precision' in attrs and attrs['precision'] != 'INF' and int(attrs['precision']) <= 0):
-                raise ValueError('INLINE_ACCURACY_SEMANTICS_INVALID')
-            literal = content(node)
-            if not re.fullmatch(r'(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?', literal):
-                raise ValueError('INLINE_NUMERIC_LITERAL_UNSUPPORTED')
-            amount = Decimal(literal.replace(',', '')) * (-1 if attrs.get('sign') == '-' else 1)
-            value = amount * Decimal(10) ** scale
-            if not value.is_finite():
-                raise ValueError('INLINE_NONFINITE')
+            currency, literal, scale, amount, value = monetary_value(node, unit[0], qualified=qualified)
             source_cell = dict(inline_id=attrs.get('id'), ordinal=node['ordinal'], concept=attrs['name'],
                 concept_namespace=namespace, context_id=attrs['contextref'], unit_id=attrs['unitref'],
                 literal=literal, scale=scale, sign=attrs.get('sign', ''), format=attrs.get('format'),

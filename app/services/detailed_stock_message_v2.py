@@ -1,6 +1,7 @@
 """B2-owned New Buyer and backend timing, with unchanged accepted v1 body rows."""
 from dataclasses import dataclass
 from decimal import Decimal
+import re
 from typing import Literal
 
 from app.services.detailed_stock_message_service import (
@@ -157,7 +158,7 @@ def _us_sr_rows(packet, base, axes, security_id):
     excluded = f" · {ref['target_session']} 해당 일봉 불일치 제외" if ref.get('latest_daily_exclusion') else ''
     heading = _row("price", "dated-us-sr-context",
         f"참고 지지·저항: {ref['as_of']} 완료 조정봉 · USD{excluded}\n"
-        "진입 관찰 지지 구간과 구분해 보는 가격 구조입니다.",
+        "완료봉의 참고 지지·저항입니다. 현재가 손익비는 별도의 ENTRY 적격 목표로 계산합니다.",
         facts=tuple(dict.fromkeys(value for row in rows for value in row.source_fact_ids)),
         hashes=(digest(ref),), formatting="dated-us-reference-context-v2")
     return (heading, *rows)
@@ -685,7 +686,7 @@ def _entry_lines(output, model_input, entry_context, market, session, *, assessm
         explanation = b2.economic_reason(output['economic_reason'], economic_refs | b2.historical_price_refs(model_input))
         label = {'SUPPORTIVE':'경제적 가격 지지','NEUTRAL':'중립','BURDENSOME':'가격 부담',
                  'UNRESOLVED':'적격 배수 자료 부족'}[valuation['state']]
-        lines.append(f'기업·가격 판단: {label} — {explanation}')
+        lines.append(f'기업·가격 판단: {label} — {_sentence_lines(explanation)}')
         refs.update(economic_refs)
         refs.update(output.get('provider_reference_refs', ()))
     lines.append(detail)
@@ -697,7 +698,7 @@ def _entry_lines(output, model_input, entry_context, market, session, *, assessm
                   'STABLE': '변화 제한'}.get(technical.get('change'))
         if change:
             label += ' · ' + change
-        lines.append(f'기술지표 판단: {label} — {explanation}')
+        lines.append(f'기술지표 판단: {label} — {_sentence_lines(explanation)}')
         refs.update(technical['evidence_refs'])
     lines.append(f'최종 신규매수 행동: {action}')
     return tuple(lines), tuple(sorted(refs))
@@ -772,7 +773,7 @@ def _entry_scenario_row(packet, base, assessment, session):
         'invalidation_unavailable': '무효화선 미확보',
         'non_positive_upside_or_downside': '유효 상승·하락폭 없음'}
     if target:
-        lines.append('현재가 기준 가까운 저항 하단 ' + target + (' · 손익비 ' + rr if rr else ' · 손익비 미산출'))
+        lines.append('현재가 손익비에 적용한 ENTRY 적격 저항 하단 ' + target + (' · 손익비 ' + rr if rr else ' · 손익비 미산출'))
     elif sc.get('current_rr_reason'):
         lines.append('현재 손익비 미산출: ' + reason_labels.get(sc['current_rr_reason'], '가격 구조 재확인 필요'))
     if target and not rr and sc.get('current_rr_reason'):
@@ -782,7 +783,8 @@ def _entry_scenario_row(packet, base, assessment, session):
         lines.append(f'저항까지 상승 여력 {up} · 무효화선까지 하락 위험폭 {down}')
     barrier = display('possible_current_barrier')
     if barrier:
-        lines.append('가까운 역할 미확정 구간 하단 ' + barrier + ' (저항 확정 아님)')
+        lines.append(('현재 목표까지 중간 장벽 하단 ' if target else '관찰 장벽 하단 ')
+                     + barrier + ' · 저항 역할 미확정')
     current_ceiling = display('current_rr2_ceiling_inward')
     if current_ceiling:
         lines.append('현재 목표 고정 RR 2배 수학적 상한 ' + current_ceiling + ' (관찰 지지 아님)')
@@ -795,7 +797,7 @@ def _entry_scenario_row(packet, base, assessment, session):
         midpoint_rr = display('band_rr', ratio=True)
         assumed = ' (기존 저항 재접근 가정)' if sc.get('band_target_assumption') else ''
         label = '기존 구조 참고' if assessment.quality == 'BLOCKED' else '지지 접근 가정'
-        lines.append(f'{label}: 가까운 저항 {band}{assumed}' +
+        lines.append(f'{label}: 가정 진입에 적용한 적격 저항 {band}{assumed}' +
                      (f' · 중간값 RR {midpoint_rr}' if midpoint_rr else '') +
                      f' · 손익비 2배 상한(내향 표시) {ceiling} · 지지 교집합 {note}')
     elif sc.get('band_reason') or sc.get('invalidation_reason'):
@@ -823,8 +825,10 @@ def _provider_reference_row(context):
             amount += ' (공급자 0 관측, 실적 0 확정 아님)'
         note = ''
         if 'reference_quote_quotient' in item:
-            note = (f" · 기준가 단순 몫 {item['reference_quote_quotient']:.2f}배"
-                    " (공급자 현재 배수 재계산 아님)")
+            quote = reference['reference_quote']
+            basis = {'adjusted_close':'조정종가','close':'종가','regular_close':'정규장 종가'}.get(quote['basis'],quote['basis'])
+            note = (f" · {quote['as_of']} {basis} {_price_display(quote['value'], currency)} 기준"
+                    f" 단순 몫 {item['reference_quote_quotient']:.2f}배 (원값 기준·공급자 배수와 산식 별도)")
             refs.add(item['comparison_metric_ref'])
         lines.append(f'{provider} 직접 {label}: {amount}'+note)
         refs.add(item['ref_id'])
@@ -950,6 +954,47 @@ def _historical_price_row(context, output, assessment, *, scenario_row=None):
         formatting='existing-deterministic-historical-reference-v1')
 
 
+def _sentence_lines(text):
+    # Long accepted explanations remain verbatim. Offer the existing transport
+    # a line boundary between sentences before it ever needs to split a paragraph.
+    return re.sub(r'(?<=[.!?]) (?=[^\s])', '\n', text) if len(text) > 240 else text
+
+
+def _cited_filing_rows(context, output, source):
+    """Only show filing evidence used by the accepted economic judgment."""
+    available = {r['ref_id']: r for r in context.get('economic_context', {}).get('observations', ())}
+    native = {r['ref_id']: r for r in source['packet']['stocks'][0].get('reported_filing_context', ())}
+    rows = []
+    for ref in dict.fromkeys(output['valuation_context'].get('business_evidence_refs', ())):
+        item = available.get(ref)
+        if ref not in native or item is None:
+            continue
+        record = native[ref]['observation']
+        if item['kind'] == 'REPORTED_SEGMENT_CONTEXT_ONLY':
+            reg = native[ref]['numeric_registry_entry']
+            if (not reg['registered'] or reg['fact_id'] != ref or reg['value'] != record['value']
+                    or reg['unit'] != record['currency'] or reg['semantic_type'] != record['metric']):
+                continue
+            names = ' / '.join(member.split(':')[-1].removesuffix('Member') for member in record['dimensions'].values())
+            text = (f"{names} · {reg['approved_labels'][0]} {reg['value']:,} {reg['unit']} "
+                    f"({record['period_start']}~{record['period_end']}, {record['document']})")
+            keys = (ref + ':' + reg['field_path'],)
+        elif item['kind'] == 'FILING_EXCERPT_CONTEXT_ONLY':
+            label = {'COMPANY_REPORTED_OBSERVATION': '회사 보고 내용', 'MANAGEMENT_EXPLANATION': '회사의 원인 설명',
+                     'MANAGEMENT_OUTLOOK_OR_ESTIMATE': '경영진 전망·계획 또는 추정'}[record['classification']]
+            text = f"{label} · {record['document']} (공시 {record['filing_date']})"
+            # Quantitative prose still belongs to the numeric registry. The
+            # accepted Korean economic explanation accompanies this source.
+            if not any(c.isdigit() for c in record['excerpt']):
+                text += '\n“' + record['excerpt'] + '”'
+            keys = ()
+        else:
+            continue
+        rows.append(_row('business', 'cited-filing-' + ref, text, facts=(ref,), numeric=keys,
+                         hashes=(ref, record['raw_artifact_sha256']), formatting='cited-filing-context'))
+    return rows
+
+
 def _judgment_text(decision, axes, entry_lines, *, step2=False, price=None):
     score = decision["directional_buy_score"]
     if step2:
@@ -1023,6 +1068,7 @@ def build_detailed_plan_v2(*, packet, base, b2_request, b2_result, authorization
         formatting="accepted-independent-b2-axes-v2")
     rows = (row, *(r for r in presentation.rows if r.section != "judgment"))
     if step2:
+        rows += tuple(_cited_filing_rows(context, output, base.source_stock))
         # These are the exact accepted entry/economic lines, not a second model.
         for i, line in enumerate(entry_lines[:-1]):
             section = 'valuation' if line.startswith(('신규매수 근거:', '기업·가격 판단:')) else 'price'
