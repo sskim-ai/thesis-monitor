@@ -244,8 +244,13 @@ def test_original_owner_ledger_freeze_and_registered_entry_in_new_processes(tmp_
 def test_market_terminal_recorded_before_original_child_closes(monkeypatch):
     from app.services.production_source_backend import CanonicalProductionSourceBackend
     events=[]
-    ledger=SimpleNamespace(bind_model_plan=lambda c:events.append('bind'),
-        rendered_market=lambda c,r:events.append('terminal'))
+    rendered = []
+    def render(child, result):
+        rendered.append(digest(result))
+        events.append('terminal')
+    ledger=SimpleNamespace(bind_model_plan=lambda c:events.append('bind'), rendered_market=render,
+        identity={'plan_http_market':'us'}, state=lambda:dict(plans={'us':'a'*64},
+            runtime=dict(http_budget=dict(total=4, providers={'kiwoom':4})),http_total=1,http={'kiwoom':1}))
     child=SimpleNamespace(verify=lambda:None,market='us',binding=lambda:{},
         plan=SimpleNamespace(sha256='0'*64,cohort=SimpleNamespace(cutoff='2026-11-20T06:10:00+09:00')),
         owner=SimpleNamespace(close=lambda:events.append('close')))
@@ -255,8 +260,9 @@ def test_market_terminal_recorded_before_original_child_closes(monkeypatch):
     monkeypatch.setattr(job,'load_adapter',lambda *a,**kw:object())
     monkeypatch.setattr(job,'build_engine',lambda *a,**kw:SimpleNamespace(run=run))
     source=dict(run_ledger=ledger,frozen={'stock_plan':{'implementation_sha':'a'*40}})
-    asyncio.run(job.run_registered(None,source=source,model={'run_ledger':ledger},
+    result=asyncio.run(job.run_registered(None,source=source,model={'run_ledger':ledger},
         mode='LIVE_NO_SEND',record_market_terminal=True))
+    assert rendered == [digest(result)] and result['source_http']['attempted'] == 1
     assert events == ['bind','terminal','close']
 
 

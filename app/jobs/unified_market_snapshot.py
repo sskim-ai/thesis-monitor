@@ -501,17 +501,12 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
             b2_retry_policy=retry_policy,
             artifact_budget=artifacts)
         with artifact_scope(artifacts):
-            result = await run_registered(settings, source=source, model=model, mode='LIVE_NO_SEND',
+            return await run_registered(settings, source=source, model=model, mode='LIVE_NO_SEND',
                 record_market_terminal=True,
                 initial_code_identity=initial_code_identity,
                 **(dict(configured_us_one_shot=config.one_shot)
                    if market == 'us' and getattr(config, 'one_shot', None) and one_shot_tag == config.one_shot.tag else {}),
                 **(dict(routine_us_no_send_source_seconds=1800) if market == 'us' else {}))
-        if one_shot_tag is None:
-            state = ledger.state()
-            result['source_http'] = dict(request_plan_sha256=plan.plan_sha256, max_http=budget['total'],
-                provider_caps=budget['providers'], attempted=state['http_total'], providers=state['http'])
-        return result
     except BaseException as exc:
         _record_local_failure(directory, exc, config=config, session=session,
             generation=generation, before_owner_cleanup=True)
@@ -819,6 +814,12 @@ async def run_registered(settings, *, source, model=None, mode='SOURCE_ONLY', cl
         if not failed and runtime_code_identity() != initial_code_identity:
             raise ValueError('registered_runtime_code_changed')
         if record_market_terminal:
+            ledger = source['run_ledger']
+            if getattr(ledger, 'identity', {}).get('plan_http_market') == child.market:
+                state = ledger.state()
+                budget = state['runtime']['http_budget']
+                result['source_http'] = dict(request_plan_sha256=state['plans'][child.market], max_http=budget['total'],
+                    provider_caps=budget['providers'], attempted=state['http_total'], providers=state['http'])
             if result.get('status') == 'FAILED_NO_SEND':
                 try:
                     source['run_ledger'].stop(result.get('first_failure', {}).get('code', 'RESEARCH_STAGE_FAILED'))
