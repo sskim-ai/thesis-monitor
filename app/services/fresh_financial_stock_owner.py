@@ -319,7 +319,7 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
             if fields:
                 # Included in the existing stock binding, outside directional facts and valuation.
                 stock['reported_absolute_context_fields'] = fields
-        if not bridge and fp['provider'] == 'sec_edgar':
+        if not bridge and fp['provider'] in ('sec_edgar', 'opendart'):
             from app.services.bounded_financial_projection import reported_filing_context
             filings = reported_filing_context(fp, fin['acquisition'], fin['directory'], fin['receipts'])
             if filings:

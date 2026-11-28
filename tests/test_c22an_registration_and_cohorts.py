@@ -247,12 +247,19 @@ def test_partial_original_owner_seed_source_plan_and_dynamic_models(tmp_path,mon
     assert campaign.ledger.selected_child(market)['subjects']==sorted(eligible)
     configs={p:digest(p) for p in ('kiwoom','sec_edgar','opendart','fred','eia','ecos','krx_night_futures',
         'finnhub','google_news_rss','naver_news')}
+    auxiliary = None
+    if 'SKHY' in eligible:
+        from tests.test_us14_source_scope import us_plan
+        scope, _, _ = us_plan()
+        auxiliary = dict(security=scope['auxiliary_security'],
+                         official_identity_sha256=scope['auxiliary_identity_sha256'])
     frozen,_,_,local=freeze_registered_child(registration_owner=owners[market],policy=POLICY,code_sha='a'*40,
         native=None,native_owner_root=tmp_path/'not-installed',config_identities=configs,
         configured_kr_pages=20,listing_rows=[],kis_static_hashes={},
         completed_close_documentation={'path':'SYNTHETIC','sha256':'a'*64},
         consumer_policy=SelectedConsumerPolicy(),master_id='C22AN_SYNTHETIC_MASTER',
-        ohlcv_source_url='https://synthetic.invalid/ohlcv',enabled=True,run_ledger=campaign.ledger)
+        ohlcv_source_url='https://synthetic.invalid/ohlcv',enabled=True,run_ledger=campaign.ledger,
+        issuer_auxiliary=auxiliary)
     assert len(frozen['stock_plan']['reads'])==4*count and not local['denials']
     assert set(r['subject'] for r in frozen['stock_plan']['reads'])==set(eligible)
     cohort=FrozenCohort('SYNTHETIC_'+market,'SYNTHETIC_'+market,frozen['sessions'][market],at.isoformat(),at.isoformat(),

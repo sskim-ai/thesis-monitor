@@ -115,6 +115,20 @@ def reported_filing_context(plan, acquisition, directory, receipts):
     from app.services.bounded_financial_acquisition import sec_document_identity
     from app.services.reported_filing_context import extract_filing, select_observations
 
+    if plan['provider'] == 'opendart' and plan['market'] == 'kr':
+        from app.services.reported_filing_context import dart_operating_observations
+        current = [f for f in acquisition['selected_filings'] if f.get('role') == 'current']
+        if len(current) != 1:
+            return []
+        filing = current[0]
+        if (filing.get('corp_code') != plan['issuer'] or filing.get('ticker') != plan['ticker']
+                or not filing.get('receipt_date') or filing['receipt_date'] > plan['cutoff'][:10]):
+            return []
+        document = _dart_cfs_document(plan, filing, acquisition, directory, receipts, optional=True)
+        if document:
+            raw, rows = document
+            return dart_operating_observations(plan, filing, rows, sha256_bytes(raw))
+        return []
     if plan['provider'] != 'sec_edgar':
         return []
     texts, fields = [], []
@@ -133,6 +147,25 @@ def reported_filing_context(plan, acquisition, directory, receipts):
         texts.extend(excerpts)
         fields.extend(segments)
     return select_observations(texts, fields)
+
+
+def _dart_cfs_document(plan, filing, acquisition, directory, receipts, *, optional=False):
+    from pathlib import Path
+    docs = [d for d in acquisition['documents'] if d['filing'].get('receipt_no') == filing['receipt_no']
+            and d['filing'].get('basis') == 'CFS']
+    if len(docs) != 1 or (optional and docs[0]['filing'].get('role') != 'current'):
+        return None
+    raw = _raw(Path(directory), docs[0]['artifact'], receipts)
+    payload = json.loads(raw)
+    rows = payload.get('list', [])
+    if payload.get('status') != '000' or any(
+            str(r.get('rcept_no')) != filing['receipt_no'] or str(r.get('corp_code')) != plan['issuer']
+            or str(r.get('bsns_year')) != str(filing['business_year']) or r.get('reprt_code') != filing['report_code']
+            or r.get('fs_div') not in (None, '', 'CFS') for r in rows):
+        if optional:
+            return None
+        raise ValueError('STATEMENT_RESPONSE_FILING_IDENTITY_MISMATCH')
+    return raw, rows
 
 
 def _sec_context_fields(plan, filing, raw, extended_sec_fields, *, business_analysis_fields=False):
@@ -247,18 +280,10 @@ def reported_context_fields(plan, acquisition, directory, receipts, *, expected_
                                             business_analysis_fields=business_analysis_fields)
     elif plan['provider'] == 'opendart':
         from app.services.opendart_financial_recovery_service import FieldSpec, select_basis_occurrence
-        docs = [d for d in acquisition['documents'] if d['filing'].get('receipt_no') == filing['receipt_no']
-                and d['filing'].get('basis') == 'CFS']
-        if len(docs) != 1:
+        document = _dart_cfs_document(plan, filing, acquisition, directory, receipts)
+        if document is None:
             return dict(fields=[], denied=[dict(metric='all', reason='EXACT_CONSOLIDATED_DOCUMENT_REQUIRED')])
-        raw = _raw(directory, docs[0]['artifact'], receipts)
-        payload = json.loads(raw)
-        rows = payload.get('list', [])
-        if payload.get('status') != '000' or any(
-                str(r.get('rcept_no')) != filing['receipt_no'] or str(r.get('corp_code')) != plan['issuer']
-                or str(r.get('bsns_year')) != str(filing['business_year']) or r.get('reprt_code') != filing['report_code']
-                or r.get('fs_div') not in (None, '', 'CFS') for r in rows):
-            raise ValueError('STATEMENT_RESPONSE_FILING_IDENTITY_MISMATCH')
+        raw, rows = document
         specs = {k: FIELD_SPECS[k] for k in ('assets', 'equity', 'operating_cash_flow')}
         specs['liabilities'] = FieldSpec('liabilities', ('ifrs-full_liabilities',), (), ('BS',))
         if business_analysis_fields:

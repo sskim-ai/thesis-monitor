@@ -186,8 +186,9 @@ def filing_observations(view):
     from app.services.unified_snapshot_contract import digest
     stocks = (view.get('packet') or {}).get('stocks', [])
     owner = view.get('selected_financial_owner') or {}
+    direct = owner.get('owner_type')
     if (len(stocks) != 1 or not stocks[0].get('reported_filing_context')
-            or owner.get('owner_type') != 'direct_sec' or owner.get('bridge_receipt')
+            or direct not in ('direct_sec', 'direct_opendart') or owner.get('bridge_receipt')
             or owner.get('monitored_security') != view['ticker'] or stocks[0]['ticker'] != view['ticker']
             or owner.get('selected_projection_sha256') != digest(view.get('projection'))):
         return []
@@ -195,9 +196,12 @@ def filing_observations(view):
     result = []
     for item in stocks[0]['reported_filing_context']:
         source = item['observation']
+        operating = item['kind'] == 'REPORTED_OPERATING_CONTEXT_ONLY'
+        if operating != (direct == 'direct_opendart') or (operating and source.get('source_provider') != 'opendart'):
+            continue
         if item['kind'] == 'FILING_EXCERPT_CONTEXT_ONLY':
             issuer, security, ref = source['issuer_id'], source['security_id'], digest(source)
-        elif item['kind'] == 'REPORTED_SEGMENT_CONTEXT_ONLY':
+        elif operating or item['kind'] == 'REPORTED_SEGMENT_CONTEXT_ONLY':
             issuer, security = source['provider_issuer_id'], source['canonical_security_id']
             if not source.get('context_eligible') or source.get('quality_errors') or source.get('direction_eligible') is not False:
                 continue
@@ -206,14 +210,15 @@ def filing_observations(view):
             continue
         if (ref == item['ref_id'] and source['ticker'] == view['ticker']
                 and issuer == owner['issuer_identity'] and security == security_id):
-            if item['kind'] == 'REPORTED_SEGMENT_CONTEXT_ONLY':
+            if operating or item['kind'] == 'REPORTED_SEGMENT_CONTEXT_ONLY':
                 registry = item.get('numeric_registry_entry') or {}
                 if (registry.get('fact_id') != ref or registry.get('registered') is not True
                         or registry.get('semantic_type') != source['metric']
                         or registry.get('unit') != source['currency'] or registry.get('value') != source['value']):
                     continue
-                keys = ('source_document_id','document','filing_date','dimensions','semantic','metric',
-                        'value','currency','unit','period_start','period_end','statement_basis')
+                keys = ('source_document_id','document','filing_date')
+                keys += ('account_name','source_column','period_role','current_prior_role') if operating else ('dimensions',)
+                keys += ('semantic','metric','value','currency','unit','period_start','period_end','statement_basis')
                 result.append(dict(ref_id=ref, as_of=source['period_end'], kind=item['kind'],
                     observation={k: deepcopy(source[k]) for k in keys}))
             else:
@@ -365,11 +370,20 @@ def economic_context(view, context, classification, *, original_rows=None):
              for r in (view.get('event_view') or {}).get('binding', {}).get('selected', ())
              if r.get('review_scope') == 'HEADLINE_FOLLOWUP_ONLY'
              and r.get('reason') == 'business_relevance_failure' and r.get('published_at')]
+    scope = {}
+    if filing_rows:
+        if filing_rows[0]['kind'] == 'REPORTED_OPERATING_CONTEXT_ONLY':
+            scope['filing_scope'] = ('Consolidated reported accounts. Distinguish balances from period results. '
+                'Contract balances do not measure backlog. PPE carrying amounts do not measure capex or capacity. '
+                'R&D expense is incurred spending. Investment income can be part of the net investment result. '
+                'These accounts alone do not establish growth drivers.')
+        else:
+            scope['filing_scope'] = ('Issuer statements are attributed context. Product and segment dimensions '
+                'can overlap. Keep each period, unit and classification separate; do not sum dimensions, '
+                'infer a security denominator, or convert plans to realized results.')
     return dict(observations=observed, relationships=relations,
                 **({'unverified_headlines_to_check': leads[:2]} if leads else {}),
-                **({'filing_scope': 'Issuer statements are attributed context. Product and segment dimensions '
-                    'can overlap. Keep each period, unit and classification separate; do not sum dimensions, '
-                    'infer a security denominator, or convert plans to realized results.'} if filing_rows else {}),
+                **scope,
                 classification={k: deepcopy(classification[k]) for k in ('archetype','valuation_regime_tier')
                                 if k in classification})
 

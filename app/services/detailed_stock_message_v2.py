@@ -970,14 +970,20 @@ def _cited_filing_rows(context, output, source):
         if ref not in native or item is None:
             continue
         record = native[ref]['observation']
-        if item['kind'] == 'REPORTED_SEGMENT_CONTEXT_ONLY':
+        if item['kind'] in ('REPORTED_SEGMENT_CONTEXT_ONLY', 'REPORTED_OPERATING_CONTEXT_ONLY'):
             reg = native[ref]['numeric_registry_entry']
             if (not reg['registered'] or reg['fact_id'] != ref or reg['value'] != record['value']
                     or reg['unit'] != record['currency'] or reg['semantic_type'] != record['metric']):
                 continue
-            names = ' / '.join(member.split(':')[-1].removesuffix('Member') for member in record['dimensions'].values())
+            period = record['period_start'] + '~' + record['period_end']
+            if item['kind'] == 'REPORTED_OPERATING_CONTEXT_ONLY':
+                names = '연결재무제표'
+                if record['period_role'] == 'point_in_time':
+                    period = record['period_end'] + ' 기준'
+            else:
+                names = ' / '.join(member.split(':')[-1].removesuffix('Member') for member in record['dimensions'].values())
             text = (f"{names} · {reg['approved_labels'][0]} {reg['value']:,} {reg['unit']} "
-                    f"({record['period_start']}~{record['period_end']}, {record['document']})")
+                    f"({period}, {record['document']})")
             keys = (ref + ':' + reg['field_path'],)
         elif item['kind'] == 'FILING_EXCERPT_CONTEXT_ONLY':
             label = {'COMPANY_REPORTED_OBSERVATION': '회사 보고 내용', 'MANAGEMENT_EXPLANATION': '회사의 원인 설명',

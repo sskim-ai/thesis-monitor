@@ -29,7 +29,8 @@ POLICY = UnifiedSourcePolicy(frozenset({'kiwoom', 'local', 'canonical_local', 's
 
 def fresh_inputs(root, ticker, *, current_only=False, conflict=False, insurance=False,
                  verified_identity=False, policy=POLICY, security_overrides=None, empty_financial=False,
-                 denied_quality=False, plan=None, cohort_securities=None, completed_price=True, financial_scale=1):
+                 denied_quality=False, plan=None, cohort_securities=None, completed_price=True, financial_scale=1,
+                 dart_operating_rows=()):
     plan = plan or stock_plan_fixture.__wrapped__()
     reads = [r for r in plan.reads if r.subject == ticker]
     market, session_key = reads[0].market, reads[0].latest_completed_session
@@ -116,6 +117,7 @@ def fresh_inputs(root, ticker, *, current_only=False, conflict=False, insurance=
             fs_div='CFS', sj_div='CIS', account_id=account, account_nm=label, account_detail='-', ord=str(i+1),
             currency='KRW', thstrm_amount=str(amount), frmtrm_q_amount=str(prior),
             thstrm_nm='제 1 기 반기', frmtrm_q_nm='제 0 기 반기'))
+    dart_rows.extend({**dart_rows[0], **extra} for extra in dart_operating_rows)
 
     def respond(request):
         if market == 'kr':

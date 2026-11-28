@@ -56,7 +56,18 @@ def _spec(
     )
 
 
+_OPERATING_ACCOUNT_LABELS = {
+    'insurance_service_result': '보험서비스손익', 'investment_result': '투자손익',
+    'other_operating_result': '기타영업손익', 'investment_income': '투자수익',
+    'research_development_expense': '연구개발비',
+    'current_contract_assets': '유동 계약자산', 'current_contract_liabilities': '유동 계약부채',
+    'gross_profit': '매출총이익', 'current_trade_receivables': '유동 매출채권',
+    'ppe_carrying_amount': '유형자산 장부금액',
+}
+
 NUMERIC_SEMANTICS = {
+    **{key: _spec(key, ('KRW',), (label,), (re.escape(label),), 'currency_amount')
+       for key, label in _OPERATING_ACCOUNT_LABELS.items()},
     "inventory_growth_signed_gap_pct_point": _spec(
         "inventory_growth_signed_gap_pct_point",
         ("pct_point",),
@@ -1385,6 +1396,8 @@ for _window in _INVESTOR_FLOW_WINDOWS:
 
 
 _FIELD_RULES = (
+    *(NumericFieldRule(('reported_operating',), rf'fields\.{key}', key, 'currency')
+      for key in _OPERATING_ACCOUNT_LABELS),
     *_INVESTOR_FLOW_RECONCILIATION_RULES,
     NumericFieldRule(
         ("working_capital_inventory_relation",),

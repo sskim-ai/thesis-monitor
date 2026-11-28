@@ -2,6 +2,7 @@
 from collections import defaultdict
 from datetime import date
 from decimal import InvalidOperation
+from math import isfinite
 import re
 
 from app.services.sec_primary_inline_financial import (
@@ -34,7 +35,23 @@ _METRICS = {
     'OperatingIncomeLoss': 'segment_operating_income',
 }
 _MAX_EXCERPTS = 6
-_MAX_SEGMENTS = 8
+_MAX_FILING_AMOUNTS = 8
+
+# Exact primary-statement concepts. The order retains issuer-specific operating
+# lines ahead of the more common profitability and working-capital balances.
+_DART_OPERATING_CONCEPTS = {
+    'insurance_service_result': ('IS', ('ifrs-full_insuranceserviceresult',)),
+    'investment_result': ('IS', ('dart_investmentincomeexpenses',)),
+    'other_operating_result': ('IS', ('ifrs-full_otheroperatingincomeexpense',)),
+    'investment_income': ('IS', ('ifrs-full_investmentincome',)),
+    'research_development_expense': ('IS', ('ifrs-full_researchanddevelopmentexpense',)),
+    'current_contract_assets': ('BS', ('ifrs-full_currentcontractassets',)),
+    'current_contract_liabilities': ('BS', ('ifrs-full_currentcontractliabilities',)),
+    'gross_profit': ('IS', ('ifrs-full_grossprofit',)),
+    'current_trade_receivables': ('BS', ('ifrs-full_currenttradereceivables',)),
+    'ppe_carrying_amount': ('BS', ('ifrs-full_propertyplantandequipment',
+                                  'ifrs-full_propertyplantandequipmentincludingrightofuseassets')),
+}
 
 
 class _FilingDocument(InlineDocument):
@@ -231,6 +248,62 @@ def extract_filing(plan, filing, filename, raw):
     return texts, _segment_fields(parser, plan, filing, sha, filename)
 
 
+def dart_operating_observations(plan, filing, rows, raw_sha):
+    from app.services.bounded_financial_projection import field_record
+    from app.services.kr_financial_lineage_service import opendart_field_lineage
+    from app.services.opendart_financial_recovery_service import FieldSpec, select_basis_occurrence
+
+    # The lineage owner assigns calendar-quarter bounds. A filing ending in a
+    # different fiscal month cannot substantiate those dates.
+    period = re.search(r'\((\d{4})[./-](\d{1,2})\)', filing.get('report_name', '').replace(' ', ''))
+    end_month = {'11013': 3, '11012': 6, '11014': 9, '11011': 12}.get(filing['report_code'])
+    if not period or (int(period[1]), int(period[2])) != (filing['business_year'], end_month):
+        return []
+    totals = [r for r in rows if r.get('account_detail') in (None, '', '-')]
+    current, comparative = [], []
+    for metric, (statement, concepts) in _DART_OPERATING_CONCEPTS.items():
+        statements = ('IS', 'CIS') if statement == 'IS' else ('BS',)
+        columns = ['thstrm_amount']
+        if statement == 'IS':
+            columns.append('frmtrm_amount' if filing['report_code'] == '11011' else 'frmtrm_q_amount')
+        current_identity = None
+        for column in columns:
+            spec = FieldSpec(metric, concepts, (), statements, source_column=column)
+            selected = select_basis_occurrence(totals, spec, basis='CFS')
+            if selected.status != 'selected':
+                break
+            row = selected.row
+            identity = (row['sj_div'], row['account_id'], row.get('account_nm'), row.get('ord'))
+            if current_identity is not None and identity != current_identity:
+                break
+            lineage = opendart_field_lineage(row, logical_field=metric, report_code=filing['report_code'],
+                source_column=column, selected=True, requested_fs_div='CFS')
+            literal = str(row[column]).strip()
+            if (not lineage['lineage_verified'] or not isfinite(lineage['amount'])
+                    or not re.fullmatch(r'[+-]?(?:\d+|\d{1,3}(?:,\d{3})+)', literal)):
+                break
+            role = 'current' if column == 'thstrm_amount' else 'prior'
+            witness = dict(source_document_id=filing['receipt_no'], source_document_type=filing['report_code'],
+                filing_date=filing['receipt_date'], document=filing['report_name'], semantic=row['account_id'],
+                account_name=row.get('account_nm'), source_column=column, source_literal=literal,
+                occurrence_id=lineage['source_row_identity'], period_start=lineage['amount_period_start'],
+                period_end=lineage['amount_period_end'], period_role=lineage['amount_period_type'],
+                statement_basis=lineage['statement_basis'], currency=lineage['currency'], unit='KRW', unit_scale=1)
+            field = field_record(plan, metric=metric, value=int(literal.replace(',', '')), lineage=witness,
+                                 quality=[], raw_sha=raw_sha, role=role, allow_instant=True)
+            if not field['context_eligible']:
+                break
+            (current if role == 'current' else comparative).append(field)
+            current_identity = identity
+    # Leave space for up to two same-statement comparative income amounts.
+    keep = _MAX_FILING_AMOUNTS - min(2, len(comparative))
+    numeric = current[:keep]
+    kept_metrics = {r['metric'] for r in numeric}
+    remaining = (r for r in comparative if r['metric'] in kept_metrics)
+    numeric += list(remaining)[:_MAX_FILING_AMOUNTS - len(numeric)]
+    return _registered_observations(numeric, 'reported_operating', 'REPORTED_OPERATING_CONTEXT_ONLY')
+
+
 def select_observations(texts, fields):
     """Bound model input and retain distinct documents, operating topics and segment metrics."""
     ranked = sorted(texts, key=lambda t: (t[2]['report_end'], t[0]), reverse=True)
@@ -254,21 +327,25 @@ def select_observations(texts, fields):
     for row in fields:
         families[(row['metric'], tuple(sorted(row['dimensions'])))].append(row)
     numeric = []
-    while families and len(numeric) < _MAX_SEGMENTS:
+    while families and len(numeric) < _MAX_FILING_AMOUNTS:
         for key in list(families):
             numeric.append(families[key].pop(0))
             if not families[key]:
                 del families[key]
-            if len(numeric) == _MAX_SEGMENTS:
+            if len(numeric) == _MAX_FILING_AMOUNTS:
                 break
+    return [dict(ref_id=digest(r), as_of=r['filing_date'], kind='FILING_EXCERPT_CONTEXT_ONLY', observation=r)
+            for r in chosen] + _registered_observations(numeric, 'reported_segment', 'REPORTED_SEGMENT_CONTEXT_ONLY')
+
+
+def _registered_observations(numeric, fact_type, kind):
     from app.services.numeric_semantic_registry import build_numeric_registry
     registered = []
     for row in numeric:
-        fact = dict(fact_id=row['normalized_hash'], fact_type='reported_segment',
+        fact = dict(fact_id=row['normalized_hash'], fact_type=fact_type,
             as_of_date=row['period_end'], fields={row['metric']: row['value'], 'currency': row['currency']})
         entry, = build_numeric_registry([fact])
         if entry['registered'] and entry['unit'] == row['currency']:
             registered.append(dict(ref_id=row['normalized_hash'], as_of=row['period_end'],
-                kind='REPORTED_SEGMENT_CONTEXT_ONLY', observation=row, numeric_registry_entry=entry))
-    return [dict(ref_id=digest(r), as_of=r['filing_date'], kind='FILING_EXCERPT_CONTEXT_ONLY', observation=r)
-            for r in chosen] + registered
+                kind=kind, observation=row, numeric_registry_entry=entry))
+    return registered
