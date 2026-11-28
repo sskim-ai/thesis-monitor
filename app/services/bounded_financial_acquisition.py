@@ -14,6 +14,7 @@ from urllib.parse import urlsplit
 
 import httpx
 
+from app.services.dart_report_artifact import DART_REPORT_URL, document_error_status, eligible_report_filing, extract_dart_xml
 from app.services.opendart_financial_recovery_service import (
     LIST_ENDPOINT, STATEMENT_ENDPOINT, authoritative_filings,
 )
@@ -57,7 +58,9 @@ DART = Limits(2, 200, 1, 1, 2, 0, 0, 0)
 
 
 def make_plan(security, *, market, cutoff, run_id, all_subjects_fresh=False, exact_financial_owner=False,
-              fpi_nomination=None, maximum_retries_per_request=2):
+              fpi_nomination=None, maximum_retries_per_request=2, dart_business_report=False):
+    if type(dart_business_report) is not bool or dart_business_report and (market != "kr" or maximum_retries_per_request != 0):
+        raise AcquisitionDenied("dart_report_requires_kr_no_retry_plan")
     if type(maximum_retries_per_request) is not int or not 0 <= maximum_retries_per_request <= 2:
         raise AcquisitionDenied('finite_transient_retry_policy_required')
     if type(all_subjects_fresh) is not bool:
@@ -109,6 +112,12 @@ def make_plan(security, *, market, cutoff, run_id, all_subjects_fresh=False, exa
         "planned_retry_attempts": 0, "redirects": False,
         "selection": "latest_period_current_and_prior_year_comparable_no_value_ranking",
         "scope": "reported_revenue_operating_income_net_income_only"}
+    if dart_business_report:
+        plan['dart_business_report'] = True
+        plan['maximum_logical_requests'] += 1
+        plan['maximum_HTTP_attempts'] += 1
+        names['DART_MAX_TOTAL_LOGICAL_REQUESTS_PER_SUBJECT'] += 1
+        names['DART_MAX_CURRENT_REPORT_DOCUMENTS'] = 1
     if fpi_nomination is not None:
         from app.services.sec_current_financial_candidates import NOMINATED_CONTRACT, validate_nomination
         nomination = validate_nomination(fpi_nomination, plan)
@@ -282,6 +291,13 @@ class BoundedReader:
                     rf'https://www\.sec\.gov/Archives/edgar/data/{int(plan["issuer"])}/\d{{18}}/[A-Za-z0-9_.-]+', url)):
                 raise SystemicStop("unexpected_provider_request")
         else:
+            if stage == 'dart_report':
+                current = [f for f in self.filings if f['role'] == 'current']
+                if (not plan.get('dart_business_report') or len(current) != 1 or url != DART_REPORT_URL
+                        or not re.fullmatch(r'[0-9]{14}', str(current[0]['receipt_no']))
+                        or params != {'rcept_no': current[0]['receipt_no']}):
+                    raise SystemicStop('unexpected_dart_report_request')
+                return
             if stage not in {"discovery", "statement"} or url != {"discovery": LIST_ENDPOINT, "statement": STATEMENT_ENDPOINT}[stage]:
                 raise SystemicStop("unexpected_provider_request")
             if params.get("corp_code") != plan["issuer"] or "crtfc_key" in params:
@@ -293,6 +309,8 @@ class BoundedReader:
         if digest(self.plan) != self.plan_sha:
             raise SystemicStop("plan_drift")
         limits = self.plan["limits"]
+        if stage == 'dart_report' and filing != next(f for f in self.filings if f['role'] == 'current'):
+            raise SystemicStop('report_not_in_frozen_selection')
         if stage in {'document', 'index', 'statement'}:
             if stage == 'statement':
                 selected = [r for r in self.filings if r['receipt_no'] == (filing or {}).get('receipt_no')]
@@ -316,7 +334,7 @@ class BoundedReader:
                     'end_de': self.plan['cutoff'][:10].replace('-', ''), 'pblntf_ty': 'A',
                     'last_reprt_at': 'N', 'page_count': 100, 'page_no': page}:
                 raise SystemicStop('discovery_outside_frozen_window')
-        maximum = {"discovery": limits["discovery"], "companyfacts": limits["companyfacts"],
+        maximum = {"dart_report": int(bool(self.plan.get("dart_business_report"))), "discovery": limits["discovery"], "companyfacts": limits["companyfacts"],
             "index": (limits["current"] + limits["prior"]) * limits["indexes_per_filing"],
             "document": (limits["current"] + limits["prior"]) * limits["documents_per_filing"],
             "statement": (limits["current"] + limits["prior"]) * limits["documents_per_filing"]}[stage]
@@ -353,7 +371,12 @@ class BoundedReader:
                     raise SystemicStop("provider_response_secret_echo")
                 if status in {401, 403} and self.authorization_denial_is_systemic:
                     raise SystemicStop("provider_authorization_denied")
-                if self.plan["provider"] == "opendart" and status == 200:
+                if stage == 'dart_report' and status == 200:
+                    provider_status = document_error_status(raw)
+                    if provider_status and provider_status not in {'013', '014'}:
+                        raise SystemicStop('dart_document_provider_denied:' + str(provider_status))
+                    extract_dart_xml(raw, filing['receipt_no'], corp_code=filing['corp_code'], report_code=filing['report_code'])
+                elif self.plan["provider"] == "opendart" and status == 200:
                     provider_status = response.json().get("status")
                 failed = status != 200 or (provider_status not in {None, "000", "013"})
                 transient = retryable(status=status, provider_status=provider_status)
@@ -467,4 +490,21 @@ async def collect(reader):
                 metadata = {"role": role, "receipt_no": filing.receipt_no, "basis": basis}
                 raw, receipt = await reader.read("statement", STATEMENT_ENDPOINT, params, filing=metadata)
                 output["documents"].append({"filing": metadata, "artifact": receipt["artifact"]})
+        if plan.get('dart_business_report'):
+            current = next((f for f in output['selected_filings'] if f['role'] == 'current'), None)
+            report = {'status': 'UNAVAILABLE', 'filing': current}
+            output['dart_report'] = report
+            if eligible_report_filing(rows, current):
+                try:
+                    _, receipt = await reader.read('dart_report', DART_REPORT_URL,
+                        {'rcept_no': current['receipt_no']}, filing=current)
+                except SystemicStop:
+                    raise
+                except AcquisitionDenied as exc:
+                    report['reason'] = str(exc)
+                else:
+                    report.update(status='RETAINED' if receipt['attempt'] == 0 else 'CAPTURED',
+                                  artifact=receipt['artifact'])
+            else:
+                report['reason'] = 'NO_ELIGIBLE_CURRENT_RECEIPT'
     return output

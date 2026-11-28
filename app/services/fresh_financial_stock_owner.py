@@ -176,7 +176,7 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
     # existing projector. Additionally enforce availability in this generation.
     for receipt in fin['receipts']:
         times = [datetime.fromisoformat(receipt[key]) for key in ('started_at', 'finished_at')]
-        if 'retained_sec_origin' in receipt:
+        if ('retained_sec_origin' in receipt or 'retained_dart_origin' in receipt):
             from app.services.sealed_financial_reader import verify_retained_financial_use
             selected_at = verify_retained_financial_use(fp,fin['directory'],receipt)
             if not times[0] <= times[1] < plan.frozen_at <= selected_at:
@@ -321,7 +321,11 @@ def assemble_fresh_stock(*, technical_inputs, financial_inputs, valuation_inputs
                 stock['reported_absolute_context_fields'] = fields
         if not bridge and fp['provider'] in ('sec_edgar', 'opendart'):
             from app.services.bounded_financial_projection import reported_filing_context
-            filings = reported_filing_context(fp, fin['acquisition'], fin['directory'], fin['receipts'])
+            diagnostic = {}
+            filings = reported_filing_context(fp, fin['acquisition'], fin['directory'], fin['receipts'],
+                                              report_diagnostic=diagnostic)
+            if diagnostic:
+                stock['dart_business_context_unavailable'] = diagnostic
             if filings:
                 stock['reported_filing_context'] = filings
         from app.services.reported_business_projection import _BUILDER_PERMIT, issue

@@ -65,7 +65,28 @@ _OPERATING_ACCOUNT_LABELS = {
     'ppe_carrying_amount': '유형자산 장부금액',
 }
 
+# Units produced by the report-cell extractor. Unrecognized pairs remain unregistered.
+_REPORT_CURRENCIES = ('KRW', 'USD')
+_DART_BUSINESS_MEASURES = {
+    'business_revenue': ('사업 매출', _REPORT_CURRENCIES),
+    'business_revenue_share': ('매출 비중', ('pct',)),
+    'business_operating_profit': ('사업 영업손익', _REPORT_CURRENCIES),
+    'production_capacity': ('생산능력', ('배치',)),
+    'production_output': ('생산실적', ('배치',)),
+    'utilization_rate': ('가동률', ('pct',)),
+    'opening_backlog': ('기초 수주잔고', _REPORT_CURRENCIES),
+    'new_orders': ('신규 수주', _REPORT_CURRENCIES),
+    'delivered_orders': ('공시 납품·기납액', _REPORT_CURRENCIES),
+    'closing_backlog': ('기말 수주잔고', _REPORT_CURRENCIES),
+    'contract_stated_total': ('공시 계약 총액(이행·수취액 별도)', _REPORT_CURRENCIES),
+    'contract_payments_made': ('실제 누적 지급액', _REPORT_CURRENCIES),
+    'contract_payments_received': ('실제 누적 수취액', _REPORT_CURRENCIES),
+    'net_order_change': ('공시 수주 증감', _REPORT_CURRENCIES),
+}
+
 NUMERIC_SEMANTICS = {
+    **{metric: _spec(metric, units, (label,), (re.escape(label),), 'reported_measure')
+       for metric, (label, units) in _DART_BUSINESS_MEASURES.items()},
     **{key: _spec(key, ('KRW',), (label,), (re.escape(label),), 'currency_amount')
        for key, label in _OPERATING_ACCOUNT_LABELS.items()},
     "inventory_growth_signed_gap_pct_point": _spec(
@@ -2172,6 +2193,13 @@ def resolve_numeric_semantic(
     field_path: str,
     fields: dict[str, object],
 ) -> tuple[NumericSemanticSpec | None, str]:
+    if fact_type == 'dart_business_metric':
+        metric = field_path.removeprefix('fields.')
+        unit = fields.get('unit')
+        if (field_path.startswith('fields.') and metric in _DART_BUSINESS_MEASURES
+                and unit in _DART_BUSINESS_MEASURES[metric][1]):
+            return semantic_spec(metric), unit
+        return None, 'unknown'
     if fact_type == "market_flow" and field_path == "fields.net_buy_amount":
         actor = str(fields.get("actor") or "")
         semantic_type = {
@@ -2634,6 +2662,10 @@ def canonical_display_value(
 ) -> str | None:
     """Render the single backend-owned display value used by numeric binding."""
     formatter = spec.formatter
+    if formatter == "reported_measure":
+        # The original unit and precision distinguish e.g. a production quantity from utilization.
+        rendered = f"{int(value):,}" if int(value) == value else f"{value:,}"
+        return rendered + ("%" if unit == "pct" else " " + unit)
     if unit == "KRW":
         if formatter == "currency_amount":
             return compact_krw_amount(value)
@@ -2689,6 +2721,8 @@ def approved_display_variants(
     value: float,
     unit: str,
 ) -> list[str]:
+    if spec.formatter == "reported_measure":
+        return [canonical_display_value(spec, value, unit)]
     variants = [_plain_number(value), f"{value:,.12g}"]
     if unit == "pct":
         for digits in (1, 2, 4):
@@ -2921,6 +2955,7 @@ def build_numeric_registry(
                     and quality_state in {"verified_usable", "caution_usable"}
                     and quality_prose_eligible
                 )
+                display_value = value if fact_type == "dart_business_metric" or not prose_allowed else float(value)
                 registry.append(
                     {
                         "fact_id": fact_id,
@@ -2956,12 +2991,12 @@ def build_numeric_registry(
                         "denial_reason": quality.get("denial_reason"),
                         "quality_decision_version": quality.get("decision_version"),
                         "approved_display_variants": (
-                            approved_display_variants(spec, float(value), unit)
+                            approved_display_variants(spec, display_value, unit)
                             if spec is not None and prose_allowed
                             else []
                         ),
                         "canonical_display_value": (
-                            canonical_display_value(spec, float(value), unit)
+                            canonical_display_value(spec, display_value, unit)
                             if spec is not None and prose_allowed
                             else None
                         ),

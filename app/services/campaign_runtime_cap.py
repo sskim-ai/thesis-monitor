@@ -88,6 +88,53 @@ def optional_news_result(attempt, identity):
         and attempt.get('outcome') == 'HTTP_RESPONSE' and attempt.get('status') == 429)
 
 
+def optional_dart_result(attempt, identity):
+    subject = attempt.get('subject', '')
+    slot = attempt.get('optional_dart')
+    return (identity.get('plan_http_market') == 'kr' and attempt.get('market') == 'kr'
+        and slot is not None and slot == f'financial:{subject}:filing1:report'
+        and attempt.get('provider') == 'opendart' and attempt.get('phase') == 'SOURCE'
+        and attempt.get('method') == 'GET' and attempt.get('owner') == 'SelectedSourceDispatcher'
+        and (attempt.get('outcome') == 'HTTP_RESPONSE' and attempt.get('status') in (404, 410)
+            or attempt.get('outcome') == 'TRANSPORT_UNKNOWN'
+            and attempt.get('error_type') in {'TimeoutError', 'TimeoutException', 'ReadTimeout'}))
+
+
+def apply_plan_http_event(state, event, value, identity):
+    """Replay the same frozen budget and pending Source slot in parent and worker."""
+    market = identity['plan_http_market']
+    if event == 'PLAN':
+        budget = value['http_budget']
+        caps = budget['providers']
+        if (state.get('http_budget') is not None or state['total'] or value['market'] != market
+                or not caps or set(caps) - set(identity['runtime_cap']['endpoints'])
+                or any(type(n) is not int or n <= 0 for n in caps.values())
+                or budget['total'] != sum(caps.values())):
+            raise ValueError('PHYSICAL_FROZEN_BUDGET_INVALID_OR_ALREADY_BOUND')
+        state.update(http_budget=budget, http_slots=value['http_slots'], http_plan=value['sha256'],
+                     logical_provider=None)
+    elif event == 'INTENT' and value['kind'] == 'HTTP':
+        key = value['key']
+        provider = value['provider']
+        prefix = 'HTTP:' + market + ':'
+        if (not state.get('http_budget') or value.get('market') != market or not key.startswith(prefix)
+                or value['plan'] != state['http_plan'] or state.get('logical_provider')):
+            raise ValueError('PHYSICAL_FROZEN_PLAN_SLOT_REQUIRED')
+        slot = key[len(prefix):]
+        if provider == 'kis':
+            match = re.fullmatch(r'kis-wire:([1-9][0-9]*)', slot)
+            allowed = match and int(match[1]) == state['providers'].get('kis', 0) + 1
+        else:
+            allowed = state['http_slots'].get(slot) == provider
+        if not allowed or state['providers'].get(provider, 0) >= state['http_budget']['providers'].get(provider, 0):
+            raise ValueError('PHYSICAL_OUTSIDE_FROZEN_SOURCE_SLOTS')
+        state['logical_provider'] = provider
+        state['logical_slot'] = slot
+    elif event == 'RESULT':
+        state['logical_provider'] = None
+        state['logical_slot'] = None
+
+
 def apply_runtime_event(state,event,value,identity):
     if event=='PHYSICAL_INTENT':
         caps=identity['runtime_cap']
@@ -96,11 +143,21 @@ def apply_runtime_event(state,event,value,identity):
         if (market:=identity.get('fresh_timeout_retry_market')) and (
                 value['market']!=market or value['phase']!='SOURCE'):
             raise ValueError('PHYSICAL_FRESH_TIMEOUT_RETRY_MARKET_SCOPE')
+        if identity.get('plan_http_market'):
+            if (not state.get('http_budget') or state.get('logical_provider') != provider
+                    or value['market'] != identity['plan_http_market'] or value['phase'] != 'SOURCE'):
+                raise ValueError('PHYSICAL_PENDING_PLAN_SLOT_REQUIRED')
+            if value.get('optional_dart') and value['optional_dart'] != state.get('logical_slot'):
+                raise ValueError('PHYSICAL_OPTIONAL_DART_SLOT_MISMATCH')
+            max_http, provider_caps = state['http_budget']['total'], state['http_budget']['providers']
+            state['logical_provider'] = None
+        else:
+            max_http, provider_caps = identity['max_http'], identity['provider_caps']
         if (key in state['attempts'] or provider in state['stopped_providers']
                 or (identity.get('staged_markets') and state['pending'])
                 or state['first_external_failure'] is not None
-                or state['total']>=identity['max_http']
-                or state['providers'].get(provider,0)>=identity['provider_caps'].get(provider,0)):
+                or state['total']>=max_http
+                or state['providers'].get(provider,0)>=provider_caps.get(provider,0)):
             raise ValueError('CAP_EXHAUSTED_OR_ATTEMPT_ALREADY_USED')
         if value['generation']!=identity['children'][value['market']]['generation']:
             raise ValueError('PHYSICAL_CAMPAIGN_GENERATION_MISMATCH')
@@ -121,11 +178,12 @@ def apply_runtime_event(state,event,value,identity):
         provider=state['pending'].pop(key)['provider']
         state['attempts'][key]={**state['attempts'][key],**value}
         night_unavailable = optional_night_result(state['attempts'][key], identity)
-        if (not optional_news_result(state['attempts'][key], identity) and not night_unavailable
+        dart_unavailable = optional_dart_result(state['attempts'][key], identity)
+        if (not optional_news_result(state['attempts'][key], identity) and not (night_unavailable or dart_unavailable)
                 and identity['runtime_cap'].get('stop_on_first_external_failure') and
                 (value['outcome']=='TRANSPORT_UNKNOWN' or (value.get('status') or 0)>=400)):
             state['first_external_failure']=key
-        if night_unavailable or value.get('status') in (401,403,429) or value['outcome']=='TRANSPORT_UNKNOWN':
+        if night_unavailable or value.get('status') in (401,403,429) or (value['outcome']=='TRANSPORT_UNKNOWN' and not dart_unavailable):
             if provider not in state['stopped_providers']:
                 state['stopped_providers'].append(provider)
     else:
@@ -172,6 +230,8 @@ class RuntimeCap:
                 if row['event']=='REGISTRATION':
                     capture_cutoff=row['value']['receipt']['cutoff']
                     market_capture_cutoffs.update({m:capture_cutoff for m in pending_markets})
+                if identity.get('plan_http_market') and row['event'] in ('PLAN', 'INTENT', 'RESULT'):
+                    apply_plan_http_event(state,row['event'],row['value'],identity)
                 if row['event']=='PLAN':
                     frozen_plans[row['value']['market']]=row['value']['sha256']
                 if row['event']=='CAPTURE':closed_source.add(row['value']['market'])
@@ -201,7 +261,7 @@ class RuntimeCap:
                     capture_cutoff=market_capture_cutoffs.get(value['market']) if value['phase']=='SOURCE' else None
                     if value['phase']=='SOURCE' and capture_cutoff is None:
                         raise ValueError('CAMPAIGN_CURRENT_MARKET_CAPTURE_REQUIRED')
-                if identity.get('fresh_timeout_retry_market') and (
+                if (identity.get('fresh_timeout_retry_market') or identity.get('plan_http_market')) and (
                         value['market'] not in frozen_plans or value['market'] in closed_source):
                     raise ValueError('CAMPAIGN_FROZEN_OPEN_SOURCE_REQUIRED')
                 if capture_cutoff and now>=datetime.fromisoformat(capture_cutoff)+timedelta(hours=1):
@@ -230,7 +290,7 @@ class RuntimeCap:
 
     def reserve(self,*,provider,method,host,path,market,subject,phase,owner,
                 request_sha256,attempt_id=None,optional_news=None,optional_night=None):
-        identity,_=self._locked()
+        identity,state=self._locked()
         child=identity['children'].get(market,{})
         market_subjects = identity['runtime_cap'].get('market_subjects',{}).get(market,()) if phase=='SOURCE' else ()
         if subject not in (*child.get('subjects',()),*market_subjects,'*') or phase not in ('ONBOARDING','SOURCE'):
@@ -251,6 +311,15 @@ class RuntimeCap:
             value['optional_news'] = deepcopy(optional_news)
         if optional_night is not None:
             value['optional_night'] = deepcopy(optional_night)
+        if identity.get('plan_http_market') and provider == 'opendart':
+            slot = state.get('logical_slot') or ''
+            document_slot = slot == f'financial:{subject}:filing1:report'
+            if path.startswith('/api/document.xml') or slot.endswith(':filing1:report'):
+                if (not document_slot or method != 'GET' or host != 'opendart.fss.or.kr'
+                        or path != '/api/document.xml' or market != 'kr' or phase != 'SOURCE'
+                        or subject not in child.get('subjects', ()) or owner != 'SelectedSourceDispatcher'):
+                    raise ValueError('PHYSICAL_OPTIONAL_DART_ROUTE_MISMATCH')
+                value['optional_dart'] = slot
         self._locked('PHYSICAL_INTENT',value)
         return key
 
@@ -285,6 +354,11 @@ def reserve_request(cap,request,*,provider,market,subject,phase,owner,optional_n
         if request.url.host==r['host'] and request.url.path.startswith(r['prefix'])]
     if (request.url.scheme!='https' or not any((request.url.port or 443) in r.get('ports',[443]) for r in rules)):
         raise ValueError('PHYSICAL_TLS_OR_PORT_OUTSIDE_CAMPAIGN')
+    if identity.get('plan_http_market') and provider == 'opendart' and request.url.path == '/api/document.xml':
+        params = request.url.params
+        if (sorted(key for key, _ in params.multi_items()) != ['crtfc_key', 'rcept_no']
+                or not params.get('crtfc_key') or not re.fullmatch('[0-9]{14}', params.get('rcept_no', ''))):
+            raise ValueError('PHYSICAL_OPTIONAL_DART_RECEIPT_REQUIRED')
     if optional_night is not None:
         day = optional_night.get('logical_id', '').removeprefix('night:KOSPI200:').replace('-', '')
         if (provider != 'krx_night_futures' or request.method != 'GET'
@@ -351,8 +425,8 @@ class MeteredAsyncTransport(_TransportMixin,httpx.AsyncBaseTransport):
             response=await self.inner.handle_async_request(request)
             await response.aread()
         except BaseException as exc:
-            deadline = request.extensions.get('_thesis_optional_night_timeout')
-            timed_out = (self.context.get('optional_night') is not None
+            deadline = request.extensions.get('_thesis_optional_source_timeout')
+            timed_out = (deadline is not None
                 and isinstance(exc, asyncio.CancelledError)
                 and isinstance(deadline, asyncio.Timeout) and deadline.expired())
             self.cap.finish(key,error=TimeoutError() if timed_out else exc)

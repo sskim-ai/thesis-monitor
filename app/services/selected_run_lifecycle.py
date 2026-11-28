@@ -24,7 +24,7 @@ class SelectedRunLedger:
                  max_http, max_models, database_identity, onboarding=False, database_budget=None,
                  wallclock_seconds_max=None, runtime_cap=None, onboarding_subjects=None,
                  staged_markets=False, capture_max_private_export_bytes=None, timeout_retry_cap=0, b2_retry_policy=None,
-                 timeout_retry_market='us'):
+                 timeout_retry_market='us', plan_http_market=None):
         decision = registration._approval(approval)
         from app.services.unified_stock_acquisition import UNIVERSE
         from app.services.model_timeout_retry import ALL_MODEL_STAGE_ONE_RETRY_V1, roster_model_ceiling
@@ -52,6 +52,11 @@ class SelectedRunLedger:
             authorized_at=decision.effective_at.isoformat(), expires_at=decision.expires_at.isoformat(),
             children=deepcopy(children), provider_caps=dict(provider_caps), max_http=max_http,
             max_models=max_models, database_identity=database_identity, retry=0, send=False)
+        if plan_http_market is not None:
+            if (plan_http_market not in children or onboarding or max_http or provider_caps
+                    or runtime_cap is None or not staged_markets):
+                raise ValueError('selected_plan_http_open_requires_unbound_regular_market')
+            self.identity['plan_http_market'] = plan_http_market
         if decision.routine_us_no_send_source_seconds is not None:
             if set(children) != {'us'} or onboarding or wallclock_seconds_max is None:
                 raise ValueError('selected_routine_us_no_send_source_scope')
@@ -72,8 +77,8 @@ class SelectedRunLedger:
             self.identity['timeout_retry_market']='kr'
         if timeout_retry_cap:
             self.identity['timeout_retry_cap'] = timeout_retry_cap
-            if max_http:
-                if not provider_caps or not any(provider_caps.values()):
+            if max_http or plan_http_market:
+                if not plan_http_market and not any(provider_caps.values()):
                     raise ValueError('selected_fresh_timeout_retry_provider_caps_required')
                 self.identity['fresh_timeout_retry_market'] = timeout_retry_market
         if b2_retry_policy is not None:
@@ -88,8 +93,8 @@ class SelectedRunLedger:
                     or dynamic_retry and max_models != roster_model_ceiling(children[timeout_retry_market]['subjects'])):
                 raise ValueError('selected_b2_retry_new_us_campaign_required')
             self.identity['b2_retry_policy'] = b2_retry_policy
-            if max_http:
-                if not provider_caps or not any(provider_caps.values()):
+            if max_http or plan_http_market:
+                if not plan_http_market and not any(provider_caps.values()):
                     raise ValueError('selected_fresh_timeout_retry_provider_caps_required')
                 self.identity['fresh_timeout_retry_market'] = timeout_retry_market
         if capture_max_private_export_bytes is not None:
@@ -215,6 +220,11 @@ class SelectedRunLedger:
         staged = self.identity.get('staged_markets', False)
         required = set(s['active_markets']) if staged else set(children)
         if event == 'OPEN': return
+        if self.identity.get('plan_http_market') and event in ('PLAN', 'INTENT', 'RESULT'):
+            from app.services.campaign_runtime_cap import runtime_state, apply_plan_http_event
+            if s['runtime'] is None:
+                s['runtime'] = runtime_state()
+            apply_plan_http_event(s['runtime'], event, v, self.identity)
         if event.startswith('PHYSICAL_'):
             from app.services.campaign_runtime_cap import runtime_state,apply_runtime_event
             if not self.identity.get('runtime_cap'):
@@ -514,13 +524,16 @@ class SelectedRunLedger:
             if s['pending'] != v['key']: raise ValueError('selected_result_without_intent')
             optional = v.get('optional_unavailable')
             if optional is not None:
-                from app.services.campaign_runtime_cap import optional_news_result, optional_night_result
+                from app.services.campaign_runtime_cap import optional_dart_result, optional_news_result, optional_night_result
                 attempt = (s.get('runtime') or {}).get('attempts', {}).get(optional, {})
                 news = optional_news_result(attempt, self.identity)
                 night = optional_night_result(attempt, self.identity)
+                dart = optional_dart_result(attempt, self.identity)
                 scope = attempt.get('optional_news' if news else 'optional_night', {})
-                if (v['ok'] is not False or not (news or night)
-                        or v['key'] != 'HTTP:us:' + scope.get('logical_id', '')):
+                expected = 'HTTP:kr:' + attempt['optional_dart'] if dart else 'HTTP:us:' + scope.get('logical_id', '')
+                if v['ok'] is not False or not (news or night or dart) or v['key'] != expected:
+                    if attempt.get('optional_dart'):
+                        raise ValueError('selected_optional_dart_result_not_original_failure')
                     raise ValueError('selected_optional_night_result_not_original_failure'
                         if attempt.get('optional_night') else 'selected_optional_news_result_not_original_429')
             s['pending'] = None
@@ -655,7 +668,7 @@ class SelectedRunLedger:
             raise ValueError('selected_original_readonly_receipt_required')
         self._event('REGISTRATION', sha256=digest(receipt), selects=selects, receipt=receipt)
 
-    def bind_source_plan(self, market, plan):
+    def bind_source_plan(self, market, plan, *, kis_plan=None):
         self._external()
         c = self.selected_child(market)
         if (plan.market != market or plan.generation_id != c['generation'] or tuple(plan.subjects) != tuple(c['subjects'])
@@ -665,7 +678,15 @@ class SelectedRunLedger:
         if (getattr(plan, 'routine_us_no_send_source_seconds', None) != seconds
                 or seconds is not None and (market != 'us' or plan.purpose != registration.ROUTINE_SCOPE)):
             raise ValueError('selected_routine_source_plan_approval_mismatch')
-        self._event('PLAN', market=market, sha256=plan.plan_sha256)
+        bound = {}
+        if self.identity.get('plan_http_market'):
+            from app.services.selected_source_plan import SelectedRequestPlan, request_budget
+            if (self.approval is None or type(plan) is not SelectedRequestPlan or self.identity['plan_http_market'] != market
+                    or (digest(kis_plan) if kis_plan is not None else None) != plan.kis_plan_sha256):
+                raise ValueError('selected_regular_frozen_source_and_kis_required')
+            bound = dict(http_budget=request_budget({'plan': plan}, kis_plan),
+                         http_slots={d.logical_request_id: d.provider for d in plan.descriptors})
+        self._event('PLAN', market=market, sha256=plan.plan_sha256, **bound)
 
     def source_captured(self, market):
         self._event('CAPTURE', market=market)

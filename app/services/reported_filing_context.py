@@ -1,7 +1,7 @@
 """Compact observations from already selected official filings. No acquisition or decision rights."""
 from collections import defaultdict
 from datetime import date
-from decimal import InvalidOperation
+from decimal import Decimal, InvalidOperation
 from math import isfinite
 import re
 
@@ -302,6 +302,67 @@ def dart_operating_observations(plan, filing, rows, raw_sha):
     remaining = (r for r in comparative if r['metric'] in kept_metrics)
     numeric += list(remaining)[:_MAX_FILING_AMOUNTS - len(numeric)]
     return _registered_observations(numeric, 'reported_operating', 'REPORTED_OPERATING_CONTEXT_ONLY')
+
+
+def dart_document_observations(plan, filing, parsed, provenance):
+    """Bind selected original document spans to the existing economic-context path."""
+    from app.services.bounded_financial_projection import field_record
+    from app.services.numeric_semantic_registry import build_numeric_registry, resolve_numeric_semantic
+
+    if not parsed or not parsed.get('period_end'):
+        return []
+    if (plan['provider'] != 'opendart' or plan['market'] != 'kr'
+            or filing.get('role') != 'current' or filing['corp_code'] != plan['issuer']
+            or filing['ticker'] != plan['ticker']
+            or any(provenance[key] != filing[key] for key in ('corp_code','ticker','receipt_no','report_code'))
+            or provenance['filing_date'] != filing['receipt_date']
+            or not parsed['period_end'] <= filing['receipt_date'] <= plan['cutoff'][:10]):
+        return []
+    report_month = re.search(r'\((\d{4})[./-](\d{1,2})\)', filing['report_name'].replace(' ', ''))
+    if (not report_month or (int(report_month[1]), int(report_month[2])) !=
+            (int(parsed['period_end'][:4]), int(parsed['period_end'][5:7]))):
+        return []
+    common = dict(source_document_id=filing['receipt_no'], source_document_type=filing['report_code'],
+                  document=filing['report_name'], filing_date=filing['receipt_date'],
+                  report_start=parsed['period_start'], report_end=parsed['period_end'],
+                  xml_name=provenance['xml_name'], xml_sha256=provenance['xml_sha256'],
+                  retrieved_at=provenance['retrieved_at'])
+    raw_sha = provenance['zip_sha256']
+    result = []
+    for text in parsed['texts']:
+        observation = dict(**common, source_provider='opendart', ticker=plan['ticker'],
+            issuer_id=plan['issuer'], security_id=plan['security']['canonical_security_id'],
+            raw_artifact_sha256=raw_sha, section=text['section'], line=text['line'],
+            statement_basis=text['scope'], classification=text['classification'], excerpt=text['excerpt'])
+        result.append(dict(ref_id=digest(observation), as_of=filing['receipt_date'],
+                           kind='DART_BUSINESS_EXCERPT_CONTEXT_ONLY', observation=observation))
+    for cell in parsed['numbers']:
+        metric, unit = cell['metric'], cell['unit']
+        spec, _ = resolve_numeric_semantic('dart_business_metric', 'fields.'+metric, {'unit':unit})
+        if spec is None:
+            continue
+        amount = Decimal(str(cell['value'])) * cell['unit_scale']
+        value = int(amount) if amount == amount.to_integral_value() else float(amount)
+        anchor = dict(section=cell['section'], line=cell['line'], subject=cell['subject'],
+                      row_header=cell['row_header'], column_header=cell['column_header'])
+        monetary = unit in ('KRW', 'USD')
+        lineage = dict(**common, **anchor, occurrence_id=digest([provenance['xml_sha256'],anchor,metric]),
+            classification=cell['classification'], semantic=metric, statement_basis=cell['scope'],
+            period_start=cell['period_start'], period_end=cell['period_end'], period_role=cell['period_role'],
+            source_literal=cell['source_text'], source_unit=cell['unit_label'], unit_scale=cell['unit_scale'],
+            currency=unit if monetary else None, unit=unit, notes=cell.get('notes', []))
+        role = 'current' if cell['period_end'] == parsed['period_end'] else 'historical'
+        record = field_record(plan, metric=metric, value=value, lineage=lineage, quality=[],
+                              raw_sha=raw_sha, role=role, allow_instant=True, monetary=monetary)
+        if not record['context_eligible'] or cell['period_end'] > parsed['period_end']:
+            continue
+        ref = record['normalized_hash']
+        entry, = build_numeric_registry([dict(fact_type='dart_business_metric', fact_id=ref,
+            as_of_date=cell['period_end'], fields={metric:value,'unit':unit})])
+        if entry['registered'] and entry['prose_allowed'] and entry['value'] == value and entry['unit'] == unit:
+            result.append(dict(ref_id=ref, as_of=record['period_end'], kind='DART_BUSINESS_METRIC_CONTEXT_ONLY',
+                               observation=record, numeric_registry_entry=entry))
+    return result
 
 
 def select_observations(texts, fields):

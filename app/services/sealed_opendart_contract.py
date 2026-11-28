@@ -1,8 +1,10 @@
 """Provider-owned headers for the opt-in sealed OpenDART acquisition path."""
 
 
-def opendart_headers():
-    return {'Accept': 'application/json', 'User-Agent': 'ThesisMonitor/1.0'}
+def opendart_headers(*, document=False):
+    accept = ('application/x-msdownload, application/zip, application/octet-stream, application/xml, application/json'
+              if document else 'application/json')
+    return {'Accept': accept, 'User-Agent': 'ThesisMonitor/1.0'}
 
 
 def header_contract():

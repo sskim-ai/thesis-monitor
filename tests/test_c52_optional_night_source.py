@@ -227,6 +227,6 @@ def test_registered_cycle_freezes_optional_night_plan_and_ledger_before_http(tmp
     assert us_night_optional(frozen)
     assert identity['runtime_cap']['optional_night'] == OPTIONAL_NIGHT
     assert 'krx_night_futures' in frozen['config_identities']
-    assert identity['max_http'] == 710 and identity['max_models'] == 42
+    assert identity['plan_http_market'] == 'us' and identity['max_models'] == 42
     assert result['financial_HTTP'] == result['models'] == 0
     assert len(frozen['plan']['subjects']) == 14

@@ -967,32 +967,64 @@ def _cited_filing_rows(context, output, source):
     rows = []
     for ref in dict.fromkeys(output['valuation_context'].get('business_evidence_refs', ())):
         item = available.get(ref)
-        if ref not in native or item is None:
+        if ref not in native or item is None or item['kind'] != native[ref]['kind']:
             continue
         record = native[ref]['observation']
-        if item['kind'] in ('REPORTED_SEGMENT_CONTEXT_ONLY', 'REPORTED_OPERATING_CONTEXT_ONLY'):
+        kind = item['kind']
+        dart_amount = kind == 'DART_BUSINESS_METRIC_CONTEXT_ONLY'
+        if dart_amount or kind in ('REPORTED_SEGMENT_CONTEXT_ONLY', 'REPORTED_OPERATING_CONTEXT_ONLY'):
             reg = native[ref]['numeric_registry_entry']
             if (not reg['registered'] or reg['fact_id'] != ref or reg['value'] != record['value']
-                    or reg['unit'] != record['currency'] or reg['semantic_type'] != record['metric']):
+                    or reg['unit'] != (record['unit'] if dart_amount else record['currency'])
+                    or reg['semantic_type'] != record['metric']):
                 continue
             period = record['period_start'] + '~' + record['period_end']
-            if item['kind'] == 'REPORTED_OPERATING_CONTEXT_ONLY':
-                names = '연결재무제표'
-                if record['period_role'] == 'point_in_time':
-                    period = record['period_end'] + ' 기준'
+            if record.get('period_role') == 'point_in_time':
+                period = record['period_end'] + ' 기준'
+            if dart_amount:
+                if (reg.get('fact_type') != 'dart_business_metric' or not reg.get('prose_allowed')
+                        or reg.get('field_path') != 'fields.' + record['metric']):
+                    continue
+                scope = {'consolidated':'연결', 'separate':'별도', 'business_section':'사업의 내용'}[record['statement_basis']]
+                from app.services.numeric_semantic_registry import canonical_display_value, resolve_numeric_semantic
+                spec, unit = resolve_numeric_semantic(reg['fact_type'], reg['field_path'], {'unit': record['unit']})
+                if spec is None:
+                    continue
+                value = canonical_display_value(spec, record['value'], unit)
+                text = (f"{record['subject']} · {spec.approved_labels[0]} {value} "
+                        f"({period}, {scope}, {record['document']} · {record['section']})")
+                if record.get('notes'):
+                    # Preserve complete qualitative qualifications without granting additional numbers.
+                    notes = [re.sub(r'^(?:주\s*\d+\s*[).:]|[※*])\s*', '', n) for n in record['notes']]
+                    quoted = [n for n in notes if n and not any(c.isdigit() for c in n)]
+                    text += '\n표 주석 · ' + (' '.join(quoted) if quoted else '적용 범위 및 산정 기준은 해당 표의 주석 참조.')
             else:
-                names = ' / '.join(member.split(':')[-1].removesuffix('Member') for member in record['dimensions'].values())
-            text = (f"{names} · {reg['approved_labels'][0]} {reg['value']:,} {reg['unit']} "
-                    f"({period}, {record['document']})")
+                if kind == 'REPORTED_OPERATING_CONTEXT_ONLY':
+                    names = '연결재무제표'
+                else:
+                    names = ' / '.join(member.split(':')[-1].removesuffix('Member') for member in record['dimensions'].values())
+                text = (f"{names} · {reg['approved_labels'][0]} {reg['value']:,} {reg['unit']} "
+                        f"({period}, {record['document']})")
             keys = (ref + ':' + reg['field_path'],)
-        elif item['kind'] == 'FILING_EXCERPT_CONTEXT_ONLY':
+        elif kind in ('FILING_EXCERPT_CONTEXT_ONLY', 'DART_BUSINESS_EXCERPT_CONTEXT_ONLY'):
             label = {'COMPANY_REPORTED_OBSERVATION': '회사 보고 내용', 'MANAGEMENT_EXPLANATION': '회사의 원인 설명',
-                     'MANAGEMENT_OUTLOOK_OR_ESTIMATE': '경영진 전망·계획 또는 추정'}[record['classification']]
+                     'MANAGEMENT_OUTLOOK_OR_ESTIMATE': '경영진 전망·계획 또는 추정', 'CONTRACT_TERMS':'계약 조건',
+                     'DEVELOPMENT_STATUS':'개발 진행 단계', 'DISCLOSURE_LIMIT':'공시 제한·미확정 사항'}[record['classification']]
             text = f"{label} · {record['document']} (공시 {record['filing_date']})"
-            # Quantitative prose still belongs to the numeric registry. The
-            # accepted Korean economic explanation accompanies this source.
-            if not any(c.isdigit() for c in record['excerpt']):
-                text += '\n“' + record['excerpt'] + '”'
+            excerpts = [record['excerpt']]
+            if kind == 'DART_BUSINESS_EXCERPT_CONTEXT_ONLY':
+                text += f" · {record['section']}"
+                if record['classification'] == 'CONTRACT_TERMS':
+                    # Each separately labelled contract clause comes from a distinct source cell.
+                    excerpts = record['excerpt'].split(' / ')
+            for literal in excerpts:
+                measured = literal
+                if kind == 'DART_BUSINESS_EXCERPT_CONTEXT_ONLY':
+                    # Report periods, product identifiers and clinical phase names are labels.
+                    measured = re.sub(r'(?<![A-Za-z0-9])[A-Za-z]+-\d+[A-Za-z]*(?![A-Za-z0-9])'
+                        r'|임상\s*\d+(?:/\d+)?\s*상|제\s*\d+\s*기|[1-4]\s*분기', '', literal)
+                if not any(c.isdigit() for c in measured):
+                    text += '\n“' + literal + '”'
             keys = ()
         else:
             continue

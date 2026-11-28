@@ -81,10 +81,12 @@ def paired(current, prior):
         return False
 
 
-def field_record(plan, *, metric, value, lineage, quality, raw_sha, role, allow_instant=False):
+def field_record(plan, *, metric, value, lineage, quality, raw_sha, role, allow_instant=False, monetary=True):
     value_ok = isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
     required = ("source_document_id", "source_document_type", "filing_date", "occurrence_id",
-                "semantic", "period_start", "period_end", "period_role", "statement_basis", "currency", "unit", "unit_scale")
+                "semantic", "period_start", "period_end", "period_role", "statement_basis", "unit", "unit_scale")
+    if monetary:
+        required += ("currency",)
     errors = list(quality)
     if not value_ok or not all(lineage.get(k) for k in required):
         errors.append("LINEAGE_UNRESOLVED")
@@ -109,7 +111,7 @@ def field_record(plan, *, metric, value, lineage, quality, raw_sha, role, allow_
     return result
 
 
-def reported_filing_context(plan, acquisition, directory, receipts):
+def reported_filing_context(plan, acquisition, directory, receipts, *, report_diagnostic=None):
     """Use current discovery-selected documents from the verified acquisition only."""
     from pathlib import Path
     from app.services.bounded_financial_acquisition import sec_document_identity
@@ -125,10 +127,34 @@ def reported_filing_context(plan, acquisition, directory, receipts):
                 or not filing.get('receipt_date') or filing['receipt_date'] > plan['cutoff'][:10]):
             return []
         document = _dart_cfs_document(plan, filing, acquisition, directory, receipts, optional=True)
+        accounts = []
         if document:
             raw, rows = document
-            return dart_operating_observations(plan, filing, rows, sha256_bytes(raw))
-        return []
+            accounts = dart_operating_observations(plan, filing, rows, sha256_bytes(raw))
+        if acquisition.get('dart_report'):
+            from app.services.dart_report_artifact import verified_dart_report
+            from app.services.dart_business_report import parse_dart_business_report
+            from app.services.reported_filing_context import dart_document_observations
+            artifact = verified_dart_report(plan, acquisition, directory, receipts)
+            report = acquisition['dart_report']
+            if artifact is None:
+                reason = report.get('reason') or 'DART_REPORT_BINDING_UNAVAILABLE'
+            else:
+                xml, provenance = artifact
+                try:
+                    parsed = parse_dart_business_report(xml, corp_code=plan['issuer'], report_code=filing['report_code'])
+                except ValueError:
+                    # Raw acquisition may be successful while XML or the report cover is unusable.
+                    reason = 'DART_REPORT_PARSE_UNAVAILABLE'
+                else:
+                    business = dart_document_observations(plan, filing, parsed, provenance)
+                    if business:
+                        return accounts + business
+                    reason = 'DART_REPORT_NO_ELIGIBLE_OBSERVATIONS'
+            if report_diagnostic is not None:
+                report_diagnostic.update(receipt_no=filing['receipt_no'], acquisition_status=report.get('status'),
+                                         status='UNAVAILABLE', reason=reason)
+        return accounts
     if plan['provider'] != 'sec_edgar':
         return []
     texts, fields = [], []
@@ -430,7 +456,7 @@ def verify_capture(plan, acquisition, directory, receipts):
     logical = {}
     physical = 0
     for receipt in receipts:
-        retained = 'retained_sec_origin' in receipt
+        retained = ('retained_sec_origin' in receipt or 'retained_dart_origin' in receipt)
         if (receipt['plan_sha256'] != digest(plan)
                 or (receipt['attempt'] != 0 if retained else not 1 <= receipt['attempt'] <= 3)):
             raise ValueError('receipt_plan_or_attempt_mismatch')
@@ -446,7 +472,7 @@ def verify_capture(plan, acquisition, directory, receipts):
             verify_retained_financial_use(plan,directory,receipt)
         else:
             physical += 1
-        if ((attempts and (retained or 'retained_sec_origin' in attempts[-1]
+        if ((attempts and (retained or 'retained_sec_origin' in attempts[-1] or 'retained_dart_origin' in attempts[-1]
                            or attempts[-1]['request_sha256'] != receipt['request_sha256']))
                 or (not retained and receipt['attempt'] != len(attempts)+1)):
             raise ValueError('receipt_retry_identity_mismatch')

@@ -1,6 +1,8 @@
 """Finite SEC/OpenDART slots compiled before any source response is available."""
 import httpx
 
+from app.services.dart_report_artifact import DART_REPORT_URL
+
 from app.services.sealed_fresh_dispatch import FreshRequestDescriptor, wire_identity
 from app.services.sealed_opendart_contract import opendart_headers
 from app.services.sealed_response_binding import ResponseBinding
@@ -11,10 +13,10 @@ def financial_slots(policy, *, owner, owner_sha256, config_sha256):
     p = policy
     prefix = 'financial:' + p['ticker']
     result = []
-    def add(suffix, operation, url, *, params=None, rule=None):
+    def add(suffix, operation, url, *, params=None, rule=None, mandatory=True):
         key = prefix + ':' + suffix
         headers = ({'User-Agent': 'PLAN_CREDENTIAL', 'Accept': 'application/json'}
-                   if p['market'] == 'us' else opendart_headers())
+                   if p['market'] == 'us' else opendart_headers(document=operation == 'dart_report'))
         if p['market'] == 'kr':
             params = dict(params or {}, crtfc_key='PLAN_CREDENTIAL')
         req = httpx.Request('GET', url, params=params, headers=headers)
@@ -22,7 +24,7 @@ def financial_slots(policy, *, owner, owner_sha256, config_sha256):
             provider=p['provider'], source_family='financial', role_id=prefix, market=p['market'],
             subject=p['ticker'], endpoint_operation=operation,
             request_json=wire_identity(req, ('PLAN_CREDENTIAL',)), target_period=p['cutoff'][:10],
-            mandatory=True, group_id=key, page_ordinal=1, max_pages=1, document_ordinal=1,
+            mandatory=mandatory, group_id=key, page_ordinal=1, max_pages=1, document_ordinal=1,
             max_documents=1, timeout_seconds=p['timeout_seconds'],
             transient_retry_max=p['maximum_retries_per_request'], raw_path=f'raw/{key}/source.body',
             normalizer=owner, consumer_role=prefix, owner_sha256=owner_sha256,
@@ -57,6 +59,10 @@ def financial_slots(policy, *, owner, owner_sha256, config_sha256):
                 add(f'filing{ordinal}:{basis}', 'statement', 'https://opendart.fss.or.kr/api/fnlttSinglAcntAll.json',
                     params=dict(corp_code=p['issuer'], bsns_year='0000', reprt_code='00000', fs_div=basis),
                     rule=binding('DART_STATEMENT', tuple(parents), selection_ordinal=ordinal, basis=basis))
+        if p.get('dart_business_report'):
+            add('filing1:report', 'dart_report', DART_REPORT_URL,
+                params={'rcept_no': '00000000000000'}, mandatory=False,
+                rule=binding('DART_REPORT', tuple(parents), selection_ordinal=1))
     if len(result) != p['maximum_logical_requests']:
         raise ValueError('financial_slot_budget_parity')
     return tuple(result)

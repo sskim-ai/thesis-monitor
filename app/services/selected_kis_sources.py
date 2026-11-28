@@ -6,18 +6,19 @@ from scripts.kis_eps_wire_calibration import sealed
 CONTRACT='selected-original-kis-source-v1'
 
 
-def build_plan(*,generation,as_of,securities,static_hashes):
+def build_plan(*,generation,as_of,securities,static_hashes,plan_derived_http=False):
     subjects=tuple(sorted(securities))
-    if not subjects or len(subjects)>8:
+    if not subjects or not plan_derived_http and len(subjects)>8:
         raise ValueError('selected_kis_bounded_subjects_required')
     for t,s in securities.items():
         if (s['ticker']!=t or s['exchange'] not in ('KRX','KOSPI','KOSDAQ') or s['currency']!='KRW'
                 or not s['canonical_security_id'] or not s.get('corp_code')):
             raise ValueError('selected_kis_security_identity_gap')
     initial=len(action.VARIANTS)*len(subjects)
-    continuation=min(18,60-initial)
+    continuation=18 if plan_derived_http else min(18,60-initial)
     return sealed(dict(contract=CONTRACT,generation_id=generation,scope='SELECTED_ORIGINAL_RESEARCH_V1',
-        securities=securities,subjects=list(subjects),as_of=as_of,calendar=price.calendar_receipt(as_of),
+        securities=securities,subjects=list(subjects),
+        **(dict(plan_derived_http=True) if plan_derived_http else {}),as_of=as_of,calendar=price.calendar_receipt(as_of),
         static_hashes=static_hashes,auth_max=1,estimate_max=len(subjects),identity_max=len(subjects),price_max=len(subjects),
         action_initial_max=initial,action_data_max=initial+continuation,action_continuation_max=continuation,
         data_max=3*len(subjects)+initial+continuation,maximum_physical_HTTP=1+3*len(subjects)+initial+continuation,
@@ -27,7 +28,8 @@ def build_plan(*,generation,as_of,securities,static_hashes):
 
 
 def validate_plan(plan):
-    rebuilt=build_plan(generation=plan['generation_id'],as_of=plan['as_of'],securities=plan['securities'],static_hashes=plan['static_hashes'])
+    rebuilt=build_plan(generation=plan['generation_id'],as_of=plan['as_of'],securities=plan['securities'],static_hashes=plan['static_hashes'],
+        plan_derived_http=plan.get('plan_derived_http') is True)
     if plan!=rebuilt:
         raise ValueError('selected_kis_plan_reproduction_gap')
     return tuple(plan['subjects'])

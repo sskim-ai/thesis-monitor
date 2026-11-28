@@ -125,7 +125,7 @@ def test_us_scheduled_caller_freeze_to_original_acquisition_gate(tmp_path,monkey
     assert value['frozen']['optional_news_429']==value['identity']['runtime_cap']['optional_news_429']
     assert value['frozen']['us_selected_dated_sr']['enabled'] is True
     assert len(value['frozen']['plan']['subjects'])==14
-    assert value['identity']['max_models']==42 and value['identity']['max_http']==710
+    assert value['identity']['max_models']==42 and value['identity']['plan_http_market']=='us'
     assert value['identity']['b2_retry_policy']=='B2_PER_TICKER_ONE_RETRY_V1' and value['source_budget']['ceiling_seconds']==1800
 
 
@@ -142,7 +142,7 @@ def test_kr_scheduled_caller_kis_flows_chart_and_original_600_budget(tmp_path,mo
     assert len(value['frozen']['kr_stock_flow_reads'])==8 and value['kis'] is not None
     assert len(value['frozen']['plan']['subjects'])==8
     assert len([row for row in value['frozen']['plan']['descriptors'] if row['provider']=='ecos'])==3
-    assert value['identity']['max_models']==18 and value['identity']['max_http']==334
+    assert value['identity']['max_models']==18 and value['identity']['plan_http_market']=='kr'
     assert value['identity'].get('timeout_retry_cap',0)==0 and value['source_budget']['ceiling_seconds']==600
 
 

@@ -36,6 +36,14 @@ def _night_attempt(cap, scope, identity):
     return matches[0] if matches else None
 
 
+def _dart_unavailable(cap, logical, identity):
+    from app.services.campaign_runtime_cap import optional_dart_result
+    for key, attempt in cap.state()['attempts'].items():
+        if attempt.get('optional_dart') == logical and optional_dart_result(attempt, identity):
+            return key
+    return None
+
+
 class SelectedSourceDispatcher(SealedDispatcher):
     def __init__(self, *, plan, compiler_args, kis_plan, registration_owner, policy,
                  config_identities, credential_presence, repository_root, root,
@@ -71,7 +79,10 @@ class SelectedSourceDispatcher(SealedDispatcher):
             raise ValueError('selected_kis_credentials_required')
         self.registration_owner,self.stock,self.policy,self.guard=registration_owner,stock,policy,guard
         self.run_ledger = run_ledger
-        if run_ledger is not None and run_ledger.state()['plans'].get(self.plan.market) != self.plan.plan_sha256:
+        state = run_ledger.state()
+        if (state['plans'].get(self.plan.market) != self.plan.plan_sha256
+                or run_ledger.identity.get('plan_http_market') and
+                state['runtime']['http_budget']['providers'] != approved_provider_caps):
             raise ValueError('selected_shared_run_plan_not_bound')
         self._require_current()
         self._qualified_registration = (registration_owner, stock, policy)
@@ -109,10 +120,16 @@ class SelectedSourceDispatcher(SealedDispatcher):
                 ledger.identity.get('runtime_cap', {}).get('optional_news_429') == OPTIONAL_NEWS_429 else None)
             optional_night = (optional_night_scope(self.plan, descriptor) if
                 ledger.identity.get('runtime_cap', {}).get('optional_night') == OPTIONAL_NIGHT else None)
+            dart_report = bool(ledger.identity.get('plan_http_market') == 'kr' and not descriptor.mandatory
+                and descriptor.endpoint_operation == 'dart_report' and descriptor.response_binding
+                and descriptor.response_binding.kind == 'DART_REPORT')
+            report_unavailable = None
             class CountedTransport:
                 optional_night_timeout = optional_night is not None
+                optional_dart_timeout = dart_report
 
                 async def handle_async_request(self, request):
+                    nonlocal report_unavailable
                     parent._require_current()
                     key = parent.run_ledger.before_http(market=parent.plan.market, provider=descriptor.provider,
                         logical_id=logical, plan_sha256=parent.plan.plan_sha256)
@@ -130,6 +147,7 @@ class SelectedSourceDispatcher(SealedDispatcher):
                                     market=parent.plan.market,phase='SOURCE',owner='SelectedSourceDispatcher',inner=wire,
                                     **({'subject':descriptor.subject, 'optional_news':optional} if optional else
                                        {'optional_night':optional_night} if optional_night else
+                                       {'subject':descriptor.subject} if dart_report else
                                        {'subject':'000660'} if issuer_only else {}))
                             if descriptor.endpoint_operation=='usa20590':
                                 response=await _completed_close_on_lane(metered,request)
@@ -138,10 +156,12 @@ class SelectedSourceDispatcher(SealedDispatcher):
                         else:
                             response = await wire.handle_async_request(request)
                     except BaseException:
-                        night_attempt = (_night_attempt(metered.cap, optional_night, ledger.identity)
+                        unavailable = (_night_attempt(metered.cap, optional_night, ledger.identity)
                             if optional_night and metered is not None else None)
+                        if dart_report and metered is not None:
+                            report_unavailable = unavailable = _dart_unavailable(metered.cap, logical, ledger.identity)
                         parent.run_ledger.result(key, ok=False,
-                            **({'optional_unavailable':night_attempt} if night_attempt else {}))
+                            **({'optional_unavailable':unavailable} if unavailable else {}))
                         raise
                     optional_attempt = None
                     if optional and response.status_code == 429:
@@ -153,6 +173,10 @@ class SelectedSourceDispatcher(SealedDispatcher):
                         optional_attempt = matches[0]
                     if optional_night:
                         optional_attempt = _night_attempt(metered.cap, optional_night, ledger.identity)
+                    if dart_report and response.status_code in (404, 410):
+                        report_unavailable = optional_attempt = _dart_unavailable(metered.cap, logical, ledger.identity)
+                        if optional_attempt is None:
+                            raise SourceSafetyStop('selected_optional_dart_physical_result_missing')
                     parent.run_ledger.result(key, ok=False if optional_attempt else response.status_code not in (401,403,429),
                         **({'optional_unavailable':optional_attempt} if optional_attempt else {}))
                     return response
@@ -166,6 +190,13 @@ class SelectedSourceDispatcher(SealedDispatcher):
         optional_429 = (ledger is not None and optional and final['status'] == 'FAILED'
             and len(final['attempts']) == 1 and final['attempts'][0]['status'] == 429
             and final['attempts'][0].get('error') is None)
+        if ledger is not None and dart_report and final['status'] == 'FAILED':
+            if report_unavailable:
+                return final
+            if any((a['status'] or 0) >= 400 or a.get('error') for a in final['attempts']):
+                self.halted = True
+                ledger.stop('SOURCE_DART_PROVIDER_FAILED')
+                raise SourceSafetyStop('selected_dart_provider_failed')
         if ledger is not None and optional_night and final['status'] == 'FAILED':
             from app.services.campaign_runtime_cap import RuntimeCap, OptionalNightCollectionError
             attempt = _night_attempt(RuntimeCap(ledger.worker_binding()), optional_night, ledger.identity)

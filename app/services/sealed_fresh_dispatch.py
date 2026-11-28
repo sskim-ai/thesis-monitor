@@ -38,7 +38,7 @@ def read_route(provider, method, path):
     routes = {
         'kiwoom': r'(?:/api/(?:us/(?:chart|stkinfo|mrkcond)|dostk/(?:chart|sect|mrkcond|stkinfo))|/oauth2/token)',
         'sec_edgar': r'/(?:submissions/CIK\d{10}\.json|api/xbrl/companyfacts/CIK\d{10}\.json|Archives/edgar/data/\d+/\d{18}/[A-Za-z0-9_.-]+)',
-        'opendart': r'/api/(?:list|fnlttSinglAcntAll)\.json',
+        'opendart': r'/api/(?:(?:list|fnlttSinglAcntAll)\.json|document\.xml)',
         'fred': r'/fred/series/observations', 'eia': r'/v2/seriesid/[A-Z0-9.]+',
         'ecos': (r'/api/(?:KeyStatisticList/(?:\[REDACTED\]|%5BREDACTED%5D)/json/kr/1/100|'
                  r'StatisticSearch/(?:\[REDACTED\]|%5BREDACTED%5D)/json/kr/1/100/'
@@ -106,6 +106,12 @@ class FreshRequestDescriptor(ContractModel):
             raise ValueError('undeclared_provider_or_route')
         if not read_route(self.provider, value['method'], url.path):
             raise ValueError('nonreadonly_or_undeclared_operation')
+        if url.path == '/api/document.xml':
+            if (self.endpoint_operation != 'dart_report' or self.market != 'kr' or self.mandatory
+                    or self.transient_retry_max or not self.response_binding or self.response_binding.kind != 'DART_REPORT'
+                    or list(httpx.URL(value['url']).params.multi_items()) !=
+                        [('rcept_no', '00000000000000'), ('crtfc_key', '[REDACTED]')]):
+                raise ValueError('dart_report_requires_single_selected_optional_request')
         if url.path == '/api/us/mrkcond' and (self.endpoint_operation != 'usa20590'
                 or dict(value['headers']).get('api-id') != 'usa20590'):
             raise ValueError('us_mrkcond_completed_close_read_only')
@@ -333,7 +339,7 @@ The live source controller has no route here until the *whole* plan is admitted.
         return resolved, receipts, selected
 
     async def execute(self, logical_id, request, *, transport, normalize, reuse_us_market_origin=None,
-                      retained_sec_document=None):
+                      retained_sec_document=None, retained_dart_document=None, unavailable_dart_origin=False):
         if self.halted:
             raise SourceSafetyStop('systemic_stop_latched')
         if encoded(json.loads((self.root / 'plan.json').read_bytes())) != encoded(self.plan.model_dump(mode='json')):
@@ -358,19 +364,37 @@ The live source controller has no route here until the *whole* plan is admitted.
             resolved_request_sha256=sha256_bytes(resolved.encode()), parent_receipts=parents)
         self._save(base / 'plan.json', dict(binding, descriptor=d.model_dump(mode='json')))
         self._save(base / 'resolved-request.json', dict(binding, request=json.loads(resolved), selected=selected))
-        if reuse_us_market_origin is not None or retained_sec_document is not None:
-            if retained_sec_document is not None:
-                if reuse_us_market_origin is not None:
-                    raise SourceSafetyStop('multiple_retained_response_origins')
+        retained = [item for item in (reuse_us_market_origin, retained_sec_document, retained_dart_document)
+                    if item is not None]
+        if unavailable_dart_origin:
+            if retained or not d.response_binding or d.response_binding.kind != 'DART_REPORT' or d.mandatory:
+                raise SourceSafetyStop('invalid_dart_origin_outside_selected_optional_report')
+            reason = 'DART_RETAINED_DOCUMENT_UNAVAILABLE'
+            finished = stamp()
+            self._save(base / 'start.json', dict(binding, started_at=finished, transport_started=False))
+            for name in ('normalization', 'role-binding'):
+                self._save(base / (name + '.json'), dict(binding, status='NOT_ELIGIBLE', cause=reason))
+            final = dict(binding, status='FAILED', attempts=[], raw_sha256=None, failure=reason, finished_at=finished)
+            final['receipt_sha256'] = digest(final)
+            self._save(base / 'final.json', final)
+            self.results[logical_id] = final
+            return final
+        if retained:
+            if len(retained) != 1:
+                raise SourceSafetyStop('multiple_retained_response_origins')
+            if retained_sec_document is not None or retained_dart_document is not None:
+                from app.services.retained_dart_reports import verify_retained_dart_document
                 from app.services.sealed_financial_reader import verify_retained_sec_document
-                proof, raw = retained_sec_document
+                kind = 'dart' if retained_dart_document is not None else 'sec'
+                verify = verify_retained_dart_document if kind == 'dart' else verify_retained_sec_document
+                proof, raw = retained[0]
                 finished = stamp()
-                original = verify_retained_sec_document(d, json.loads(resolved), selected, proof, raw,
+                original = verify(d, json.loads(resolved), selected, proof, raw,
                     frozen_at=self.plan.frozen_at, selected_at=finished,
                     discovery_finished_at=self.results[d.response_binding.parents[0]]['finished_at'])
-                extra = dict(retained_sec_origin=proof['pin'], retrieval_time=original['finished_at'],
-                             response_headers={})
-                self._save(base / 'retained-sec-origin.json', proof)
+                extra = {f'retained_{kind}_origin': proof['pin'], 'retrieval_time': original['finished_at'],
+                         'response_headers': {}}
+                self._save(base / f'retained-{kind}-origin.json', proof)
             else:
                 origin, receipt, raw = _market_page_origin(self.root, self.plan, d, reuse_us_market_origin,
                     resolved_sha256=binding['resolved_request_sha256'])
@@ -422,18 +446,19 @@ The live source controller has no route here until the *whole* plan is admitted.
                         await result.aclose()
                     return result
                 try:
-                    if (d.provider == 'krx_night_futures' and not d.mandatory
-                            and getattr(transport, 'optional_night_timeout', False)):
+                    if not d.mandatory and (
+                            d.provider == 'krx_night_futures' and getattr(transport, 'optional_night_timeout', False)
+                            or d.endpoint_operation == 'dart_report' and getattr(transport, 'optional_dart_timeout', False)):
                         # Share this exact request deadline with its metered
                         # transport. Only its own expired timer is a timeout;
                         # cancellation by the campaign/operator remains fatal.
                         deadline = asyncio.timeout(d.timeout_seconds)
-                        request.extensions['_thesis_optional_night_timeout'] = deadline
+                        request.extensions['_thesis_optional_source_timeout'] = deadline
                         try:
                             async with deadline:
                                 response = await receive()
                         finally:
-                            request.extensions.pop('_thesis_optional_night_timeout', None)
+                            request.extensions.pop('_thesis_optional_source_timeout', None)
                     else:
                         response = await asyncio.wait_for(receive(), timeout=d.timeout_seconds)
                     raw = response.content
@@ -667,18 +692,24 @@ def consume_bound_result(*, root, plan, logical_id, receipt_sha256):
     if any(p.is_symlink() for p in (raw_path, *raw_path.parents)):
         raise ValueError('consumer_raw_symlink_denied')
     raw = raw_path.read_bytes()
-    if 'retained_sec_origin' in final:
+    if 'retained_sec_origin' in final or 'retained_dart_origin' in final:
+        from app.services.retained_dart_reports import verify_retained_dart_document
         from app.services.sealed_financial_reader import verify_retained_sec_document
-        proof = read(base / 'retained-sec-origin.json')
+        kind = 'dart' if 'retained_dart_origin' in final else 'sec'
+        if kind == 'dart' and 'retained_sec_origin' in final:
+            raise ValueError('multiple_retained_response_origins')
+        verify = verify_retained_dart_document if kind == 'dart' else verify_retained_sec_document
+        proof = read(base / f'retained-{kind}-origin.json')
         if descriptor.response_binding is None:
             raise ValueError('retained_sec_requires_current_selection')
         discovery = read(Path(root) / 'receipts' / descriptor.response_binding.parents[0] / 'final.json')
-        original = verify_retained_sec_document(descriptor, resolved['request'], resolved['selected'], proof, raw,
+        original = verify(descriptor, resolved['request'], resolved['selected'], proof, raw,
             frozen_at=plan.frozen_at, selected_at=final['finished_at'], discovery_finished_at=discovery['finished_at'])
         if (final['attempts'] or 'reused_wire' in final or final['response_headers']
-                or final['retained_sec_origin'] != proof['pin']
+                or final[f'retained_{kind}_origin'] != proof['pin']
                 or final['retrieval_time'] != original['finished_at']
-                or len(discovery['attempts']) != 1 or discovery['attempts'][0]['status'] != 200):
+                or (kind == 'sec' and len(discovery['attempts']) != 1)
+                or not discovery['attempts'] or discovery['attempts'][-1]['status'] != 200):
             raise ValueError('retained_sec_dispatch_lineage_mismatch')
     norm, role = read(base / 'normalization.json'), read(base / 'role-binding.json')
     if (sha256_bytes(raw) != final['raw_sha256'] or digest(norm) != final['normalization_sha256']

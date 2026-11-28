@@ -7,6 +7,7 @@ import re
 import httpx
 
 from app.services.bounded_financial_acquisition import AcquisitionDenied, BoundedReader, SystemicStop
+from app.services.dart_report_artifact import document_error_status, extract_dart_xml
 from app.services.bounded_financial_acquisition import sec_base, sec_document_identity, sec_selection
 from app.services.sealed_fresh_dispatch import consume_bound_result, decode_request_plan, wire_identity
 from app.services.sealed_opendart_contract import opendart_headers
@@ -66,6 +67,8 @@ def verify_retained_financial_use(plan, directory, receipt):
     root = directory.parents[1]/'dispatch'
     if directory.name != plan['ticker'] or directory.parent.name != 'financial':
         raise ValueError('retained_sec_financial_directory_scope')
+    kind = 'dart' if 'retained_dart_origin' in receipt else 'sec'
+    origin = f'retained_{kind}_origin'
     key = receipt['sealed_logical_id']
     if not re.fullmatch(r'[A-Za-z0-9_.:-]+',key) or key in {'.','..'}:
         raise ValueError('retained_sec_logical_id_scope')
@@ -81,31 +84,40 @@ def verify_retained_financial_use(plan, directory, receipt):
             or json.loads(descriptor.response_binding.policy_json) != plan
             or dispatch_plan.generation_id != plan['run_id'] or receipt['sealed_generation_id'] != plan['run_id']
             or receipt['sealed_descriptor_sha256'] != descriptor.descriptor_sha256
-            or final.get('retained_sec_origin') is None or final['retained_sec_origin'] != receipt['retained_sec_origin']
+            or final.get(origin) is None or final[origin] != receipt[origin]
             or receipt['selected_at'] != final['finished_at'] or receipt['finished_at'] != final['retrieval_time']
             or receipt['artifact'] != local+'-retained.body' or receipt['raw_sha256'] != final['raw_sha256']
             or sha256_bytes(_plain_read(directory/receipt['artifact'])) != final['raw_sha256']
-            or request['url'] != resolved['request']['url'] or request['filing'] != resolved['selected']
+            or request['url'] != (resolved['request']['url'].split('?')[0] if kind == 'dart' else resolved['request']['url'])
+            or request['filing'] != resolved['selected']
             or request['filing'] != receipt['filing'] or request['stage'] != descriptor.endpoint_operation
-            or request['stage'] != receipt['stage'] or request['method'] != 'GET' or request['params']
+            or request['stage'] != receipt['stage'] or request['method'] != 'GET'
+            or request['params'] != (dict(rcept_no=receipt['filing']['receipt_no']) if kind == 'dart' else {})
             or receipt['attempt'] != 0 or receipt['HTTP_status'] is not None or receipt['failure_class'] is not None):
         raise ValueError('retained_sec_financial_use_mismatch')
     consume_bound_result(root=root,plan=dispatch_plan,logical_id=key,receipt_sha256=receipt['sealed_final_receipt_sha256'])
-    original = json.loads(_plain_read(root/'receipts'/key/'retained-sec-origin.json'))['original_receipt']
+    original = json.loads(_plain_read(root/'receipts'/key/f'retained-{kind}-origin.json'))['original_receipt']
     if receipt['started_at'] != original['started_at']:
         raise ValueError('retained_sec_original_time_changed')
     return datetime.fromisoformat(receipt['selected_at'])
 
 
 class FinancialFragment:
-    def __init__(self, descriptor):
+    def __init__(self, descriptor, filing=None):
+        self.filing = filing
         self.identity = (descriptor.normalizer, descriptor.owner_sha256)
         self.descriptor = descriptor
 
     def __call__(self, raw):
         if not raw:
             raise ValueError('empty_financial_fragment')
-        if self.descriptor.provider == 'opendart':
+        if self.descriptor.endpoint_operation == 'dart_report':
+            status = document_error_status(raw)
+            if status and status not in {'013', '014'}:
+                raise SourceSafetyStop('dart_document_provider_denied:' + str(status))
+            extract_dart_xml(raw, self.filing['receipt_no'], corp_code=self.filing['corp_code'],
+                             report_code=self.filing['report_code'])
+        elif self.descriptor.provider == 'opendart':
             if json.loads(raw).get('status') not in {'000', '013'}:
                 raise ValueError('dart_provider_status_denied')
         elif self.descriptor.endpoint_operation != 'document':
@@ -141,7 +153,7 @@ class SealedFinancialReader(BoundedReader):
         wire_params = dict(params, crtfc_key=self.api_key) if self.plan['provider'] == 'opendart' else params
         headers = {'User-Agent': self.user_agent, 'Accept': 'application/json'} if self.user_agent else {}
         if self.plan['provider'] == 'opendart':
-            headers = opendart_headers()
+            headers = opendart_headers(document=stage == 'dart_report')
         request = httpx.Request('GET', url, params=wire_params, headers=headers)
         public = wire_identity(request, self.dispatcher.secrets)
         matches = []
@@ -172,7 +184,7 @@ class SealedFinancialReader(BoundedReader):
             raise SystemicStop('financial_request_not_unique_sealed_slot')
         d = matches[0]
         _, _, selected = self.dispatcher.resolve(d.logical_request_id)
-        if stage in {'index', 'document'} and filing != selected:
+        if stage in {'index', 'document', 'dart_report'} and filing != selected:
             raise SystemicStop('sealed_financial_filing_metadata_mismatch')
         if stage == 'statement' and filing != dict(role=selected['role'], receipt_no=selected['receipt_no'], basis=d.response_binding.basis):
             raise SystemicStop('sealed_financial_statement_metadata_mismatch')
@@ -190,10 +202,19 @@ class SealedFinancialReader(BoundedReader):
                 if comparable(original['filing']) == comparable(filing):
                     raw = _plain_read(entry['body'])
                     retained = (entry['proof'], raw)
+        store = getattr(self.dispatcher, 'dart_report_store', None) if stage == 'dart_report' else None
+        invalid_origin = False
+        if store is not None:
+            try:
+                retained = store.find(self.plan, filing)
+            except (ValueError, OSError):
+                invalid_origin = True
         try:
             final = await self.dispatcher.execute(d.logical_request_id, request,
-                transport=self.wire_transport, normalize=FinancialFragment(d), **(
-                    dict(retained_sec_document=retained) if retained is not None else {}))
+                transport=self.wire_transport, normalize=FinancialFragment(d, filing),
+                **({'unavailable_dart_origin': True} if invalid_origin else {}), **(
+                    {('retained_dart_document' if stage == 'dart_report' else 'retained_sec_document'): retained}
+                    if retained is not None else {}))
         except SourceSafetyStop as exc:
             raise SystemicStop('sealed_financial_systemic_stop') from exc
         if retained is not None:
@@ -203,7 +224,8 @@ class SealedFinancialReader(BoundedReader):
                 request_sha256=digest(frozen), attempt=0, started_at=original['started_at'],
                 finished_at=original['finished_at'], selected_at=final['finished_at'],
                 HTTP_status=None, failure_class=None, filing=filing, raw_sha256=final['raw_sha256'],
-                artifact=artifact, retained_sec_origin=final['retained_sec_origin'],
+                artifact=artifact, **({'retained_dart_origin': final['retained_dart_origin']} if stage == 'dart_report'
+                                     else {'retained_sec_origin': final['retained_sec_origin']}),
                 sealed_generation_id=d.generation_id, sealed_logical_id=d.logical_request_id,
                 sealed_final_receipt_sha256=final['receipt_sha256'], sealed_descriptor_sha256=d.descriptor_sha256)
             durable_bytes(self.output / artifact, retained[1], exclusive=True)
@@ -218,7 +240,9 @@ class SealedFinancialReader(BoundedReader):
             if artifact:
                 raw = (self.dispatcher.root / row['artifact']).read_bytes()
                 durable_bytes(self.output / artifact, raw, exclusive=True)
-                if self.plan['provider'] == 'opendart':
+                if stage == 'dart_report':
+                    provider_status = document_error_status(raw)
+                elif self.plan['provider'] == 'opendart':
                     try:
                         provider_status = json.loads(raw).get('status')
                     except ValueError:
@@ -251,4 +275,12 @@ class SealedFinancialReader(BoundedReader):
                         self.dispatcher.resolve(slot.logical_request_id)
                     except SlotNotSelected:
                         self.dispatcher.skip_unselected(slot.logical_request_id)
-        return (self.dispatcher.root / d.raw_path).read_bytes(), self.receipts[-1]
+        raw = (self.dispatcher.root / d.raw_path).read_bytes()
+        if store is not None:
+            try:
+                store.put(self.plan, filing, raw, final)
+            except (OSError, ValueError):
+                # The capture and its verified current-generation receipt remain available.
+                self.output_state.setdefault('source_notes', []).append(
+                    {'stage': stage, 'reason': 'DART_REPORT_CACHE_WRITE_UNAVAILABLE'})
+        return raw, self.receipts[-1]

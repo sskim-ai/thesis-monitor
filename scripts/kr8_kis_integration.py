@@ -161,7 +161,7 @@ class FreshProbe(base.Probe):
         return Evidence(raw, receipt['raw_sha256']), receipt
 
 
-def action_plan(rows, documentation, *, selected_subjects=None):
+def action_plan(rows, documentation, *, selected_subjects=None, continuation_max=None):
     requests, inputs = [], {}
     subjects = SUBJECTS if selected_subjects is None else tuple(selected_subjects)
     if not subjects or len(set(subjects))!=len(subjects) or len(rows) != len(subjects) or {r['security_code'] for r in rows} != set(subjects):
@@ -183,11 +183,17 @@ def action_plan(rows, documentation, *, selected_subjects=None):
             route = action.route_contract(variant, documentation)
             requests.append(dict(subject=code, variant=variant, path=route['path'], tr_id=route['tr_id'],
                 params=action.action_params(variant, code, window)))
-    initial = 48 if selected_subjects is None else len(action.VARIANTS)*len(subjects)
-    data = 60 if selected_subjects is None else min(60,initial+18)
+    if selected_subjects is None:
+        initial, data, continuation = 48, 60, 18
+    else:
+        initial = len(action.VARIANTS) * len(subjects)
+        continuation = min(18, 60-initial) if continuation_max is None else continuation_max
+        if type(continuation) is not int or not 0 <= continuation <= 18:
+            raise ValueError('SELECTED_ACTION_CONTINUATION_SCOPE')
+        data = initial + continuation
     return dict(contract='kr8-fresh-exact-action-plan-v1' if selected_subjects is None else 'selected-original-exact-action-plan-v1', requests=requests, inputs=inputs,
         policy=action.POLICY, maximum_initial_calls=initial, maximum_data_calls=data,
-        maximum_continuation_calls=18 if selected_subjects is None else data-initial,
+        maximum_continuation_calls=continuation,
         documentation_sha256=digest(documentation), retries=0)
 
 
@@ -232,7 +238,8 @@ def replay(root, plan, *, inventories, docs, controls, scale, price_docs, action
                 raise ValueError('PRICE_FRESH_GENERATION_GAP')
             row['price'] = price.price_receipt(eps, security, evidence(root/f'price/{code}.body'),
                 read(f'price/{code}-receipt.json'), plan['calendar'], price_docs)
-    expected = action_plan(rows, action_docs, selected_subjects=_subjects(plan) if plan['contract']!=CONTRACT else None)
+    expected = action_plan(rows, action_docs, selected_subjects=_subjects(plan) if plan['contract']!=CONTRACT else None,
+        continuation_max=plan['action_continuation_max'])
     if read('action-plan.json') != expected:
         raise ValueError('ACTION_PLAN_REPRODUCTION_GAP')
     for row in rows:
@@ -351,7 +358,8 @@ def acquire(root, *, plan, credentials, inventories, static, guard,
                     ev, sr = probe.fetch(code, 'price', eps=eps)
                     security = dict(plan['securities'][code], standard_code=eps['security']['standard_code'])
                     row['price'] = price.price_receipt(eps, security, ev, sr, plan['calendar'], inputs['price_docs'])
-            ap = action_plan(rows, inputs['action_docs'],selected_subjects=subjects if plan['contract']!=CONTRACT else None)
+            ap = action_plan(rows, inputs['action_docs'],selected_subjects=subjects if plan['contract']!=CONTRACT else None,
+                continuation_max=plan['action_continuation_max'])
             probe.save('action-plan.json', ap)
             (root/'actions').mkdir()
             actions = FreshActions(root/'actions', credentials, client, plan=ap, documentation=inputs['action_docs'])

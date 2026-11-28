@@ -48,6 +48,8 @@ def freeze_registered_child(*, registration_owner, policy, code_sha, native, nat
         configured_kr_pages=configured_kr_pages,kr_post_acquisition_completeness_approved=True,
         exact_financial_owner=True,valuation_market_types=routing_markets(identities,listing_rows=listing_rows),
         transient_retry_max=0)
+    if market == 'kr' and run_ledger.identity.get('plan_http_market') == 'kr':
+        compiler['dart_business_report'] = True
     if include_kr_stock_flow is not False:
         compiler['include_kr_stock_flow'] = include_kr_stock_flow
     if consumer_policy is not None:
@@ -60,7 +62,9 @@ def freeze_registered_child(*, registration_owner, policy, code_sha, native, nat
     elif issuer_auxiliary is not None:
         raise ValueError('selected_auxiliary_issuer_scope_denied')
     kis=build_kis_plan(generation=generation,as_of=at.isoformat(),
-        securities={t:dict(s,currency='KRW') for t,s in identities.items()},static_hashes=kis_static_hashes) if market=='kr' else None
+        securities={t:dict(s,currency='KRW') for t,s in identities.items()},static_hashes=kis_static_hashes,
+        **(dict(plan_derived_http=True) if run_ledger and run_ledger.identity.get('plan_http_market') == 'kr' else {})
+        ) if market=='kr' else None
     compiled=compile_selected_plan(compiler_args=compiler,kis_plan=kis)
     target=next(iter({r.latest_completed_session for r in stock.reads}))
     symbols=compiled['candidate']['us_market_symbols']

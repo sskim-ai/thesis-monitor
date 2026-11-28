@@ -150,14 +150,15 @@ def build_stock_plan(*,market,identities,at,generation,code_sha,counts,native=No
 
 def acquisition_plan(stock,identities,*,kr_max_pages,exact_financial_owner=False,
                      auxiliary_security=None,auxiliary_identity_sha256=None,transient_retry_max=None,
-                     consumer_policy=None):
+                     consumer_policy=None, dart_business_report=False):
     if (type(stock) is not SelectedStockPlan or set(identities)!=set(stock.subjects)
             or type(transient_retry_max) is not int or transient_retry_max!=0):
         raise ValueError('selected_explicit_no_retry_scope_required')
     # Direct financial ownership is generic. An issuer bridge is not guessed
     # from a ticker/CIK and cannot transfer per-share or price authority.
     financial={t:make_plan(s,market=stock.market,cutoff=stock.frozen_at,run_id=stock.run_id,
-        all_subjects_fresh=True,exact_financial_owner=exact_financial_owner,maximum_retries_per_request=0)
+        all_subjects_fresh=True,exact_financial_owner=exact_financial_owner,maximum_retries_per_request=0,
+        dart_business_report=dart_business_report)
         for t,s in identities.items()}
     auxiliary = {}
     if auxiliary_security is not None or auxiliary_identity_sha256 is not None:

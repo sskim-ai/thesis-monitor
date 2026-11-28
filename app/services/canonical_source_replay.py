@@ -355,6 +355,8 @@ def stock_inputs(root, frozen, policy, outcome, *, subjects=None, cycle_owners=N
                     if (retained != receipt.get('retained_sec_origin') or (retained is not None
                             and retained not in frozen.get('retained_sec_documents',{}).get(ticker,()))):
                         raise ValueError('financial_retained_sec_not_in_frozen_sources')
+                    if final.get('retained_dart_origin') != receipt.get('retained_dart_origin'):
+                        raise ValueError('financial_retained_dart_origin_mismatch')
                     if final['status'] == 'PASS':
                         consume_bound_result(root=root/'dispatch', plan=sealed, logical_id=key, receipt_sha256=final['receipt_sha256'])
                 item = dict(technical_inputs=technical, financial_inputs=dict(plan=frozen['candidate']['financial_plans'][ticker],

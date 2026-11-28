@@ -196,35 +196,54 @@ def filing_observations(view):
     result = []
     for item in stocks[0]['reported_filing_context']:
         source = item['observation']
-        operating = item['kind'] == 'REPORTED_OPERATING_CONTEXT_ONLY'
-        if operating != (direct == 'direct_opendart') or (operating and source.get('source_provider') != 'opendart'):
+        kind = item['kind']
+        operating = kind == 'REPORTED_OPERATING_CONTEXT_ONLY'
+        dart_amount = kind == 'DART_BUSINESS_METRIC_CONTEXT_ONLY'
+        dart_text = kind == 'DART_BUSINESS_EXCERPT_CONTEXT_ONLY'
+        if direct == 'direct_opendart':
+            if not (operating or dart_amount or dart_text) or source.get('source_provider') != 'opendart':
+                continue
+        elif (kind not in ('FILING_EXCERPT_CONTEXT_ONLY', 'REPORTED_SEGMENT_CONTEXT_ONLY')
+              or source.get('source_provider') == 'opendart'):
             continue
-        if item['kind'] == 'FILING_EXCERPT_CONTEXT_ONLY':
+        narrative = dart_text or kind == 'FILING_EXCERPT_CONTEXT_ONLY'
+        if narrative:
             issuer, security, ref = source['issuer_id'], source['security_id'], digest(source)
-        elif operating or item['kind'] == 'REPORTED_SEGMENT_CONTEXT_ONLY':
+        else:
             issuer, security = source['provider_issuer_id'], source['canonical_security_id']
             if not source.get('context_eligible') or source.get('quality_errors') or source.get('direction_eligible') is not False:
                 continue
             ref = digest({k: v for k, v in source.items() if k != 'normalized_hash'})
-        else:
+        if (ref != item['ref_id'] or source['ticker'] != view['ticker']
+                or issuer != owner['issuer_identity'] or security != security_id):
             continue
-        if (ref == item['ref_id'] and source['ticker'] == view['ticker']
-                and issuer == owner['issuer_identity'] and security == security_id):
-            if operating or item['kind'] == 'REPORTED_SEGMENT_CONTEXT_ONLY':
-                registry = item.get('numeric_registry_entry') or {}
-                if (registry.get('fact_id') != ref or registry.get('registered') is not True
-                        or registry.get('semantic_type') != source['metric']
-                        or registry.get('unit') != source['currency'] or registry.get('value') != source['value']):
-                    continue
-                keys = ('source_document_id','document','filing_date')
-                keys += ('account_name','source_column','period_role','current_prior_role') if operating else ('dimensions',)
-                keys += ('semantic','metric','value','currency','unit','period_start','period_end','statement_basis')
-                result.append(dict(ref_id=ref, as_of=source['period_end'], kind=item['kind'],
-                    observation={k: deepcopy(source[k]) for k in keys}))
+        if narrative:
+            as_of = source['filing_date']
+            if dart_text:
+                keys = ('source_document_id','document','source_document_type','report_start','report_end',
+                        'filing_date','section','line','statement_basis','classification','excerpt')
             else:
-                result.append(dict(ref_id=ref, as_of=source['filing_date'], kind=item['kind'],
-                    observation={k: source[k] for k in ('source_document_id','document','document_type',
-                        'report_end','classification','excerpt')}))
+                keys = ('source_document_id','document','document_type','report_end','classification','excerpt')
+        else:
+            as_of = source['period_end']
+            registry = item.get('numeric_registry_entry') or {}
+            if (registry.get('fact_id') != ref or registry.get('registered') is not True
+                    or registry.get('semantic_type') != source['metric'] or registry.get('value') != source['value']
+                    or registry.get('unit') != (source['unit'] if dart_amount else source['currency'])):
+                continue
+            keys = ('source_document_id','document','filing_date')
+            if dart_amount:
+                if (registry.get('fact_type') != 'dart_business_metric' or registry.get('prose_allowed') is not True
+                        or registry.get('field_path') != 'fields.' + source['metric']):
+                    continue
+                keys += ('section','line','classification','subject','row_header','column_header','notes',
+                         'period_role','current_prior_role')
+            elif operating:
+                keys += ('account_name','source_column','period_role','current_prior_role')
+            else:
+                keys += ('dimensions',)
+            keys += ('semantic','metric','value','currency','unit','period_start','period_end','statement_basis')
+        result.append(dict(ref_id=ref, as_of=as_of, kind=kind, observation={k: deepcopy(source[k]) for k in keys}))
     return result
 
 
@@ -372,15 +391,24 @@ def economic_context(view, context, classification, *, original_rows=None):
              and r.get('reason') == 'business_relevance_failure' and r.get('published_at')]
     scope = {}
     if filing_rows:
-        if filing_rows[0]['kind'] == 'REPORTED_OPERATING_CONTEXT_ONLY':
-            scope['filing_scope'] = ('Consolidated reported accounts. Distinguish balances from period results. '
+        kinds = {r['kind'] for r in filing_rows}
+        guidance = []
+        if 'REPORTED_OPERATING_CONTEXT_ONLY' in kinds:
+            guidance.append('Consolidated reported accounts. Distinguish balances from period results. '
                 'Contract balances do not measure backlog. PPE carrying amounts do not measure capex or capacity. '
                 'R&D expense is incurred spending. Investment income can be part of the net investment result. '
                 'These accounts alone do not establish growth drivers.')
-        else:
-            scope['filing_scope'] = ('Issuer statements are attributed context. Product and segment dimensions '
+        if kinds & {'REPORTED_SEGMENT_CONTEXT_ONLY', 'FILING_EXCERPT_CONTEXT_ONLY'}:
+            guidance.append('Issuer statements are attributed context. Product and segment dimensions '
                 'can overlap. Keep each period, unit and classification separate; do not sum dimensions, '
                 'infer a security denominator, or convert plans to realized results.')
+        if kinds & {'DART_BUSINESS_EXCERPT_CONTEXT_ONLY', 'DART_BUSINESS_METRIC_CONTEXT_ONLY'}:
+            guidance.append('DART business disclosures. Attribute explanations, development status, plans and '
+                'conditional contract terms to the issuer. Distinguish paid, received and potential amounts. '
+                'Interpret reported metrics within their named business, period, unit and table notes. '
+                'Service groups can differ from accounting segments. Never sum overlapping scopes. '
+                'Undisclosed or pending figures remain unresolved. Excerpts and notes confer no independent numeric authority.')
+        scope['filing_scope'] = ' '.join(guidance)
     return dict(observations=observed, relationships=relations,
                 **({'unverified_headlines_to_check': leads[:2]} if leads else {}),
                 **scope,

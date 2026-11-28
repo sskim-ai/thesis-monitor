@@ -131,6 +131,12 @@ class NativeProductionSourceTransport:
                 policy=self.source_policy,approved_plan_sha256=rebuilt['plan'].plan_sha256,
                 approved_provider_caps=request_budget(rebuilt,kis_plan)['providers'],guard=guard,
                 enabled=True,run_ledger=self.run_ledger)
+            if any(d.endpoint_operation == 'dart_report' for d in dispatcher.plan.descriptors):
+                from app.services.retained_dart_reports import DartReportStore
+                # The regular job writes <run_root>/kr-<session>/source.
+                if root.name != 'source' or not re.fullmatch(r'kr-[0-9]{4}-[0-9]{2}-[0-9]{2}', root.parent.name):
+                    raise ValueError('dart_report_regular_run_root_required')
+                dispatcher.dart_report_store = DartReportStore(root.parent.parent, source_root=root)
         else:
             if self.run_ledger is not None:
                 raise ValueError('selected_campaign_cannot_enter_full22_transport')

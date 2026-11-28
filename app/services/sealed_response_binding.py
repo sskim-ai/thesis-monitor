@@ -12,6 +12,7 @@ from pydantic import Field, model_validator
 from app.services.bounded_financial_acquisition import (
     dart_selection, exhibit_selection, sec_base, sec_selection,
 )
+from app.services.dart_report_artifact import eligible_report_filing
 from app.services.unified_run_artifacts import sha256_bytes
 from app.services.unified_snapshot_contract import ContractModel, digest, encoded
 
@@ -22,7 +23,7 @@ class SlotNotSelected(ValueError):
 
 class ResponseBinding(ContractModel):
     kind: Literal['KIWOOM_CONTINUATION', 'KIWOOM_US_EXCHANGE', 'SEC_PRIMARY', 'SEC_INDEX', 'SEC_EXHIBIT',
-                  'DART_NEXT_PAGE', 'DART_STATEMENT']
+                  'DART_NEXT_PAGE', 'DART_STATEMENT', 'DART_REPORT']
     parents: tuple[str, ...] = Field(min_length=1, max_length=3)
     policy_json: str
     policy_sha256: str = Field(pattern=r'^[a-f0-9]{64}$')
@@ -37,7 +38,7 @@ class ResponseBinding(ContractModel):
             raise ValueError('binding_policy_identity_mismatch')
         if len(set(self.parents)) != len(self.parents):
             raise ValueError('binding_parent_duplicate')
-        expected = 3 if self.kind in {'SEC_EXHIBIT', 'KIWOOM_US_EXCHANGE'} else 2 if self.kind == 'DART_STATEMENT' else 1
+        expected = 3 if self.kind in {'SEC_EXHIBIT', 'KIWOOM_US_EXCHANGE'} else 2 if self.kind in {'DART_STATEMENT', 'DART_REPORT'} else 1
         if len(self.parents) != expected:
             raise ValueError('binding_parent_count')
         if (self.kind == 'DART_STATEMENT') != (self.basis is not None):
@@ -59,6 +60,7 @@ class ResponseBinding(ContractModel):
             rebuilt = make_plan(policy['security'], market=policy['market'],
                 cutoff=datetime.fromisoformat(policy['cutoff']), run_id=policy['run_id'], all_subjects_fresh=True,
                 exact_financial_owner=bool(policy.get('financial_owner_policy')),
+                dart_business_report=policy.get('dart_business_report', False),
                 fpi_nomination=policy.get('fpi_nomination'),
                 maximum_retries_per_request=policy.get('maximum_retries_per_request', 2))
             if rebuilt != policy:
@@ -66,6 +68,8 @@ class ResponseBinding(ContractModel):
             market = 'us' if self.kind.startswith('SEC_') else 'kr'
             if policy['market'] != market:
                 raise ValueError('binding_policy_market')
+            if self.kind == 'DART_REPORT' and (not policy.get('dart_business_report') or self.selection_ordinal != 1):
+                raise ValueError('binding_requires_current_dart_report_plan')
             if self.selection_ordinal > policy['limits']['current'] + policy['limits']['prior']:
                 raise ValueError('binding_selection_budget')
             if self.kind == 'SEC_EXHIBIT' and self.item_ordinal > policy['limits']['linked_exhibits']:
@@ -77,6 +81,7 @@ def binding_owner_hash():
     root = Path(__file__).resolve().parents[2]
     names = ('app/services/sealed_response_binding.py',
              'app/services/bounded_financial_acquisition.py',
+             'app/services/dart_report_artifact.py',
              'app/services/sec_current_financial_candidates.py',
              'app/services/fpi_filing_document_graph.py',
              'app/services/sec_logical_cell_reference.py',
@@ -215,7 +220,12 @@ def resolve_response_binding(template, binding, parents):
             selected = dict(asdict(filing), role=role, receipt_date=filing.receipt_date.isoformat())
             url = httpx.URL(request['url'])
             params = dict(url.params)
-            params.update(corp_code=policy['issuer'], bsns_year=str(filing.business_year),
-                          reprt_code=filing.report_code, fs_div=binding.basis)
+            if binding.kind == 'DART_REPORT':
+                if role != 'current' or not eligible_report_filing(rows, selected):
+                    raise SlotNotSelected('NO_ELIGIBLE_CURRENT_RECEIPT')
+                params['rcept_no'] = filing.receipt_no
+            else:
+                params.update(corp_code=policy['issuer'], bsns_year=str(filing.business_year),
+                              reprt_code=filing.report_code, fs_div=binding.basis)
             request['url'] = str(url.copy_with(query=None).copy_merge_params(params)).replace('%5BREDACTED%5D', '[REDACTED]')
     return encoded(request).decode(), selected

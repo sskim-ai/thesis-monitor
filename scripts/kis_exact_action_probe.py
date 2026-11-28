@@ -67,7 +67,7 @@ class ExactActionProbe(base.Probe):
         key = (request['subject'], request['variant'])
         previous = self.chain.get(key)
         if (request not in self.plan['requests'] or not self.token or self.last_finished is None
-                or key in self.failed or self.data_count >= 60
+                or key in self.failed or self.data_count >= self.plan['maximum_data_calls']
                 or page != self.pages.get(key, 0) + 1
                 or (page == 1 and cursor != '')
                 or (page > 1 and (not previous or previous['next_cursor'] is None

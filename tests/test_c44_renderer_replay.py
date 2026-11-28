@@ -34,11 +34,14 @@ from tests.test_r9_rev7_detailed_renderer import inputs as detailed_inputs
 
 
 def synthetic_renderer_case(market, *, target_session="2026-11-23", include_support=False,
-                            support_timeframe="daily"):
+                            support_timeframe="daily", filing_view=None, cited_refs=()):
     """Compose existing fictional fixtures into one frozen renderer input."""
     ticker = "123456" if market == "kr" else "C44_SYNTHETIC"
     currency = "KRW" if market == "kr" else "USD"
     security = "SYNTHETIC:" + ticker
+    if filing_view:
+        ticker = filing_view["ticker"]
+        security = filing_view["valuation_view"]["security_id"]
     setup = detailed_inputs.__wrapped__()
     packet = setup["packet"].model_copy(update={
         "ticker": ticker, "market": market, "assessment_date": "2026-11-24",
@@ -48,6 +51,11 @@ def synthetic_renderer_case(market, *, target_session="2026-11-23", include_supp
     pass_a["ticker"] = ticker
     stock = source["packet"]["stocks"][0]
     stock["ticker"] = ticker
+    if filing_view:
+        source["packet"]["generated_at"] = "2026-11-24T00:00:00+00:00"
+        stock["reported_filing_context"] = filing_view["packet"]["stocks"][0]["reported_filing_context"]
+        source["selected_financial_owner"] = filing_view["selected_financial_owner"]
+        source["projection"] = filing_view["projection"]
     stock["chart_context"] = {}
     quote = stock["current_price_context"]
     quote.update(current_price=10, currency=currency, as_of_date="2026-11-23",
@@ -127,6 +135,9 @@ def synthetic_renderer_case(market, *, target_session="2026-11-23", include_supp
         context["source_use_projection"]["source_permissions"].append(
             dict(ref_id="canonical:chart:weekly", allowed_uses=["ENTRY"]))
 
+    if filing_view:
+        from app.services.canonical_monitoring_input import economic_context
+        context['economic_context'] = economic_context(source, context, {})
     data = b2_inputs(legacy=False)
     subject = data["v1_request"]["subject"]
     subject.update(ticker=ticker, security_id=security, source_generation_id="source-one",
@@ -136,6 +147,9 @@ def synthetic_renderer_case(market, *, target_session="2026-11-23", include_supp
         tactical_catalog=tactical_catalog(context, ticker, security))
     for valuation_fact in subject["facts"].values():
         valuation_fact.update(ticker=ticker, security_id=security)
+    if filing_view:
+        subject["economic_context"] = deepcopy(context["economic_context"])
+        data["step2_quality"] = True
     data["v1_request"]["output_schema"] = b1.output_schema(subject)
     data["v1_request"]["request_sha256"] = digest({
         key: value for key, value in data["v1_request"].items() if key != "request_sha256"})
@@ -148,7 +162,17 @@ def synthetic_renderer_case(market, *, target_session="2026-11-23", include_supp
     data["census"] = blocker_census([coverage_row], expected_subjects=[ticker])
     data.update(coverage_sha=data["coverage"]["receipt_sha256"], census_sha=data["census"]["receipt_sha256"])
     request = b2.build_request(**data)
-    output = {"new_buyer_shadow": next(row for row in outputs(request) if row["new_buyer"] == "ATTRACTIVE")}
+    if filing_view:
+        from tests.test_newbuyer_b2_contract import instantiate
+        fields = next(branch["properties"] for branch in request["output_schema"]["anyOf"]
+                      if branch["properties"]["new_buyer"]["const"] == "ATTRACTIVE")
+        response = {key: instantiate(schema) for key, schema in fields.items() if key != "economic_reason"}
+        response["economic_reason"] = "생산 물량 변화와 회사의 투자 계획을 함께 고려했습니다."
+        positives = request["provider_request"]["input"]["business_gate"]["eligible_positive_core_refs_after_quality"]
+        response["valuation_context"]["business_evidence_refs"] = [positives[0], *cited_refs]
+    else:
+        response = next(row for row in outputs(request) if row["new_buyer"] == "ATTRACTIVE")
+    output = {"new_buyer_shadow": response}
     auth = authorize_b2(request, generation_id="exec-one", source_generation_id="source-one",
         source_envelope_sha256=digest("synthetic envelope"), owner_sha256=digest("synthetic owner"),
         core_sha256=digest(core), pass_a_sha256=digest(pass_a),

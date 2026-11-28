@@ -33,6 +33,12 @@ from app.services.selected_source_plan import UsNightPolicy, US_NIGHT_EXCLUDED, 
 
 
 LOCAL_BASIS = 'LOCAL_OPERATOR_SCHEDULED_NO_SEND'
+LOCAL_PROVIDERS = {
+    'us': frozenset(('kiwoom', 'sec_edgar', 'finnhub', 'google_news_rss', 'fred',
+                     'krx_night_futures', 'opendart', 'eia', 'ecos')),
+    'kr': frozenset(('kiwoom', 'kis', 'opendart', 'naver_news', 'ecos')),
+}
+# Historical full-roster one-shot authorizations.
 LOCAL_CAPS = {
     'us': dict(kiwoom=552, sec_edgar=86, finnhub=28, google_news_rss=14,
         fred=13, krx_night_futures=7, opendart=6, eia=3, ecos=1),
@@ -326,7 +332,8 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     all_stage_retry = getattr(config, 'all_stage_timeout_retry', False)
     subjects = (tuple(registered_subjects) if all_stage_retry else
         SR5_SUBJECTS if sr5 else US2_SUBJECTS if diagnostic else UNIVERSE[market])
-    caps = SR5_CAPS if sr5 else US2_CAPS if diagnostic else LOCAL_CAPS[market]
+    caps = (SR5_CAPS if sr5 else US2_CAPS if diagnostic else LOCAL_CAPS[market]
+            ) if one_shot_tag else {}
     max_models = (_local_model_cap(config, one_shot_tag, subjects=subjects) if all_stage_retry
         else _local_model_cap(config, one_shot_tag))
     combined_retry = config.market_b2_timeout_retry
@@ -376,7 +383,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
     os.environ['KIWOOM_GLOBAL_LANE_REQUIRED'] = '1'
     validate_binding(bound, str(bound.executable), profile=SOL_HIGH_V1)
     endpoints = json.loads(config.endpoint_rules.read())
-    if set(endpoints) != set(LOCAL_CAPS[market]):
+    if set(endpoints) != LOCAL_PROVIDERS[market]:
         raise ValueError('local_schedule_original_provider_scope_required')
     settings = Settings(_env_file=config.settings_env_file, notification_dry_run=True,
         unified_snapshot_enabled=True, unified_snapshot_adapter_version='production-v1',
@@ -413,6 +420,7 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
             **(dict(routine_us_no_send_source_seconds=1800) if market == 'us' else {})))
         ledger = SelectedRunLedger(path=directory/'campaign.jsonl', approval=approval, master_id=master,
             children=children, provider_caps=caps, max_http=sum(caps.values()),
+            **(dict(plan_http_market=market) if one_shot_tag is None else {}),
             max_models=max_models, staged_markets=True,
             timeout_retry_cap=market_retry_cap, timeout_retry_market=market if combined_retry or all_stage_retry else 'kr' if kr_market_retry else 'us',
             b2_retry_policy=retry_policy, wallclock_seconds_max=16200,
@@ -458,15 +466,15 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
             durable_json(source_root/'kis-plan.json', kis, exclusive=True)
             require_persisted_plan(source_root, kis, plan)
         budget = request_budget({'plan':plan}, kis)
-        if budget['total'] > ledger.identity['max_http'] or any(
-                n > caps.get(p, 0) for p,n in budget['providers'].items()):
+        if one_shot_tag and (budget['total'] > ledger.identity['max_http'] or any(
+                n > caps.get(p, 0) for p,n in budget['providers'].items())):
             raise ValueError('local_schedule_frozen_plan_exceeds_original_caps')
         frozen.update(protocol_inputs=protocols, private_export_limit_bytes=64*1024**2,
             available_evidence_policy='FIELD_LOCAL_DATED_USE_V1',
             protected_input_hashes={str(p.relative_to(source_root)):sha256_bytes(p.read_bytes())
                 for p in (source_root/'static').rglob('*') if p.is_file()})
         durable_json(source_root/'production-frozen-source-plan.json', frozen, exclusive=True)
-        ledger.bind_source_plan(market, plan)
+        ledger.bind_source_plan(market, plan, **(dict(kis_plan=kis) if one_shot_tag is None else {}))
         if diagnostic:
             financial_subjects=set(subjects)|({'000660'} if auxiliary else set())
             if (tuple(plan.subjects)!=subjects or tuple(compiler['stock'].subjects)!=subjects
@@ -493,12 +501,17 @@ async def _local_registered_cycle(config, directory, session, *, one_shot_tag=No
             b2_retry_policy=retry_policy,
             artifact_budget=artifacts)
         with artifact_scope(artifacts):
-            return await run_registered(settings, source=source, model=model, mode='LIVE_NO_SEND',
+            result = await run_registered(settings, source=source, model=model, mode='LIVE_NO_SEND',
                 record_market_terminal=True,
                 initial_code_identity=initial_code_identity,
                 **(dict(configured_us_one_shot=config.one_shot)
                    if market == 'us' and getattr(config, 'one_shot', None) and one_shot_tag == config.one_shot.tag else {}),
                 **(dict(routine_us_no_send_source_seconds=1800) if market == 'us' else {}))
+        if one_shot_tag is None:
+            state = ledger.state()
+            result['source_http'] = dict(request_plan_sha256=plan.plan_sha256, max_http=budget['total'],
+                provider_caps=budget['providers'], attempted=state['http_total'], providers=state['http'])
+        return result
     except BaseException as exc:
         _record_local_failure(directory, exc, config=config, session=session,
             generation=generation, before_owner_cleanup=True)
@@ -651,7 +664,8 @@ async def run_local_scheduled(configuration, market, *, now=None, one_shot_tag=N
             session=session.isoformat(), code_commit=head, configuration_sha256=digest(config.model_dump(mode='json')),
             consent_basis='LOCAL_USER_MANAGED_CONFIGURATION_NOT_EXTERNAL_OR_DAILY_HUMAN_SIGNATURE',
             source_seconds=1800 if market == 'us' else 600, model_per_call_seconds=600,
-            max_http=sum(SR5_CAPS.values()) if sr5 else sum(US2_CAPS.values()) if diagnostic else sum(LOCAL_CAPS[market].values()),
+            **(dict(max_http=sum((SR5_CAPS if sr5 else US2_CAPS if diagnostic else LOCAL_CAPS[market]).values()))
+               if one_shot_tag else dict(max_http=None, max_http_basis='PENDING_FROZEN_SOURCE_PLAN')),
             max_models=max_models,
             market_timeout_retry_cap=int(config.market_b2_timeout_retry or market=='kr' and config.kr_market_timeout_retry),
             b2_retry_policy=(ALL_MODEL_STAGE_ONE_RETRY_V1 if getattr(config,'all_stage_timeout_retry',False)
